@@ -1,0 +1,25 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Node / Next.js
+**/node_modules/
+**/.next/
+**/out/
+**/npm-debug.log*
+
+# Java / Maven
+**/target/
+**/*.log
+
+# IDE and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Local infrastructure
+mysql-data/
