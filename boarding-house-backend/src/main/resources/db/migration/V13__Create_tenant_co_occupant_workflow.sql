@@ -1,0 +1,98 @@
+ALTER TABLE tenant_residences
+    ADD COLUMN relationship VARCHAR(100) NULL AFTER residence_role;
+
+CREATE TABLE co_occupant_requests (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    code VARCHAR(50) NULL,
+    request_type VARCHAR(30) NOT NULL,
+    property_id BIGINT UNSIGNED NOT NULL,
+    room_id BIGINT UNSIGNED NOT NULL,
+    contract_id BIGINT UNSIGNED NOT NULL,
+    requester_user_id BIGINT UNSIGNED NOT NULL,
+    occupant_profile_id BIGINT UNSIGNED NULL,
+    full_name VARCHAR(150) NOT NULL,
+    date_of_birth DATE NULL,
+    gender VARCHAR(20) NULL,
+    phone VARCHAR(20) NULL,
+    email VARCHAR(255) NULL,
+    permanent_address VARCHAR(500) NULL,
+    hometown VARCHAR(255) NULL,
+    nationality VARCHAR(100) NULL,
+    occupation VARCHAR(150) NULL,
+    workplace VARCHAR(255) NULL,
+    relationship VARCHAR(100) NULL,
+    emergency_contact_name VARCHAR(150) NULL,
+    emergency_contact_phone VARCHAR(20) NULL,
+    emergency_contact_relationship VARCHAR(100) NULL,
+    identity_type VARCHAR(30) NULL,
+    identity_number VARCHAR(50) NULL,
+    identity_issued_date DATE NULL,
+    identity_expires_date DATE NULL,
+    identity_issued_place VARCHAR(255) NULL,
+    expected_move_in_date DATE NULL,
+    expected_move_out_date DATE NULL,
+    previous_address VARCHAR(500) NULL,
+    reason VARCHAR(1000) NOT NULL,
+    note VARCHAR(1000) NULL,
+    request_account BOOLEAN NOT NULL DEFAULT FALSE,
+    status VARCHAR(30) NOT NULL DEFAULT 'SUBMITTED',
+    public_feedback VARCHAR(1000) NULL,
+    information_request_message VARCHAR(1000) NULL,
+    information_deadline DATE NULL,
+    idempotency_key VARCHAR(100) NOT NULL,
+    version BIGINT NOT NULL DEFAULT 0,
+    submitted_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    CONSTRAINT uk_co_occupant_request_code UNIQUE (code),
+    CONSTRAINT uk_co_occupant_request_idempotency UNIQUE (requester_user_id, idempotency_key),
+    CONSTRAINT fk_co_request_property FOREIGN KEY (property_id) REFERENCES properties (id),
+    CONSTRAINT fk_co_request_room FOREIGN KEY (room_id) REFERENCES rooms (id),
+    CONSTRAINT fk_co_request_contract FOREIGN KEY (contract_id) REFERENCES contracts (id),
+    CONSTRAINT fk_co_request_requester FOREIGN KEY (requester_user_id) REFERENCES users (id),
+    CONSTRAINT fk_co_request_profile FOREIGN KEY (occupant_profile_id) REFERENCES tenant_profiles (id),
+    INDEX idx_co_request_room_status (room_id, status, updated_at),
+    INDEX idx_co_request_requester (requester_user_id, updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE co_occupant_request_documents (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    request_id BIGINT UNSIGNED NOT NULL,
+    document_type VARCHAR(40) NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    content_type VARCHAR(100) NOT NULL,
+    file_size BIGINT NOT NULL,
+    file_content LONGBLOB NOT NULL,
+    uploaded_by BIGINT UNSIGNED NOT NULL,
+    uploaded_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    tenant_visible BOOLEAN NOT NULL DEFAULT TRUE,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_co_document_request FOREIGN KEY (request_id) REFERENCES co_occupant_requests (id) ON DELETE CASCADE,
+    CONSTRAINT fk_co_document_uploader FOREIGN KEY (uploaded_by) REFERENCES users (id),
+    INDEX idx_co_document_request (request_id, tenant_visible, uploaded_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE co_occupant_request_history (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    request_id BIGINT UNSIGNED NOT NULL,
+    event_type VARCHAR(40) NOT NULL,
+    description VARCHAR(500) NOT NULL,
+    actor_name VARCHAR(150) NULL,
+    tenant_visible BOOLEAN NOT NULL DEFAULT TRUE,
+    occurred_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    CONSTRAINT fk_co_history_request FOREIGN KEY (request_id) REFERENCES co_occupant_requests (id) ON DELETE CASCADE,
+    INDEX idx_co_history_request_time (request_id, tenant_visible, occurred_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE co_occupant_additional_information (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    request_id BIGINT UNSIGNED NOT NULL,
+    submitted_by BIGINT UNSIGNED NOT NULL,
+    content VARCHAR(2000) NOT NULL,
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    CONSTRAINT fk_co_additional_request FOREIGN KEY (request_id) REFERENCES co_occupant_requests (id) ON DELETE CASCADE,
+    CONSTRAINT fk_co_additional_submitter FOREIGN KEY (submitted_by) REFERENCES users (id),
+    INDEX idx_co_additional_request_time (request_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

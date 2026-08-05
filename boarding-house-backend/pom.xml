@@ -128,6 +128,9 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<!-- Keep the plain JAR and write the executable archive separately.
+					     This avoids Windows rename failures when antivirus/indexers hold the JAR briefly. -->
+					<classifier>exec</classifier>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>

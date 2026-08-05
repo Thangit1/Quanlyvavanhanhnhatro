@@ -1,2 +1,4 @@
-import { ProtectedPage } from "@/components/auth/protected-page";
-export default function Page() { return <ProtectedPage allowedRole="TECHNICIAN" title="Công việc kỹ thuật" />; }
+import { TechnicianTaskList } from "@/components/technician/technician-task-list";
+export default function Page() {
+  return <TechnicianTaskList />;
+}

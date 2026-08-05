@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Locale;
 
@@ -22,11 +24,18 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final UserRepository users;
     private final RoleRepository roles;
     private final PasswordEncoder passwordEncoder;
+    private final JdbcClient jdbc;
 
-    public RegistrationServiceImpl(UserRepository users, RoleRepository roles, PasswordEncoder passwordEncoder) {
+    @Autowired
+    public RegistrationServiceImpl(UserRepository users, RoleRepository roles, PasswordEncoder passwordEncoder, JdbcClient jdbc) {
         this.users = users;
         this.roles = roles;
         this.passwordEncoder = passwordEncoder;
+        this.jdbc = jdbc;
+    }
+
+    public RegistrationServiceImpl(UserRepository users, RoleRepository roles, PasswordEncoder passwordEncoder) {
+        this(users, roles, passwordEncoder, null);
     }
 
     @Override
@@ -51,6 +60,12 @@ public class RegistrationServiceImpl implements RegistrationService {
                 request.fullName().trim(), email, phone, passwordEncoder.encode(request.password()), tenantRole);
         try {
             User saved = users.saveAndFlush(user);
+            if (jdbc != null && saved.getId() != null) jdbc.sql("""
+                    INSERT INTO tenant_profiles(tenant_code,user_id,full_name,phone,email,status,profile_status)
+                    VALUES(:code,:userId,:fullName,:phone,:email,'ACTIVE','INCOMPLETE')
+                    """).param("code","NT%06d".formatted(saved.getId())).param("userId",saved.getId())
+                    .param("fullName",saved.getFullName()).param("phone",phone==null?"UNSET-"+saved.getId():phone)
+                    .param("email",email).update();
             return new RegisterResponse(saved.getId(), saved.getFullName(), saved.getEmail(), RoleCode.TENANT);
         } catch (DataIntegrityViolationException exception) {
             throw new AuthException(HttpStatus.CONFLICT, "ACCOUNT_ALREADY_EXISTS",

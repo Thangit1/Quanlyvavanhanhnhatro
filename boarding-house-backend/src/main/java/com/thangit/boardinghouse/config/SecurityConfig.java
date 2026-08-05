@@ -43,9 +43,19 @@ public class SecurityConfig {
                         .requestMatchers("/api/manager/**").hasAnyRole("OWNER", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/admin/tenants/**")
                                 .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/properties/**", "/api/admin/rooms/**")
+                                .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
+                        .requestMatchers("/api/admin/invoices/**")
+                                .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/reports/**")
+                                .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT", "TECHNICIAN")
+                        .requestMatchers("/api/admin/reports/**")
+                                .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
+                        .requestMatchers("/api/admin/maintenance/**")
+                                .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
                         .requestMatchers("/api/admin/**").hasAnyRole("OWNER", "MANAGER")
-                        .requestMatchers("/api/accountant/**").hasAnyRole("OWNER", "ACCOUNTANT")
-                        .requestMatchers("/api/technician/**").hasAnyRole("OWNER", "MANAGER", "TECHNICIAN")
+                        .requestMatchers("/api/accountant/**").hasRole("ACCOUNTANT")
+                        .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
                         .requestMatchers("/api/tenant/**").hasRole("TENANT")
                         .anyRequest().authenticated())
                 .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
@@ -76,7 +86,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Idempotency-Key"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
