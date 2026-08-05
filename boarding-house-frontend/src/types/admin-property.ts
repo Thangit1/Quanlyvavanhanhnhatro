@@ -1,0 +1,225 @@
+export type PageData<T> = {
+  items: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+};
+export type Manager = { id: number; fullName: string } | null;
+export type PropertyRow = {
+  id: number;
+  propertyCode: string;
+  name: string;
+  type: string;
+  address: string;
+  thumbnailUrl?: string;
+  manager: Manager;
+  buildingCount: number;
+  floorCount: number;
+  totalRooms: number;
+  occupiedRooms: number;
+  vacantRooms: number;
+  reservedRooms: number;
+  maintenanceRooms: number;
+  occupancyRate: number;
+  currentRevenue: number;
+  outstandingDebt: number;
+  status: string;
+  version: number;
+};
+export type PropertySummary = {
+  totalProperties: number;
+  activeProperties: number;
+  totalRooms: number;
+  occupiedRooms: number;
+  vacantRooms: number;
+  maintenanceRooms: number;
+};
+export type Floor = {
+  id: number;
+  code: string;
+  name: string;
+  floorNumber?: number;
+  displayOrder: number;
+  totalRooms: number;
+  occupiedRooms: number;
+};
+export type Building = {
+  id: number;
+  code: string;
+  name: string;
+  displayOrder: number;
+  floors: Floor[];
+};
+export type Activity = {
+  id: number;
+  type: string;
+  description: string;
+  actorName?: string;
+  createdAt: string;
+};
+export type PropertyDetail = {
+  id: number;
+  propertyCode: string;
+  name: string;
+  type: string;
+  description?: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  operationStartDate?: string;
+  thumbnailUrl?: string;
+  manager: Manager;
+  status: string;
+  version: number;
+  totalRooms: number;
+  occupiedRooms: number;
+  vacantRooms: number;
+  reservedRooms: number;
+  maintenanceRooms: number;
+  occupancyRate: number;
+  currentRevenue: number;
+  outstandingDebt: number;
+  buildings: Building[];
+  activities: Activity[];
+};
+export type PropertyPayload = {
+  code: string;
+  name: string;
+  type: string;
+  description?: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  operationStartDate?: string;
+  thumbnailUrl?: string;
+  managerId?: number;
+  version?: number;
+};
+export type Option = { id: number; label: string; parentId?: number };
+export type Amenity = { id: number; code: string; name: string; icon?: string };
+export type PropertyOptions = {
+  properties: Option[];
+  buildings: Option[];
+  floors: Option[];
+  amenities: Amenity[];
+};
+export type PropertyFilters = {
+  keyword?: string;
+  status?: string;
+  page?: number;
+  size?: number;
+};
+
+export type TenantBrief = {
+  id?: number;
+  fullName: string;
+  phone?: string;
+  representative: boolean;
+};
+export type ContractBrief = {
+  id: number;
+  code: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+};
+export type RoomRow = {
+  id: number;
+  roomCode: string;
+  name: string;
+  thumbnailUrl?: string;
+  propertyId: number;
+  propertyName: string;
+  buildingId?: number;
+  buildingName?: string;
+  floorId?: number;
+  floorName?: string;
+  roomType?: string;
+  area?: number;
+  monthlyRent: number;
+  depositAmount: number;
+  maxOccupants: number;
+  currentOccupants: number;
+  representativeTenant?: TenantBrief;
+  currentContract?: ContractBrief;
+  outstandingDebt: number;
+  openMaintenanceCount: number;
+  status: string;
+  version: number;
+  updatedAt: string;
+};
+export type RoomSummary = {
+  totalRooms: number;
+  occupiedRooms: number;
+  vacantRooms: number;
+  reservedRooms: number;
+  maintenanceRooms: number;
+  inactiveRooms: number;
+};
+export type Asset = {
+  id?: number;
+  name: string;
+  quantity: number;
+  conditionStatus: string;
+  note?: string;
+};
+export type Meter = {
+  id: number;
+  meterType: string;
+  meterCode: string;
+  currentReading: number;
+  readingDate?: string;
+  status: string;
+};
+export type History = {
+  id: number;
+  type: string;
+  fromValue?: string;
+  toValue: string;
+  reason?: string;
+  actorName?: string;
+  effectiveDate?: string;
+  createdAt: string;
+};
+export type RoomDetail = {
+  room: RoomRow;
+  description?: string;
+  occupants: TenantBrief[];
+  amenities: Amenity[];
+  assets: Asset[];
+  meters: Meter[];
+  images: string[];
+  priceHistory: History[];
+  statusHistory: History[];
+  activities: Activity[];
+  canEdit: boolean;
+  canChangePrice: boolean;
+  canChangeStatus: boolean;
+};
+export type RoomPayload = {
+  propertyId: number;
+  buildingId: number;
+  floorId: number;
+  code: string;
+  name: string;
+  roomType?: string;
+  description?: string;
+  area?: number;
+  monthlyRent: number;
+  depositAmount?: number;
+  capacity: number;
+  imageUrl?: string;
+  amenityIds: number[];
+  assets: Asset[];
+  version?: number;
+};
+export type RoomFilters = {
+  propertyId?: number;
+  buildingId?: number;
+  floorId?: number;
+  status?: string;
+  keyword?: string;
+  page?: number;
+  size?: number;
+};

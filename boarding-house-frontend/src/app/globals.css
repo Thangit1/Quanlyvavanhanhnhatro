@@ -48,12 +48,22 @@
 }
 
 @media print {
-  @page { margin: 14mm; }
-  body { background: white !important; }
-  .contract-print-area { max-width: none !important; padding: 0 !important; }
+  @page {
+    margin: 14mm;
+  }
+  body {
+    background: white !important;
+  }
+  .contract-print-area {
+    max-width: none !important;
+    padding: 0 !important;
+  }
   .contract-print-area section,
   .contract-print-area article,
-  .contract-print-area details { break-inside: avoid; box-shadow: none !important; }
+  .contract-print-area details {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
 }
 
 :root {
@@ -135,4 +145,36 @@
   html {
     @apply font-sans;
   }
+}
+
+html[data-theme="dark"] body {
+  background: #020617;
+  color: #e2e8f0;
+}
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-slate-50 {
+  background-color: #0f172a;
+}
+html[data-theme="dark"] .text-slate-950,
+html[data-theme="dark"] .text-slate-800,
+html[data-theme="dark"] .text-slate-700 {
+  color: #e2e8f0;
+}
+html[data-theme="dark"] .text-slate-600,
+html[data-theme="dark"] .text-slate-500 {
+  color: #94a3b8;
+}
+html[data-theme="dark"] .border,
+html[data-theme="dark"] .border-b,
+html[data-theme="dark"] .border-r,
+html[data-theme="dark"] .border-t {
+  border-color: #334155;
+}
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }

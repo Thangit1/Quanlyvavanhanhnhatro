@@ -1,9 +1,13 @@
 import type { ContractStatus } from "@/types/tenant-contract";
 
 export const contractStatusLabel: Record<ContractStatus, string> = {
-  PENDING_CONFIRMATION: "Chờ xác nhận", ACTIVE: "Đang hiệu lực", EXPIRING: "Sắp hết hạn",
-  EXPIRED: "Đã hết hạn", TERMINATION_REQUESTED: "Đang yêu cầu chấm dứt",
-  TERMINATED: "Đã chấm dứt", CANCELLED: "Đã hủy",
+  PENDING_CONFIRMATION: "Chờ xác nhận",
+  ACTIVE: "Đang hiệu lực",
+  EXPIRING: "Sắp hết hạn",
+  EXPIRED: "Đã hết hạn",
+  TERMINATION_REQUESTED: "Đang yêu cầu chấm dứt",
+  TERMINATED: "Đã chấm dứt",
+  CANCELLED: "Đã hủy",
 };
 export const contractStatusStyle: Record<ContractStatus, string> = {
   PENDING_CONFIRMATION: "border-blue-200 bg-blue-50 text-blue-700",

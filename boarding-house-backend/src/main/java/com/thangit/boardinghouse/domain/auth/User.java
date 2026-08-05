@@ -43,6 +43,9 @@ public class User {
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
+    @Column(name = "password_changed_at")
+    private Instant passwordChangedAt;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -75,5 +78,10 @@ public class User {
         failedLoginAttempts = 0;
         lockedUntil = null;
         lastLoginAt = now;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.passwordHash = encodedPassword;
+        this.passwordChangedAt = Instant.now();
     }
 }

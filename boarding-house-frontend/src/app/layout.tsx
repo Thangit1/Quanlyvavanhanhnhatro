@@ -8,11 +8,15 @@ export const metadata: Metadata = {
   description: "Hệ thống quản lý và vận hành nhà trọ tích hợp AI",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="vi" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <QueryProvider><AuthProvider>{children}</AuthProvider></QueryProvider>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
