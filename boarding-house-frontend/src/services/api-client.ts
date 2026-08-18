@@ -3,7 +3,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 const baseURL =
   process.env.NEXT_PUBLIC_API_BASE_URL ??
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/v1\/?$/, "") ??
-  "http://localhost:8080/api";
+  "http://localhost:8081/api";
 let accessToken: string | null = null;
 let refreshPromise: Promise<string> | null = null;
 

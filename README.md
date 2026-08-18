@@ -49,7 +49,7 @@ Set-Location .\boarding-house-backend
 .\mvnw.cmd spring-boot:run
 ```
 
-Kiểm tra http://localhost:8080/api/v1/health.
+Kiểm tra http://localhost:8081/api/v1/health.
 
 ## 4. Chạy frontend
 

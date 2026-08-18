@@ -21,6 +21,9 @@ spring:
     validate-migration-naming: true
 
 server:
+  # Use 8081 locally so the backend does not conflict with another service on 8080.
+  # Override with SERVER_PORT when a different port is required.
+  port: ${SERVER_PORT:8081}
   error:
     include-message: never
     include-stacktrace: never
