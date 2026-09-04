@@ -17,6 +17,7 @@ public final class AdminTenantRequests {
             @NotBlank @Pattern(regexp = "^[0-9+ .()-]{8,20}$", message = "Số điện thoại không hợp lệ") String phone,
             @Email @Size(max = 255) String email,
             @Size(max = 500) String permanentAddress,
+            @Size(max = 255) String hometown,
             @Size(max = 150) String occupation,
             @Size(max = 255) String workplace,
             @Size(max = 150) String emergencyContactName,

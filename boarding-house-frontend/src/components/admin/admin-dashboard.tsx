@@ -29,13 +29,13 @@ import {
   FileClock,
   House,
   LayoutDashboard,
-  LogOut,
   Menu,
   Receipt,
   Search,
   Settings,
   TrendingUp,
   Users,
+  Workflow,
   Wrench,
   X,
 } from "lucide-react";
@@ -49,12 +49,14 @@ import {
   PageLoading,
   StatusBadge,
 } from "@/components/shared/dashboard-ui";
+import { AdminUserMenu } from "@/components/admin/admin-user-menu";
 
 const navigation = [
   ["Tổng quan", "/owner/dashboard", LayoutDashboard],
   ["Nhà và phòng", "/admin/properties", Building2],
   ["Người thuê", "/admin/tenants", Users],
   ["Hợp đồng", "/admin/contracts", ClipboardList],
+  ["Vòng đời thuê", "/admin/rental-lifecycle", Workflow],
   ["Hóa đơn", "/admin/invoices", Receipt],
   ["Bảo trì", "/admin/maintenance", Wrench],
   ["Báo cáo", "/admin/reports", TrendingUp],
@@ -115,7 +117,7 @@ function SideNavigation({
 }
 
 export function AdminDashboard() {
-  const { user, isBootstrapping, logout } = useAuth();
+  const { user, isBootstrapping } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -215,16 +217,6 @@ export function AdminDashboard() {
         <div className="mt-8">
           <SideNavigation home={home} />
         </div>
-        <button
-          onClick={() => {
-            if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?"))
-              void logout();
-          }}
-          className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-600 hover:bg-slate-100"
-        >
-          <LogOut className="size-5" />
-          Đăng xuất
-        </button>
       </aside>
       {menuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -283,9 +275,7 @@ export function AdminDashboard() {
             >
               <Bell className="size-5" />
             </Link>
-            <span className="grid size-9 place-items-center rounded-full bg-blue-100 font-bold text-blue-700">
-              {user.fullName.trim().charAt(0).toUpperCase()}
-            </span>
+            <AdminUserMenu />
           </div>
         </header>
 

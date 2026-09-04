@@ -21,6 +21,8 @@ export interface TenantSummary {
   temporaryRegistered: number;
   temporaryPending: number;
   noAccount: number;
+  customersWithDebt: number;
+  pendingCheckin: number;
 }
 export interface TenantRow {
   id: number;
@@ -36,7 +38,9 @@ export interface TenantRow {
   status: string;
   contractCode: string | null;
   contractEndDate: string | null;
+  moveInDate: string | null;
   outstandingDebt: number;
+  financialStatus: string;
   temporaryResidenceStatus: string;
   hasAccount: boolean;
   accountStatus: string | null;
@@ -72,11 +76,16 @@ export interface Residence {
 export interface ContractItem {
   id: number;
   code: string;
+  propertyName: string;
+  roomCode: string;
   status: string;
   startDate: string;
   endDate: string;
+  monthlyRent: number;
   depositAmount: number;
+  paymentCycle: string;
   outstandingDebt: number;
+  daysToExpiry: number;
 }
 export interface InvoiceItem {
   id: number;
@@ -84,8 +93,58 @@ export interface InvoiceItem {
   billingPeriod: string;
   totalAmount: number;
   paidAmount: number;
+  roomAmount: number;
+  serviceAmount: number;
   dueDate: string;
   status: string;
+}
+export interface FinancialSummary {
+  totalInvoiced: number;
+  totalPaid: number;
+  outstandingDebt: number;
+  overdueDebt: number;
+  depositHeld: number;
+}
+export interface PaymentItem {
+  id: number;
+  receiptCode: string;
+  invoiceCode: string;
+  amount: number;
+  paymentMethod: string;
+  referenceCode: string | null;
+  status: string;
+  paidAt: string;
+}
+export interface UtilityItem {
+  id: number;
+  billingPeriod: string;
+  electricityPrevious: number | null;
+  electricityCurrent: number | null;
+  electricityConsumption: number;
+  electricityAmount: number | null;
+  waterPrevious: number | null;
+  waterCurrent: number | null;
+  waterConsumption: number;
+  waterAmount: number | null;
+}
+export interface CoResidentItem {
+  id: number;
+  tenantCode: string;
+  fullName: string;
+  phone: string;
+  relationship: string | null;
+  residenceRole: string;
+  moveInDate: string;
+  status: string;
+}
+export interface MaintenanceItem {
+  id: number;
+  code: string;
+  title: string;
+  issueType: string;
+  priority: string;
+  status: string;
+  createdAt: string;
 }
 export interface TemporaryResidenceItem {
   propertyId: number;
@@ -122,6 +181,7 @@ export interface TenantDetail {
   email: string | null;
   avatarUrl: string | null;
   permanentAddress: string | null;
+  hometown: string | null;
   occupation: string | null;
   workplace: string | null;
   emergencyContactName: string | null;
@@ -137,6 +197,11 @@ export interface TenantDetail {
   residences: Residence[];
   contracts: ContractItem[];
   invoices: InvoiceItem[];
+  financial: FinancialSummary;
+  payments: PaymentItem[];
+  utilityReadings: UtilityItem[];
+  coResidents: CoResidentItem[];
+  maintenanceRequests: MaintenanceItem[];
   temporaryResidences: TemporaryResidenceItem[];
   documents: DocumentItem[];
   activities: ActivityItem[];
@@ -148,6 +213,7 @@ export interface SaveTenantPayload {
   phone: string;
   email?: string;
   permanentAddress?: string;
+  hometown?: string;
   occupation?: string;
   workplace?: string;
   emergencyContactName?: string;
@@ -170,6 +236,8 @@ export interface TenantFilters {
   temporaryStatus?: string;
   accountStatus?: string;
   keyword?: string;
+  debtStatus?: string;
+  contractStatus?: string;
   sort?: string;
   direction?: string;
   page?: number;

@@ -55,6 +55,12 @@ const labels: Record<string, string> = {
   DECLARED: "Đã khai báo",
   APPROVED: "Đã phê duyệt",
   PENDING: "Đang chờ xử lý",
+  NOTICE: "Sắp trả phòng",
+  CHECKED_OUT: "Đã trả phòng",
+  NO_DEBT: "Không nợ",
+  WITH_DEBT: "Còn công nợ",
+  CLOSED: "Đã đóng",
+  RESOLVED: "Đã xử lý",
   REPRESENTATIVE: "Người đại diện thuê",
 };
 export function statusLabel(value: string | null | undefined) {

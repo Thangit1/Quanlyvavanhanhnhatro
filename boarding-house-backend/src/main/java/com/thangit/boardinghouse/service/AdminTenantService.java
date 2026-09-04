@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface AdminTenantService {
     TenantList list(AuthenticatedUser principal, Long propertyId, Long roomId, String status,
                     String temporaryStatus, String accountStatus, String keyword,
-                    String sort, String direction, int page, int size);
+                    String debtStatus, String contractStatus, String sort, String direction, int page, int size);
     TenantDetail detail(AuthenticatedUser principal, long tenantId);
     CreatedTenant create(AuthenticatedUser principal, SaveTenant request);
     TenantDetail update(AuthenticatedUser principal, long tenantId, SaveTenant request);

@@ -20,6 +20,7 @@ type FormValues = {
   phone: string;
   email: string;
   permanentAddress: string;
+  hometown: string;
   occupation: string;
   workplace: string;
   emergencyContactName: string;
@@ -41,6 +42,7 @@ const empty: FormValues = {
   phone: "",
   email: "",
   permanentAddress: "",
+  hometown: "",
   occupation: "",
   workplace: "",
   emergencyContactName: "",
@@ -83,6 +85,7 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
       phone: d.phone,
       email: d.email ?? "",
       permanentAddress: d.permanentAddress ?? "",
+      hometown: d.hometown ?? "",
       occupation: d.occupation ?? "",
       workplace: d.workplace ?? "",
       emergencyContactName: d.emergencyContactName ?? "",
@@ -121,6 +124,7 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
       email: values.email || undefined,
       identityNumber: values.identityNumber || undefined,
       identityIssuedDate: values.identityIssuedDate || undefined,
+      hometown: values.hometown || undefined,
       propertyId: values.propertyId ? Number(values.propertyId) : undefined,
       roomId: values.roomId ? Number(values.roomId) : undefined,
       moveInDate: values.moveInDate || undefined,
@@ -248,6 +252,9 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
                     className={inputClass}
                   />
                 </Field>
+                <Field label="Quê quán">
+                  <input {...register("hometown")} className={inputClass} />
+                </Field>
               </div>
             )}
             {step === 1 && (
@@ -267,7 +274,14 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
                   }
                 >
                   <input
-                    {...register("identityNumber", { maxLength: 50 })}
+                    {...register("identityNumber", {
+                      required: editing ? false : "Vui lòng nhập số giấy tờ",
+                      maxLength: 50,
+                      pattern: {
+                        value: /^[A-Za-z0-9]{6,20}$/,
+                        message: "Số giấy tờ gồm 6-20 chữ hoặc số",
+                      },
+                    })}
                     className={inputClass}
                     autoComplete="off"
                   />
@@ -336,11 +350,13 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
                   <Field label="Phòng">
                     <select {...register("roomId")} className={inputClass}>
                       <option value="">Chưa gán phòng</option>
-                      {rooms.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          Phòng {r.code} · {r.status}
-                        </option>
-                      ))}
+                      {rooms
+                        .filter((r) => ["VACANT", "READY"].includes(r.status))
+                        .map((r) => (
+                          <option key={r.id} value={r.id}>
+                            Phòng {r.code} · {r.status}
+                          </option>
+                        ))}
                     </select>
                   </Field>
                   <Field

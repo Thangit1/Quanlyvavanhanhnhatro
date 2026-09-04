@@ -10,7 +10,6 @@ import {
   FileText,
   Gauge,
   Home,
-  LogOut,
   Menu,
   Receipt,
   UserRound,
@@ -25,7 +24,7 @@ import {
   NotificationBell,
   UnreadBadge,
 } from "@/components/tenant/notifications/notification-bell";
-import { AccountAvatar } from "@/components/tenant/account/account-ui";
+import { TenantUserMenu } from "@/components/tenant/tenant-user-menu";
 import { useAccountPreferences } from "@/hooks/use-tenant-account";
 
 const nav = [
@@ -41,7 +40,7 @@ const nav = [
 ] as const;
 
 export function TenantShell({ children }: { children: React.ReactNode }) {
-  const { user, isBootstrapping, logout } = useAuth();
+  const { user, isBootstrapping } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -99,16 +98,6 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
           SmartHome AI
         </Link>
         <div className="mt-8">{items}</div>
-        <button
-          onClick={() => {
-            if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?"))
-              void logout();
-          }}
-          className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-600 hover:bg-red-50 hover:text-red-700"
-        >
-          <LogOut className="size-5" />
-          Đăng xuất
-        </button>
       </aside>
       {menuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden print:hidden">
@@ -158,11 +147,7 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <NotificationBell />
-            <AccountAvatar
-              name={user.fullName}
-              avatarUrl={user.avatarUrl ?? undefined}
-              size="size-9"
-            />
+            <TenantUserMenu />
           </div>
         </header>
         {children}

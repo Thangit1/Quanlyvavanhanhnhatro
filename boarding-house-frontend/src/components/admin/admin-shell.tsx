@@ -7,17 +7,18 @@ import {
   Building2,
   ClipboardList,
   LayoutDashboard,
-  LogOut,
   Menu,
   Receipt,
   Settings,
   TrendingUp,
   Users,
+  Workflow,
   Wrench,
   X,
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { PageLoading } from "@/components/shared/dashboard-ui";
+import { AdminUserMenu } from "@/components/admin/admin-user-menu";
 import { roleHome } from "@/types/auth";
 
 const nav = [
@@ -25,6 +26,7 @@ const nav = [
   ["Nhà và phòng", "/admin/properties", Building2],
   ["Người thuê", "/admin/tenants", Users],
   ["Hợp đồng", "/admin/contracts", ClipboardList],
+  ["Vòng đời thuê", "/admin/rental-lifecycle", Workflow],
   ["Hóa đơn", "/admin/invoices", Receipt],
   ["Bảo trì", "/admin/maintenance", Wrench],
   ["Báo cáo", "/admin/reports", TrendingUp],
@@ -42,7 +44,7 @@ export function AdminShell({
   children: React.ReactNode;
   readOnly?: boolean;
 }) {
-  const { user, isBootstrapping, logout } = useAuth();
+  const { user, isBootstrapping } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [menu, setMenu] = useState(false);
@@ -95,13 +97,6 @@ export function AdminShell({
           SmartHome AI
         </Link>
         <div className="mt-8">{navigation}</div>
-        <button
-          onClick={() => void logout()}
-          className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-600 hover:bg-slate-100"
-        >
-          <LogOut className="size-5" />
-          Đăng xuất
-        </button>
       </aside>
       {menu && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -145,9 +140,7 @@ export function AdminShell({
             >
               <Bell className="size-5" />
             </button>
-            <span className="grid size-9 place-items-center rounded-full bg-blue-100 font-bold text-blue-700">
-              {user.fullName.charAt(0).toUpperCase()}
-            </span>
+            <AdminUserMenu />
           </div>
         </header>
         <main className="p-4 sm:p-6">{children}</main>

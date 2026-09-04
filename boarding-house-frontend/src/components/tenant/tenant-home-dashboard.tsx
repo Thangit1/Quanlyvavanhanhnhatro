@@ -40,6 +40,7 @@ import {
   PageLoading,
   StatusBadge,
 } from "@/components/shared/dashboard-ui";
+import { TenantUserMenu } from "@/components/tenant/tenant-user-menu";
 
 const navigation = [
   ["Tổng quan", "/tenant/home", Home],
@@ -82,7 +83,7 @@ function Card({
 }
 
 export function TenantHomeDashboard() {
-  const { user, isBootstrapping, logout } = useAuth();
+  const { user, isBootstrapping } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -137,28 +138,7 @@ export function TenantHomeDashboard() {
                 </span>
               )}
             </Link>
-            <button
-              onClick={() => {
-                if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?"))
-                  void logout();
-              }}
-              className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-slate-100"
-            >
-              <span className="grid size-9 place-items-center rounded-full bg-blue-100 font-bold text-blue-700">
-                {(data?.user.fullName ?? user.fullName)
-                  .trim()
-                  .charAt(0)
-                  .toUpperCase()}
-              </span>
-              <span className="hidden text-left sm:block">
-                <span className="block text-sm font-semibold text-slate-800">
-                  {data?.user.fullName ?? user.fullName}
-                </span>
-                <span className="block text-xs text-slate-500">
-                  Khách thuê · Đăng xuất
-                </span>
-              </span>
-            </button>
+            <TenantUserMenu />
           </div>
         </div>
       </header>
