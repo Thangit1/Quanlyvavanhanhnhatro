@@ -6,7 +6,6 @@ import {
   FileKey2,
   Headphones,
   KeyRound,
-  LogOut,
   ShieldCheck,
   SlidersHorizontal,
   UserRound,
@@ -26,10 +25,8 @@ import {
   AccountAvatar,
   AccountLoading,
   AccountMenu,
-  ConfirmDialog,
   StatusPill,
 } from "./account-ui";
-import { useState } from "react";
 const quick = [
   ["Hồ sơ cá nhân", "/tenant/account/profile", UserRound],
   ["Đổi mật khẩu", "/tenant/account/change-password", KeyRound],
@@ -37,9 +34,8 @@ const quick = [
   ["Thông báo", "/tenant/notifications/settings", Bell],
 ] as const;
 export function AccountOverviewPage() {
-  const { user, logout } = useAuth(),
-    query = useAccountOverview(user?.activeRole === "TENANT"),
-    [confirm, setConfirm] = useState(false);
+  const { user } = useAuth(),
+    query = useAccountOverview(user?.activeRole === "TENANT");
   if (query.isLoading) return <AccountLoading />;
   if (query.isError || !query.data)
     return (
@@ -218,24 +214,8 @@ export function AccountOverviewPage() {
             <Headphones className="text-blue-600" />
             Hỗ trợ tài khoản
           </Link>
-          <button
-            onClick={() => setConfirm(true)}
-            className="flex w-full items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 font-bold text-red-700"
-          >
-            <LogOut />
-            Đăng xuất
-          </button>
         </aside>
       </div>
-      <ConfirmDialog
-        open={confirm}
-        title="Đăng xuất khỏi tài khoản?"
-        description="Phiên đăng nhập hiện tại sẽ bị thu hồi và bạn sẽ được chuyển về trang đăng nhập."
-        confirmLabel="Đăng xuất"
-        danger
-        onClose={() => setConfirm(false)}
-        onConfirm={() => void logout()}
-      />
     </main>
   );
 }

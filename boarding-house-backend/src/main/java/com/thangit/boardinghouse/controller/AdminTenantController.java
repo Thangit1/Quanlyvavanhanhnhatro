@@ -28,11 +28,12 @@ public class AdminTenantController {
             @RequestParam(required = false) Long propertyId, @RequestParam(required = false) Long roomId,
             @RequestParam(required = false) String status, @RequestParam(required = false) String temporaryStatus,
             @RequestParam(required = false) String accountStatus, @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String debtStatus, @RequestParam(required = false) String contractStatus,
             @RequestParam(defaultValue = "fullName") String sort, @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         return ApiResponse.success("Lấy danh sách người thuê thành công.",
                 service.list(principal, propertyId, roomId, status, temporaryStatus, accountStatus,
-                        keyword, sort, direction, page, size));
+                        keyword, debtStatus, contractStatus, sort, direction, page, size));
     }
 
     @GetMapping("/{tenantId}")

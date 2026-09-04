@@ -32,9 +32,13 @@ import { useAuth } from "@/providers/auth-provider";
 
 const tabs = [
   "Tổng quan",
-  "Cư trú",
   "Hợp đồng",
   "Hóa đơn",
+  "Thanh toán",
+  "Điện & nước",
+  "Thành viên",
+  "Yêu cầu hỗ trợ",
+  "Lịch sử cư trú",
   "Tạm trú",
   "Giấy tờ",
   "Hoạt động",
@@ -59,6 +63,11 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
     );
   const d = query.data;
   const current = d.residences.find((r) => r.status === "ACTIVE");
+  const currentContract = d.contracts.find((item) =>
+    ["ACTIVE", "EXPIRING", "PENDING_CONFIRMATION"].includes(item.status),
+  );
+  const latestInvoice = d.invoices[0];
+  const latestRequest = d.maintenanceRequests[0];
   return (
     <AdminShell
       title={d.fullName}
@@ -76,13 +85,14 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
           </Link>
           {canWrite && (
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setAction("transfer")}
-                className={outlineButton}
-              >
-                <RefreshCw className="size-4" />
-                Chuyển phòng
-              </button>
+              {d.status === "ACTIVE" && (
+                <button
+                  onClick={() => setAction("transfer")}
+                  className={outlineButton}
+                >
+                  <RefreshCw className="size-4" /> Chuyển phòng
+                </button>
+              )}
               <button
                 onClick={() => setAction("temporary")}
                 className={outlineButton}
@@ -90,13 +100,19 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                 <MapPinHouse className="size-4" />
                 Cập nhật tạm trú
               </button>
-              <button
-                onClick={() => setAction("moveout")}
-                className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700"
-              >
-                <LogOut className="size-4" />
-                Rời phòng
-              </button>
+              {["ACTIVE", "NOTICE"].includes(d.status) && currentContract && (
+                <Link
+                  href="/admin/rental-lifecycle"
+                  className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700"
+                >
+                  <LogOut className="size-4" /> Thực hiện trả phòng
+                </Link>
+              )}
+              {d.status === "PENDING" && (
+                <Link href="/admin/rental-lifecycle" className={outlineButton}>
+                  Thực hiện nhận phòng
+                </Link>
+              )}
               <Link
                 href={`/admin/tenants/${tenantId}/edit`}
                 className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white"
@@ -167,36 +183,155 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
         </div>
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           {tab === "Tổng quan" && (
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Panel title="Thông tin cá nhân">
-                <Info label="Mã người thuê" value={d.tenantCode} />
-                <Info label="Ngày sinh" value={formatDate(d.dateOfBirth)} />
-                <Info label="Giới tính" value={d.gender} />
-                <Info label="Nghề nghiệp" value={d.occupation} />
-                <Info label="Nơi làm việc" value={d.workplace} />
-                <Info label="Thường trú" value={d.permanentAddress} />
-              </Panel>
-              <Panel title="Định danh & liên hệ">
-                <Info
-                  label={d.identityType ?? "Giấy tờ"}
-                  value={d.maskedIdentityNumber}
+            <div className="space-y-6">
+              {currentContract && currentContract.daysToExpiry <= 30 && (
+                <div
+                  className={`rounded-xl border p-4 text-sm font-semibold ${currentContract.daysToExpiry < 0 ? "border-red-200 bg-red-50 text-red-700" : "border-amber-200 bg-amber-50 text-amber-800"}`}
+                >
+                  {currentContract.daysToExpiry < 0
+                    ? "Hợp đồng đã hết hạn"
+                    : `Hợp đồng sẽ hết hạn sau ${currentContract.daysToExpiry} ngày`}
+                </div>
+              )}
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                <MoneyCard
+                  label="Tổng hóa đơn"
+                  value={d.financial.totalInvoiced}
                 />
-                <Info
-                  label="Ngày cấp"
-                  value={formatDate(d.identityIssuedDate)}
+                <MoneyCard
+                  label="Đã thanh toán"
+                  value={d.financial.totalPaid}
+                  tone="success"
                 />
-                <Info label="Nơi cấp" value={d.identityIssuedPlace} />
-                <Info
-                  label="Liên hệ khẩn cấp"
-                  value={[d.emergencyContactName, d.emergencyContactPhone]
-                    .filter(Boolean)
-                    .join(" · ")}
+                <MoneyCard
+                  label="Còn phải thu"
+                  value={d.financial.outstandingDebt}
+                  tone="danger"
                 />
-                <Info label="Ghi chú" value={d.note} />
-              </Panel>
+                <MoneyCard
+                  label="Nợ quá hạn"
+                  value={d.financial.overdueDebt}
+                  tone="danger"
+                />
+                <MoneyCard
+                  label="Tiền cọc đang giữ"
+                  value={d.financial.depositHeld}
+                />
+              </div>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <Panel title="Thông tin cá nhân">
+                  <Info label="Mã người thuê" value={d.tenantCode} />
+                  <Info label="Ngày sinh" value={formatDate(d.dateOfBirth)} />
+                  <Info label="Giới tính" value={d.gender} />
+                  <Info label="Nghề nghiệp" value={d.occupation} />
+                  <Info label="Nơi làm việc" value={d.workplace} />
+                  <Info label="Thường trú" value={d.permanentAddress} />
+                  <Info label="Quê quán" value={d.hometown} />
+                </Panel>
+                <Panel title="Định danh & liên hệ">
+                  <Info
+                    label={d.identityType ?? "Giấy tờ"}
+                    value={d.maskedIdentityNumber}
+                  />
+                  <Info
+                    label="Ngày cấp"
+                    value={formatDate(d.identityIssuedDate)}
+                  />
+                  <Info label="Nơi cấp" value={d.identityIssuedPlace} />
+                  <Info
+                    label="Liên hệ khẩn cấp"
+                    value={[d.emergencyContactName, d.emergencyContactPhone]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  />
+                  <Info label="Ghi chú" value={d.note} />
+                </Panel>
+                <Panel title="Phòng hiện tại">
+                  <Info label="Tòa nhà" value={current?.propertyName} />
+                  <Info
+                    label="Phòng"
+                    value={
+                      current?.roomCode ? `Phòng ${current.roomCode}` : null
+                    }
+                  />
+                  <Info
+                    label="Ngày vào ở"
+                    value={formatDate(current?.moveInDate)}
+                  />
+                  <Info label="Vai trò" value={current?.residenceRole} />
+                </Panel>
+                <Panel title="Hợp đồng hiện tại">
+                  <Info label="Mã hợp đồng" value={currentContract?.code} />
+                  <Info
+                    label="Thời hạn"
+                    value={
+                      currentContract
+                        ? `${formatDate(currentContract.startDate)} → ${formatDate(currentContract.endDate)}`
+                        : null
+                    }
+                  />
+                  <Info
+                    label="Giá thuê"
+                    value={
+                      currentContract
+                        ? formatCurrency(currentContract.monthlyRent)
+                        : null
+                    }
+                  />
+                  <Info
+                    label="Tiền cọc"
+                    value={
+                      currentContract
+                        ? formatCurrency(currentContract.depositAmount)
+                        : null
+                    }
+                  />
+                </Panel>
+                <Panel title="Hóa đơn gần nhất">
+                  <Info
+                    label="Kỳ hóa đơn"
+                    value={formatDate(latestInvoice?.billingPeriod)}
+                  />
+                  <Info
+                    label="Tổng tiền"
+                    value={
+                      latestInvoice
+                        ? formatCurrency(latestInvoice.totalAmount)
+                        : null
+                    }
+                  />
+                  <Info
+                    label="Hạn thanh toán"
+                    value={formatDate(latestInvoice?.dueDate)}
+                  />
+                  <Info label="Trạng thái" value={latestInvoice?.status} />
+                </Panel>
+                <Panel title="Yêu cầu hỗ trợ">
+                  <Info
+                    label="Ticket đang mở"
+                    value={String(
+                      d.maintenanceRequests.filter(
+                        (item) =>
+                          !["RESOLVED", "CLOSED", "CANCELLED"].includes(
+                            item.status,
+                          ),
+                      ).length,
+                    )}
+                  />
+                  <Info
+                    label="Ticket gần nhất"
+                    value={
+                      latestRequest
+                        ? `${latestRequest.code} · ${latestRequest.title}`
+                        : null
+                    }
+                  />
+                  <Info label="Trạng thái" value={latestRequest?.status} />
+                </Panel>
+              </div>
             </div>
           )}
-          {tab === "Cư trú" && (
+          {tab === "Lịch sử cư trú" && (
             <ListOrEmpty items={d.residences} empty="Chưa có lịch sử cư trú">
               {d.residences.map((item) => (
                 <Card
@@ -220,16 +355,39 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
               {d.contracts.map((item) => (
                 <Card key={item.id} title={item.code} status={item.status}>
                   <p>
+                    {item.propertyName} · Phòng {item.roomCode}
+                  </p>
+                  <p>
                     {formatDate(item.startDate)} → {formatDate(item.endDate)}
                   </p>
                   <p>
-                    Đặt cọc: {formatCurrency(item.depositAmount)} · Công nợ:{" "}
+                    Giá thuê: {formatCurrency(item.monthlyRent)} · Đặt cọc:{" "}
+                    {formatCurrency(item.depositAmount)}
+                  </p>
+                  <p>
+                    Chu kỳ {item.paymentCycle} · Công nợ:{" "}
                     <strong
                       className={item.outstandingDebt > 0 ? "text-red-600" : ""}
                     >
                       {formatCurrency(item.outstandingDebt)}
                     </strong>
                   </p>
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Link
+                      href={`/admin/contracts/${item.id}`}
+                      className="font-semibold text-blue-700"
+                    >
+                      Xem hợp đồng
+                    </Link>
+                    {["ACTIVE", "EXPIRING"].includes(item.status) && (
+                      <Link
+                        href={`/admin/contracts/${item.id}`}
+                        className="font-semibold text-amber-700"
+                      >
+                        Gia hạn
+                      </Link>
+                    )}
+                  </div>
                 </Card>
               ))}
             </ListOrEmpty>
@@ -246,6 +404,140 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                     {formatCurrency(item.paidAmount)} /{" "}
                     {formatCurrency(item.totalAmount)}
                   </p>
+                  <p>
+                    Tiền phòng {formatCurrency(item.roomAmount)} · Dịch vụ/phát
+                    sinh {formatCurrency(item.serviceAmount)}
+                  </p>
+                  <Link
+                    href={`/admin/invoices/${item.id}`}
+                    className="inline-block pt-2 font-semibold text-blue-700"
+                  >
+                    Xem chi tiết
+                  </Link>
+                </Card>
+              ))}
+            </ListOrEmpty>
+          )}
+          {tab === "Thanh toán" && (
+            <ListOrEmpty
+              items={d.payments}
+              empty="Chưa có giao dịch thanh toán"
+            >
+              {d.payments.map((item) => (
+                <Card
+                  key={item.id}
+                  title={item.receiptCode}
+                  status={item.status}
+                >
+                  <p>Ngày thanh toán: {formatDate(item.paidAt)}</p>
+                  <p>
+                    Hóa đơn {item.invoiceCode} · {item.paymentMethod}
+                  </p>
+                  <p className="font-bold text-emerald-700">
+                    {formatCurrency(item.amount)}
+                  </p>
+                  {item.referenceCode && (
+                    <p>Mã giao dịch: {item.referenceCode}</p>
+                  )}
+                </Card>
+              ))}
+            </ListOrEmpty>
+          )}
+          {tab === "Điện & nước" && (
+            <ListOrEmpty
+              items={d.utilityReadings}
+              empty="Chưa có dữ liệu điện nước"
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[850px] text-left text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                    <tr>
+                      <th className="px-3 py-3">Tháng</th>
+                      <th>Điện cũ</th>
+                      <th>Điện mới</th>
+                      <th>Tiêu thụ</th>
+                      <th>Nước cũ</th>
+                      <th>Nước mới</th>
+                      <th>Tiêu thụ</th>
+                      <th>Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {d.utilityReadings.map((item) => (
+                      <tr key={item.id} className="border-t">
+                        <td className="px-3 py-3 font-semibold">
+                          {formatDate(item.billingPeriod)}
+                        </td>
+                        <td>{item.electricityPrevious ?? "—"}</td>
+                        <td>{item.electricityCurrent ?? "—"}</td>
+                        <td>{item.electricityConsumption}</td>
+                        <td>{item.waterPrevious ?? "—"}</td>
+                        <td>{item.waterCurrent ?? "—"}</td>
+                        <td>{item.waterConsumption}</td>
+                        <td>
+                          {formatCurrency(
+                            (item.electricityAmount ?? 0) +
+                              (item.waterAmount ?? 0),
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ListOrEmpty>
+          )}
+          {tab === "Thành viên" && (
+            <div className="space-y-4">
+              <ListOrEmpty items={d.coResidents} empty="Chưa có người ở cùng">
+                {d.coResidents.map((item) => (
+                  <Card
+                    key={item.id}
+                    title={item.fullName}
+                    status={item.status}
+                  >
+                    <p>
+                      {item.phone} ·{" "}
+                      {item.relationship ?? "Chưa khai báo quan hệ"}
+                    </p>
+                    <p>
+                      {item.residenceRole} · Vào ở {formatDate(item.moveInDate)}
+                    </p>
+                    <Link
+                      href={`/admin/tenants/${item.id}`}
+                      className="font-semibold text-blue-700"
+                    >
+                      Xem hồ sơ
+                    </Link>
+                  </Card>
+                ))}
+              </ListOrEmpty>
+              <Link href="/admin/rental-lifecycle" className={outlineButton}>
+                Quản lý nhận phòng / thành viên
+              </Link>
+            </div>
+          )}
+          {tab === "Yêu cầu hỗ trợ" && (
+            <ListOrEmpty
+              items={d.maintenanceRequests}
+              empty="Chưa có yêu cầu hỗ trợ"
+            >
+              {d.maintenanceRequests.map((item) => (
+                <Card
+                  key={item.id}
+                  title={`${item.code} · ${item.title}`}
+                  status={item.status}
+                >
+                  <p>
+                    {item.issueType} · Mức độ {item.priority}
+                  </p>
+                  <p>Tạo lúc {formatDate(item.createdAt)}</p>
+                  <Link
+                    href={`/admin/maintenance/${item.id}`}
+                    className="font-semibold text-blue-700"
+                  >
+                    Xem ticket
+                  </Link>
                 </Card>
               ))}
             </ListOrEmpty>
@@ -634,6 +926,32 @@ function Panel({
       <h2 className="mb-4 font-bold text-slate-900">{title}</h2>
       <dl className="space-y-3">{children}</dl>
     </div>
+  );
+}
+function MoneyCard({
+  label,
+  value,
+  tone = "default",
+}: {
+  label: string;
+  value: number;
+  tone?: "default" | "success" | "danger";
+}) {
+  const color =
+    tone === "danger"
+      ? "text-red-700"
+      : tone === "success"
+        ? "text-emerald-700"
+        : "text-slate-900";
+  return (
+    <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {label}
+      </p>
+      <p className={`mt-2 text-lg font-extrabold ${color}`}>
+        {formatCurrency(value)}
+      </p>
+    </article>
   );
 }
 function Info({

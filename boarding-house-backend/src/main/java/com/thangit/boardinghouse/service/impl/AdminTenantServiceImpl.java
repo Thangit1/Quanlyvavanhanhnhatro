@@ -34,7 +34,7 @@ public class AdminTenantServiceImpl implements AdminTenantService {
     @Override @Transactional(readOnly = true)
     public TenantList list(AuthenticatedUser principal, Long propertyId, Long roomId, String status,
                            String temporaryStatus, String accountStatus, String keyword,
-                           String sort, String direction, int page, int size) {
+                           String debtStatus, String contractStatus, String sort, String direction, int page, int size) {
         requireReadRole(principal);
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 10), 100);
@@ -43,7 +43,8 @@ public class AdminTenantServiceImpl implements AdminTenantService {
                 repository.rooms(principal.id(), principal.activeRole(), propertyId),
                 repository.summary(principal.id(), principal.activeRole(), propertyId),
                 repository.list(principal.id(), principal.activeRole(), propertyId, roomId, status,
-                        temporaryStatus, accountStatus, keyword, sort, direction, safePage, safeSize));
+                        temporaryStatus, accountStatus, keyword, debtStatus, contractStatus,
+                        sort, direction, safePage, safeSize));
     }
 
     @Override @Transactional(readOnly = true)
@@ -53,12 +54,16 @@ public class AdminTenantServiceImpl implements AdminTenantService {
         return new TenantDetail(number(p, "id"), string(p, "tenant_code"), nullableNumber(p, "user_id"),
                 string(p, "full_name"), date(p, "date_of_birth"), string(p, "gender"), string(p, "phone"),
                 string(p, "email"), string(p, "avatar_url"), string(p, "permanent_address"),
-                string(p, "occupation"), string(p, "workplace"), string(p, "emergency_contact_name"),
+                string(p, "hometown"), string(p, "occupation"), string(p, "workplace"),
+                string(p, "emergency_contact_name"),
                 string(p, "emergency_contact_phone"), string(p, "identity_type"),
                 maskIdentity(string(p, "identity_number")), date(p, "identity_issued_date"),
-                string(p, "identity_issued_place"), string(p, "note"), string(p, "status"),
+                string(p, "identity_issued_place"), string(p, "note"), string(p, "resident_status"),
                 p.get("user_id") != null, string(p, "account_status"), repository.residences(tenantId),
                 repository.contracts(tenantId), repository.invoices(tenantId),
+                repository.financial(tenantId), repository.payments(tenantId),
+                repository.utilityReadings(tenantId), repository.coResidents(tenantId),
+                repository.maintenanceRequests(tenantId),
                 repository.temporaryResidences(tenantId), repository.documents(tenantId),
                 repository.activities(tenantId));
     }
@@ -70,6 +75,8 @@ public class AdminTenantServiceImpl implements AdminTenantService {
         requireProperty(principal, request.propertyId());
         validateRoom(request.propertyId(), request.roomId());
         validateProfile(request, null);
+        if (request.identityNumber() == null || request.identityNumber().isBlank())
+            throw badRequest("IDENTITY_REQUIRED", "Vui lòng nhập số CCCD/CMND hoặc hộ chiếu.");
         long id = repository.createProfile(request, principal.id());
         repository.createResidence(id, request.propertyId(), request.roomId(), request.contractId(),
                 request.moveInDate(), normalizeResidenceRole(request.residenceRole()), principal.id());
@@ -209,6 +216,12 @@ public class AdminTenantServiceImpl implements AdminTenantService {
             throw forbidden("Bạn không có quyền truy cập nhà trọ đã chọn.");
     }
     private void validateProfile(SaveTenant request, Long excludedId) {
+        if (request.email() != null && !request.email().isBlank()
+                && repository.profileEmailExists(request.email().trim(), excludedId))
+            throw badRequest("TENANT_EMAIL_EXISTS", "Email đã tồn tại trong hồ sơ người thuê.");
+        if (request.identityNumber() != null && !request.identityNumber().isBlank()
+                && repository.profileIdentityExists(request.identityNumber().trim(), excludedId))
+            throw badRequest("IDENTITY_EXISTS", "Số giấy tờ đã tồn tại trong hồ sơ người thuê.");
         if (repository.profilePhoneExists(request.phone().trim(), excludedId))
             throw badRequest("PHONE_EXISTS", "Số điện thoại đã tồn tại trong hồ sơ người thuê.");
         if (request.dateOfBirth() != null && request.dateOfBirth().isAfter(LocalDate.now()))
