@@ -176,7 +176,7 @@ export function AdminDashboard() {
           "text-violet-700 bg-violet-50",
         ],
         [
-          "Doanh thu kỳ này",
+          "Thu dịch vụ kỳ này",
           formatCurrency(data.summary.currentRevenue),
           CircleDollarSign,
           "text-blue-700 bg-blue-50",
@@ -350,7 +350,7 @@ export function AdminDashboard() {
                   </section>
 
                   <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-                    <Panel title="Doanh thu và công nợ">
+                    <Panel title="Thu dịch vụ và công nợ">
                       {!data.revenueHistory.length ? (
                         <EmptyState text="Chưa có dữ liệu tài chính trong kỳ." />
                       ) : (
@@ -370,7 +370,7 @@ export function AdminDashboard() {
                               />
                               <Bar
                                 dataKey="revenue"
-                                name="Doanh thu"
+                                name="Thu dịch vụ"
                                 fill="#2563eb"
                                 radius={[5, 5, 0, 0]}
                               />

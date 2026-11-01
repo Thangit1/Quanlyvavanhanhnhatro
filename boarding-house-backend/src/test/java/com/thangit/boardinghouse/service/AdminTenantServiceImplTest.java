@@ -17,6 +17,15 @@ class AdminTenantServiceImplTest {
     private final AdminTenantService service =
             new AdminTenantServiceImpl(repository, mock(PasswordEncoder.class));
 
+    @Test void moveOutCannotBypassFinancialSettlement() {
+        var p=new AuthenticatedUser(1L,"owner@example.com",RoleCode.OWNER);
+        when(repository.canAccessTenant(1L,RoleCode.OWNER,9L)).thenReturn(true);
+        when(repository.activeResidence(9L)).thenReturn(java.util.Optional.of(java.util.Map.of("id",10L,"contract_id",11L,"room_id",12L)));
+        assertThatThrownBy(()->service.moveOut(p,9L,new com.thangit.boardinghouse.dto.request.tenant.AdminTenantRequests.MoveOut(java.time.LocalDate.now(),"Trả phòng",true)))
+                .isInstanceOf(AuthException.class).extracting(e->((AuthException)e).code()).isEqualTo("LIFECYCLE_SETTLEMENT_REQUIRED");
+        verify(repository,never()).moveOut(anyLong(),anyLong(),any(),any(),any(),any(),anyBoolean(),anyLong());
+    }
+
     @Test
     void tenantCannotReadAdministrativeTenantData() {
         assertThatThrownBy(() -> service.detail(

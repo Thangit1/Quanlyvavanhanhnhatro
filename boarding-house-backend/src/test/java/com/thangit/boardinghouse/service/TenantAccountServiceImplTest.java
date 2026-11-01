@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import com.thangit.boardinghouse.common.exception.AuthException;
 import com.thangit.boardinghouse.domain.auth.RoleCode;
 import com.thangit.boardinghouse.dto.request.account.TenantAccountRequests.ChangePassword;
+import com.thangit.boardinghouse.dto.request.account.TenantAccountRequests.UpdateProfile;
 import com.thangit.boardinghouse.repository.*;
 import com.thangit.boardinghouse.security.AuthenticatedUser;
 import com.thangit.boardinghouse.service.impl.TenantAccountServiceImpl;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class TenantAccountServiceImplTest {
@@ -43,5 +45,14 @@ class TenantAccountServiceImplTest {
         var fake=new MockMultipartFile("file","avatar.png","image/png","not-an-image".getBytes());
         assertThrows(AuthException.class,()->service.saveAvatar(tenant,fake));
         verifyNoInteractions(repository);
+    }
+
+    @Test void rejectsProfilePhoneAlreadyUsedByAnotherAccount(){
+        var tenant=new AuthenticatedUser(2L,"tenant@example.com",RoleCode.TENANT);
+        var request=new UpdateProfile("Developer","Company","0337813143","tenant@example.com","Address",null,1L);
+        when(users.existsByPhoneInAndIdNot(List.of("0337813143","+84337813143"),2L)).thenReturn(true);
+
+        assertThrows(AuthException.class,()->service.updateProfile(tenant,request));
+        verify(repository,never()).updateProfile(anyLong(),any());
     }
 }

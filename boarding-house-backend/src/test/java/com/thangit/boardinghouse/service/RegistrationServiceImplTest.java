@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -53,5 +54,20 @@ class RegistrationServiceImplTest {
                 "Nguyễn Văn A", "guest@gmail.com", "", "guest123", "different1", true)))
                 .isInstanceOf(AuthException.class);
         verifyNoInteractions(users);
+    }
+
+    @Test
+    void rejectsPhoneAlreadyStoredInEquivalentInternationalFormat() {
+        UserRepository users = mock(UserRepository.class);
+        when(users.existsByPhoneIn(List.of("0337813143", "+84337813143"))).thenReturn(true);
+        RegistrationService service = new RegistrationServiceImpl(
+                users, mock(RoleRepository.class), new BCryptPasswordEncoder(4));
+
+        assertThatThrownBy(() -> service.registerTenant(new RegisterRequest(
+                "Nguyễn Văn A", "guest@gmail.com", "0337813143",
+                "guest123", "guest123", true)))
+                .isInstanceOf(AuthException.class)
+                .hasMessageContaining("Số điện thoại này đã được sử dụng.");
+        verify(users, never()).saveAndFlush(any());
     }
 }

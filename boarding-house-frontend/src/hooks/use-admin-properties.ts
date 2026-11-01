@@ -32,6 +32,7 @@ export function usePropertyMutations(id?: number) {
   const client = useQueryClient();
   const refresh = async () => {
     await client.invalidateQueries({ queryKey: ["admin-properties"] });
+    await client.invalidateQueries({ queryKey: ["rental-lifecycle"] });
     await client.invalidateQueries({ queryKey: ["property-options"] });
     if (id)
       await client.invalidateQueries({ queryKey: ["admin-property", id] });
@@ -85,6 +86,7 @@ export function useRoomMutations(id?: number) {
   const client = useQueryClient();
   const refresh = async () => {
     await client.invalidateQueries({ queryKey: ["admin-rooms"] });
+    await client.invalidateQueries({ queryKey: ["rental-lifecycle"] });
     await client.invalidateQueries({ queryKey: ["admin-properties"] });
     if (id) await client.invalidateQueries({ queryKey: ["admin-room", id] });
   };
@@ -107,8 +109,12 @@ export function useRoomMutations(id?: number) {
       onSuccess: refresh,
     }),
     status: useMutation({
-      mutationFn: (p: { status: string; reason?: string; version: number }) =>
-        adminPropertyService.roomStatus(id!, p),
+      mutationFn: (p: {
+        status: string;
+        reason?: string;
+        version: number;
+        readinessConfirmed?: boolean;
+      }) => adminPropertyService.roomStatus(id!, p),
       onSuccess: refresh,
     }),
   };

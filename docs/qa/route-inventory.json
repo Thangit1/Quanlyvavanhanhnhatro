@@ -1,0 +1,776 @@
+[
+  {
+    "route": "/403",
+    "source": "../boarding-house-frontend/src/app/403/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/account",
+    "source": "../boarding-house-frontend/src/app/accountant/account/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/bankbook",
+    "source": "../boarding-house-frontend/src/app/accountant/bankbook/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/cash-flow",
+    "source": "../boarding-house-frontend/src/app/accountant/cash-flow/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/cashbook",
+    "source": "../boarding-house-frontend/src/app/accountant/cashbook/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/dashboard",
+    "source": "../boarding-house-frontend/src/app/accountant/dashboard/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/accountant/debts",
+    "source": "../boarding-house-frontend/src/app/accountant/debts/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/debts/tenants/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/debts/tenants/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/deposits",
+    "source": "../boarding-house-frontend/src/app/accountant/deposits/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/deposits/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/deposits/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/expenses",
+    "source": "../boarding-house-frontend/src/app/accountant/expenses/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/expenses/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/expenses/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/exports",
+    "source": "../boarding-house-frontend/src/app/accountant/exports/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/invoices/generate",
+    "source": "../boarding-house-frontend/src/app/accountant/invoices/generate/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/invoices",
+    "source": "../boarding-house-frontend/src/app/accountant/invoices/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/accountant/invoices/review",
+    "source": "../boarding-house-frontend/src/app/accountant/invoices/review/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/invoices/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/invoices/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/notifications",
+    "source": "../boarding-house-frontend/src/app/accountant/notifications/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/other-income",
+    "source": "../boarding-house-frontend/src/app/accountant/other-income/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant",
+    "source": "../boarding-house-frontend/src/app/accountant/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/payment-proofs",
+    "source": "../boarding-house-frontend/src/app/accountant/payment-proofs/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/payment-proofs/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/payment-proofs/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/payment-vouchers",
+    "source": "../boarding-house-frontend/src/app/accountant/payment-vouchers/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/payment-vouchers/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/payment-vouchers/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/payments",
+    "source": "../boarding-house-frontend/src/app/accountant/payments/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/accountant/payments/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/payments/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/periods",
+    "source": "../boarding-house-frontend/src/app/accountant/periods/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/accountant/receipts",
+    "source": "../boarding-house-frontend/src/app/accountant/receipts/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/receipts/[id]",
+    "source": "../boarding-house-frontend/src/app/accountant/receipts/[id]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/reconciliation/bank",
+    "source": "../boarding-house-frontend/src/app/accountant/reconciliation/bank/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/reconciliation",
+    "source": "../boarding-house-frontend/src/app/accountant/reconciliation/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/reconciliation/payment-gateways",
+    "source": "../boarding-house-frontend/src/app/accountant/reconciliation/payment-gateways/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/accountant/reports",
+    "source": "../boarding-house-frontend/src/app/accountant/reports/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/contracts",
+    "source": "../boarding-house-frontend/src/app/admin/contracts/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/contracts/[contractId]",
+    "source": "../boarding-house-frontend/src/app/admin/contracts/[contractId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/invoices/debt",
+    "source": "../boarding-house-frontend/src/app/admin/invoices/debt/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/invoices/generate",
+    "source": "../boarding-house-frontend/src/app/admin/invoices/generate/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/invoices/new",
+    "source": "../boarding-house-frontend/src/app/admin/invoices/new/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/invoices",
+    "source": "../boarding-house-frontend/src/app/admin/invoices/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/invoices/[invoiceId]",
+    "source": "../boarding-house-frontend/src/app/admin/invoices/[invoiceId]/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/maintenance/assets",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/assets/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/maintenance/calendar",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/calendar/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/maintenance/materials",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/materials/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/maintenance/new",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/new/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/maintenance",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/maintenance/preventive",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/preventive/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/maintenance/reports",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/reports/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/maintenance/[requestId]",
+    "source": "../boarding-house-frontend/src/app/admin/maintenance/[requestId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/properties/new",
+    "source": "../boarding-house-frontend/src/app/admin/properties/new/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/properties",
+    "source": "../boarding-house-frontend/src/app/admin/properties/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/properties/[propertyId]/edit",
+    "source": "../boarding-house-frontend/src/app/admin/properties/[propertyId]/edit/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/properties/[propertyId]",
+    "source": "../boarding-house-frontend/src/app/admin/properties/[propertyId]/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/rental-lifecycle",
+    "source": "../boarding-house-frontend/src/app/admin/rental-lifecycle/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/assets",
+    "source": "../boarding-house-frontend/src/app/admin/reports/assets/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/contracts",
+    "source": "../boarding-house-frontend/src/app/admin/reports/contracts/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/debt",
+    "source": "../boarding-house-frontend/src/app/admin/reports/debt/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/expenses",
+    "source": "../boarding-house-frontend/src/app/admin/reports/expenses/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/export-history",
+    "source": "../boarding-house-frontend/src/app/admin/reports/export-history/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/invoices",
+    "source": "../boarding-house-frontend/src/app/admin/reports/invoices/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/maintenance",
+    "source": "../boarding-house-frontend/src/app/admin/reports/maintenance/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/occupancy",
+    "source": "../boarding-house-frontend/src/app/admin/reports/occupancy/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/operations",
+    "source": "../boarding-house-frontend/src/app/admin/reports/operations/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports",
+    "source": "../boarding-house-frontend/src/app/admin/reports/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/reports/payments",
+    "source": "../boarding-house-frontend/src/app/admin/reports/payments/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/profit",
+    "source": "../boarding-house-frontend/src/app/admin/reports/profit/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/revenue",
+    "source": "../boarding-house-frontend/src/app/admin/reports/revenue/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/tenants",
+    "source": "../boarding-house-frontend/src/app/admin/reports/tenants/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/reports/utilities",
+    "source": "../boarding-house-frontend/src/app/admin/reports/utilities/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/rooms/new",
+    "source": "../boarding-house-frontend/src/app/admin/rooms/new/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/rooms",
+    "source": "../boarding-house-frontend/src/app/admin/rooms/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/rooms/[roomId]/edit",
+    "source": "../boarding-house-frontend/src/app/admin/rooms/[roomId]/edit/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/rooms/[roomId]",
+    "source": "../boarding-house-frontend/src/app/admin/rooms/[roomId]/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/settings",
+    "source": "../boarding-house-frontend/src/app/admin/settings/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/settings/[section]",
+    "source": "../boarding-house-frontend/src/app/admin/settings/[section]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/tenants/new",
+    "source": "../boarding-house-frontend/src/app/admin/tenants/new/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/tenants",
+    "source": "../boarding-house-frontend/src/app/admin/tenants/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/admin/tenants/[tenantId]/edit",
+    "source": "../boarding-house-frontend/src/app/admin/tenants/[tenantId]/edit/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/admin/tenants/[tenantId]",
+    "source": "../boarding-house-frontend/src/app/admin/tenants/[tenantId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/forgot-password",
+    "source": "../boarding-house-frontend/src/app/forgot-password/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/login",
+    "source": "../boarding-house-frontend/src/app/login/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/manager/dashboard",
+    "source": "../boarding-house-frontend/src/app/manager/dashboard/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/owner/dashboard",
+    "source": "../boarding-house-frontend/src/app/owner/dashboard/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/",
+    "source": "../boarding-house-frontend/src/app/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/register",
+    "source": "../boarding-house-frontend/src/app/register/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/account",
+    "source": "../boarding-house-frontend/src/app/technician/account/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/technician/assets",
+    "source": "../boarding-house-frontend/src/app/technician/assets/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/assets/[assetId]",
+    "source": "../boarding-house-frontend/src/app/technician/assets/[assetId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/calendar",
+    "source": "../boarding-house-frontend/src/app/technician/calendar/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/dashboard",
+    "source": "../boarding-house-frontend/src/app/technician/dashboard/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/technician/emergency",
+    "source": "../boarding-house-frontend/src/app/technician/emergency/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/material-requests",
+    "source": "../boarding-house-frontend/src/app/technician/material-requests/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/materials",
+    "source": "../boarding-house-frontend/src/app/technician/materials/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/notifications",
+    "source": "../boarding-house-frontend/src/app/technician/notifications/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician",
+    "source": "../boarding-house-frontend/src/app/technician/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/performance",
+    "source": "../boarding-house-frontend/src/app/technician/performance/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/preventive-maintenance",
+    "source": "../boarding-house-frontend/src/app/technician/preventive-maintenance/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/technician/tasks",
+    "source": "../boarding-house-frontend/src/app/technician/tasks/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/technician/tasks/[taskId]",
+    "source": "../boarding-house-frontend/src/app/technician/tasks/[taskId]/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/account/activity",
+    "source": "../boarding-house-frontend/src/app/tenant/account/activity/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/account/change-password",
+    "source": "../boarding-house-frontend/src/app/tenant/account/change-password/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/account/documents",
+    "source": "../boarding-house-frontend/src/app/tenant/account/documents/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/account",
+    "source": "../boarding-house-frontend/src/app/tenant/account/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/account/preferences",
+    "source": "../boarding-house-frontend/src/app/tenant/account/preferences/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/account/profile",
+    "source": "../boarding-house-frontend/src/app/tenant/account/profile/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/account/security",
+    "source": "../boarding-house-frontend/src/app/tenant/account/security/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/account/sessions",
+    "source": "../boarding-house-frontend/src/app/tenant/account/sessions/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/account/support",
+    "source": "../boarding-house-frontend/src/app/tenant/account/support/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/co-occupants/history",
+    "source": "../boarding-house-frontend/src/app/tenant/co-occupants/history/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/co-occupants/new",
+    "source": "../boarding-house-frontend/src/app/tenant/co-occupants/new/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/co-occupants",
+    "source": "../boarding-house-frontend/src/app/tenant/co-occupants/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/co-occupants/requests/[requestId]",
+    "source": "../boarding-house-frontend/src/app/tenant/co-occupants/requests/[requestId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/co-occupants/[occupantId]",
+    "source": "../boarding-house-frontend/src/app/tenant/co-occupants/[occupantId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/contracts",
+    "source": "../boarding-house-frontend/src/app/tenant/contracts/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/contracts/[contractId]",
+    "source": "../boarding-house-frontend/src/app/tenant/contracts/[contractId]/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/home",
+    "source": "../boarding-house-frontend/src/app/tenant/home/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/invoices",
+    "source": "../boarding-house-frontend/src/app/tenant/invoices/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/invoices/[invoiceId]",
+    "source": "../boarding-house-frontend/src/app/tenant/invoices/[invoiceId]/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/invoices/[invoiceId]/payment",
+    "source": "../boarding-house-frontend/src/app/tenant/invoices/[invoiceId]/payment/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/maintenance/new",
+    "source": "../boarding-house-frontend/src/app/tenant/maintenance/new/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/maintenance",
+    "source": "../boarding-house-frontend/src/app/tenant/maintenance/page.tsx",
+    "execution": "PASS",
+    "note": "Chromium smoke; does not certify every form action on this route."
+  },
+  {
+    "route": "/tenant/maintenance/[requestId]/feedback",
+    "source": "../boarding-house-frontend/src/app/tenant/maintenance/[requestId]/feedback/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/maintenance/[requestId]",
+    "source": "../boarding-house-frontend/src/app/tenant/maintenance/[requestId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/notifications",
+    "source": "../boarding-house-frontend/src/app/tenant/notifications/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/notifications/settings",
+    "source": "../boarding-house-frontend/src/app/tenant/notifications/settings/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/notifications/[notificationId]",
+    "source": "../boarding-house-frontend/src/app/tenant/notifications/[notificationId]/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/occupants",
+    "source": "../boarding-house-frontend/src/app/tenant/occupants/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/occupants/request",
+    "source": "../boarding-house-frontend/src/app/tenant/occupants/request/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/payments",
+    "source": "../boarding-house-frontend/src/app/tenant/payments/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  },
+  {
+    "route": "/tenant/utilities",
+    "source": "../boarding-house-frontend/src/app/tenant/utilities/page.tsx",
+    "execution": "NOT_RUN",
+    "note": "Source inventory; browser evidence lists routes actually exercised."
+  }
+]

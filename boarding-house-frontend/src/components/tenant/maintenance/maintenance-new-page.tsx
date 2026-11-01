@@ -23,6 +23,7 @@ import {
 } from "@/constants/tenant-maintenance";
 import { ErrorState, PageLoading } from "@/components/shared/dashboard-ui";
 import type { CreateMaintenance } from "@/types/tenant-maintenance";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 const pad = (n: number) => String(n).padStart(2, "0");
 const localNow = () => {
   const d = new Date();
@@ -70,6 +71,7 @@ export function MaintenanceNewPage() {
       (x) => x.location.roomId === data.roomId,
     ),
     assets = selected?.assets ?? [];
+  const contactPhoneValidation = validateVietnamPhone(data.contactPhone);
   function patch<K extends keyof CreateMaintenance>(
     k: K,
     v: CreateMaintenance[K],
@@ -121,7 +123,7 @@ export function MaintenanceNewPage() {
       );
     if (step === 5)
       return (
-        !!data.preferredSchedule.preferredDate && !!data.contactPhone.trim()
+        !!data.preferredSchedule.preferredDate && contactPhoneValidation.valid
       );
     if (step === 6) return confirmed;
     return true;
@@ -426,6 +428,14 @@ export function MaintenanceNewPage() {
                 label="Số điện thoại liên hệ"
                 value={data.contactPhone}
                 onChange={(v) => patch("contactPhone", v)}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                error={
+                  data.contactPhone && !contactPhoneValidation.valid
+                    ? contactPhoneValidation.message
+                    : ""
+                }
               />
               <label className="text-sm font-semibold">
                 Quyền vào phòng
@@ -550,6 +560,8 @@ function Field({
   type = "text",
   placeholder,
   min,
+  error,
+  ...props
 }: {
   label: string;
   value: string;
@@ -557,6 +569,8 @@ function Field({
   type?: string;
   placeholder?: string;
   min?: string;
+  error?: string;
+  [key: string]: unknown;
 }) {
   return (
     <label className="block text-sm font-semibold">
@@ -564,11 +578,16 @@ function Field({
       <input
         type={type}
         min={min}
+        {...props}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 block w-full rounded-xl border p-3 font-normal"
+        aria-invalid={Boolean(error)}
+        className={`mt-1 block w-full rounded-xl border p-3 font-normal ${error ? "border-red-500" : ""}`}
       />
+      {error && (
+        <span className="mt-1 block text-xs text-red-600">{error}</span>
+      )}
     </label>
   );
 }

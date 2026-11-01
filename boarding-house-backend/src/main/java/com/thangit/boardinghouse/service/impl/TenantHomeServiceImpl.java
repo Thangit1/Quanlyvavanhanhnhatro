@@ -56,11 +56,11 @@ public class TenantHomeServiceImpl implements TenantHomeService {
     }
     private UtilityUsage utilities(UtilityRow row) {
         return new UtilityUsage(
-                utility(row.electricityPrevious(), row.electricityCurrent(), row.electricityUnitPrice(), row.electricityAmount()),
-                utility(row.waterPrevious(), row.waterCurrent(), row.waterUnitPrice(), row.waterAmount()));
+                utility(row.electricityPrevious(), row.electricityCurrent(), row.electricityUnitPrice(), row.electricityAmount(),row.electricityConsumption()),
+                utility(row.waterPrevious(), row.waterCurrent(), row.waterUnitPrice(), row.waterAmount(),row.waterConsumption()));
     }
-    private Utility utility(BigDecimal previous, BigDecimal current, BigDecimal price, BigDecimal amount) {
-        BigDecimal usage = previous == null || current == null ? null : current.subtract(previous);
+    private Utility utility(BigDecimal previous, BigDecimal current, BigDecimal price, BigDecimal amount,BigDecimal consumption) {
+        BigDecimal usage = consumption!=null?consumption:previous == null || current == null ? null : current.subtract(previous);
         return new Utility(previous, current, usage, price, amount);
     }
     private MaintenanceRequest maintenance(MaintenanceRow row) {

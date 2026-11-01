@@ -15,10 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminContractServiceImpl implements AdminContractService {
     private final AdminContractRepository repository;
+    private com.thangit.boardinghouse.service.ContractChangeService changes;
+    @org.springframework.beans.factory.annotation.Autowired public void setContractChanges(com.thangit.boardinghouse.service.ContractChangeService service){this.changes=service;}
 
-    public AdminContractServiceImpl(AdminContractRepository repository) {
+    private final com.thangit.boardinghouse.service.RoomLifecycleGuard rooms;
+    private final com.thangit.boardinghouse.service.ContractOnboardingService onboarding;
+    public AdminContractServiceImpl(AdminContractRepository repository,com.thangit.boardinghouse.service.RoomLifecycleGuard rooms,com.thangit.boardinghouse.service.ContractOnboardingService onboarding) {
+        this.onboarding=onboarding;
         this.repository = repository;
+        this.rooms=rooms;
     }
+    @Override @Transactional
+    public void approveExtension(AuthenticatedUser principal,long contractId,long requestId,String reason){requireRole(principal);changes.legacyOffer(principal,contractId,requestId,reason);}
+    @Override @Transactional(readOnly=true)
+    public java.util.List<java.util.Map<String,Object>> extensions(AuthenticatedUser principal,long contractId){requireRole(principal);return rooms.extensions(principal,contractId);}
 
     @Override
     @Transactional(readOnly = true)
@@ -47,6 +57,7 @@ public class AdminContractServiceImpl implements AdminContractService {
     public byte[] exportCsv(AuthenticatedUser principal, Long propertyId, String status, String keyword,
                             String sort, String direction) {
         requireRole(principal);
+        repository.requireExport(principal,propertyId);
         StringBuilder csv = new StringBuilder("\uFEFFMã hợp đồng,Khách thuê,Điện thoại,Nhà trọ,Phòng,"
                 + "Ngày bắt đầu,Ngày kết thúc,Tiền thuê,Tiền cọc,Trạng thái\n");
         for (ContractRow row : repository.list(principal.id(), principal.activeRole(), propertyId, status,
@@ -69,6 +80,6 @@ public class AdminContractServiceImpl implements AdminContractService {
 
     private String csv(String value) {
         if (value == null) return "";
-        return "\"" + value.replace("\"", "\"\"") + "\"";
+        return com.thangit.boardinghouse.common.validation.CsvCells.quote(value);
     }
 }

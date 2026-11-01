@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.tenant;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,14 +15,14 @@ public final class AdminTenantRequests {
             @NotBlank @Size(max = 150) String fullName,
             LocalDate dateOfBirth,
             @Size(max = 20) String gender,
-            @NotBlank @Pattern(regexp = "^[0-9+ .()-]{8,20}$", message = "Số điện thoại không hợp lệ") String phone,
+            @NotBlank @Pattern(regexp = VietnamPhones.REGEX, message = VietnamPhones.INVALID_MESSAGE) String phone,
             @Email @Size(max = 255) String email,
             @Size(max = 500) String permanentAddress,
             @Size(max = 255) String hometown,
             @Size(max = 150) String occupation,
             @Size(max = 255) String workplace,
             @Size(max = 150) String emergencyContactName,
-            @Size(max = 20) String emergencyContactPhone,
+            @Pattern(regexp = VietnamPhones.OPTIONAL_REGEX, message = VietnamPhones.INVALID_MESSAGE) String emergencyContactPhone,
             @Size(max = 30) String identityType,
             @Size(max = 50) String identityNumber,
             LocalDate identityIssuedDate,

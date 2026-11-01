@@ -2,6 +2,8 @@
 
 Monorepo đồ án tốt nghiệp gồm frontend Next.js, backend Spring Boot và MySQL. Giai đoạn 1 cung cấp nền tảng dự án, migration xác thực, bảo mật cơ sở và health check end-to-end.
 
+Kết quả kiểm thử và giới hạn nghiệm thu mới nhất: [Prompt 11 — release readiness](docs/qa/RELEASE_READINESS.md), [báo cáo thực thi](docs/qa/TEST_EXECUTION_REPORT.md), [danh sách lỗi và cách sửa](docs/qa/BUG_REPORT.md).
+
 ## Yêu cầu trên Windows
 
 - Git

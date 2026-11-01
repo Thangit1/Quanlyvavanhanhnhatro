@@ -21,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminPropertyServiceImpl implements AdminPropertyService {
     private final AdminPropertyRepository repository;
-    public AdminPropertyServiceImpl(AdminPropertyRepository repository){this.repository=repository;}
+    private final com.thangit.boardinghouse.service.RoomLifecycleGuard rooms;
+    public AdminPropertyServiceImpl(AdminPropertyRepository repository,com.thangit.boardinghouse.service.RoomLifecycleGuard rooms){this.repository=repository;this.rooms=rooms;}
 
     @Override @Transactional(readOnly=true)
     public PropertyList listProperties(AuthenticatedUser principal,String keyword,String status,int page,int size){
@@ -35,18 +36,21 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
         requireProperty(principal,id); Map<String,Object> p=repository.property(id).orElseThrow(()->notFound("Không tìm thấy nhà trọ."));
         PropertyRow stats=repository.properties(principal.id(),principal.activeRole(),string(p,"code"),null,0,20).stream().filter(x->x.id()==id).findFirst().orElseThrow();
         Manager manager=p.get("manager_id")==null?null:new Manager(number(p,"manager_id"),string(p,"manager_name"));
-        return new PropertyDetail(id,string(p,"code"),string(p,"name"),string(p,"type"),string(p,"description"),string(p,"address"),string(p,"phone"),string(p,"email"),date(p,"operation_start_date"),string(p,"thumbnail_url"),manager,string(p,"status"),number(p,"version"),stats.totalRooms(),stats.occupiedRooms(),stats.vacantRooms(),stats.reservedRooms(),stats.maintenanceRooms(),stats.occupancyRate(),stats.currentRevenue(),stats.outstandingDebt(),repository.buildings(id),repository.activities(id));
+        return new PropertyDetail(id,string(p,"code"),string(p,"name"),string(p,"type"),string(p,"description"),string(p,"address"),string(p,"phone"),string(p,"email"),date(p,"operation_start_date"),string(p,"thumbnail_url"),manager,string(p,"status"),number(p,"version"),stats.totalRooms(),stats.occupiedRooms(),stats.vacantRooms(),stats.reservedRooms(),stats.maintenanceRooms(),stats.occupancyRate(),stats.currentRevenue(),stats.outstandingDebt(),repository.buildings(id),repository.visibleActivities(id,principal));
     }
     @Override @Transactional
     public Created createProperty(AuthenticatedUser principal,SaveProperty request){
         requireOwner(principal); validateProperty(request,null); long id=repository.createProperty(principal.id(),request);
+        repository.assignManager(id,request.managerId(),principal.id());
         repository.addActivity(id,principal.id(),"PROPERTY_CREATED","Đã tạo nhà trọ "+request.name()+".","/admin/properties/"+id);
         return new Created(id,request.code().trim().toUpperCase());
     }
     @Override @Transactional
     public PropertyDetail updateProperty(AuthenticatedUser principal,long id,SaveProperty request){
         requirePropertyWrite(principal,id); validateProperty(request,id);
+        if(principal.activeRole()==RoleCode.MANAGER&&request.managerId()!=null&&!repository.assignedManager(id,request.managerId()))throw new AuthException(HttpStatus.FORBIDDEN,"MANAGER_ASSIGNMENT_OWNER_ONLY","Only the property owner may change manager assignments.");
         if(repository.updateProperty(id,request)==0) throw conflict();
+        if(principal.activeRole()==RoleCode.OWNER)repository.assignManager(id,request.managerId(),principal.id());
         repository.addActivity(id,principal.id(),"PROPERTY_UPDATED","Đã cập nhật thông tin nhà trọ.","/admin/properties/"+id);
         return property(principal,id);
     }
@@ -54,6 +58,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     public void propertyStatus(AuthenticatedUser principal,long id,String status,Long version){
         requireOwner(principal); requireProperty(principal,id);
         if(!Set.of("ACTIVE","INACTIVE").contains(status)) throw bad("PROPERTY_STATUS_INVALID","Trạng thái nhà trọ không hợp lệ.");
+        if("INACTIVE".equals(status))rooms.propertyCanStop(id);
         if("INACTIVE".equals(status)&&repository.activeContractCount(id)>0) throw bad("PROPERTY_HAS_ACTIVE_CONTRACTS","Không thể ngừng hoạt động khi còn hợp đồng hiệu lực.");
         if(repository.setPropertyStatus(id,status,version)==0) throw conflict();
         repository.addActivity(id,principal.id(),"PROPERTY_STATUS_CHANGED","Đã chuyển trạng thái nhà trọ thành "+status+".","/admin/properties/"+id);
@@ -80,9 +85,9 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     }
     @Override @Transactional(readOnly=true)
     public RoomDetail room(AuthenticatedUser principal,long id){
-        requireRole(principal); RoomRow room=repository.room(id).orElseThrow(()->notFound("Không tìm thấy phòng.")); requireProperty(principal,room.propertyId());
+        requireRole(principal); RoomRow room=repository.roomView(id,principal).orElseThrow(()->notFound("Không tìm thấy phòng.")); requireProperty(principal,room.propertyId());
         Map<String,Object> raw=repository.roomRaw(id).orElseThrow(); boolean write=canWrite(principal);
-        return new RoomDetail(room,string(raw,"description"),repository.occupants(id),repository.roomAmenities(id),repository.roomAssets(id),repository.roomMeters(id),repository.roomImages(id),repository.priceHistory(id),repository.statusHistory(id),repository.activities(room.propertyId()),write,write,write);
+        return new RoomDetail(room,string(raw,"description"),repository.occupants(id),repository.roomAmenities(id),repository.roomAssets(id),repository.roomMeters(id),repository.roomImages(id),repository.priceHistory(id),repository.statusHistory(id),repository.visibleActivities(room.propertyId(),principal),write,write,write);
     }
     @Override @Transactional
     public Created createRoom(AuthenticatedUser principal,SaveRoom request){
@@ -91,7 +96,8 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     }
     @Override @Transactional
     public RoomDetail updateRoom(AuthenticatedUser principal,long id,SaveRoom request){
-        RoomRow current=repository.room(id).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,current.propertyId()); requirePropertyWrite(principal,request.propertyId()); validateRoom(request,id);
+        rooms.lockRoom(id);RoomRow current=repository.room(id).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,current.propertyId()); requirePropertyWrite(principal,request.propertyId()); validateRoom(request,id);
+        if(current.propertyId()!=request.propertyId())throw bad("ROOM_PROPERTY_IMMUTABLE","Không thể chuyển phòng vật lý sang khu trọ khác vì ảnh hưởng lịch sử hợp đồng và tài chính.");
         if(repository.updateRoom(id,request)==0) throw conflict(); repository.addActivity(request.propertyId(),principal.id(),"ROOM_UPDATED","Đã cập nhật phòng "+request.code()+".","/admin/rooms/"+id); return room(principal,id);
     }
     @Override @Transactional
@@ -107,18 +113,18 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     }
     @Override @Transactional
     public RoomDetail changePrice(AuthenticatedUser principal,long id,ChangePrice request){
-        RoomRow room=repository.room(id).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,room.propertyId());
+        RoomRow room=repository.roomView(id,principal).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,room.propertyId());
         if(request.effectiveDate().isBefore(LocalDate.now())) throw bad("PRICE_DATE_INVALID","Ngày áp dụng giá không được ở quá khứ.");
         if(repository.changePrice(id,room.monthlyRent(),request,principal.id())==0) throw conflict(); repository.addActivity(room.propertyId(),principal.id(),"ROOM_PRICE_CHANGED","Đã đổi giá phòng "+room.roomCode()+" thành "+request.newPrice()+".","/admin/rooms/"+id); return room(principal,id);
     }
     @Override @Transactional
     public RoomDetail changeStatus(AuthenticatedUser principal,long id,ChangeStatus request){
-        RoomRow room=repository.room(id).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,room.propertyId()); validateTransition(room,request.status());
-        if(repository.changeStatus(id,room.status(),request,principal.id())==0) throw conflict(); repository.addActivity(room.propertyId(),principal.id(),"ROOM_STATUS_CHANGED","Đã chuyển phòng "+room.roomCode()+" từ "+room.status()+" sang "+request.status()+".","/admin/rooms/"+id); return room(principal,id);
+        RoomRow room=repository.roomView(id,principal).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,room.propertyId()); rooms.access(principal,room.propertyId());rooms.manual(id,request.status(),request.version(),request.reason(),request.readinessConfirmed(),principal.id());
+        repository.addActivity(room.propertyId(),principal.id(),"ROOM_STATUS_CHANGED","Đã chuyển phòng "+room.roomCode()+" từ "+room.status()+" sang "+request.status()+".","/admin/rooms/"+id); return room(principal,id);
     }
     private void validateProperty(SaveProperty request,Long excluded){if(repository.codeExists(request.code().trim(),excluded)) throw bad("PROPERTY_CODE_EXISTS","Mã nhà trọ đã tồn tại."); if(request.operationStartDate()!=null&&request.operationStartDate().isAfter(LocalDate.now().plusYears(1))) throw bad("OPERATION_DATE_INVALID","Ngày vận hành không hợp lệ.");}
     private void validateRoom(SaveRoom request,Long excluded){if(!repository.validHierarchy(request.propertyId(),request.buildingId(),request.floorId())) throw bad("ROOM_HIERARCHY_INVALID","Tòa hoặc tầng không thuộc nhà trọ đã chọn."); if(repository.roomCodeExists(request.propertyId(),request.code().trim(),excluded)) throw bad("ROOM_CODE_EXISTS","Mã phòng đã tồn tại trong nhà trọ.");}
-    private void validateTransition(RoomRow room,String next){if(room.status().equals(next))return; Map<String,Set<String>> graph=Map.of("VACANT",Set.of("RESERVED","MAINTENANCE","INACTIVE"),"RESERVED",Set.of("VACANT","OCCUPIED","MAINTENANCE"),"OCCUPIED",Set.of("MAINTENANCE"),"MAINTENANCE",Set.of("VACANT","INACTIVE"),"INACTIVE",Set.of("VACANT")); if(!graph.getOrDefault(room.status(),Set.of()).contains(next)) throw bad("ROOM_STATUS_TRANSITION_INVALID","Không thể chuyển trạng thái phòng từ "+room.status()+" sang "+next+"."); if(Set.of("VACANT","INACTIVE").contains(next)&&room.currentContract()!=null) throw bad("ROOM_HAS_ACTIVE_CONTRACT","Phòng đang có hợp đồng hiệu lực.");}
+
     private void requireRole(AuthenticatedUser p){if(!Set.of(RoleCode.OWNER,RoleCode.MANAGER,RoleCode.ACCOUNTANT).contains(p.activeRole()))throw forbidden();}
     private boolean canWrite(AuthenticatedUser p){return Set.of(RoleCode.OWNER,RoleCode.MANAGER).contains(p.activeRole());}
     private void requireOwner(AuthenticatedUser p){if(p.activeRole()!=RoleCode.OWNER)throw new AuthException(HttpStatus.FORBIDDEN,"OWNER_REQUIRED","Chỉ chủ trọ được thực hiện thao tác này.");}

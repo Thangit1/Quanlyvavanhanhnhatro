@@ -40,9 +40,12 @@ export function ContractListPage() {
   const groups = useMemo(
     () => ({
       current: contracts.filter((item) =>
-        ["ACTIVE", "PENDING_CONFIRMATION", "TERMINATION_REQUESTED"].includes(
-          item.status,
-        ),
+        [
+          "ACTIVE",
+          "PENDING_CONFIRMATION",
+          "TERMINATION_REQUESTED",
+          "SETTLING",
+        ].includes(item.status),
       ),
       expiring: contracts.filter((item) => item.status === "EXPIRING"),
       history: contracts.filter((item) =>

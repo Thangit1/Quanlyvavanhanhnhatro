@@ -22,6 +22,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AdminReportRepository {
     private final JdbcClient jdbc;
+    public boolean managerCapability(long user,long property,String capability){return jdbc.sql("SELECT COUNT(*) FROM manager_property_capabilities WHERE manager_id=:user AND property_id=:property AND capability=:capability").param("user",user).param("property",property).param("capability",capability).query(Long.class).single()==1;}
+    public List<Long> exportProperties(long user,long id,RoleCode role){String raw=jdbc.sql("SELECT CAST(filter_json AS CHAR) FROM report_export_jobs WHERE requested_by=:user AND id=:id").param("user",user).param("id",id).query(String.class).optional().orElseThrow(()->new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.NOT_FOUND,"REPORT_EXPORT_NOT_FOUND","Không tìm thấy tệp."));try{var context=json.readTree(raw);if(!context.path("propertyIds").isArray()||(!context.path("role").isMissingNode()&&!role.name().equals(context.path("role").asText()))||(context.path("role").isMissingNode()&&role!=RoleCode.OWNER))throw new IllegalArgumentException();List<Long> ids=new ArrayList<>();for(var item:context.path("propertyIds")){if(!item.isIntegralNumber()||item.asLong()<=0)throw new IllegalArgumentException();ids.add(item.asLong());}return ids;}catch(Exception e){throw new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.FORBIDDEN,"REPORT_EXPORT_SCOPE_INVALID","Cần xuất lại báo cáo bằng vai trò và phạm vi hiện tại.");}}
     private final ObjectMapper json = new ObjectMapper();
 
     public AdminReportRepository(JdbcClient jdbc) {
@@ -30,12 +32,13 @@ public class AdminReportRepository {
 
     private String scope(RoleCode role, String alias) {
         if (role == RoleCode.OWNER) return alias + ".owner_id=:userId";
+        if(role==RoleCode.ACCOUNTANT)return "EXISTS(SELECT 1 FROM accountant_property_assignments a WHERE a.property_id="+alias+".id AND a.accountant_id=:userId)";
         if (role == RoleCode.TECHNICIAN) return "EXISTS(SELECT 1 FROM maintenance_requests scoped_m WHERE scoped_m.property_id=" + alias + ".id AND scoped_m.assigned_to=:userId)";
         return "EXISTS(SELECT 1 FROM property_managers pm WHERE pm.property_id=" + alias + ".id AND pm.manager_id=:userId)";
     }
 
     private String propertyFilter(List<Long> propertyIds, String alias) {
-        return propertyIds == null || propertyIds.isEmpty() ? "" : " AND " + alias + ".id IN (:propertyIds)";
+        return propertyIds == null ? "" : propertyIds.isEmpty()?" AND 1=0":" AND " + alias + ".id IN (:propertyIds)";
     }
 
     private Map<String, Object> params(long userId, List<Long> propertyIds, LocalDate start, LocalDate end) {
@@ -56,7 +59,7 @@ public class AdminReportRepository {
     public Map<String, Object> roomSummary(long userId, RoleCode role, List<Long> ids) {
         String sql = """
                 SELECT COUNT(DISTINCT p.id) total_properties,COUNT(r.id) total_rooms,
-                  SUM(r.status='OCCUPIED') occupied_rooms,SUM(r.status='VACANT') vacant_rooms,
+                  SUM(r.status IN ('OCCUPIED','NOTICE')) occupied_rooms,SUM(r.status IN ('VACANT','READY')) vacant_rooms,
                   SUM(r.status='RESERVED') reserved_rooms,SUM(r.status='MAINTENANCE') maintenance_rooms,
                   SUM(r.status='INACTIVE') inactive_rooms,
                   SUM(r.status NOT IN ('INACTIVE','MAINTENANCE')) available_rooms
@@ -72,21 +75,21 @@ public class AdminReportRepository {
                 SELECT
                   COALESCE((SELECT SUM(CASE WHEN py.transaction_type='REFUND' THEN -py.amount ELSE py.amount END)
                     FROM payments py JOIN invoices i ON i.id=py.invoice_id JOIN properties p ON p.id=i.property_id
-                    WHERE py.status='CONFIRMED' AND i.status<>'CANCELLED' AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s),0) confirmed_revenue,
+                    WHERE py.status='CONFIRMED' AND py.transaction_type IN ('PAYMENT','REFUND') AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s),0) confirmed_revenue,
                   COALESCE((SELECT SUM(e.amount) FROM expenses e JOIN properties p ON p.id=e.property_id
                     WHERE e.status IN ('CONFIRMED','APPROVED') AND e.expense_date>=:startDate AND e.expense_date<:endExclusive AND %s%s),0) confirmed_expense,
                   COALESCE((SELECT SUM(GREATEST(i.remaining_amount,0)) FROM invoices i JOIN properties p ON p.id=i.property_id
-                    WHERE i.status<>'CANCELLED' AND %s%s),0) outstanding_debt,
+                    WHERE i.status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED') AND %s%s),0) outstanding_debt,
                   (SELECT COUNT(*) FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id
                     WHERE c.status='ACTIVE' AND c.end_date BETWEEN CURRENT_DATE AND DATE_ADD(CURRENT_DATE,INTERVAL 30 DAY) AND %s%s) expiring_contracts,
                   (SELECT COUNT(*) FROM maintenance_requests m JOIN properties p ON p.id=m.property_id
                     WHERE m.status NOT IN ('RESOLVED','REJECTED','CANCELLED') AND %s%s) open_maintenance,
-                  (SELECT COUNT(*) FROM tenant_residences tr JOIN properties p ON p.id=tr.property_id
-                    WHERE tr.status='ACTIVE' AND %s%s) active_tenants
+                  (SELECT COUNT(DISTINCT tr.tenant_profile_id) FROM tenant_residences tr JOIN properties p ON p.id=tr.property_id
+                    WHERE %s AND %s%s) active_tenants
                 """.formatted(
                 scope(role,"p"),filter, scope(role,"p"),filter, scope(role,"p"),filter,
-                scope(role,"p"),filter, scope(role,"p"),filter, scope(role,"p"),filter);
-        return one(sql, params(userId, ids, start, end));
+                scope(role,"p"),filter, scope(role,"p"),filter, ResidentSql.current("tr"),scope(role,"p"),filter);
+        var result=new java.util.LinkedHashMap<String,Object>(one(sql,params(userId,ids,start,end)));var totals=new ManagementFinanceRepository(jdbc).summary(ids,start,end);result.putAll(totals);result.put("confirmedRevenue",totals.get("netServiceCollections"));result.put("confirmedExpense",totals.get("paidVouchers"));return result;
     }
 
     public List<ChartPoint> roomStatuses(long userId, RoleCode role, List<Long> ids) {
@@ -95,20 +98,9 @@ public class AdminReportRepository {
         return points(sql, params(userId, ids, LocalDate.now(), LocalDate.now()));
     }
 
-    public List<ChartPoint> financeTrend(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
-        String filter = propertyFilter(ids, "p");
-        String sql = """
-                SELECT DATE_FORMAT(MIN(x.day),'%%m/%%Y') label,SUM(x.revenue) value,SUM(x.expense) secondary_value,'FINANCE' category
-                FROM (
-                  SELECT DATE(py.paid_at) day,CASE WHEN py.transaction_type='REFUND' THEN -py.amount ELSE py.amount END revenue,0 expense
-                  FROM payments py JOIN invoices i ON i.id=py.invoice_id JOIN properties p ON p.id=i.property_id
-                  WHERE py.status='CONFIRMED' AND i.status<>'CANCELLED' AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s
-                  UNION ALL
-                  SELECT e.expense_date day,0 revenue,e.amount expense FROM expenses e JOIN properties p ON p.id=e.property_id
-                  WHERE e.status IN ('CONFIRMED','APPROVED') AND e.expense_date>=:startDate AND e.expense_date<:endExclusive AND %s%s
-                ) x GROUP BY YEAR(x.day),MONTH(x.day) ORDER BY YEAR(x.day),MONTH(x.day)
-                """.formatted(scope(role,"p"),filter,scope(role,"p"),filter);
-        return points(sql, params(userId, ids, start, end));
+    public List<ChartPoint> financeTrend(long userId,RoleCode role,List<Long> ids,LocalDate start,LocalDate end){
+        String sql="SELECT DATE_FORMAT(occurred_at,'%Y-%m') label,SUM(cash_in) value,SUM(cash_out) secondary_value,'CASH_FLOW' category FROM management_cash_events WHERE property_id IN (:propertyIds) AND occurred_at>=:startDate AND occurred_at<:endExclusive GROUP BY DATE_FORMAT(occurred_at,'%Y-%m') ORDER BY label";
+        if(ids.isEmpty())return List.of();return points(sql,params(userId,ids,start,end));
     }
 
     public ReportData occupancy(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
@@ -117,10 +109,10 @@ public class AdminReportRepository {
         BigDecimal available = summary.getOrDefault("availableRooms", BigDecimal.ZERO);
         summary.put("occupancyRate", percent(summary.get("occupiedRooms"), available));
         String sql = """
-                SELECT p.name property_name,COUNT(r.id) total_rooms,SUM(r.status='OCCUPIED') occupied_rooms,
-                 SUM(r.status='VACANT') vacant_rooms,SUM(r.status='MAINTENANCE') maintenance_rooms,
+                SELECT p.name property_name,COUNT(r.id) total_rooms,SUM(r.status IN ('OCCUPIED','NOTICE')) occupied_rooms,
+                 SUM(r.status IN ('VACANT','READY')) vacant_rooms,SUM(r.status='MAINTENANCE') maintenance_rooms,
                  SUM(r.status='INACTIVE') inactive_rooms,
-                 ROUND(100*SUM(r.status='OCCUPIED')/NULLIF(SUM(r.status NOT IN ('INACTIVE','MAINTENANCE')),0),2) occupancy_rate,
+                 ROUND(100*SUM(r.status IN ('OCCUPIED','NOTICE'))/NULLIF(SUM(r.status NOT IN ('INACTIVE','MAINTENANCE')),0),2) occupancy_rate,
                  COALESCE(AVG(r.monthly_rent),0) average_room_rent
                 FROM properties p LEFT JOIN rooms r ON r.property_id=p.id WHERE %s%s GROUP BY p.id,p.name ORDER BY p.name
                 """.formatted(scope(role,"p"),propertyFilter(ids,"p"));
@@ -128,44 +120,40 @@ public class AdminReportRepository {
                 list(sql, params(userId,ids,start,end)));
     }
 
+    public List<Map<String,Object>> cashDetails(List<Long> ids,LocalDate start,LocalDate end){return new ManagementFinanceRepository(jdbc).cashEvents(ids,start,end);}
     public ReportData revenue(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
         String filter=propertyFilter(ids,"p");
         String metrics="""
                 SELECT COALESCE(SUM(CASE WHEN py.transaction_type='REFUND' THEN -py.amount ELSE py.amount END),0) confirmed_revenue,
                  COUNT(DISTINCT py.id) payment_count,COALESCE(AVG(CASE WHEN py.transaction_type='PAYMENT' THEN py.amount END),0) average_payment
                 FROM payments py JOIN invoices i ON i.id=py.invoice_id JOIN properties p ON p.id=i.property_id
-                WHERE py.status='CONFIRMED' AND i.status<>'CANCELLED' AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s
+                WHERE py.status='CONFIRMED' AND py.transaction_type IN ('PAYMENT','REFUND') AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s
                 """.formatted(scope(role,"p"),filter);
         String breakdown="""
                 SELECT py.payment_method label,SUM(CASE WHEN py.transaction_type='REFUND' THEN -py.amount ELSE py.amount END) value,NULL secondary_value,'PAYMENT_METHOD' category
                 FROM payments py JOIN invoices i ON i.id=py.invoice_id JOIN properties p ON p.id=i.property_id
-                WHERE py.status='CONFIRMED' AND i.status<>'CANCELLED' AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s GROUP BY py.payment_method ORDER BY value DESC
+                WHERE py.status='CONFIRMED' AND py.transaction_type IN ('PAYMENT','REFUND') AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s GROUP BY py.payment_method ORDER BY value DESC
                 """.formatted(scope(role,"p"),filter);
         String rows="""
                 SELECT py.paid_at payment_date,p.name property_name,r.code room_code,i.code invoice_code,
                  py.receipt_code,py.payment_method,py.transaction_type,py.amount,py.status
                 FROM payments py JOIN invoices i ON i.id=py.invoice_id JOIN rooms r ON r.id=i.room_id JOIN properties p ON p.id=i.property_id
-                WHERE py.status='CONFIRMED' AND i.status<>'CANCELLED' AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s ORDER BY py.paid_at DESC LIMIT 200
+                WHERE py.status='CONFIRMED' AND py.transaction_type IN ('PAYMENT','REFUND') AND py.paid_at>=:startDate AND py.paid_at<:endExclusive AND %s%s ORDER BY py.paid_at DESC
                 """.formatted(scope(role,"p"),filter);
         Map<String,Object> p=params(userId,ids,start,end);
         return data("REVENUE",ids,start,end,decimals(one(metrics,p)),financeTrend(userId,role,ids,start,end),points(breakdown,p),list(rows,p));
     }
 
-    public ReportData expenses(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
-        String filter=propertyFilter(ids,"p");
-        String metrics="SELECT COALESCE(SUM(e.amount),0) total_expense,COUNT(*) expense_count,COALESCE(AVG(e.amount),0) average_expense FROM expenses e JOIN properties p ON p.id=e.property_id WHERE e.status IN ('CONFIRMED','APPROVED') AND e.expense_date>=:startDate AND e.expense_date<:endExclusive AND "+scope(role,"p")+filter;
-        String byProperty="SELECT p.name label,SUM(e.amount) value,NULL secondary_value,'PROPERTY' category FROM expenses e JOIN properties p ON p.id=e.property_id WHERE e.status IN ('CONFIRMED','APPROVED') AND e.expense_date>=:startDate AND e.expense_date<:endExclusive AND "+scope(role,"p")+filter+" GROUP BY p.id,p.name ORDER BY value DESC";
-        String rows="SELECT e.id,e.expense_date,p.name property_name,e.description,e.amount,e.status FROM expenses e JOIN properties p ON p.id=e.property_id WHERE e.status IN ('CONFIRMED','APPROVED') AND e.expense_date>=:startDate AND e.expense_date<:endExclusive AND "+scope(role,"p")+filter+" ORDER BY e.expense_date DESC,e.id DESC LIMIT 200";
-        Map<String,Object> p=params(userId,ids,start,end);
-        return data("EXPENSES",ids,start,end,decimals(one(metrics,p)),List.of(),points(byProperty,p),list(rows,p));
+    public ReportData expenses(long userId,RoleCode role,List<Long> ids,LocalDate start,LocalDate end){
+        var repository=new ManagementFinanceRepository(jdbc);var rows=repository.expenses(ids,start,end);var total=repository.summary(ids,start,end).get("confirmedCosts");return data("EXPENSES",ids,start,end,Map.of("totalExpense",total,"expenseCount",BigDecimal.valueOf(rows.size())),List.of(),List.of(),rows);
     }
 
     public ReportData debt(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
         String filter=propertyFilter(ids,"p");
-        String where=" i.status<>'CANCELLED' AND i.issue_date>=:startDate AND i.issue_date<:endExclusive AND "+scope(role,"p")+filter;
+        String where=" i.status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED') AND i.issue_date>=:startDate AND i.issue_date<:endExclusive AND "+scope(role,"p")+filter;
         String metrics="SELECT COALESCE(SUM(i.total_amount),0) total_invoice_amount,COALESCE(SUM(i.paid_amount),0) total_paid_amount,COALESCE(SUM(i.remaining_amount),0) outstanding_debt,SUM(i.status='UNPAID') unpaid_invoice_count,SUM(i.status='PARTIALLY_PAID') partially_paid_invoice_count,SUM(i.due_date<CURRENT_DATE AND i.remaining_amount>0) overdue_invoice_count FROM invoices i JOIN properties p ON p.id=i.property_id WHERE"+where;
         String aging="SELECT CASE WHEN i.due_date>=CURRENT_DATE THEN 'NOT_DUE' WHEN DATEDIFF(CURRENT_DATE,i.due_date)<=7 THEN 'OVERDUE_1_7' WHEN DATEDIFF(CURRENT_DATE,i.due_date)<=15 THEN 'OVERDUE_8_15' WHEN DATEDIFF(CURRENT_DATE,i.due_date)<=30 THEN 'OVERDUE_16_30' WHEN DATEDIFF(CURRENT_DATE,i.due_date)<=60 THEN 'OVERDUE_31_60' ELSE 'OVER_60_DAYS' END label,SUM(i.remaining_amount) value,COUNT(*) secondary_value,'AGING' category FROM invoices i JOIN properties p ON p.id=i.property_id WHERE i.remaining_amount>0 AND"+where+" GROUP BY label ORDER BY MIN(i.due_date) DESC";
-        String rows="SELECT i.code invoice_code,p.name property_name,r.code room_code,tp.full_name tenant_name,c.code contract_code,i.total_amount,i.paid_amount,i.remaining_amount,i.due_date,GREATEST(DATEDIFF(CURRENT_DATE,i.due_date),0) overdue_days,i.status FROM invoices i JOIN properties p ON p.id=i.property_id LEFT JOIN rooms r ON r.id=i.room_id LEFT JOIN contracts c ON c.id=i.contract_id LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id WHERE"+where+" ORDER BY i.remaining_amount DESC LIMIT 200";
+        String rows="SELECT i.code invoice_code,p.name property_name,r.code room_code,tp.full_name tenant_name,c.code contract_code,i.total_amount,i.paid_amount,i.remaining_amount,i.due_date,GREATEST(DATEDIFF(CURRENT_DATE,i.due_date),0) overdue_days,i.status FROM invoices i JOIN properties p ON p.id=i.property_id LEFT JOIN rooms r ON r.id=i.room_id LEFT JOIN contracts c ON c.id=i.contract_id LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id WHERE"+where+" ORDER BY i.remaining_amount DESC";
         Map<String,Object> p=params(userId,ids,start,end);Map<String,BigDecimal>s=decimals(one(metrics,p));s.put("collectionRate",percent(s.get("totalPaidAmount"),s.get("totalInvoiceAmount")));
         return data("DEBT",ids,start,end,s,List.of(),points(aging,p),list(rows,p));
     }
@@ -174,39 +162,48 @@ public class AdminReportRepository {
         String f=propertyFilter(ids,"p");String sc=scope(role,"p");
         String metrics="SELECT SUM(c.status='ACTIVE') active_contracts,SUM(c.created_at>=:startDate AND c.created_at<:endExclusive) new_contracts,SUM(c.status='ACTIVE' AND c.end_date BETWEEN CURRENT_DATE AND DATE_ADD(CURRENT_DATE,INTERVAL 30 DAY)) expiring_contracts,SUM(c.status='EXPIRED') expired_contracts,SUM(c.status='TERMINATED') terminated_contracts,COALESCE(AVG(DATEDIFF(c.end_date,c.start_date)),0) average_term_days FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+sc+f;
         String breakdown="SELECT c.status label,COUNT(*) value,NULL secondary_value,'STATUS' category FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+sc+f+" GROUP BY c.status ORDER BY value DESC";
-        String rows="SELECT c.code contract_code,p.name property_name,r.code room_code,tp.full_name tenant_name,c.start_date,c.end_date,DATEDIFF(c.end_date,CURRENT_DATE) days_remaining,r.monthly_rent,c.deposit_amount,c.status FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id WHERE "+sc+f+" ORDER BY c.end_date LIMIT 200";
+        String rows="SELECT c.code contract_code,p.name property_name,r.code room_code,tp.full_name tenant_name,c.start_date,c.end_date,DATEDIFF(c.end_date,CURRENT_DATE) days_remaining,c.agreed_monthly_rent monthly_rent,c.deposit_amount,c.status FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id WHERE "+sc+f+" ORDER BY c.end_date";
         Map<String,Object> p=params(userId,ids,start,end);return data("CONTRACTS",ids,start,end,decimals(one(metrics,p)),List.of(),points(breakdown,p),list(rows,p));
     }
 
     public ReportData tenants(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
         String f=propertyFilter(ids,"p");String sc=scope(role,"p");
-        String metrics="SELECT COUNT(*) active_residents,SUM(tr.residence_role='REPRESENTATIVE') representatives,SUM(tr.residence_role<>'REPRESENTATIVE') occupants,SUM(tr.move_in_date>=:startDate AND tr.move_in_date<:endExclusive) moved_in,SUM(tr.move_out_date>=:startDate AND tr.move_out_date<:endExclusive) moved_out,SUM(COALESCE(tpr.status,'NOT_DECLARED')='NOT_DECLARED') temporary_residence_missing FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id JOIN properties p ON p.id=tr.property_id LEFT JOIN temporary_residence_records tpr ON tpr.tenant_profile_id=tp.id AND tpr.property_id=p.id WHERE tr.status='ACTIVE' AND "+sc+f;
-        String breakdown="SELECT p.name label,COUNT(*) value,NULL secondary_value,'PROPERTY' category FROM tenant_residences tr JOIN properties p ON p.id=tr.property_id WHERE tr.status='ACTIVE' AND "+sc+f+" GROUP BY p.id,p.name ORDER BY value DESC";
-        String rows="SELECT tp.tenant_code,p.name property_name,r.code room_code,tp.full_name,tr.residence_role,tr.move_in_date,tr.move_out_date,tp.status profile_status,COALESCE(tpr.status,'NOT_DECLARED') temporary_residence_status FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id JOIN properties p ON p.id=tr.property_id LEFT JOIN rooms r ON r.id=tr.room_id LEFT JOIN temporary_residence_records tpr ON tpr.tenant_profile_id=tp.id AND tpr.property_id=p.id WHERE "+sc+f+" ORDER BY tp.full_name LIMIT 200";
+        String current=ResidentSql.current("tr");
+        String metrics="SELECT COUNT(DISTINCT CASE WHEN "+current+" THEN tp.id END) active_residents,"
+                +"COUNT(DISTINCT CASE WHEN "+current+" AND tr.residence_role='REPRESENTATIVE' THEN tp.id END) representatives,"
+                +"COUNT(DISTINCT CASE WHEN "+current+" AND tr.residence_role<>'REPRESENTATIVE' THEN tp.id END) occupants,"
+                +"COUNT(DISTINCT CASE WHEN tr.room_id IS NOT NULL AND tr.move_in_date<=CURRENT_DATE AND tr.move_in_date>=:startDate AND tr.move_in_date<:endExclusive THEN tp.id END) moved_in,"
+                +"COUNT(DISTINCT CASE WHEN tr.status IN ('MOVED_OUT','TRANSFERRED') AND tr.move_out_date<=CURRENT_DATE AND tr.move_out_date>=:startDate AND tr.move_out_date<:endExclusive THEN tp.id END) moved_out,"
+                +"COUNT(DISTINCT CASE WHEN "+current+" AND COALESCE(tpr.status,'NOT_DECLARED')='NOT_DECLARED' THEN tp.id END) temporary_residence_missing "
+                +"FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id JOIN properties p ON p.id=tr.property_id LEFT JOIN temporary_residence_records tpr ON tpr.tenant_profile_id=tp.id AND tpr.property_id=p.id WHERE "+sc+f;
+        String breakdown="SELECT p.name label,COUNT(*) value,NULL secondary_value,'PROPERTY' category FROM tenant_residences tr JOIN properties p ON p.id=tr.property_id WHERE "+ResidentSql.current("tr")+" AND "+sc+f+" GROUP BY p.id,p.name ORDER BY value DESC";
+        String rows="SELECT tp.tenant_code,p.name property_name,r.code room_code,tp.full_name,tr.residence_role,tr.move_in_date,tr.move_out_date,tp.status profile_status,COALESCE(tpr.status,'NOT_DECLARED') temporary_residence_status FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id JOIN properties p ON p.id=tr.property_id LEFT JOIN rooms r ON r.id=tr.room_id LEFT JOIN temporary_residence_records tpr ON tpr.tenant_profile_id=tp.id AND tpr.property_id=p.id WHERE "+sc+f+" ORDER BY tp.full_name";
         Map<String,Object> p=params(userId,ids,start,end);return data("TENANTS",ids,start,end,decimals(one(metrics,p)),List.of(),points(breakdown,p),list(rows,p));
     }
 
     public ReportData utilities(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
         String f=propertyFilter(ids,"p");String sc=scope(role,"p");String where=" u.billing_period>=:startDate AND u.billing_period<:endExclusive AND "+sc+f;
-        String metrics="SELECT COALESCE(SUM(GREATEST(u.electricity_current-u.electricity_previous,0)),0) electricity_usage,COALESCE(SUM(GREATEST(u.water_current-u.water_previous,0)),0) water_usage,COALESCE(SUM(u.electricity_amount),0) electricity_cost,COALESCE(SUM(u.water_amount),0) water_cost,COUNT(DISTINCT r.id) measured_rooms FROM utility_readings u JOIN contracts c ON c.id=u.contract_id JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+where;
-        String trend="SELECT DATE_FORMAT(MIN(u.billing_period),'%m/%Y') label,SUM(GREATEST(u.electricity_current-u.electricity_previous,0)) value,SUM(GREATEST(u.water_current-u.water_previous,0)) secondary_value,'USAGE' category FROM utility_readings u JOIN contracts c ON c.id=u.contract_id JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+where+" GROUP BY YEAR(u.billing_period),MONTH(u.billing_period) ORDER BY YEAR(u.billing_period),MONTH(u.billing_period)";
-        String rows="SELECT p.name property_name,r.code room_code,u.billing_period,u.electricity_previous,u.electricity_current,GREATEST(u.electricity_current-u.electricity_previous,0) electricity_usage,u.electricity_unit_price,u.electricity_amount,u.water_previous,u.water_current,GREATEST(u.water_current-u.water_previous,0) water_usage,u.water_unit_price,u.water_amount FROM utility_readings u JOIN contracts c ON c.id=u.contract_id JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+where+" ORDER BY u.billing_period DESC,p.name,r.code LIMIT 200";
+        String metrics="SELECT COALESCE(SUM(GREATEST(COALESCE(u.electricity_consumption,u.electricity_current-u.electricity_previous),0)),0) electricity_usage,COALESCE(SUM(GREATEST(COALESCE(u.water_consumption,u.water_current-u.water_previous),0)),0) water_usage,COALESCE(SUM(u.electricity_amount),0) electricity_cost,COALESCE(SUM(u.water_amount),0) water_cost,COUNT(DISTINCT r.id) measured_rooms FROM utility_readings u JOIN contracts c ON c.id=u.contract_id JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+where;
+        String trend="SELECT DATE_FORMAT(MIN(u.billing_period),'%m/%Y') label,SUM(GREATEST(COALESCE(u.electricity_consumption,u.electricity_current-u.electricity_previous),0)) value,SUM(GREATEST(COALESCE(u.water_consumption,u.water_current-u.water_previous),0)) secondary_value,'USAGE' category FROM utility_readings u JOIN contracts c ON c.id=u.contract_id JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+where+" GROUP BY YEAR(u.billing_period),MONTH(u.billing_period) ORDER BY YEAR(u.billing_period),MONTH(u.billing_period)";
+        String rows="SELECT p.name property_name,r.code room_code,u.billing_period,u.electricity_previous,u.electricity_current,GREATEST(COALESCE(u.electricity_consumption,u.electricity_current-u.electricity_previous),0) electricity_usage,u.electricity_unit_price,u.electricity_amount,u.water_previous,u.water_current,GREATEST(COALESCE(u.water_consumption,u.water_current-u.water_previous),0) water_usage,u.water_unit_price,u.water_amount FROM utility_readings u JOIN contracts c ON c.id=u.contract_id JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id WHERE "+where+" ORDER BY u.billing_period DESC,p.name,r.code";
         Map<String,Object> p=params(userId,ids,start,end);return data("UTILITIES",ids,start,end,decimals(one(metrics,p)),points(trend,p),List.of(),list(rows,p));
     }
 
     public ReportData maintenance(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
-        String f=propertyFilter(ids,"p");String sc=scope(role,"p");String where=" m.created_at>=:startDate AND m.created_at<:endExclusive AND "+sc+f;
+        String f=propertyFilter(ids,"p");String sc=scope(role,"p");String where=" m.created_at>=:startDate AND m.created_at<:endExclusive AND "+sc+f+(role==RoleCode.TECHNICIAN?" AND m.assigned_to=:userId":"");
         String metrics="SELECT COUNT(*) total_requests,SUM(m.status NOT IN ('RESOLVED','REJECTED','CANCELLED')) open_requests,SUM(m.status='RESOLVED') resolved_requests,SUM(m.sla_due_at<NOW() AND m.status NOT IN ('RESOLVED','CANCELLED')) overdue_requests,COALESCE(SUM(m.actual_cost),0) total_cost,COALESCE(AVG(CASE WHEN m.resolved_at IS NOT NULL THEN TIMESTAMPDIFF(MINUTE,m.created_at,m.resolved_at)/60 END),0) average_resolution_hours FROM maintenance_requests m JOIN properties p ON p.id=m.property_id WHERE "+where;
         String breakdown="SELECT m.issue_type label,COUNT(*) value,SUM(m.actual_cost) secondary_value,'ISSUE_TYPE' category FROM maintenance_requests m JOIN properties p ON p.id=m.property_id WHERE "+where+" GROUP BY m.issue_type ORDER BY value DESC";
-        String rows="SELECT m.code request_code,p.name property_name,r.code room_code,m.title,m.issue_type,m.priority,u.full_name assignee_name,m.actual_cost,m.created_at,m.resolved_at,m.status FROM maintenance_requests m JOIN properties p ON p.id=m.property_id LEFT JOIN rooms r ON r.id=m.room_id LEFT JOIN users u ON u.id=m.assigned_to WHERE "+where+" ORDER BY m.created_at DESC LIMIT 200";
+        String rows="SELECT m.code request_code,p.name property_name,r.code room_code,m.title,m.issue_type,m.priority,u.full_name assignee_name,m.actual_cost,m.created_at,m.resolved_at,m.status FROM maintenance_requests m JOIN properties p ON p.id=m.property_id LEFT JOIN rooms r ON r.id=m.room_id LEFT JOIN users u ON u.id=m.assigned_to WHERE "+where+" ORDER BY m.created_at DESC";
         Map<String,Object> p=params(userId,ids,start,end);return data("MAINTENANCE",ids,start,end,decimals(one(metrics,p)),List.of(),points(breakdown,p),list(rows,p));
     }
 
     public ReportData assets(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
         String f=propertyFilter(ids,"p");String sc=scope(role,"p");
+        if(role==RoleCode.TECHNICIAN)sc+=" AND EXISTS(SELECT 1 FROM maintenance_requests m WHERE m.room_id=a.room_id AND m.assigned_to=:userId)";
         String metrics="SELECT COALESCE(SUM(a.quantity),0) total_assets,COALESCE(SUM(CASE WHEN a.condition_status='GOOD' THEN a.quantity ELSE 0 END),0) good_assets,COALESCE(SUM(CASE WHEN a.condition_status IN ('NEEDS_MAINTENANCE','MAINTENANCE') THEN a.quantity ELSE 0 END),0) maintenance_assets,COALESCE(SUM(CASE WHEN a.condition_status IN ('BROKEN','DAMAGED') THEN a.quantity ELSE 0 END),0) damaged_assets FROM room_assets a JOIN rooms r ON r.id=a.room_id JOIN properties p ON p.id=r.property_id WHERE "+sc+f;
         String breakdown="SELECT a.condition_status label,SUM(a.quantity) value,NULL secondary_value,'CONDITION' category FROM room_assets a JOIN rooms r ON r.id=a.room_id JOIN properties p ON p.id=r.property_id WHERE "+sc+f+" GROUP BY a.condition_status ORDER BY value DESC";
-        String rows="SELECT a.id,a.name,p.name property_name,r.code room_code,a.quantity,a.condition_status,a.note,(SELECT COUNT(*) FROM maintenance_requests m WHERE m.asset_id=a.id) repair_count,(SELECT COALESCE(SUM(m.actual_cost),0) FROM maintenance_requests m WHERE m.asset_id=a.id) repair_cost FROM room_assets a JOIN rooms r ON r.id=a.room_id JOIN properties p ON p.id=r.property_id WHERE "+sc+f+" ORDER BY p.name,r.code,a.name LIMIT 200";
+        String rows="SELECT a.id,a.name,p.name property_name,r.code room_code,a.quantity,a.condition_status,a.note,(SELECT COUNT(*) FROM maintenance_requests m WHERE m.asset_id=a.id) repair_count,(SELECT COALESCE(SUM(m.actual_cost),0) FROM maintenance_requests m WHERE m.asset_id=a.id) repair_cost FROM room_assets a JOIN rooms r ON r.id=a.room_id JOIN properties p ON p.id=r.property_id WHERE "+sc+f+" ORDER BY p.name,r.code,a.name";
+        if(role==RoleCode.TECHNICIAN)rows=rows.replace("WHERE m.asset_id=a.id","WHERE m.asset_id=a.id AND m.assigned_to=:userId");
         Map<String,Object> p=params(userId,ids,start,end);return data("ASSETS",ids,start,end,decimals(one(metrics,p)),List.of(),points(breakdown,p),list(rows,p));
     }
 

@@ -18,8 +18,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class RentalLifecycleRepository {
+    public void validateUtilitySettlement(long c,CompleteCheckout r){new com.thangit.boardinghouse.service.MonthlyBillingService(jdbc).validateSettlement(c,r.actualDate(),r.finalElectricityReading(),r.finalWaterReading(),r.charges()!=null&&r.charges().stream().anyMatch(x->"UTILITY".equals(x.chargeType())&&x.amount().signum()>0));}
     private final JdbcClient jdbc;
-    public RentalLifecycleRepository(JdbcClient jdbc) { this.jdbc = jdbc; }
+    private final com.thangit.boardinghouse.service.RoomLifecycleGuard rooms;
+    public RentalLifecycleRepository(JdbcClient jdbc,com.thangit.boardinghouse.service.RoomLifecycleGuard rooms) { this.jdbc = jdbc;this.rooms=rooms; }
 
     private String scope(RoleCode role, String alias) {
         return role == RoleCode.OWNER ? alias + ".owner_id=:userId" :
@@ -31,34 +33,33 @@ public class RentalLifecycleRepository {
         return jdbc.sql("SELECT COUNT(*) FROM properties p WHERE p.id=:id AND " + scope(role,"p"))
                 .param("id",propertyId).param("userId",userId).query(Long.class).single()>0;
     }
-    public boolean tenantInProperty(long tenantProfileId,long propertyId){return jdbc.sql("SELECT COUNT(*) FROM tenant_residences WHERE tenant_profile_id=:tenant AND property_id=:property")
-            .param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).single()>0;}
+    public boolean tenantInProperty(long tenantProfileId,long propertyId){return !jdbc.sql("SELECT id FROM tenant_residences WHERE tenant_profile_id=:tenant AND property_id=:property FOR UPDATE").param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).list().isEmpty()||!jdbc.sql("SELECT q.id FROM contract_change_requests q JOIN rooms r ON r.id=q.target_room_id WHERE q.target_profile_id=:tenant AND r.property_id=:property AND q.status IN ('REQUESTED','OFFERED','AGREED') AND q.change_type IN ('TRANSFER','REPRESENTATIVE') FOR UPDATE").param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).list().isEmpty();}
     public boolean hasCheckin(long contractId){return jdbc.sql("SELECT COUNT(*) FROM rental_checkins WHERE contract_id=:id").param("id",contractId).query(Long.class).single()>0;}
-    public boolean hasCheckout(long contractId){return jdbc.sql("SELECT COUNT(*) FROM rental_checkouts WHERE contract_id=:id").param("id",contractId).query(Long.class).single()>0;}
+    public boolean hasCheckout(long contractId){return jdbc.sql("SELECT COUNT(*) FROM rental_checkouts WHERE contract_id=:id AND status<>'CANCELLED'").param("id",contractId).query(Long.class).single()>0;}
 
     public Optional<Map<String,Object>> room(long id) {
-        return jdbc.sql("SELECT r.*,p.name property_name FROM rooms r JOIN properties p ON p.id=r.property_id WHERE r.id=:id")
+        return jdbc.sql("SELECT r.*,p.name property_name FROM rooms r JOIN properties p ON p.id=r.property_id WHERE r.id=:id FOR UPDATE")
                 .param("id",id).query(RentalLifecycleRepository::map).optional();
     }
     public Optional<Map<String,Object>> booking(long id) {
-        return jdbc.sql("SELECT b.*,tp.user_id tenant_user_id FROM rental_bookings b JOIN tenant_profiles tp ON tp.id=b.tenant_profile_id WHERE b.id=:id")
+        return jdbc.sql("SELECT b.*,tp.user_id tenant_user_id FROM rental_bookings b JOIN tenant_profiles tp ON tp.id=b.tenant_profile_id WHERE b.id=:id FOR UPDATE")
                 .param("id",id).query(RentalLifecycleRepository::map).optional();
     }
     public Optional<Map<String,Object>> contract(long id) {
         return jdbc.sql("""
                 SELECT c.*,r.property_id,r.status room_status,tp.full_name tenant_name,
-                  COALESCE((SELECT SUM(GREATEST(i.total_amount-i.paid_amount,0)) FROM invoices i
-                    WHERE i.contract_id=c.id AND i.status<>'CANCELLED'),0) outstanding_debt
+                  COALESCE((SELECT SUM(i.remaining_amount) FROM invoices i
+                    WHERE i.contract_id=c.id AND i.status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED')),0) outstanding_debt
                 FROM contracts c JOIN rooms r ON r.id=c.room_id
-                LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id WHERE c.id=:id
+                LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id WHERE c.id=:id FOR UPDATE
                 """).param("id",id).query(RentalLifecycleRepository::map).optional();
     }
     public Optional<Map<String,Object>> checkin(long id) {
-        return jdbc.sql("SELECT ci.*,c.room_id,c.tenant_id,c.tenant_profile_id,r.property_id FROM rental_checkins ci JOIN contracts c ON c.id=ci.contract_id JOIN rooms r ON r.id=c.room_id WHERE ci.id=:id")
+        return jdbc.sql("SELECT ci.*,c.room_id,c.tenant_id,c.tenant_profile_id,r.property_id FROM rental_checkins ci JOIN contracts c ON c.id=ci.contract_id JOIN rooms r ON r.id=c.room_id WHERE ci.id=:id FOR UPDATE")
                 .param("id",id).query(RentalLifecycleRepository::map).optional();
     }
     public Optional<Map<String,Object>> checkout(long id) {
-        return jdbc.sql("SELECT co.*,c.room_id,c.tenant_id,c.tenant_profile_id,c.deposit_amount,r.property_id,ci.electricity_reading initial_electricity_reading,ci.water_reading initial_water_reading FROM rental_checkouts co JOIN contracts c ON c.id=co.contract_id JOIN rooms r ON r.id=c.room_id LEFT JOIN rental_checkins ci ON ci.id=(SELECT ci2.id FROM rental_checkins ci2 WHERE ci2.contract_id=c.id AND ci2.status='COMPLETED' ORDER BY ci2.id DESC LIMIT 1) WHERE co.id=:id")
+        return jdbc.sql("SELECT co.*,c.room_id,c.tenant_id,c.tenant_profile_id,c.deposit_amount,r.property_id,ci.electricity_reading initial_electricity_reading,ci.water_reading initial_water_reading FROM rental_checkouts co JOIN contracts c ON c.id=co.contract_id JOIN rooms r ON r.id=c.room_id LEFT JOIN rental_checkins ci ON ci.id=(SELECT ci2.id FROM rental_checkins ci2 WHERE ci2.contract_id=c.id AND ci2.status='COMPLETED' ORDER BY ci2.id DESC LIMIT 1) WHERE co.id=:id FOR UPDATE")
                 .param("id",id).query(RentalLifecycleRepository::map).optional();
     }
 
@@ -139,19 +140,20 @@ public class RentalLifecycleRepository {
             VALUES(:code,:property,:room,:tenant,'RESERVED',:start,:end,:deposit,'UNPAID',:source,:note,:actor)
             """).param("code",code).param("property",propertyId).param("room",r.roomId()).param("tenant",r.tenantProfileId()).param("start",r.reservationStart())
             .param("end",r.reservationEnd()).param("deposit",r.depositAmount()).param("source",clean(r.source())).param("note",clean(r.note())).param("actor",actor).update(kh,"id");
-        long id=kh.getKey().longValue();history(id,null,"RESERVED","Đã giữ phòng",actor);return new Created(id,code,"RESERVED");}
-    public int changeBooking(long id,String before,ChangeBookingStatus r,long actor){String deposit="DEPOSITED".equals(r.status())?",deposit_status='PAID'":"";int n=jdbc.sql("UPDATE rental_bookings SET status=:status"+deposit+",version=version+1 WHERE id=:id AND version=:version")
+        long id=kh.getKey().longValue();jdbc.sql("INSERT INTO tenant_deposits(booking_id,property_id,tenant_id,required_amount) SELECT b.id,b.property_id,tp.user_id,b.deposit_amount FROM rental_bookings b JOIN tenant_profiles tp ON tp.id=b.tenant_profile_id WHERE b.id=:id").param("id",id).update();history(id,null,"RESERVED","Đã giữ phòng",actor);return new Created(id,code,"RESERVED");}
+    public int changeBooking(long id,String before,ChangeBookingStatus r,long actor){String deposit="";int n=jdbc.sql("UPDATE rental_bookings SET status=:status"+deposit+",version=version+1 WHERE id=:id AND version=:version")
             .param("status",r.status()).param("id",id).param("version",r.version()==null?0:r.version()).update();if(n>0)history(id,before,r.status(),r.reason(),actor);return n;}
     public void history(long id,String before,String after,String description,long actor){jdbc.sql("INSERT INTO rental_booking_history(booking_id,previous_status,new_status,description,actor_id) VALUES(:id,:before,:after,:description,:actor)")
             .param("id",id).param("before",before).param("after",after).param("description",clean(description)).param("actor",actor).update();}
-    public void roomStatus(long room,String status,String reason,long actor){Map<String,Object> raw=room(room).orElseThrow();String before=String.valueOf(raw.get("status"));jdbc.sql("UPDATE rooms SET status=:status,version=version+1 WHERE id=:id").param("status",status).param("id",room).update();jdbc.sql("INSERT INTO room_status_history(room_id,old_status,new_status,reason,actor_id) VALUES(:room,:before,:after,:reason,:actor)").param("room",room).param("before",before).param("after",status).param("reason",reason).param("actor",actor).update();}
-    public void releaseRoomAfterBooking(long roomId,long excludedBooking,long actor){long active=jdbc.sql("SELECT COUNT(*) FROM rental_bookings WHERE room_id=:room AND id<>:booking AND status IN ('RESERVED','DEPOSITED','CONTRACT_CREATED')").param("room",roomId).param("booking",excludedBooking).query(Long.class).single();if(active==0){Map<String,Object>r=room(roomId).orElseThrow();if("RESERVED".equals(String.valueOf(r.get("status"))))roomStatus(roomId,"VACANT","Booking không còn hiệu lực",actor);}}
+    public int extendBooking(long id,ExtendBooking r){return jdbc.sql("UPDATE rental_bookings SET reservation_end=:end,version=version+1 WHERE id=:id AND version=:version AND status IN ('RESERVED','DEPOSITED') AND contract_id IS NULL").param("id",id).param("end",r.reservationEnd()).param("version",r.version()).update();}
+    public void roomStatus(long room,String status,String reason,long actor){rooms.transition(room,status,reason,actor);}
+    public void releaseRoomAfterBooking(long roomId,long excludedBooking,long actor){rooms.release(roomId,"Booking cancelled or expired",actor);}
 
     public Created createContract(long bookingId,String code,Map<String,Object>b,CreateContract r,long actor){GeneratedKeyHolder kh=new GeneratedKeyHolder();jdbc.sql("""
-            INSERT INTO contracts(room_id,tenant_id,tenant_profile_id,code,contract_type,start_date,end_date,deposit_amount,occupant_count,status,payment_cycle,payment_due_day,notice_period_days)
-            VALUES(:room,:user,:profile,:code,'FIXED_TERM',:start,:end,:deposit,1,'PENDING_CONFIRMATION','MONTHLY',:due,:notice)
+            INSERT INTO contracts(room_id,tenant_id,tenant_profile_id,code,contract_type,start_date,end_date,original_end_date,deposit_amount,occupant_count,status,payment_cycle,payment_due_day,notice_period_days,agreed_monthly_rent,initial_payment_required)
+            VALUES(:room,:user,:profile,:code,'FIXED_TERM',:start,:end,:end,:deposit,1,'PENDING_CONFIRMATION','MONTHLY',:due,:notice,COALESCE(:rent,(SELECT monthly_rent FROM rooms WHERE id=:room)),:initial)
             """).param("room",b.get("room_id")).param("user",b.get("tenant_user_id")).param("profile",b.get("tenant_profile_id")).param("code",code)
-            .param("start",r.startDate()).param("end",r.endDate()).param("deposit",r.depositAmount()).param("due",r.paymentDueDay()).param("notice",r.noticePeriodDays()).update(kh,"id");
+            .param("start",r.startDate()).param("end",r.endDate()).param("deposit",r.depositAmount()).param("due",r.paymentDueDay()).param("notice",r.noticePeriodDays()).param("rent",r.monthlyRent()).param("initial",r.initialPaymentRequired()).update(kh,"id");
         long id=kh.getKey().longValue();jdbc.sql("UPDATE rental_bookings SET contract_id=:contract,status='CONTRACT_CREATED',version=version+1 WHERE id=:booking").param("contract",id).param("booking",bookingId).update();history(bookingId,String.valueOf(b.get("status")),"CONTRACT_CREATED","Đã tạo hợp đồng "+code,actor);return new Created(id,code,"PENDING_CONFIRMATION");}
 
     public Created prepareCheckin(PrepareCheckin r,long actor){GeneratedKeyHolder kh=new GeneratedKeyHolder();jdbc.sql("INSERT INTO rental_checkins(contract_id,booking_id,scheduled_date,status,note,created_by) VALUES(:contract,COALESCE(:booking,(SELECT id FROM rental_bookings WHERE contract_id=:contract LIMIT 1)),:date,'READY',:note,:actor)")
@@ -166,20 +168,23 @@ public class RentalLifecycleRepository {
             """).param("identity",r.identityVerified()).param("contract",r.contractVerified()).param("deposit",r.depositVerified())
             .param("electricity",r.electricityReading()).param("water",r.waterReading()).param("keys",r.keysCardsCount()).param("note",clean(r.note()))
             .param("actor",actor).param("id",id).param("version",r.version()==null?0:r.version()).update();return n;}
-    public void activateAfterCheckin(Map<String,Object> ci,CompleteCheckin r,long actor){long contract=num(ci,"contract_id"),room=num(ci,"room_id"),profile=num(ci,"tenant_profile_id");jdbc.sql("UPDATE contracts SET status='ACTIVE',signed_at=COALESCE(signed_at,NOW()) WHERE id=:id").param("id",contract).update();roomStatus(room,"OCCUPIED","Hoàn tất check-in",actor);
+    public void activateAfterCheckin(Map<String,Object> ci,CompleteCheckin r,long actor){long contract=num(ci,"contract_id"),room=num(ci,"room_id"),profile=num(ci,"tenant_profile_id");jdbc.sql("UPDATE contracts SET status='ACTIVE',original_end_date=end_date WHERE id=:id").param("id",contract).update();roomStatus(room,"OCCUPIED","Hoàn tất check-in",actor);
+        if(ci.get("booking_id")!=null)history(num(ci,"booking_id"),"CONTRACT_CREATED","CHECKED_IN","Hoàn tất bàn giao nhận phòng",actor);
+        contractHistory(contract,"CHECKIN_COMPLETED","Hợp đồng hoạt động sau bàn giao nhận phòng",actor);
         jdbc.sql("UPDATE rental_bookings SET status='CHECKED_IN',version=version+1 WHERE id=(SELECT booking_id FROM rental_checkins WHERE id=:id) ").param("id",ci.get("id")).update();
         long existing=jdbc.sql("SELECT COUNT(*) FROM tenant_residences WHERE tenant_profile_id=:profile AND contract_id=:contract AND status='ACTIVE'").param("profile",profile).param("contract",contract).query(Long.class).single();if(existing==0)jdbc.sql("INSERT INTO tenant_residences(tenant_profile_id,property_id,room_id,contract_id,residence_role,status,move_in_date,created_by) VALUES(:profile,:property,:room,:contract,'REPRESENTATIVE','ACTIVE',CURRENT_DATE,:actor)").param("profile",profile).param("property",ci.get("property_id")).param("room",room).param("contract",contract).param("actor",actor).update();
-        updateMeter(room,"ELECTRICITY",r.electricityReading());updateMeter(room,"WATER",r.waterReading());}
+        for(String type:List.of("ELECTRICITY","WATER"))if(jdbc.sql("SELECT COUNT(*) FROM contract_utility_rates WHERE contract_id=:id AND code=:type AND calculation_method='METER'").param("id",contract).param("type",type).query(Long.class).single()>0)updateMeter(room,type,"ELECTRICITY".equals(type)?r.electricityReading():r.waterReading());}
 
     public Created requestCheckout(String code,RequestCheckout r,Map<String,Object> c,long actor){GeneratedKeyHolder kh=new GeneratedKeyHolder();jdbc.sql("INSERT INTO rental_checkouts(contract_id,requested_date,status,deposit_held,outstanding_debt,reason,created_by) VALUES(:contract,:date,'REQUESTED',:deposit,:debt,:reason,:actor)")
-            .param("contract",r.contractId()).param("date",r.requestedDate()).param("deposit",c.get("deposit_amount")).param("debt",c.get("outstanding_debt")).param("reason",r.reason().trim()).param("actor",actor).update(kh,"id");long id=kh.getKey().longValue();roomStatus(num(c,"room_id"),"NOTICE","Khách đã yêu cầu trả phòng",actor);return new Created(id,code,"REQUESTED");}
+            .param("contract",r.contractId()).param("date",r.requestedDate()).param("deposit",jdbc.sql("SELECT balance_amount FROM tenant_deposits WHERE contract_id=:id").param("id",r.contractId()).query(BigDecimal.class).optional().orElse(BigDecimal.ZERO)).param("debt",c.get("outstanding_debt")).param("reason",r.reason().trim()).param("actor",actor).update(kh,"id");long id=kh.getKey().longValue();roomStatus(num(c,"room_id"),"NOTICE","Khách đã yêu cầu trả phòng",actor);return new Created(id,code,"REQUESTED");}
     public int settleCheckout(long id,CompleteCheckout r,BigDecimal debt,BigDecimal deposit,BigDecimal charges,BigDecimal refund,BigDecimal due,long actor){int n=jdbc.sql("""
-            UPDATE rental_checkouts SET confirmed_date=:date,actual_checkout_at=NOW(),status='COMPLETED',final_electricity_reading=:electricity,
+            UPDATE rental_checkouts SET actual_checkout_at=inspection_at,settlement_applied_at=NOW(6),status='SETTLEMENT',final_electricity_reading=:electricity,
               final_water_reading=:water,outstanding_debt=:debt,deposit_held=:deposit,additional_charges=:charges,refund_amount=:refund,
-              balance_due=:due,note=:note,completed_by=:actor,version=version+1 WHERE id=:id AND version=:version AND status IN ('REQUESTED','INSPECTION','SETTLEMENT')
-            """).param("date",r.actualDate()).param("electricity",r.finalElectricityReading()).param("water",r.finalWaterReading()).param("debt",debt).param("deposit",deposit).param("charges",charges).param("refund",refund).param("due",due).param("note",clean(r.note())).param("actor",actor).param("id",id).param("version",r.version()==null?0:r.version()).update();if(n>0&&r.charges()!=null)r.charges().forEach(c->jdbc.sql("INSERT INTO rental_checkout_charges(checkout_id,charge_type,description,amount) VALUES(:id,:type,:description,:amount)").param("id",id).param("type",c.chargeType()).param("description",c.description().trim()).param("amount",c.amount()).update());return n;}
-    public String finishCheckout(Map<String,Object> co,CompleteCheckout r,long actor){long contract=num(co,"contract_id"),room=num(co,"room_id"),profile=num(co,"tenant_profile_id");jdbc.sql("UPDATE contracts SET status='TERMINATED',end_date=LEAST(end_date,:date) WHERE id=:id").param("date",r.actualDate()).param("id",contract).update();jdbc.sql("UPDATE tenant_residences SET status='MOVED_OUT',move_out_date=:date WHERE contract_id=:contract AND status='ACTIVE'").param("date",r.actualDate()).param("contract",contract).update();jdbc.sql("UPDATE tenant_profiles SET status='MOVED_OUT' WHERE id=:profile AND NOT EXISTS(SELECT 1 FROM tenant_residences WHERE tenant_profile_id=:profile AND status='ACTIVE')").param("profile",profile).update();updateMeter(room,"ELECTRICITY",r.finalElectricityReading());updateMeter(room,"WATER",r.finalWaterReading());boolean damage=r.charges()!=null&&r.charges().stream().anyMatch(c->"DAMAGE".equals(c.chargeType())&&c.amount().signum()>0);String status=damage?"MAINTENANCE":"CLEANING";roomStatus(room,status,"Hoàn tất check-out",actor);return status;}
+              balance_due=:due,note=:note,completed_by=:actor,version=version+1 WHERE id=:id AND version=:version AND status IN ('REQUESTED','INSPECTION','SETTLEMENT') AND settlement_applied_at IS NULL
+            """).param("electricity",r.finalElectricityReading()).param("water",r.finalWaterReading()).param("debt",debt).param("deposit",deposit).param("charges",charges).param("refund",refund).param("due",due).param("note",clean(r.note())).param("actor",actor).param("id",id).param("version",r.version()==null?0:r.version()).update();if(n>0&&r.charges()!=null)r.charges().forEach(c->jdbc.sql("INSERT INTO rental_checkout_charges(checkout_id,charge_type,description,amount) VALUES(:id,:type,:description,:amount)").param("id",id).param("type",c.chargeType()).param("description",c.description().trim()).param("amount",c.amount()).update());return n;}
+    public String finishCheckout(Map<String,Object> co,CompleteCheckout r,long actor){if(co.get("actual_checkout_at")!=null)return jdbc.sql("SELECT status FROM rooms WHERE id=:id").param("id",co.get("room_id")).query(String.class).single();long contract=num(co,"contract_id"),room=num(co,"room_id"),profile=num(co,"tenant_profile_id");jdbc.sql("UPDATE contracts SET status='SETTLING',operational_ended_at=(SELECT actual_checkout_at FROM rental_checkouts WHERE id=:checkout) WHERE id=:id").param("checkout",co.get("id")).param("id",contract).update();jdbc.sql("UPDATE tenant_residences SET status='MOVED_OUT',move_out_date=:date WHERE contract_id=:contract AND status='ACTIVE'").param("date",r.actualDate()).param("contract",contract).update();jdbc.sql("UPDATE tenant_profiles tp JOIN (SELECT DISTINCT tenant_profile_id FROM tenant_residences WHERE contract_id=:contract) moved ON moved.tenant_profile_id=tp.id SET tp.status='MOVED_OUT' WHERE NOT EXISTS(SELECT 1 FROM tenant_residences tr WHERE tr.tenant_profile_id=tp.id AND tr.status='ACTIVE')").param("contract",contract).update();jdbc.sql("UPDATE contract_occupants SET residence_status='MOVED_OUT' WHERE contract_id=:id AND residence_status='ACTIVE'").param("id",contract).update();for(String type:List.of("ELECTRICITY","WATER"))if(jdbc.sql("SELECT COUNT(*) FROM contract_utility_rates WHERE contract_id=:id AND code=:type AND calculation_method='METER'").param("id",contract).param("type",type).query(Long.class).single()>0)updateMeter(room,type,"ELECTRICITY".equals(type)?r.finalElectricityReading():r.finalWaterReading());boolean damage=jdbc.sql("SELECT repair_required FROM rental_checkouts WHERE id=:id").param("id",co.get("id")).query(Boolean.class).single()||r.charges()!=null&&r.charges().stream().anyMatch(c->"DAMAGE".equals(c.chargeType())&&c.amount().signum()>0);String status=damage?"MAINTENANCE":"CLEANING";roomStatus(room,status,"Hoàn tất check-out",actor);return status;}
     private void updateMeter(long room,String type,BigDecimal value){if(value==null)return;jdbc.sql("UPDATE utility_meters SET current_reading=:value,reading_date=CURRENT_DATE WHERE room_id=:room AND meter_type=:type").param("value",value).param("room",room).param("type",type).update();}
+    public void contractHistory(long contract,String event,String description,long actor){jdbc.sql("INSERT INTO contract_history(contract_id,event_type,description,actor_name) VALUES(:id,:event,:description,(SELECT full_name FROM users WHERE id=:actor))").param("id",contract).param("event",event).param("description",description).param("actor",actor).update();}
     public void activity(long property,long actor,String type,String description,String url){jdbc.sql("INSERT INTO operational_activities(property_id,actor_id,activity_type,description,target_url) VALUES(:property,:actor,:type,:description,:url)").param("property",property).param("actor",actor).param("type",type).param("description",description).param("url",url).update();}
 
     private static Option option(ResultSet r)throws SQLException{return new Option(r.getLong("id"),r.getString("code"),r.getString("name"),nullableLong(r,"parent_id"),r.getString("status"));}

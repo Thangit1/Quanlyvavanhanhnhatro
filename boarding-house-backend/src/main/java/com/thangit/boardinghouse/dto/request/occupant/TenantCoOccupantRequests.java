@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.occupant;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -14,7 +15,7 @@ public final class TenantCoOccupantRequests {
 
     public record EmergencyContact(
             @NotBlank @Size(max = 150) String fullName,
-            @NotBlank @Pattern(regexp = "^(?:\\+84|0)(?:3|5|7|8|9)\\d{8}$") String phone,
+            @NotBlank @Pattern(regexp = VietnamPhones.REGEX, message = VietnamPhones.INVALID_MESSAGE) String phone,
             @NotBlank @Size(max = 100) String relationship) {}
 
     public record IdentityDocument(
@@ -28,7 +29,7 @@ public final class TenantCoOccupantRequests {
             @NotBlank @Size(max = 150) String fullName,
             @NotNull LocalDate dateOfBirth,
             @Size(max = 20) String gender,
-            @NotBlank @Pattern(regexp = "^(?:\\+84|0)(?:3|5|7|8|9)\\d{8}$") String phone,
+            @NotBlank @Pattern(regexp = VietnamPhones.REGEX, message = VietnamPhones.INVALID_MESSAGE) String phone,
             @Email @Size(max = 255) String email,
             @NotBlank @Size(max = 500) String permanentAddress,
             @Size(max = 255) String hometown,
@@ -58,5 +59,5 @@ public final class TenantCoOccupantRequests {
             @NotNull @FutureOrPresent LocalDate expectedMoveOutDate,
             @NotBlank @Size(min = 3, max = 1000) String reason,
             @Size(max = 1000) String note,
-            @NotBlank @Pattern(regexp = "^(?:\\+84|0)(?:3|5|7|8|9)\\d{8}$") String contactPhone) {}
+            @NotBlank @Pattern(regexp = VietnamPhones.REGEX, message = VietnamPhones.INVALID_MESSAGE) String contactPhone) {}
 }

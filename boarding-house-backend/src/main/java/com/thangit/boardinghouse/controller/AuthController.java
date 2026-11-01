@@ -31,9 +31,10 @@ public class AuthController {
     private final AuthService authService;
     private final RegistrationService registrationService;
     private final AuthProperties properties;
+    private final com.thangit.boardinghouse.security.LiveSessionVerifier sessions;
 
-    public AuthController(AuthService authService, RegistrationService registrationService, AuthProperties properties) {
-        this.authService = authService; this.registrationService = registrationService; this.properties = properties;
+    public AuthController(AuthService authService, RegistrationService registrationService, AuthProperties properties,com.thangit.boardinghouse.security.LiveSessionVerifier sessions) {
+        this.authService = authService; this.registrationService = registrationService; this.properties = properties;this.sessions=sessions;
     }
 
     @PostMapping("/register")
@@ -45,8 +46,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest body,
-                                                             HttpServletRequest request) {
+                                                             HttpServletRequest request,@AuthenticationPrincipal AuthenticatedUser principal) {
         var result = authService.login(body, request.getHeader("User-Agent"), clientIp(request));
+        authService.logout(optionalRefreshCookie(request));
+        sessions.logout(principal);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie(result.refreshToken(),
                         Duration.ofMillis(properties.jwt().refreshExpiration())).toString())
                 .body(ApiResponse.success("Đăng nhập thành công.", result.login()));
@@ -66,8 +69,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request,@AuthenticationPrincipal AuthenticatedUser principal) {
         authService.logout(optionalRefreshCookie(request));
+        sessions.logout(principal);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie("", Duration.ZERO).toString())
                 .body(ApiResponse.success("Đăng xuất thành công.", null));
     }
@@ -76,8 +80,8 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body) {
         // Response is deliberately identical for existing and unknown accounts.
         // Email delivery is not configured in this project yet; no reset token is exposed here.
-        return ResponseEntity.accepted().body(ApiResponse.success(
-                "Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.", null));
+        throw new AuthException(HttpStatus.SERVICE_UNAVAILABLE,"PASSWORD_RECOVERY_UNAVAILABLE",
+                "Hệ thống chưa cấu hình gửi hướng dẫn khôi phục mật khẩu. Vui lòng liên hệ chủ trọ.");
     }
 
     private ResponseCookie cookie(String value, Duration maxAge) {
@@ -100,7 +104,6 @@ public class AuthController {
     }
 
     private static String clientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        return forwarded == null || forwarded.isBlank() ? request.getRemoteAddr() : forwarded.split(",", 2)[0].trim();
+        return request.getRemoteAddr();
     }
 }

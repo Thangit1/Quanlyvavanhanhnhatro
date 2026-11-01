@@ -10,7 +10,7 @@ import {
   ErrorState,
   PageLoading,
 } from "@/components/shared/dashboard-ui";
-import { date, label, money, openBlob } from "./invoice-ui";
+import { date, InvoiceBadge, label, money, openBlob } from "./invoice-ui";
 
 export function PaymentHistoryPage() {
   const { user } = useAuth();
@@ -54,6 +54,7 @@ export function PaymentHistoryPage() {
                   <th className="p-4">Hóa đơn</th>
                   <th className="p-4">Thời gian</th>
                   <th className="p-4">Phương thức</th>
+                  <th className="p-4">Trạng thái</th>
                   <th className="p-4 text-right">Số tiền</th>
                   <th className="p-4" />
                 </tr>
@@ -68,17 +69,18 @@ export function PaymentHistoryPage() {
                     <td className="p-4 text-blue-700">{x.invoiceCode}</td>
                     <td className="p-4">{date(x.paidAt)}</td>
                     <td className="p-4">{label(x.paymentMethod)}</td>
-                    <td className="p-4 text-right font-bold text-emerald-700">
+                    <td className="p-4"><InvoiceBadge status={x.status} /></td>
+                    <td className={`p-4 text-right font-bold ${x.status === "CONFIRMED" ? "text-emerald-700" : "text-slate-500"}`}>
                       {money(x.amount)}
                     </td>
                     <td className="p-4">
-                      <button
+                      {x.status === "CONFIRMED" && <button
                         onClick={() => receipt(x.id)}
                         className="inline-flex items-center gap-1 text-blue-600"
                       >
                         <Download className="size-4" />
                         Biên nhận
-                      </button>
+                      </button>}
                     </td>
                   </tr>
                 ))}

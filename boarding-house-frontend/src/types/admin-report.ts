@@ -31,7 +31,7 @@ export interface ReportOverview {
   scope: ReportScope;
   availableProperties: PropertyOption[];
   summary: Record<string, number>;
-  comparison: Record<string, number>;
+  comparison: Record<string, number | null>;
   roomStatus: ChartPoint[];
   revenueTrend: ChartPoint[];
   operationalAlerts: ReportAlert[];

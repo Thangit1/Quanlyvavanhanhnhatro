@@ -20,6 +20,8 @@ export function formatDate(value: string | null | undefined, withTime = false) {
 
 const labels: Record<string, string> = {
   VACANT: "Phòng trống",
+  READY: "Sẵn sàng cho thuê",
+  CLEANING: "Đang vệ sinh",
   RESERVED: "Đang giữ chỗ",
   OCCUPIED: "Đang thuê",
   MAINTENANCE: "Đang sửa chữa",
@@ -35,6 +37,8 @@ const labels: Record<string, string> = {
   EXPIRING: "Sắp hết hạn",
   TERMINATION_REQUESTED: "Đang yêu cầu chấm dứt",
   TERMINATED: "Đã chấm dứt",
+  SETTLING: "Đang quyết toán tài chính",
+  SETTLEMENT: "Đã lập quyết toán, chờ đóng tài chính",
   NEW: "Mới tiếp nhận",
   ASSIGNED: "Đã phân công",
   IN_PROGRESS: "Đang xử lý",

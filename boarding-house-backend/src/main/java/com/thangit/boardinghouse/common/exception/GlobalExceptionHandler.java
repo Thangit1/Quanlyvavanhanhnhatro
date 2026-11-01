@@ -16,6 +16,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiErrorResponse> handleFileLimit(org.springframework.web.multipart.MaxUploadSizeExceededException exception) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(ApiErrorResponse.of("Chứng từ vượt quá giới hạn tải lên.","FILE_TOO_LARGE",List.of()));
+    }
+    @ExceptionHandler(org.springframework.dao.DuplicateKeyException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicate(org.springframework.dao.DuplicateKeyException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiErrorResponse.of("Mã giao dịch hoặc chứng từ đã tồn tại.","FINANCIAL_REFERENCE_CONFLICT",List.of()));
+    }
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public ResponseEntity<ApiErrorResponse> handleDatabaseGuard(org.springframework.dao.DataAccessException exception) {
+        for(Throwable cause=exception;cause!=null;cause=cause.getCause()) {
+            if(cause instanceof java.sql.SQLException sql && "45000".equals(sql.getSQLState())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiErrorResponse.of("Kỳ kế toán đã khóa hoặc lịch sử tài chính không được sửa trực tiếp.","FINANCIAL_POSTING_BLOCKED",List.of()));
+            }
+        }
+        return handleUnexpected(exception);
+    }
+    @ExceptionHandler({org.springframework.dao.PessimisticLockingFailureException.class,org.springframework.dao.OptimisticLockingFailureException.class})
+    public ResponseEntity<ApiErrorResponse> handleConcurrentUpdate(RuntimeException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiErrorResponse.of("Dữ liệu đang được xử lý đồng thời. Vui lòng tải lại và thử lại.","CONCURRENT_UPDATE",List.of()));
+    }
 
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<ApiErrorResponse> handleAuth(AuthException exception) {
@@ -45,7 +66,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception exception) {
-        log.error("Unhandled request error", exception);
+        log.error("Unhandled request failure type={} requestId={}",exception.getClass().getSimpleName(),org.slf4j.MDC.get("requestId"));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 ApiErrorResponse.of("Đã xảy ra lỗi hệ thống.", "INTERNAL_SERVER_ERROR", List.of()));
     }

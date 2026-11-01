@@ -19,8 +19,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class RentalLifecycleServiceImplTest {
+    private final CheckoutSettlementService checkoutWorkflow=mock(CheckoutSettlementService.class);
+    @org.junit.jupiter.api.BeforeEach void configureCheckout(){((RentalLifecycleServiceImpl)service).setCheckoutWorkflow(checkoutWorkflow);}
     private final RentalLifecycleRepository repository=mock(RentalLifecycleRepository.class);
-    private final RentalLifecycleService service=new RentalLifecycleServiceImpl(repository);
+    private final DepositLedgerService deposits=mock(DepositLedgerService.class);
+    private final RentalLifecycleService service=new RentalLifecycleServiceImpl(repository,deposits,mock(RoomLifecycleGuard.class),mock(ContractOnboardingService.class));
 
     @Test void tenantCannotAccessInternalLifecycle(){
         assertThatThrownBy(()->service.board(new AuthenticatedUser(7L,"tenant@example.com",RoleCode.TENANT),null))
@@ -43,12 +46,14 @@ class RentalLifecycleServiceImplTest {
         Map<String,Object> contract=Map.of("id",11L,"property_id",3L,"room_id",8L,"status","ACTIVE","outstanding_debt",new BigDecimal("1000"),"deposit_amount",new BigDecimal("2000"));
         when(repository.checkout(5L)).thenReturn(java.util.Optional.of(checkout));when(repository.contract(11L)).thenReturn(java.util.Optional.of(contract));
         when(repository.propertyAccess(1L,RoleCode.OWNER,3L)).thenReturn(true);when(repository.settleCheckout(anyLong(),any(),any(),any(),any(),any(),any(),anyLong())).thenReturn(1);when(repository.finishCheckout(anyMap(),any(),anyLong())).thenReturn("CLEANING");
-        var result=service.completeCheckout(principal,5L,new CompleteCheckout(LocalDate.now(),null,null,List.of(new CheckoutCharge("CLEANING","Vệ sinh",new BigDecimal("500"))),null,0L));
+        when(deposits.settlementDebt(11L)).thenReturn(new BigDecimal("1000"));when(deposits.held(11L)).thenReturn(new BigDecimal("2000"));
+        var result=service.completeCheckout(principal,5L,new CompleteCheckout(LocalDate.now(),BigDecimal.ZERO,BigDecimal.ZERO,List.of(new CheckoutCharge("CLEANING","Vệ sinh",new BigDecimal("500"))),null,0L));
         assertThat(result.refundAmount()).isEqualByComparingTo("500");assertThat(result.balanceDue()).isZero();assertThat(result.roomStatus()).isEqualTo("CLEANING");
         verify(repository).settleCheckout(eq(5L),any(),eq(new BigDecimal("1000")),eq(new BigDecimal("2000")),eq(new BigDecimal("500")),eq(new BigDecimal("500")),eq(BigDecimal.ZERO),eq(1L));
     }
 
     @Test void checkoutRejectsFinalMeterLowerThanCheckinReading(){
+        doThrow(new AuthException(org.springframework.http.HttpStatus.CONFLICT,"METER_READING_INVALID","Invalid final segment")).when(checkoutWorkflow).requireApproved(any(),anyLong(),any());
         var principal=new AuthenticatedUser(1L,"owner@example.com",RoleCode.OWNER);
         Map<String,Object> checkout=Map.of("id",5L,"contract_id",11L,"property_id",3L,
                 "initial_electricity_reading",new BigDecimal("120"));
@@ -56,6 +61,7 @@ class RentalLifecycleServiceImplTest {
         when(repository.checkout(5L)).thenReturn(java.util.Optional.of(checkout));
         when(repository.contract(11L)).thenReturn(java.util.Optional.of(contract));
         when(repository.propertyAccess(1L,RoleCode.OWNER,3L)).thenReturn(true);
+        when(deposits.settlementDebt(11L)).thenReturn(BigDecimal.ZERO);when(deposits.held(11L)).thenReturn(BigDecimal.ZERO);
 
         assertThatThrownBy(()->service.completeCheckout(principal,5L,
                 new CompleteCheckout(LocalDate.now(),new BigDecimal("119"),null,List.of(),null,0L)))

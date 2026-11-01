@@ -8,6 +8,7 @@ public interface RentalLifecycleService {
     LifecycleBoard board(AuthenticatedUser principal, Long propertyId);
     Created createBooking(AuthenticatedUser principal, CreateBooking request);
     void changeBookingStatus(AuthenticatedUser principal, long bookingId, ChangeBookingStatus request);
+    void extendBooking(AuthenticatedUser principal,long bookingId,ExtendBooking request);
     Created createContract(AuthenticatedUser principal, long bookingId, CreateContract request);
     Created prepareCheckin(AuthenticatedUser principal, PrepareCheckin request);
     void completeCheckin(AuthenticatedUser principal, long checkinId, CompleteCheckin request);

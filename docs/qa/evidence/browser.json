@@ -1,0 +1,188 @@
+{
+  "runId": "2397ef55-00bb-4bf9-8786-c8e94a7d4015",
+  "status": "PASS",
+  "browser": "Installed Chromium via native CDP",
+  "browserVersion": "Chrome/156.0.8078.74",
+  "cases": [
+    {
+      "id": "OWNER-login",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /owner/dashboard",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /admin/properties",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /admin/properties/2",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /admin/rooms/2",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /admin/tenants",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /admin/invoices/1",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /admin/reports",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER /admin/settings",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER Vietnamese cursor",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER mobile",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER-logout",
+      "status": "PASS"
+    },
+    {
+      "id": "MANAGER-login",
+      "status": "PASS"
+    },
+    {
+      "id": "MANAGER /manager/dashboard",
+      "status": "PASS"
+    },
+    {
+      "id": "MANAGER /admin/properties",
+      "status": "PASS"
+    },
+    {
+      "id": "MANAGER /admin/invoices",
+      "status": "PASS"
+    },
+    {
+      "id": "MANAGER /admin/maintenance",
+      "status": "PASS"
+    },
+    {
+      "id": "MANAGER mobile",
+      "status": "PASS"
+    },
+    {
+      "id": "MANAGER-logout",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT-login",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT /accountant/dashboard",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT /accountant/invoices",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT /accountant/payments",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT /accountant/reports",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT /accountant/periods",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT mobile",
+      "status": "PASS"
+    },
+    {
+      "id": "ACCOUNTANT-logout",
+      "status": "PASS"
+    },
+    {
+      "id": "TECHNICIAN-login",
+      "status": "PASS"
+    },
+    {
+      "id": "TECHNICIAN /technician/dashboard",
+      "status": "PASS"
+    },
+    {
+      "id": "TECHNICIAN /technician/tasks",
+      "status": "PASS"
+    },
+    {
+      "id": "TECHNICIAN /technician/tasks/1",
+      "status": "PASS"
+    },
+    {
+      "id": "TECHNICIAN /technician/account",
+      "status": "PASS"
+    },
+    {
+      "id": "TECHNICIAN mobile",
+      "status": "PASS"
+    },
+    {
+      "id": "TECHNICIAN-logout",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT-login",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT /tenant/home",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT /tenant/contracts",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT /tenant/contracts/3",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT /tenant/invoices",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT /tenant/invoices/1",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT /tenant/maintenance",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT /tenant/account",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT mobile",
+      "status": "PASS"
+    },
+    {
+      "id": "TENANT-logout",
+      "status": "PASS"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "apiErrors": [],
+  "authChallenges": []
+}

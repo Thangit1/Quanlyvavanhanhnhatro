@@ -28,6 +28,7 @@ import {
 } from "@/hooks/use-admin-properties";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { apiErrorMessage, normalizeAdminCode } from "@/lib/api-error";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 import { useAuth } from "@/providers/auth-provider";
 import type { PropertyPayload } from "@/types/admin-property";
 
@@ -292,9 +293,15 @@ export function PropertyFormPage({ id }: { id?: number }) {
   }, [detail.data]);
   if (id && detail.isLoading) return <PageLoading />;
   const mutation = id ? mutations.update : mutations.create;
+  const phoneValidation = validateVietnamPhone(form.phone || "", false);
+  const phoneError = phoneValidation.valid ? "" : phoneValidation.message;
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    if (phoneError) {
+      setError(phoneError);
+      return;
+    }
     try {
       const result = await mutation.mutateAsync(form);
       router.push(
@@ -371,10 +378,18 @@ export function PropertyFormPage({ id }: { id?: number }) {
             </Field>
             <Field label="Điện thoại">
               <input
-                className={input}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                className={`${input} ${phoneError ? "border-red-500" : ""}`}
                 value={form.phone || ""}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
               />
+              {phoneError && (
+                <span className="mt-1 block text-xs text-red-600">
+                  {phoneError}
+                </span>
+              )}
             </Field>
             <Field label="Email">
               <input

@@ -31,7 +31,7 @@ public class AdminReportServiceImpl implements AdminReportService {
 
     @Override @Transactional(readOnly=true)
     public Overview overview(AuthenticatedUser p,List<Long>ids,LocalDate start,LocalDate end,LocalDate previousStart,LocalDate previousEnd){
-        requireGeneral(p);Range range=range(start,end);List<Long> scope=scope(p,ids);
+        requireGeneral(p);Range range=range(start,end);List<Long> scope=scope(p,ids);scope=capabilityScope(p,scope,ids,"FINANCE_READ");
         Range previous=previousStart==null||previousEnd==null?range.previous():range(previousStart,previousEnd);
         Map<String,Object> rooms=repository.roomSummary(p.id(),p.activeRole(),scope);
         Map<String,Object> current=repository.periodSummary(p.id(),p.activeRole(),scope,range.start(),range.end());
@@ -40,11 +40,11 @@ public class AdminReportServiceImpl implements AdminReportService {
         BigDecimal available=summary.getOrDefault("availableRooms",BigDecimal.ZERO);
         summary.put("occupancyRate",percentage(summary.get("occupiedRooms"),available));
         BigDecimal revenue=summary.getOrDefault("confirmedRevenue",BigDecimal.ZERO),expense=summary.getOrDefault("confirmedExpense",BigDecimal.ZERO);
-        summary.put("profit",revenue.subtract(expense));summary.put("profitMargin",percentage(revenue.subtract(expense),revenue));
+        summary.put("profit",decimal(current.get("netCashFlow")));summary.put("netCashFlow",decimal(current.get("netCashFlow")));
         Map<String,BigDecimal> comparison=new LinkedHashMap<>();
         comparison.put("revenueChangePercent",change(revenue,decimal(old.get("confirmedRevenue"))));
         comparison.put("expenseChangePercent",change(expense,decimal(old.get("confirmedExpense"))));
-        comparison.put("profitChangePercent",change(revenue.subtract(expense),decimal(old.get("confirmedRevenue")).subtract(decimal(old.get("confirmedExpense")))));
+        comparison.put("profitChangePercent",change(decimal(current.get("netCashFlow")),decimal(old.get("netCashFlow"))));
         comparison.put("debtChangePercent",change(summary.get("outstandingDebt"),decimal(old.get("outstandingDebt"))));
         List<Alert>alerts=new ArrayList<>();
         if(summary.get("outstandingDebt").signum()>0)alerts.add(new Alert("OUTSTANDING_DEBT","ATTENTION","Công nợ cần theo dõi","Còn "+summary.get("outstandingDebt").toPlainString()+" đồng chưa thu.","/admin/reports/debt"));
@@ -56,7 +56,7 @@ public class AdminReportServiceImpl implements AdminReportService {
 
     @Override @Transactional(readOnly=true)
     public ReportData report(AuthenticatedUser p,String raw,List<Long>ids,LocalDate start,LocalDate end){
-        String type=normalize(raw);requireReport(p,type);Range range=range(start,end);List<Long> scope=scope(p,ids);
+        String type=normalize(raw);requireReport(p,type);Range range=range(start,end);List<Long> scope=scope(p,ids);if(Set.of("REVENUE","PAYMENTS","EXPENSES","PROFIT","DEBT","INVOICES","UTILITIES").contains(type))scope=capabilityScope(p,scope,ids,"FINANCE_READ");
         return switch(type){
             case "OCCUPANCY","OPERATIONS"->repository.occupancy(p.id(),p.activeRole(),scope,range.start(),range.end());
             case "REVENUE","PAYMENTS"->repository.revenue(p.id(),p.activeRole(),scope,range.start(),range.end());
@@ -75,21 +75,22 @@ public class AdminReportServiceImpl implements AdminReportService {
     private ReportData profit(AuthenticatedUser p,List<Long>scope,Range range){
         ReportData revenue=repository.revenue(p.id(),p.activeRole(),scope,range.start(),range.end());
         ReportData expenses=repository.expenses(p.id(),p.activeRole(),scope,range.start(),range.end());
-        BigDecimal income=revenue.summary().getOrDefault("confirmedRevenue",BigDecimal.ZERO),cost=expenses.summary().getOrDefault("totalExpense",BigDecimal.ZERO),profit=income.subtract(cost);
-        Map<String,BigDecimal> summary=new LinkedHashMap<>();summary.put("confirmedRevenue",income);summary.put("confirmedExpense",cost);summary.put("profit",profit);summary.put("profitMargin",percentage(profit,income));
-        return new ReportData("PROFIT",new Scope(scope,range.start(),range.end()),summary,revenue.trend(),expenses.breakdown(),expenses.details(),LocalDateTime.now());
+        var totals=repository.periodSummary(p.id(),p.activeRole(),scope,range.start(),range.end());
+        Map<String,BigDecimal> summary=new LinkedHashMap<>();totals.forEach((k,v)->{if(v instanceof Number)summary.put(k,decimal(v));});summary.put("profit",decimal(totals.get("netCashFlow")));
+        return new ReportData("PROFIT",new Scope(scope,range.start(),range.end()),summary,revenue.trend(),expenses.breakdown(),repository.cashDetails(scope,range.start(),range.end()),LocalDateTime.now());
     }
 
     @Override @Transactional
     public ExportJob createExport(AuthenticatedUser p,ExportRequest request){
-        String type=normalize(request.reportType());requireExport(p,type);if(!"CSV".equalsIgnoreCase(request.format()))throw bad("REPORT_FORMAT_UNSUPPORTED","Hệ thống hiện hỗ trợ xuất CSV; XLSX và PDF chưa được bật.");
+        if(request.filters()!=null&&!request.filters().isEmpty())throw bad("REPORT_FILTER_UNSUPPORTED","Use propertyIds and date range; unsupported filters must not be ignored.");String type=normalize(request.reportType());requireExport(p,type);if(!"CSV".equalsIgnoreCase(request.format()))throw bad("REPORT_FORMAT_UNSUPPORTED","Hệ thống hiện hỗ trợ xuất CSV; XLSX và PDF chưa được bật.");
         ReportData data=report(p,type,request.propertyIds(),request.startDate(),request.endDate());
+        capabilityScope(p,data.scope().propertyIds(),data.scope().propertyIds(),"EXPORT");
         byte[] content=csv(data,request.columns());String name="bao-cao-"+type.toLowerCase(Locale.ROOT)+"-"+request.startDate()+"-"+request.endDate()+".csv";
-        long id=repository.saveExport(p.id(),type,"CSV",Map.of("propertyIds",data.scope().propertyIds(),"startDate",request.startDate().toString(),"endDate",request.endDate().toString()),request.columns(),name,content);
+        long id=repository.saveExport(p.id(),type,"CSV",Map.of("role",p.activeRole().name(),"propertyIds",data.scope().propertyIds(),"startDate",request.startDate().toString(),"endDate",request.endDate().toString()),request.columns(),name,content);
         return repository.export(p.id(),id).orElseThrow();
     }
     @Override @Transactional(readOnly=true) public List<ExportJob> exports(AuthenticatedUser p){requireGeneral(p);return repository.exports(p.id());}
-    @Override @Transactional(readOnly=true) public ExportJob export(AuthenticatedUser p,long id){requireGeneral(p);return repository.export(p.id(),id).orElseThrow(()->bad("REPORT_EXPORT_NOT_FOUND","Không tìm thấy tác vụ xuất báo cáo."));}
+    @Override @Transactional(readOnly=true) public ExportJob export(AuthenticatedUser p,long id){requireGeneral(p);var job=repository.export(p.id(),id).orElseThrow(()->bad("REPORT_EXPORT_NOT_FOUND","Export not found"));var properties=repository.exportProperties(p.id(),id,p.activeRole());var allowed=repository.properties(p.id(),p.activeRole()).stream().map(PropertyOption::id).toList();if(!allowed.containsAll(properties))throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_PROPERTY_DENIED","Export scope no longer allowed");capabilityScope(p,properties,properties,"EXPORT");if(Set.of("REVENUE","PAYMENTS","EXPENSES","PROFIT","DEBT","INVOICES","UTILITIES").contains(job.reportType()))capabilityScope(p,properties,properties,"FINANCE_READ");return job;}
     @Override @Transactional(readOnly=true) public byte[] download(AuthenticatedUser p,long id){ExportJob job=export(p,id);if(job.expiresAt()!=null&&job.expiresAt().isBefore(LocalDateTime.now()))throw bad("REPORT_EXPORT_EXPIRED","Tệp báo cáo đã hết hạn.");return repository.exportContent(p.id(),id).orElseThrow(()->bad("REPORT_EXPORT_NOT_READY","Tệp báo cáo chưa sẵn sàng."));}
 
     private List<Long> scope(AuthenticatedUser p,List<Long>requested){List<PropertyOption> options=repository.properties(p.id(),p.activeRole());Set<Long>allowed=options.stream().map(PropertyOption::id).collect(java.util.stream.Collectors.toSet());if(requested==null||requested.isEmpty())return options.stream().map(PropertyOption::id).toList();List<Long>unique=requested.stream().distinct().toList();if(unique.size()>20||!allowed.containsAll(unique))throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_PROPERTY_DENIED","Bạn không có quyền xem một hoặc nhiều khu trọ đã chọn.");return unique;}
@@ -101,8 +102,9 @@ public class AdminReportServiceImpl implements AdminReportService {
     private AuthException bad(String code,String message){return new AuthException(HttpStatus.BAD_REQUEST,code,message);}
     private BigDecimal decimal(Object value){return value==null?BigDecimal.ZERO:value instanceof BigDecimal b?b:new BigDecimal(value.toString());}
     private BigDecimal percentage(BigDecimal value,BigDecimal total){return total==null||total.signum()==0?BigDecimal.ZERO:value.multiply(BigDecimal.valueOf(100)).divide(total,2,RoundingMode.HALF_UP);}
-    private BigDecimal change(BigDecimal current,BigDecimal previous){return previous==null||previous.signum()==0?BigDecimal.ZERO:current.subtract(previous).multiply(BigDecimal.valueOf(100)).divide(previous.abs(),2,RoundingMode.HALF_UP);}
-    private byte[] csv(ReportData data,List<String>requested){List<Map<String,Object>>rows=data.details();List<String>columns=requested==null||requested.isEmpty()?(rows.isEmpty()?new ArrayList<>(data.summary().keySet()):new ArrayList<>(rows.getFirst().keySet())):requested;StringBuilder out=new StringBuilder("\ufeff");out.append(String.join(",",columns.stream().map(this::quote).toList())).append('\n');if(rows.isEmpty())out.append(String.join(",",columns.stream().map(c->quote(data.summary().get(c))).toList())).append('\n');else for(Map<String,Object>row:rows)out.append(String.join(",",columns.stream().map(c->quote(row.get(c))).toList())).append('\n');return out.toString().getBytes(StandardCharsets.UTF_8);}
-    private String quote(Object value){return "\""+(value==null?"":value.toString().replace("\"","\"\""))+"\"";}
+    private BigDecimal change(BigDecimal current,BigDecimal previous){return previous==null||previous.signum()==0?null:current.subtract(previous).multiply(BigDecimal.valueOf(100)).divide(previous.abs(),2,RoundingMode.HALF_UP);}
+    private byte[] csv(ReportData data,List<String>requested){List<Map<String,Object>>rows=data.details();List<String>columns=requested==null||requested.isEmpty()?(rows.isEmpty()?new ArrayList<>(data.summary().keySet()):new ArrayList<>(rows.getFirst().keySet())):requested;StringBuilder out=new StringBuilder("\ufeff");out.append(quote("INTERNAL_CASH_MANAGEMENT_V1")).append(',').append(quote(data.scope().startDate()+".."+data.scope().endDate())).append(',').append(quote(data.updatedAt())).append('\n');out.append(String.join(",",columns.stream().map(this::quote).toList())).append('\n');if(rows.isEmpty())out.append(String.join(",",columns.stream().map(c->quote(data.summary().get(c))).toList())).append('\n');else for(Map<String,Object>row:rows)out.append(String.join(",",columns.stream().map(c->quote(row.get(c))).toList())).append('\n');return out.toString().getBytes(StandardCharsets.UTF_8);}
+    private String quote(Object value){return com.thangit.boardinghouse.common.validation.CsvCells.quote(value);}
+    private List<Long> capabilityScope(AuthenticatedUser p,List<Long> ids,List<Long> requested,String capability){if(p.activeRole()!=RoleCode.MANAGER)return ids;var allowed=ids.stream().filter(id->repository.managerCapability(p.id(),id,capability)).toList();if(requested!=null&&!requested.isEmpty()&&allowed.size()!=ids.size())throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_CAPABILITY_DENIED","Chưa được cấp quyền cho báo cáo này.");return allowed;}
     private record Range(LocalDate start,LocalDate end){Range previous(){long days=ChronoUnit.DAYS.between(start,end)+1;return new Range(start.minusDays(days),start.minusDays(1));}}
 }

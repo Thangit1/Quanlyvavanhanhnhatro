@@ -59,7 +59,7 @@ public class DashboardServiceImpl implements DashboardService {
         BigDecimal previous = decimal(values, "previousRevenue");
         BigDecimal occupancy = totalRooms == 0 ? BigDecimal.ZERO :
                 BigDecimal.valueOf(occupied * 100.0 / totalRooms).setScale(1, RoundingMode.HALF_UP);
-        BigDecimal change = previous.signum() == 0 ? BigDecimal.ZERO :
+        BigDecimal change = previous.signum() == 0 ? null :
                 current.subtract(previous).multiply(BigDecimal.valueOf(100)).divide(previous, 2, RoundingMode.HALF_UP);
         Summary summary = new Summary(number(values, "totalProperties").longValue(), totalRooms, occupied,
                 number(values, "vacantRooms").longValue(), number(values, "reservedRooms").longValue(),

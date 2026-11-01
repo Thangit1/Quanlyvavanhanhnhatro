@@ -41,18 +41,18 @@ class AdminReportServiceImplTest {
         assertEquals("REPORT_PROPERTY_DENIED",error.code());
     }
 
-    @Test void overviewCalculatesOccupancyProfitAndMarginOnBackend(){
+    @Test void overviewReportsCashFlowWithoutInventingAccountingProfit(){
         LocalDate start=LocalDate.of(2026,8,1),end=LocalDate.of(2026,8,31);
         when(repository.properties(1L,RoleCode.OWNER)).thenReturn(List.of(new PropertyOption(2L,"Khu A")));
         when(repository.roomSummary(1L,RoleCode.OWNER,List.of(2L))).thenReturn(Map.of("totalRooms",10L,"availableRooms",8L,"occupiedRooms",6L));
-        when(repository.periodSummary(eq(1L),eq(RoleCode.OWNER),eq(List.of(2L)),any(LocalDate.class),any(LocalDate.class))).thenReturn(Map.of("confirmedRevenue",new BigDecimal("8000000"),"confirmedExpense",new BigDecimal("2000000"),"outstandingDebt",BigDecimal.ZERO));
-        when(repository.periodSummary(1L,RoleCode.OWNER,List.of(2L),start,end)).thenReturn(Map.of("confirmedRevenue",new BigDecimal("10000000"),"confirmedExpense",new BigDecimal("2500000"),"outstandingDebt",BigDecimal.ZERO,"expiringContracts",0L,"openMaintenance",0L,"activeTenants",0L));
+        when(repository.periodSummary(eq(1L),eq(RoleCode.OWNER),eq(List.of(2L)),any(LocalDate.class),any(LocalDate.class))).thenReturn(Map.of("confirmedRevenue",new BigDecimal("8000000"),"confirmedExpense",new BigDecimal("2000000"),"netCashFlow",new BigDecimal("3000000"),"outstandingDebt",BigDecimal.ZERO));
+        when(repository.periodSummary(1L,RoleCode.OWNER,List.of(2L),start,end)).thenReturn(Map.of("confirmedRevenue",new BigDecimal("10000000"),"confirmedExpense",new BigDecimal("2500000"),"netCashFlow",new BigDecimal("3000000"),"outstandingDebt",BigDecimal.ZERO,"expiringContracts",0L,"openMaintenance",0L,"activeTenants",0L));
         when(repository.roomStatuses(1L,RoleCode.OWNER,List.of(2L))).thenReturn(List.of());
         when(repository.financeTrend(1L,RoleCode.OWNER,List.of(2L),start,end)).thenReturn(List.of());
         var result=service.overview(owner,List.of(2L),start,end,null,null);
         assertEquals(new BigDecimal("75.00"),result.summary().get("occupancyRate"));
-        assertEquals(new BigDecimal("7500000"),result.summary().get("profit"));
-        assertEquals(new BigDecimal("75.00"),result.summary().get("profitMargin"));
+        assertEquals(new BigDecimal("3000000"),result.summary().get("netCashFlow"));
+        assertEquals(false,result.summary().containsKey("profitMargin"));
     }
 
     @Test void invalidDateRangeIsRejected(){

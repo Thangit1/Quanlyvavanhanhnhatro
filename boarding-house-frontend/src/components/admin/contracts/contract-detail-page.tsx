@@ -1,6 +1,12 @@
 "use client";
+import { ContractChangesPanel } from "@/components/shared/contract-changes-panel";
+import { CheckoutSettlementPanel } from "@/components/shared/checkout-settlement-panel";
+
+import { ContractOnboardingPanel } from "@/components/shared/contract-onboarding-panel";
+import { MonthlyBillingPanel } from "@/components/shared/monthly-billing-panel";
 
 import Link from "next/link";
+import { ContractExtensionReview } from "./contract-extension-review";
 import {
   ArrowLeft,
   Banknote,
@@ -46,6 +52,17 @@ export function AdminContractDetailPage({
         </Link>
         {query.isError && <ErrorState onRetry={() => void query.refetch()} />}
         {query.data && <ContractContent contract={query.data} />}
+        {query.data && <ContractExtensionReview contractId={contractId} />}
+        {query.data && (
+          <ContractChangesPanel portal="admin" contractId={contractId} />
+        )}
+        {query.data && (
+          <CheckoutSettlementPanel portal="admin" contractId={contractId} />
+        )}
+        {query.data && <MonthlyBillingPanel contractId={contractId} />}
+        {query.data && (
+          <ContractOnboardingPanel portal="admin" contractId={contractId} />
+        )}
       </div>
     </AdminShell>
   );

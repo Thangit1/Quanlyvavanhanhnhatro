@@ -18,7 +18,7 @@ class TenantContractServiceImplTest {
     @Test
     void managerCannotUseTenantContractApi() {
         TenantContractRepository repository = mock(TenantContractRepository.class);
-        TenantContractService service = new TenantContractServiceImpl(repository);
+        TenantContractService service = new TenantContractServiceImpl(repository,org.mockito.Mockito.mock(RoomLifecycleGuard.class));
 
         assertThatThrownBy(() -> service.getContracts(
                 new AuthenticatedUser(1L, "manager@example.com", RoleCode.MANAGER),
@@ -34,7 +34,7 @@ class TenantContractServiceImplTest {
         TenantContractRepository repository = mock(TenantContractRepository.class);
         when(repository.findContract(7L, 99L)).thenReturn(Optional.empty());
         when(repository.existsContract(99L)).thenReturn(true);
-        TenantContractService service = new TenantContractServiceImpl(repository);
+        TenantContractService service = new TenantContractServiceImpl(repository,org.mockito.Mockito.mock(RoomLifecycleGuard.class));
 
         assertThatThrownBy(() -> service.getContract(
                 new AuthenticatedUser(7L, "tenant@example.com", RoleCode.TENANT), 99L))

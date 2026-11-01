@@ -5,6 +5,7 @@ export type AdminContractStatus =
   | "EXPIRING"
   | "EXPIRED"
   | "TERMINATION_REQUESTED"
+  | "SETTLING"
   | "TERMINATED"
   | "CANCELLED";
 

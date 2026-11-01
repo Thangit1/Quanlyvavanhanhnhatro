@@ -29,7 +29,9 @@ public interface AccountantPortalService {
     Map<String,Object> submitVoucher(AuthenticatedUser p,long id,Versioned request);
     Map<String,Object> otherIncome(AuthenticatedUser p,Long propertyId,String period,int page,int size);
     Map<String,Object> createOtherIncome(AuthenticatedUser p,OtherIncomeCreate request);
+    Map<String,Object> createOtherIncome(AuthenticatedUser p,String key,OtherIncomeCreate request);
     Map<String,Object> periods(AuthenticatedUser p,Long propertyId);
+    Map<String,Object> closingCheck(AuthenticatedUser p,long id);
     Map<String,Object> closePeriod(AuthenticatedUser p,long id,PeriodAction request);
     Map<String,Object> reopenPeriod(AuthenticatedUser p,long id,PeriodAction request);
     Map<String,Object> books(AuthenticatedUser p,Long propertyId,String period,String type,int page,int size);

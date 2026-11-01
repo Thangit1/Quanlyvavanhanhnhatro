@@ -33,13 +33,16 @@
 @SET __MVNW_PSMODULEP_SAVE=%PSModulePath%
 @SET PSModulePath=
 @FOR /F "usebackq tokens=1* delims==" %%A IN (`powershell -noprofile "& {$scriptDir='%~dp0'; $script='%__MVNW_ARG0_NAME__%'; icm -ScriptBlock ([Scriptblock]::Create((Get-Content -Raw '%~f0'))) -NoNewScope}"`) DO @(
-  IF "%%A"=="MVN_CMD" (set __MVNW_CMD__=%%B) ELSE IF "%%B"=="" (echo %%A) ELSE (echo %%A=%%B)
+  IF "%%A"=="MVN_CMD" (set __MVNW_CMD__=%%B) ELSE IF "%%A"=="MVNW_REAL_CWD" (set __MVNW_REAL_CWD__=%%B) ELSE IF "%%B"=="" (echo %%A) ELSE (echo %%A=%%B)
 )
 @SET PSModulePath=%__MVNW_PSMODULEP_SAVE%
 @SET __MVNW_PSMODULEP_SAVE=
 @SET __MVNW_ARG0_NAME__=
 @SET MVNW_USERNAME=
 @SET MVNW_PASSWORD=
+@REM Maven's Windows launcher loses non-ASCII characters in a junction path
+@REM (for example D:\ĐATN -> D:\DATN), corrupting the application classpath.
+@IF NOT "%__MVNW_REAL_CWD__%"=="" (PUSHD "%__MVNW_REAL_CWD__%")
 @IF NOT "%__MVNW_CMD__%"=="" ("%__MVNW_CMD__%" %*)
 @echo Cannot start maven from wrapper >&2 && exit /b 1
 @GOTO :EOF
@@ -49,6 +52,12 @@ $ErrorActionPreference = "Stop"
 if ($env:MVNW_VERBOSE -eq "true") {
   $VerbosePreference = "Continue"
 }
+
+# Resolve a Windows junction before cmd.exe launches Maven. The resolved path
+# is ASCII in this workspace, so the Java child process receives a valid classpath.
+$cwdItem = Get-Item -LiteralPath (Get-Location).Path
+$realCwd = if ($cwdItem.Target) { $cwdItem.Target[0] } else { $cwdItem.FullName }
+Write-Output "MVNW_REAL_CWD=$realCwd"
 
 # calculate distributionUrl, requires .mvn/wrapper/maven-wrapper.properties
 $distributionUrl = (Get-Content -Raw "$scriptDir/.mvn/wrapper/maven-wrapper.properties" | ConvertFrom-StringData).distributionUrl

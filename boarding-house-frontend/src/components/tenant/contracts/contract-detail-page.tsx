@@ -1,6 +1,11 @@
 "use client";
+import { ContractChangesPanel } from "@/components/shared/contract-changes-panel";
+import { CheckoutSettlementPanel } from "@/components/shared/checkout-settlement-panel";
+
+import { ContractOnboardingPanel } from "@/components/shared/contract-onboarding-panel";
 
 import Link from "next/link";
+import { DepositLedgerPanel } from "@/components/shared/deposit-ledger-panel";
 import { useState } from "react";
 import axios from "axios";
 import {
@@ -235,6 +240,14 @@ export function ContractDetailPage({
       <div className="grid gap-6 xl:grid-cols-2">
         <ContractGeneralSections data={data} />
         <ContractFinancialSections data={data} />
+        <CheckoutSettlementPanel
+          portal="tenant"
+          contractId={contractId}
+          showLedger={false}
+        />
+        <DepositLedgerPanel portal="tenant" contractId={contractId} />
+        <ContractOnboardingPanel portal="tenant" contractId={contractId} />
+        <ContractChangesPanel portal="tenant" contractId={contractId} />
         <ContractPeopleAssets data={data} />
         <ContractTermsDocuments
           data={data}

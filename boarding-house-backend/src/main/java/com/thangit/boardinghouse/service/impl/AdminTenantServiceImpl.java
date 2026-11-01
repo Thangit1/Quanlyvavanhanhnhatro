@@ -51,6 +51,7 @@ public class AdminTenantServiceImpl implements AdminTenantService {
     public TenantDetail detail(AuthenticatedUser principal, long tenantId) {
         requireTenant(principal, tenantId, false);
         Map<String, Object> p = repository.profile(tenantId).orElseThrow(() -> notFound("Không tìm thấy người thuê."));
+        if(principal.activeRole()==RoleCode.ACCOUNTANT){p=new java.util.LinkedHashMap<>(p);for(String key:List.of("date_of_birth","permanent_address","hometown","occupation","workplace","emergency_contact_name","emergency_contact_phone","identity_type","identity_number","identity_issued_date","identity_issued_place","note"))p.put(key,null);}
         return new TenantDetail(number(p, "id"), string(p, "tenant_code"), nullableNumber(p, "user_id"),
                 string(p, "full_name"), date(p, "date_of_birth"), string(p, "gender"), string(p, "phone"),
                 string(p, "email"), string(p, "avatar_url"), string(p, "permanent_address"),
@@ -59,13 +60,13 @@ public class AdminTenantServiceImpl implements AdminTenantService {
                 string(p, "emergency_contact_phone"), string(p, "identity_type"),
                 maskIdentity(string(p, "identity_number")), date(p, "identity_issued_date"),
                 string(p, "identity_issued_place"), string(p, "note"), string(p, "resident_status"),
-                p.get("user_id") != null, string(p, "account_status"), repository.residences(tenantId),
-                repository.contracts(tenantId), repository.invoices(tenantId),
-                repository.financial(tenantId), repository.payments(tenantId),
-                repository.utilityReadings(tenantId), repository.coResidents(tenantId),
-                repository.maintenanceRequests(tenantId),
-                repository.temporaryResidences(tenantId), repository.documents(tenantId),
-                repository.activities(tenantId));
+                p.get("user_id") != null, string(p, "account_status"), repository.residences(tenantId,principal.id(),principal.activeRole()),
+                repository.contracts(tenantId,principal.id(),principal.activeRole()), repository.invoices(tenantId,principal.id(),principal.activeRole()),
+                repository.financial(tenantId,principal.id(),principal.activeRole()), repository.payments(tenantId,principal.id(),principal.activeRole()),
+                repository.utilityReadings(tenantId,principal.id(),principal.activeRole()), principal.activeRole()==RoleCode.ACCOUNTANT?List.of():repository.coResidents(tenantId,principal.id(),principal.activeRole()),
+                repository.maintenanceRequests(tenantId,principal.id(),principal.activeRole()),
+                repository.temporaryResidences(tenantId,principal.id(),principal.activeRole()), principal.activeRole()==RoleCode.ACCOUNTANT?List.of():repository.documents(tenantId,principal.id(),principal.activeRole()),
+                repository.activities(tenantId,principal.id(),principal.activeRole()));
     }
 
     @Override @Transactional
@@ -102,7 +103,8 @@ public class AdminTenantServiceImpl implements AdminTenantService {
         if (room.isEmpty()) throw notFound("Không tìm thấy phòng chuyển đến.");
         long propertyId = number(room, "property_id");
         requireProperty(principal, propertyId);
-        if (!"VACANT".equals(string(room, "status")) && !"RESERVED".equals(string(room, "status")))
+        if ("REPRESENTATIVE".equals(string(current,"residence_role")))throw badRequest("ROOM_TRANSFER_REQUIRES_CONTRACT","Chuyển phòng người đại diện phải qua bàn giao và hợp đồng của phòng mới.");
+        if (!"OCCUPIED".equals(string(room, "status")) && !"NOTICE".equals(string(room, "status")))
             throw badRequest("ROOM_NOT_AVAILABLE", "Phòng chuyển đến hiện không sẵn sàng.");
         Long fromRoom = nullableNumber(current, "room_id");
         if (fromRoom != null && fromRoom.equals(request.toRoomId()))
@@ -118,8 +120,9 @@ public class AdminTenantServiceImpl implements AdminTenantService {
         requireTenant(principal, tenantId, true);
         Map<String, Object> current = repository.activeResidence(tenantId)
                 .orElseThrow(() -> badRequest("NO_ACTIVE_RESIDENCE", "Người thuê không có lượt cư trú đang hoạt động."));
+        if((request.closeContract()||"REPRESENTATIVE".equals(string(current,"residence_role"))) && nullableNumber(current,"contract_id")!=null)throw badRequest("LIFECYCLE_SETTLEMENT_REQUIRED","Người đại diện trả phòng phải qua bàn giao và quyết toán trong Vòng đời thuê.");
         repository.moveOut(tenantId, number(current, "id"), nullableNumber(current, "room_id"),
-                nullableNumber(current, "contract_id"), request.moveOutDate(), request.reason(), request.closeContract());
+                nullableNumber(current, "contract_id"), request.moveOutDate(), request.reason(), request.closeContract(),principal.id());
         repository.addActivity(tenantId, principal.id(), "MOVED_OUT",
                 "Đã xác nhận rời phòng ngày " + request.moveOutDate() + ".");
     }
@@ -154,6 +157,7 @@ public class AdminTenantServiceImpl implements AdminTenantService {
         requireTenant(principal, tenantId, true);
         Map<String, Object> profile = repository.profile(tenantId).orElseThrow();
         if (profile.get("user_id") == null) throw badRequest("ACCOUNT_NOT_FOUND", "Người thuê chưa có tài khoản.");
+        if(!repository.canControlAccount(principal.id(),principal.activeRole(),tenantId))throw forbidden("Shared or multi-role account requires its own account administrator; cannot change global status here");
         repository.updateAccountStatus(tenantId, request.status());
         repository.addActivity(tenantId, principal.id(), "ACCOUNT_STATUS_CHANGED",
                 "Đã chuyển trạng thái tài khoản thành " + request.status() + ".");
@@ -179,14 +183,16 @@ public class AdminTenantServiceImpl implements AdminTenantService {
 
     @Override @Transactional(readOnly = true)
     public Map<String, Object> downloadDocument(AuthenticatedUser principal, long tenantId, long documentId) {
+        if(principal.activeRole()==RoleCode.ACCOUNTANT)throw forbidden("Identity documents are restricted to authorized resident administration");
         requireTenant(principal, tenantId, false);
-        return repository.document(tenantId, documentId).orElseThrow(() -> notFound("Không tìm thấy giấy tờ."));
+        return repository.document(tenantId, documentId,principal.id(),principal.activeRole()).orElseThrow(() -> notFound("Không tìm thấy giấy tờ."));
     }
 
     @Override @Transactional(readOnly = true)
     public byte[] exportCsv(AuthenticatedUser principal, Long propertyId, String keyword) {
         requireReadRole(principal);
         if (propertyId != null) requireProperty(principal, propertyId);
+        repository.requireExport(principal,propertyId);
         StringBuilder csv = new StringBuilder("\uFEFFMã người thuê,Họ tên,Điện thoại,Email,Nhà trọ,Phòng,Trạng thái,Tạm trú,Công nợ\n");
         for (TenantRow row : repository.exportRows(principal.id(), principal.activeRole(), propertyId, keyword)) {
             csv.append(csv(row.tenantCode())).append(',').append(csv(row.fullName())).append(',')
@@ -234,7 +240,7 @@ public class AdminTenantServiceImpl implements AdminTenantService {
             throw badRequest("ROOM_PROPERTY_MISMATCH", "Phòng không thuộc nhà trọ đã chọn.");
     }
     private String normalizeResidenceRole(String role) {
-        return List.of("REPRESENTATIVE", "OCCUPANT", "DEPENDENT").contains(role) ? role : "REPRESENTATIVE";
+        return role != null && List.of("REPRESENTATIVE", "OCCUPANT", "DEPENDENT").contains(role) ? role : "REPRESENTATIVE";
     }
     private boolean strongEnough(String value) {
         return value.chars().anyMatch(Character::isUpperCase)
@@ -247,7 +253,7 @@ public class AdminTenantServiceImpl implements AdminTenantService {
     }
     private static String csv(String value) {
         if (value == null) return "";
-        return "\"" + value.replace("\"", "\"\"") + "\"";
+        return com.thangit.boardinghouse.common.validation.CsvCells.quote(value);
     }
     private static String string(Map<String, Object> map, String key) {
         Object value = map.get(key); return value == null ? null : value.toString();

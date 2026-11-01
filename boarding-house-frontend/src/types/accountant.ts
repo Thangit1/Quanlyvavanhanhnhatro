@@ -12,6 +12,7 @@ export interface PropertyOption {
   address: string;
 }
 export interface AccountantSummary {
+  [metric: string]: number;
   collected: Money;
   spent: Money;
   debt: Money;

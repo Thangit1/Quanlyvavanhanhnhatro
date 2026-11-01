@@ -159,7 +159,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
             rows={[
               ["Tạm tính", d.subtotalAmount],
               ["Giảm trừ", -d.discountAmount],
-              ["Nợ kỳ trước", d.previousDebtAmount],
+              ["Nợ cũ tham khảo (không cộng vào hóa đơn)", d.previousDebtAmount],
               ["Phí trễ hạn", d.lateFeeAmount],
             ]}
           />
@@ -212,7 +212,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
         </Section>
       )}
       <div className="grid gap-5 lg:grid-cols-2">
-        <Section title="Thanh toán đã xác nhận">
+        <Section title="Lịch sử thanh toán">
           {d.payments.length ? (
             d.payments.map((x) => (
               <div key={x.id} className="flex justify-between border-b py-3">
@@ -222,7 +222,10 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
                     {label(x.paymentMethod)} · {date(x.paidAt)}
                   </p>
                 </div>
-                <b className="text-emerald-700">{money(x.amount)}</b>
+                <div className="text-right">
+                  <b className={x.status === "CONFIRMED" ? "text-emerald-700" : "text-slate-500"}>{money(x.amount)}</b>
+                  <div className="mt-1"><InvoiceBadge status={x.status} /></div>
+                </div>
               </div>
             ))
           ) : (

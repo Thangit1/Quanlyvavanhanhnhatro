@@ -62,7 +62,11 @@ export function useInvoiceMutations(id?: number) {
         referenceCode?: string;
         note?: string;
         version: number;
-      }) => adminInvoiceService.payment(id!, p),
+        idempotencyKey: string;
+      }) => {
+        const { idempotencyKey, ...payload } = p;
+        return adminInvoiceService.payment(id!, payload, idempotencyKey);
+      },
       onSuccess: refresh,
     }),
     adjust: useMutation({

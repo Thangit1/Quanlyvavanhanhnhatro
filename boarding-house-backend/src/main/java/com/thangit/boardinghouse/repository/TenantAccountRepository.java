@@ -52,7 +52,8 @@ public class TenantAccountRepository {
         .param("emergencyPhone",r.emergencyContact()==null?null:normalizePhone(r.emergencyContact().phone()))
         .param("emergencyAddress",r.emergencyContact()==null?null:blank(r.emergencyContact().address()))
         .param("userId",userId).param("version",r.version()).update();}
-    public boolean phoneExists(String phone,long userId){return phone!=null&&jdbc.sql("SELECT COUNT(*) FROM tenant_profiles WHERE phone=:phone AND user_id<>:id").param("phone",normalizePhone(phone)).param("id",userId).query(Long.class).single()>0;}
+    public void updateAccountPhone(long userId,String phone){jdbc.sql("UPDATE users SET phone=:phone WHERE id=:id").param("phone",normalizePhone(phone)).param("id",userId).update();}
+    public boolean phoneExists(List<String> phones,long userId){return jdbc.sql("SELECT COUNT(*) FROM tenant_profiles WHERE phone IN (:phones) AND user_id<>:id").param("phones",phones).param("id",userId).query(Long.class).single()>0;}
     public boolean emailExists(String email,long userId){return email!=null&&jdbc.sql("SELECT COUNT(*) FROM tenant_profiles WHERE LOWER(email)=LOWER(:email) AND user_id<>:id").param("email",email).param("id",userId).query(Long.class).single()>0;}
 
     public long addUpdateRequest(long userId,String changesJson,String reason,String note){GeneratedKeyHolder keys=new GeneratedKeyHolder();jdbc.sql("""

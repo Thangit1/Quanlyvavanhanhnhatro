@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.account;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
@@ -8,10 +9,10 @@ import java.util.Map;
 public final class TenantAccountRequests {
     private TenantAccountRequests() {}
     public record EmergencyContact(@Size(max=150) String fullName,@Size(max=100) String relationship,
-                                   @Pattern(regexp="^$|^[0-9+ .()-]{8,20}$",message="Số điện thoại không hợp lệ") String phone,
+                                   @Pattern(regexp=VietnamPhones.OPTIONAL_REGEX,message=VietnamPhones.INVALID_MESSAGE) String phone,
                                    @Size(max=500) String address) {}
     public record UpdateProfile(@Size(max=150) String occupation,@Size(max=255) String workplace,
-                                @Pattern(regexp="^[0-9+ .()-]{8,20}$",message="Số điện thoại không hợp lệ") String phone,
+                                @Pattern(regexp=VietnamPhones.REGEX,message=VietnamPhones.INVALID_MESSAGE) String phone,
                                 @Email @Size(max=255) String contactEmail,@Size(max=500) String addressDetail,
                                 @Valid EmergencyContact emergencyContact,@NotNull Long version) {}
     public record FieldChange(@Size(max=1000) String oldValue,@NotBlank @Size(max=1000) String newValue) {}

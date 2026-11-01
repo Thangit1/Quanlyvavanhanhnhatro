@@ -2,6 +2,7 @@
 
 import { Check, LoaderCircle, RotateCcw, Save } from "lucide-react";
 import type { SettingField } from "@/constants/setting-groups";
+import { VIETNAM_PHONE_PATTERN } from "@/lib/phone-validation";
 
 export function SettingsForm({
   fields,
@@ -181,6 +182,14 @@ function Field({
       ) : (
         <input
           type={field.type}
+          inputMode={field.type === "tel" ? "tel" : undefined}
+          autoComplete={field.type === "tel" ? "tel" : undefined}
+          pattern={
+            field.type === "tel" ? VIETNAM_PHONE_PATTERN.source : undefined
+          }
+          title={
+            field.type === "tel" ? "Số điện thoại không hợp lệ." : undefined
+          }
           value={String(value ?? "")}
           disabled={disabled}
           required={field.required}
@@ -195,7 +204,7 @@ function Field({
                 : event.target.value,
             )
           }
-          className={common}
+          className={`${common} invalid:border-red-500 invalid:focus:ring-red-100`}
         />
       )}
     </label>

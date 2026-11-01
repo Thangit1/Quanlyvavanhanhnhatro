@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.property;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -22,7 +23,7 @@ public final class AdminPropertyRequests {
             @NotBlank @Pattern(regexp = "BOARDING_HOUSE|APARTMENT|DORMITORY|OTHER") String type,
             @Size(max = 3000) String description,
             @NotBlank @Size(max = 500) String address,
-            @Size(max = 20) String phone,
+            @Pattern(regexp = VietnamPhones.OPTIONAL_REGEX, message = VietnamPhones.INVALID_MESSAGE) String phone,
             @Email @Size(max = 255) String email,
             LocalDate operationStartDate,
             @Size(max = 500) String thumbnailUrl,
@@ -84,7 +85,10 @@ public final class AdminPropertyRequests {
             Long version) {}
 
     public record ChangeStatus(
-            @NotBlank @Pattern(regexp = "VACANT|RESERVED|OCCUPIED|MAINTENANCE|INACTIVE") String status,
-            @Size(max = 500) String reason,
-            Long version) {}
+            @NotBlank @Pattern(regexp = "VACANT|READY|RESERVED|OCCUPIED|NOTICE|CLEANING|MAINTENANCE|INACTIVE") String status,
+            @NotBlank @Size(max = 500) String reason,
+            @NotNull Long version,
+            boolean readinessConfirmed) {
+        public ChangeStatus(String status,String reason,Long version){this(status,reason,version,false);}
+    }
 }

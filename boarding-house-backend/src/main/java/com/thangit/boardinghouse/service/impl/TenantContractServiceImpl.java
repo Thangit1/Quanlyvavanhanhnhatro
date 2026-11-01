@@ -21,12 +21,18 @@ import java.util.Set;
 
 @Service
 public class TenantContractServiceImpl implements TenantContractService {
+    private com.thangit.boardinghouse.service.CheckoutSettlementService checkoutWorkflow;
+    @org.springframework.beans.factory.annotation.Autowired public void setCheckoutWorkflow(com.thangit.boardinghouse.service.CheckoutSettlementService workflow){this.checkoutWorkflow=workflow;}
+    private com.thangit.boardinghouse.service.ContractChangeService changes;
+    @org.springframework.beans.factory.annotation.Autowired public void setContractChanges(com.thangit.boardinghouse.service.ContractChangeService service){this.changes=service;}
     private static final Set<String> STATUSES = Set.of(
             "PENDING_CONFIRMATION", "ACTIVE", "EXPIRING", "EXPIRED",
-            "TERMINATION_REQUESTED", "TERMINATED", "CANCELLED");
+            "TERMINATION_REQUESTED", "SETTLING", "TERMINATED", "CANCELLED");
     private final TenantContractRepository repository;
 
-    public TenantContractServiceImpl(TenantContractRepository repository) {
+    private final com.thangit.boardinghouse.service.RoomLifecycleGuard rooms;
+    public TenantContractServiceImpl(TenantContractRepository repository,com.thangit.boardinghouse.service.RoomLifecycleGuard rooms) {
+        this.rooms=rooms;
         this.repository = repository;
     }
 
@@ -77,16 +83,17 @@ public class TenantContractServiceImpl implements TenantContractService {
     @Transactional
     public RequestCreated requestExtension(AuthenticatedUser principal, Long contractId, ExtensionRequest request) {
         requireTenant(principal);
-        ContractBase contract = owned(principal.id(), contractId);
+        rooms.lockContract(contractId);ContractBase contract = owned(principal.id(), contractId);
         requireActionable(contract);
         if (!request.requestedEndDate().isAfter(contract.endDate())) throw badRequest(
                 "EXTENSION_DATE_INVALID", "Ngày kết thúc mới phải sau ngày kết thúc hiện tại.");
         if (repository.pendingExtension(contractId).isPresent()) throw new AuthException(
                 HttpStatus.CONFLICT, "EXTENSION_REQUEST_PENDING", "Hợp đồng đã có yêu cầu gia hạn đang chờ xử lý.");
-        repository.createExtension(contractId, principal.id(), request.requestedEndDate(), clean(request.note()));
+        rooms.extension(contractId,request.requestedEndDate());repository.createExtension(contractId, principal.id(), request.requestedEndDate(), clean(request.note()));
         repository.addHistory(contractId, "EXTENSION_REQUESTED", "Khách thuê đã gửi yêu cầu gia hạn.",
                 contract.tenantName(), clean(request.note()));
         RequestInfo created = repository.pendingExtension(contractId).orElseThrow();
+        changes.legacyRequest(principal,contractId,created.id(),request.note()==null||request.note().isBlank()?"Tenant extension request":request.note());
         return new RequestCreated(created.id(), created.status(), "Yêu cầu gia hạn đã được gửi thành công.");
     }
 
@@ -94,16 +101,14 @@ public class TenantContractServiceImpl implements TenantContractService {
     @Transactional
     public RequestCreated requestTermination(AuthenticatedUser principal, Long contractId, TerminationRequest request) {
         requireTenant(principal);
-        ContractBase contract = owned(principal.id(), contractId);
+        rooms.lockContract(contractId);ContractBase contract = owned(principal.id(), contractId);
         requireActionable(contract);
-        LocalDate earliest = LocalDate.now().plusDays(contract.noticePeriodDays());
-        if (request.expectedMoveOutDate().isBefore(earliest)) throw badRequest(
-                "NOTICE_PERIOD_NOT_MET", "Ngày trả phòng phải đáp ứng thời gian báo trước %d ngày."
-                        .formatted(contract.noticePeriodDays()));
+        if (request.expectedMoveOutDate().isBefore(LocalDate.now())) throw badRequest("CHECKOUT_DATE_INVALID","Ngày dự kiến không được ở quá khứ.");
         if (repository.pendingTermination(contractId).isPresent()) throw new AuthException(
                 HttpStatus.CONFLICT, "TERMINATION_REQUEST_PENDING", "Hợp đồng đã có yêu cầu trả phòng đang chờ xử lý.");
         repository.createTermination(contractId, principal.id(), request.expectedMoveOutDate(),
                 request.reason().trim(), clean(request.note()), request.contactPhone().trim());
+        checkoutWorkflow.request(principal,new com.thangit.boardinghouse.dto.request.lifecycle.RentalLifecycleRequests.RequestCheckout(contractId,request.expectedMoveOutDate(),request.reason()));
         repository.addHistory(contractId, "TERMINATION_REQUESTED", "Khách thuê đã gửi yêu cầu trả phòng.",
                 contract.tenantName(), clean(request.note()));
         RequestInfo created = repository.pendingTermination(contractId).orElseThrow();
