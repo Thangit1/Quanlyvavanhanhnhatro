@@ -12,6 +12,7 @@ import {
   useTerminationRequest,
 } from "@/hooks/use-tenant-contracts";
 import type { ContractDetail } from "@/types/tenant-contract";
+import { requiredVietnamPhoneSchema } from "@/lib/phone-validation";
 
 function Dialog({
   title,
@@ -268,7 +269,7 @@ export function TerminationRequestDialog({
 }) {
   const mutation = useTerminationRequest(contract.id);
   const [apiError, setApiError] = useState<string | null>(null);
-  const earliest = addDays(todayISO(), contract.noticePeriodDays);
+  const earliest = todayISO();
   const schema = useMemo(
     () =>
       z.object({
@@ -277,7 +278,7 @@ export function TerminationRequestDialog({
           .min(1, "Vui lòng chọn ngày trả phòng.")
           .refine(
             (value) => value >= earliest,
-            `Ngày trả phòng phải báo trước ít nhất ${contract.noticePeriodDays} ngày.`,
+            "Ngày dự kiến không được ở quá khứ.",
           ),
         reason: z
           .string()
@@ -285,14 +286,12 @@ export function TerminationRequestDialog({
           .min(1, "Vui lòng nhập lý do trả phòng.")
           .max(300, "Lý do không được vượt quá 300 ký tự."),
         note: z.string().max(1000, "Ghi chú không được vượt quá 1000 ký tự."),
-        contactPhone: z
-          .string()
-          .regex(/^[0-9+]{9,15}$/, "Số điện thoại không đúng định dạng."),
+        contactPhone: requiredVietnamPhoneSchema,
         confirmed: z
           .boolean()
           .refine(Boolean, "Bạn cần xác nhận trước khi gửi."),
       }),
-    [contract.noticePeriodDays, earliest],
+    [earliest],
   );
   type Values = z.infer<typeof schema>;
   const {
@@ -381,8 +380,10 @@ export function TerminationRequestDialog({
           Số điện thoại liên hệ
           <input
             type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             {...register("contactPhone")}
-            className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3"
+            className={`mt-2 h-11 w-full rounded-xl border px-3 ${errors.contactPhone ? "border-red-500" : "border-slate-300"}`}
           />
         </label>
         {errors.contactPhone && (

@@ -16,6 +16,7 @@ import { z } from "zod";
 import { authService } from "@/services/auth.service";
 import { Brand } from "./brand";
 import { PasswordInput } from "./password-input";
+import { requiredVietnamPhoneSchema } from "@/lib/phone-validation";
 
 const schema = z
   .object({
@@ -29,13 +30,7 @@ const schema = z
       .trim()
       .min(1, "Vui lòng nhập email.")
       .email("Email không đúng định dạng."),
-    phone: z
-      .string()
-      .trim()
-      .refine(
-        (value) => !value || /^[0-9+]{9,15}$/.test(value),
-        "Số điện thoại không đúng định dạng.",
-      ),
+    phone: requiredVietnamPhoneSchema,
     password: z
       .string()
       .min(8, "Mật khẩu phải có ít nhất 8 ký tự.")
@@ -54,7 +49,7 @@ const schema = z
 type RegisterValues = z.infer<typeof schema>;
 const apiMessages: Record<string, string> = {
   EMAIL_ALREADY_EXISTS: "Email đã được sử dụng.",
-  PHONE_ALREADY_EXISTS: "Số điện thoại đã được sử dụng.",
+  PHONE_ALREADY_EXISTS: "Số điện thoại này đã được sử dụng.",
   ACCOUNT_ALREADY_EXISTS: "Email hoặc số điện thoại đã được sử dụng.",
   PASSWORD_CONFIRMATION_MISMATCH: "Mật khẩu xác nhận không khớp.",
 };
@@ -67,9 +62,10 @@ export function RegisterForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<RegisterValues>({
     resolver: zodResolver(schema),
+    mode: "onChange",
     defaultValues: {
       fullName: "",
       email: "",
@@ -86,7 +82,7 @@ export function RegisterForm() {
       await authService.register({
         ...values,
         email: values.email.trim().toLowerCase(),
-        phone: values.phone || undefined,
+        phone: values.phone,
       });
       router.replace(
         `/login?reason=registered&email=${encodeURIComponent(values.email.trim().toLowerCase())}`,
@@ -165,19 +161,17 @@ export function RegisterForm() {
               htmlFor="phone"
               className="mb-2 block font-semibold text-slate-700"
             >
-              Số điện thoại{" "}
-              <span className="font-normal text-slate-400">
-                (không bắt buộc)
-              </span>
+              Số điện thoại <span className="text-red-600">*</span>
             </label>
             <input
               id="phone"
               type="tel"
+              inputMode="tel"
               autoComplete="tel"
               placeholder="0912345678"
               disabled={isSubmitting}
               {...register("phone")}
-              className={inputClass}
+              className={`${inputClass} ${errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""}`}
             />
             {errors.phone && (
               <p className="mt-1.5 text-sm text-red-600">
@@ -280,7 +274,7 @@ export function RegisterForm() {
         )}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isValid}
           className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? (

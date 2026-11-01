@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AdminContractRepository {
     private final JdbcClient jdbc;
+    public void requireExport(com.thangit.boardinghouse.security.AuthenticatedUser p,Long property){new com.thangit.boardinghouse.security.PropertyAuthorization(jdbc,new com.thangit.boardinghouse.security.SecurityAudit(jdbc)).requireExport(p,property);}
 
     public AdminContractRepository(JdbcClient jdbc) {
         this.jdbc = jdbc;
@@ -92,7 +93,7 @@ public class AdminContractRepository {
         String sortColumn = switch (sort == null ? "" : sort) {
             case "startDate" -> "c.start_date";
             case "contractCode" -> "c.code";
-            case "monthlyRent" -> "r.monthly_rent";
+            case "monthlyRent" -> "c.agreed_monthly_rent";
             default -> "c.end_date";
         };
         String sortDirection = "desc".equalsIgnoreCase(direction) ? "DESC" : "ASC";
@@ -113,7 +114,7 @@ public class AdminContractRepository {
                   COALESCE(tp.tenant_code,CONCAT('TK',LPAD(c.tenant_id,6,'0'))) tenant_code,
                   COALESCE(tp.full_name,u.full_name) tenant_name,COALESCE(tp.phone,u.phone) tenant_phone,
                   p.id property_id,p.name property_name,r.id room_id,r.code room_code,c.start_date,c.end_date,
-                  r.monthly_rent,c.deposit_amount,%s effective_status,c.updated_at,
+                  COALESCE((SELECT rv.unit_price FROM billing_rate_versions rv WHERE rv.contract_id=c.id AND rv.code='RENT' AND rv.effective_date<=CURRENT_DATE ORDER BY rv.effective_date DESC LIMIT 1),c.agreed_monthly_rent) monthly_rent,c.deposit_amount,%s effective_status,c.updated_at,
                   EXISTS(SELECT 1 FROM contract_documents d WHERE d.contract_id=c.id) has_document
                 %s WHERE %s ORDER BY %s %s LIMIT :limit OFFSET :offset
                 """.formatted(effectiveStatus("c"), joins, parts.where(), sortColumn, sortDirection))
@@ -128,7 +129,7 @@ public class AdminContractRepository {
                   COALESCE(tp.full_name,u.full_name) tenant_name,COALESCE(tp.phone,u.phone) tenant_phone,
                   COALESCE(tp.email,u.email) tenant_email,tp.identity_number,
                   p.id property_id,p.name property_name,p.address property_address,
-                  r.id room_id,r.code room_code,r.building_name,r.floor_name,r.room_type,r.monthly_rent,
+                  r.id room_id,r.code room_code,r.building_name,r.floor_name,r.room_type,COALESCE((SELECT rv.unit_price FROM billing_rate_versions rv WHERE rv.contract_id=c.id AND rv.code='RENT' AND rv.effective_date<=CURRENT_DATE ORDER BY rv.effective_date DESC LIMIT 1),c.agreed_monthly_rent) monthly_rent,
                   c.start_date,c.end_date,c.deposit_amount,%s effective_status,c.updated_at,c.contract_type,
                   c.created_at,c.signed_at,c.payment_cycle,c.payment_due_day,c.notice_period_days,
                   c.reservation_amount,c.management_fee,c.fixed_service_fee,c.discount_amount,c.occupant_count,

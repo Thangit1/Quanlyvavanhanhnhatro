@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController @RequestMapping("/api/admin/invoices")
 public class AdminInvoiceController {
+ @PutMapping("/{id}/recalculate") public ApiResponse<InvoiceDetail> recalculate(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody SaveInvoice r){return ApiResponse.success("Đã tính lại bản nháp và lưu lịch sử",service.recalculate(p,id,r));}
  private final AdminInvoiceService service; public AdminInvoiceController(AdminInvoiceService service){this.service=service;}
  @GetMapping("/summary") public ApiResponse<Summary> summary(@AuthenticationPrincipal AuthenticatedUser p,@RequestParam(required=false)Long propertyId,@RequestParam(required=false)String billingPeriod){return ApiResponse.success("Lấy thống kê hóa đơn thành công.",service.summary(p,propertyId,billingPeriod));}
  @GetMapping("/options") public ApiResponse<InvoiceOptions> options(@AuthenticationPrincipal AuthenticatedUser p){return ApiResponse.success("Lấy dữ liệu lập hóa đơn thành công.",service.options(p));}
@@ -24,7 +25,7 @@ public class AdminInvoiceController {
  @PostMapping("/bulk-preview") public ApiResponse<java.util.List<BulkPreviewRow>> preview(@AuthenticationPrincipal AuthenticatedUser p,@Valid @RequestBody BulkInvoice r){return ApiResponse.success("Xem trước hóa đơn hàng loạt thành công.",service.bulkPreview(p,r));}
  @PostMapping("/bulk-generate") public ResponseEntity<ApiResponse<BulkResult>> bulk(@AuthenticationPrincipal AuthenticatedUser p,@Valid @RequestBody BulkInvoice r){return ResponseEntity.status(201).body(ApiResponse.success("Lập hóa đơn hàng loạt thành công.",service.bulkGenerate(p,r)));}
  @PostMapping("/{id}/issue") public ApiResponse<InvoiceDetail> issue(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@RequestParam long version){return ApiResponse.success("Hóa đơn đã được phát hành.",service.issue(p,id,version));}
- @PostMapping("/{id}/payments") public ApiResponse<InvoiceDetail> payment(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody RecordPayment r){return ApiResponse.success("Ghi nhận thanh toán thành công.",service.payment(p,id,r));}
+ @PostMapping("/{id}/payments") public ApiResponse<InvoiceDetail> payment(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@RequestHeader("Idempotency-Key") String key,@Valid @RequestBody RecordPayment r){return ApiResponse.success("Ghi nhận thanh toán thành công.",service.payment(p,id,key,r));}
  @PostMapping("/{id}/adjustments") public ApiResponse<InvoiceDetail> adjustment(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody Adjustment r){return ApiResponse.success("Điều chỉnh hóa đơn thành công.",service.adjust(p,id,r));}
  @PostMapping("/{id}/cancel") public ApiResponse<InvoiceDetail> cancel(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody CancelInvoice r){return ApiResponse.success("Hủy hóa đơn thành công.",service.cancel(p,id,r));}
  @PostMapping("/{id}/reminders") public ApiResponse<InvoiceDetail> reminder(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody Reminder r){return ApiResponse.success("Đã gửi nhắc thanh toán.",service.reminder(p,id,r));}

@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.maintenance;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -69,7 +70,7 @@ public final class TechnicianRequests {
                            @Size(max=1000) String note) {}
     public record Message(@NotBlank @Size(max=2000) String content, boolean internal) {}
     public record ProfileUpdate(@Email @Size(max=255) String email,
-                                @Pattern(regexp="^[0-9+ .()-]{8,20}$") String phone,
+                                @Pattern(regexp=VietnamPhones.OPTIONAL_REGEX,message=VietnamPhones.INVALID_MESSAGE) String phone,
                                 @PositiveOrZero long version) {}
     public record PreferenceUpdate(boolean notifyAssignment, boolean notifySchedule,
                                    boolean notifyUrgent, boolean notifyMaterial,

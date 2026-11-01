@@ -3,20 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Bell,
-  Building2,
-  CircleDollarSign,
-  FileText,
-  Gauge,
-  Home,
-  Menu,
-  Receipt,
-  UserRound,
-  Users,
-  Wrench,
-  X,
-} from "lucide-react";
+import { Building2, Menu, X } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { roleHome } from "@/types/auth";
 import { PageLoading } from "@/components/shared/dashboard-ui";
@@ -26,18 +13,11 @@ import {
 } from "@/components/tenant/notifications/notification-bell";
 import { TenantUserMenu } from "@/components/tenant/tenant-user-menu";
 import { useAccountPreferences } from "@/hooks/use-tenant-account";
-
-const nav = [
-  ["Tổng quan", "/tenant/home", Home],
-  ["Hợp đồng", "/tenant/contracts", FileText],
-  ["Hóa đơn", "/tenant/invoices", Receipt],
-  ["Thanh toán", "/tenant/payments", CircleDollarSign],
-  ["Điện nước", "/tenant/utilities", Gauge],
-  ["Yêu cầu sửa chữa", "/tenant/maintenance", Wrench],
-  ["Người ở cùng", "/tenant/co-occupants", Users],
-  ["Thông báo", "/tenant/notifications", Bell],
-  ["Tài khoản", "/tenant/account", UserRound],
-] as const;
+import {
+  isTenantNavigationActive,
+  tenantMobileNavigationItems,
+  tenantNavigationItems,
+} from "@/constants/tenant-navigation";
 
 export function TenantShell({ children }: { children: React.ReactNode }) {
   const { user, isBootstrapping } = useAuth();
@@ -56,11 +36,8 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
 
   const items = (
     <nav className="space-y-1">
-      {nav.map(([label, href, Icon]) => {
-        const active =
-          href === "/tenant/home"
-            ? pathname === href
-            : pathname.startsWith(href);
+      {tenantNavigationItems.map(({ label, href, icon: Icon }) => {
+        const active = isTenantNavigationActive(pathname, href);
         return (
           <Link
             key={href}
@@ -153,21 +130,12 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden">
-        {[
-          ["Trang chủ", "/tenant/home", Home],
-          ["Hóa đơn", "/tenant/invoices", Receipt],
-          ["Sửa chữa", "/tenant/maintenance", Wrench],
-          ["Thông báo", "/tenant/notifications", Bell],
-          ["Tài khoản", "/tenant/account", UserRound],
-        ].map(([label, href, Icon]) => {
-          const active =
-            href === "/tenant/home"
-              ? pathname === href
-              : pathname.startsWith(href as string);
+        {tenantMobileNavigationItems.map(({ label, href, icon: Icon }) => {
+          const active = isTenantNavigationActive(pathname, href);
           return (
             <Link
-              key={href as string}
-              href={href as string}
+              key={href}
+              href={href}
               aria-current={active ? "page" : undefined}
               className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] ${active ? "font-semibold text-blue-700" : "text-slate-500"}`}
             >
@@ -177,7 +145,11 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
                   <UnreadBadge className="absolute -right-3 -top-2" />
                 )}
               </span>
-              {label as string}
+              {label === "Tổng quan"
+                ? "Trang chủ"
+                : label === "Yêu cầu sửa chữa"
+                  ? "Sửa chữa"
+                  : label}
             </Link>
           );
         })}

@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.setting;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -18,7 +19,7 @@ public final class AdminSettingRequests {
     public record UpdateGeneral(
             @NotBlank @Size(max = 150) String systemName,
             @Email @Size(max = 190) String supportEmail,
-            @Pattern(regexp = "^$|^[0-9+() .-]{8,20}$") String supportPhone,
+            @Pattern(regexp = VietnamPhones.OPTIONAL_REGEX, message = VietnamPhones.INVALID_MESSAGE) String supportPhone,
             @NotBlank String defaultLanguage,
             @NotBlank String timezone,
             @NotBlank String currency,
@@ -28,7 +29,7 @@ public final class AdminSettingRequests {
     public record UpdateProperty(
             @NotBlank @Size(max = 150) String propertyName,
             @Size(max = 150) String managerName,
-            @Pattern(regexp = "^$|^[0-9+() .-]{8,20}$") String managerPhone,
+            @Pattern(regexp = VietnamPhones.OPTIONAL_REGEX, message = VietnamPhones.INVALID_MESSAGE) String managerPhone,
             @Email @Size(max = 190) String managerEmail,
             @Size(max = 100) String workingHours,
             @Min(1) @Max(31) int billingDay,

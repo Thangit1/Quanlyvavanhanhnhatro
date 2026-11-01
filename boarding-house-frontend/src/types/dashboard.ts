@@ -83,7 +83,7 @@ export interface AdminDashboardData {
     occupancyRate: number;
     currentRevenue: number;
     previousRevenue: number;
-    revenueChangePercent: number;
+    revenueChangePercent: number | null;
     outstandingDebt: number;
     expiringContracts: number;
     openMaintenanceRequests: number;

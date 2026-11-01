@@ -79,10 +79,12 @@ export const adminInvoiceService = {
       note?: string;
       version: number;
     },
+    idempotencyKey: string,
   ) => {
     const { data } = await apiClient.post<ApiEnvelope<InvoiceDetail>>(
       `/admin/invoices/${id}/payments`,
       payload,
+      { headers: { "Idempotency-Key": idempotencyKey } },
     );
     return data.data;
   },

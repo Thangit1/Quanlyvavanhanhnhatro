@@ -1,6 +1,7 @@
 package com.thangit.boardinghouse.service.impl;
 
 import com.thangit.boardinghouse.common.exception.AuthException;
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import com.thangit.boardinghouse.domain.auth.Role;
 import com.thangit.boardinghouse.domain.auth.RoleCode;
 import com.thangit.boardinghouse.domain.auth.User;
@@ -50,8 +51,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         if (users.existsByEmailIgnoreCase(email)) {
             throw new AuthException(HttpStatus.CONFLICT, "EMAIL_ALREADY_EXISTS", "Email đã được sử dụng.");
         }
-        if (phone != null && users.existsByPhone(phone)) {
-            throw new AuthException(HttpStatus.CONFLICT, "PHONE_ALREADY_EXISTS", "Số điện thoại đã được sử dụng.");
+        if (phone != null && users.existsByPhoneIn(VietnamPhones.aliases(phone))) {
+            throw new AuthException(HttpStatus.CONFLICT, "PHONE_ALREADY_EXISTS", "Số điện thoại này đã được sử dụng.");
         }
         Role tenantRole = roles.findByCode(RoleCode.TENANT.name()).orElseThrow(() ->
                 new AuthException(HttpStatus.INTERNAL_SERVER_ERROR, "TENANT_ROLE_NOT_CONFIGURED",

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import Link from "next/link";
+import { InitialRoomMeterForm } from "@/components/shared/initial-room-meter-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   createElement,
@@ -195,8 +196,11 @@ export function RoomListPage() {
                   <option value="">Tất cả trạng thái</option>
                   {[
                     "VACANT",
+                    "READY",
                     "RESERVED",
                     "OCCUPIED",
+                    "NOTICE",
+                    "CLEANING",
                     "MAINTENANCE",
                     "INACTIVE",
                   ].map((s) => (
@@ -715,6 +719,7 @@ export function RoomDetailPage({ id }: { id: number }) {
   const [status, setStatus] = useState("");
   const [reason, setReason] = useState("");
   const [actionError, setActionError] = useState("");
+  const [readinessConfirmed, setReadinessConfirmed] = useState(false);
   if (query.isLoading) return <PageLoading />;
   if (query.isError || !query.data)
     return (
@@ -739,10 +744,12 @@ export function RoomDetailPage({ id }: { id: number }) {
           status,
           reason,
           version: r.version,
+          readinessConfirmed,
         });
       setDialog(null);
       setReason("");
     } catch (requestError) {
+      void query.refetch();
       setActionError(
         apiErrorMessage(requestError, "Không thể cập nhật phòng."),
       );
@@ -778,6 +785,7 @@ export function RoomDetailPage({ id }: { id: number }) {
                 onClick={() => {
                   setActionError("");
                   setStatus("");
+                  setReadinessConfirmed(false);
                   setDialog("status");
                 }}
                 className="rounded-xl border bg-white px-4 py-2 text-sm font-semibold"
@@ -797,6 +805,19 @@ export function RoomDetailPage({ id }: { id: number }) {
           <div className="flex flex-col justify-between gap-5 sm:flex-row">
             <div>
               <StatusBadge status={r.status} />
+              {(!["VACANT", "READY"].includes(r.status) ||
+                r.currentContract ||
+                r.openMaintenanceCount > 0) && (
+                <p className="mt-2 text-sm text-amber-700">
+                  Chưa nhận giữ chỗ:{" "}
+                  {r.currentContract
+                    ? "còn hợp đồng cam kết"
+                    : r.openMaintenanceCount > 0
+                      ? "còn công việc bảo trì chưa nghiệm thu"
+                      : statusLabel(r.status)}
+                  . Nhận/trả phòng phải qua Vòng đời thuê.
+                </p>
+              )}
               <h1 className="mt-3 text-3xl font-extrabold">{r.name}</h1>
               <p className="mt-2 text-slate-500">
                 {r.roomType || "Chưa phân loại"} · {r.area || "—"} m² · tối đa{" "}
@@ -888,6 +909,7 @@ export function RoomDetailPage({ id }: { id: number }) {
                 </div>
               ))}
               {!d.meters.length && <EmptyState text="Chưa gắn công tơ." />}
+              <InitialRoomMeterForm roomId={id} />
             </div>
           </Card>
           <Card title="Lịch sử giá">
@@ -957,18 +979,30 @@ export function RoomDetailPage({ id }: { id: number }) {
                 onChange={(e) => setStatus(e.target.value)}
               >
                 <option value="">Chọn trạng thái mới</option>
-                {[
-                  "VACANT",
-                  "RESERVED",
-                  "OCCUPIED",
-                  "MAINTENANCE",
-                  "INACTIVE",
-                ].map((s) => (
+                {(
+                  {
+                    VACANT: ["READY", "MAINTENANCE", "INACTIVE"],
+                    READY: ["VACANT", "MAINTENANCE", "INACTIVE"],
+                    CLEANING: ["READY", "MAINTENANCE"],
+                    MAINTENANCE: ["READY", "CLEANING", "INACTIVE"],
+                    INACTIVE: ["VACANT", "MAINTENANCE"],
+                  } as Record<string, string[]>
+                )[r.status]?.map((s) => (
                   <option key={s} value={s}>
                     {statusLabel(s)}
                   </option>
                 ))}
               </select>
+            )}
+            {dialog === "status" && status === "READY" && (
+              <label className="mt-3 flex gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={readinessConfirmed}
+                  onChange={(e) => setReadinessConfirmed(e.target.checked)}
+                />{" "}
+                Đã kiểm tra vệ sinh, tài sản và nghiệm thu điều kiện khai thác
+              </label>
             )}
             <textarea
               className={`${input} mt-3 min-h-20`}
@@ -995,6 +1029,9 @@ export function RoomDetailPage({ id }: { id: number }) {
                 onClick={() => void submit()}
                 disabled={
                   (dialog === "price" ? price < 0 : !status) ||
+                  (dialog === "status" &&
+                    (!reason.trim() ||
+                      (status === "READY" && !readinessConfirmed))) ||
                   mutations.price.isPending ||
                   mutations.status.isPending
                 }

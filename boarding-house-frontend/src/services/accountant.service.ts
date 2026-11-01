@@ -44,10 +44,10 @@ export const accountantService = {
         headers: key ? { "Idempotency-Key": key } : undefined,
       }),
     ),
-  createPayment: (payload: object) =>
+  createPayment: ({ payload, idempotencyKey }: { payload: object; idempotencyKey: string }) =>
     unwrap<Record<string, unknown>>(
       apiClient.post("/accountant/payments", payload, {
-        headers: { "Idempotency-Key": crypto.randomUUID() },
+        headers: { "Idempotency-Key": idempotencyKey },
       }),
     ),
   createVoucher: (payload: object) =>

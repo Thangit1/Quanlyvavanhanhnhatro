@@ -38,6 +38,7 @@ const statusOptions: { value: AdminContractStatus; label: string }[] = [
   { value: "ACTIVE", label: "Đang hiệu lực" },
   { value: "EXPIRING", label: "Sắp hết hạn" },
   { value: "TERMINATION_REQUESTED", label: "Chờ chấm dứt" },
+  { value: "SETTLING", label: "Đang quyết toán tài chính" },
   { value: "EXPIRED", label: "Đã hết hạn" },
   { value: "TERMINATED", label: "Đã chấm dứt" },
   { value: "CANCELLED", label: "Đã hủy" },

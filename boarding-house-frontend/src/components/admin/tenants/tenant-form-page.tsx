@@ -12,6 +12,7 @@ import {
   useTenantMutations,
 } from "@/hooks/use-admin-tenants";
 import type { SaveTenantPayload } from "@/types/admin-tenant";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 
 type FormValues = {
   fullName: string;
@@ -71,9 +72,10 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
     handleSubmit,
     control,
     reset,
+    setValue,
     trigger,
     formState: { errors },
-  } = useForm<FormValues>({ defaultValues: empty });
+  } = useForm<FormValues>({ defaultValues: empty, mode: "onChange" });
   useEffect(() => {
     if (!detail.data) return;
     const d = detail.data;
@@ -98,6 +100,10 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
     });
   }, [detail.data, reset]);
   const propertyId = Number(useWatch({ control, name: "propertyId" }));
+  const residenceRole = useWatch({ control, name: "residenceRole" });
+  useEffect(() => {
+    if (residenceRole === "REPRESENTATIVE") setValue("roomId", "");
+  }, [residenceRole, setValue]);
   const rooms = useMemo(
     () => options.data?.rooms.filter((r) => r.propertyId === propertyId) ?? [],
     [options.data?.rooms, propertyId],
@@ -203,13 +209,15 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
                 <Field label="Số điện thoại *" error={errors.phone?.message}>
                   <input
                     {...register("phone", {
-                      required: "Vui lòng nhập số điện thoại",
-                      pattern: {
-                        value: /^[0-9+ .()-]{8,20}$/,
-                        message: "Số điện thoại không hợp lệ",
+                      validate: (value) => {
+                        const result = validateVietnamPhone(value);
+                        return result.valid || result.message;
                       },
                     })}
-                    className={inputClass}
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    className={`${inputClass} ${errors.phone ? "border-red-500" : ""}`}
                   />
                 </Field>
                 <Field label="Email" error={errors.email?.message}>
@@ -305,10 +313,21 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
                     className={inputClass}
                   />
                 </Field>
-                <Field label="SĐT liên hệ khẩn cấp">
+                <Field
+                  label="SĐT liên hệ khẩn cấp"
+                  error={errors.emergencyContactPhone?.message}
+                >
                   <input
-                    {...register("emergencyContactPhone")}
-                    className={inputClass}
+                    {...register("emergencyContactPhone", {
+                      validate: (value) => {
+                        const result = validateVietnamPhone(value, false);
+                        return result.valid || result.message;
+                      },
+                    })}
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    className={`${inputClass} ${errors.emergencyContactPhone ? "border-red-500" : ""}`}
                   />
                 </Field>
                 <Field label="Ghi chú" className="md:col-span-2">
@@ -348,16 +367,28 @@ export function TenantFormPage({ tenantId }: { tenantId?: number }) {
                     </select>
                   </Field>
                   <Field label="Phòng">
-                    <select {...register("roomId")} className={inputClass}>
+                    <select
+                      {...register("roomId")}
+                      disabled={residenceRole === "REPRESENTATIVE"}
+                      className={inputClass}
+                    >
                       <option value="">Chưa gán phòng</option>
                       {rooms
-                        .filter((r) => ["VACANT", "READY"].includes(r.status))
+                        .filter((r) =>
+                          ["OCCUPIED", "NOTICE"].includes(r.status),
+                        )
                         .map((r) => (
                           <option key={r.id} value={r.id}>
                             Phòng {r.code} · {r.status}
                           </option>
                         ))}
                     </select>
+                    {residenceRole === "REPRESENTATIVE" && (
+                      <p className="mt-2 text-xs text-slate-500">
+                        Tạo hồ sơ trước, sau đó giữ chỗ, lập hợp đồng và nhận
+                        phòng tại Vòng đời thuê.
+                      </p>
+                    )}
                   </Field>
                   <Field
                     label="Ngày vào ở *"

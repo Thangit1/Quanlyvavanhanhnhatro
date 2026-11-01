@@ -17,6 +17,9 @@ const labels: Record<string, string> = {
   IN_REVIEW: "Đang rà soát",
   REJECTED: "Bị từ chối",
   CONFIRMED: "Đã xác nhận",
+  APPROVED: "Đã duyệt",
+  REVERSED: "Đã đảo",
+  PROOF_SUBMITTED: "Đã gửi minh chứng",
   CASH: "Tiền mặt",
   BANK_TRANSFER: "Chuyển khoản",
   ELECTRICITY: "Điện",
@@ -27,7 +30,7 @@ export function InvoiceBadge({ status }: { status: InvoiceStatus | string }) {
   const tone =
     status === "PAID" || status === "CONFIRMED"
       ? "bg-emerald-100 text-emerald-700"
-      : status === "OVERDUE" || status === "REJECTED"
+      : status === "OVERDUE" || status === "REJECTED" || status === "REVERSED"
         ? "bg-red-100 text-red-700"
         : status === "PARTIALLY_PAID" || status === "PENDING"
           ? "bg-amber-100 text-amber-700"

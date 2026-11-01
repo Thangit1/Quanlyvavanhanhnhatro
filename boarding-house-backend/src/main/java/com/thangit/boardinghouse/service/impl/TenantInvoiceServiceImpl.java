@@ -41,7 +41,7 @@ public class TenantInvoiceServiceImpl implements TenantInvoiceService {
     @Override @Transactional public PaymentSession createPaymentSession(AuthenticatedUser p,long invoiceId,String key,CreatePaymentSession request){
         tenant(p);if(key==null||key.isBlank()||key.length()>100)throw bad("IDEMPOTENCY_KEY_REQUIRED","Thiếu khóa chống gửi trùng hợp lệ.");
         PaymentSession prior=repository.session(p.id(),key.trim()).orElse(null);
-        if(prior!=null){if(prior.invoiceId()!=invoiceId)throw conflict("IDEMPOTENCY_KEY_REUSED","Khóa chống gửi trùng đã được dùng cho hóa đơn khác.");return prior;}
+        if(prior!=null){if(prior.invoiceId()!=invoiceId||prior.amount().compareTo(request.amount())!=0||!prior.paymentMethod().equals(request.paymentMethod()))throw conflict("IDEMPOTENCY_KEY_REUSED","Khóa chống gửi trùng đã được dùng với nội dung thanh toán khác.");return prior;}
         Map<String,Object> i=owned(p,invoiceId,true);assertPayable(i,request.amount());
         List<PaymentMethod> methods=methods(i);PaymentMethod method=methods.stream().filter(x->x.code().equals(request.paymentMethod())).findFirst()
             .orElseThrow(()->bad("PAYMENT_METHOD_UNAVAILABLE","Phương thức thanh toán chưa được chủ trọ cấu hình."));
@@ -49,7 +49,7 @@ public class TenantInvoiceServiceImpl implements TenantInvoiceService {
         if(!partial&&request.amount().compareTo(remaining)!=0)throw bad("PARTIAL_PAYMENT_DISABLED","Hóa đơn này yêu cầu thanh toán toàn bộ số tiền còn lại.");
         String content="BANK_TRANSFER".equals(method.code())?transferContent(method.transferContent(),String.valueOf(i.get("code")),p.id()):null;
         PaymentSession created=repository.createSession(invoiceId,p.id(),request.amount(),request.paymentMethod(),key.trim(),content);
-        if(created.invoiceId()!=invoiceId)throw conflict("IDEMPOTENCY_KEY_REUSED","Khóa chống gửi trùng đã được dùng cho hóa đơn khác.");
+        if(created.invoiceId()!=invoiceId||created.amount().compareTo(request.amount())!=0||!created.paymentMethod().equals(request.paymentMethod()))throw conflict("IDEMPOTENCY_KEY_REUSED","Khóa chống gửi trùng đã được dùng với nội dung thanh toán khác.");
         return created;
     }
 
@@ -60,7 +60,9 @@ public class TenantInvoiceServiceImpl implements TenantInvoiceService {
         String mime=detectedMime(bytes);if(mime==null)throw bad("PROOF_TYPE_INVALID","Chỉ chấp nhận JPG, PNG, WEBP hoặc PDF hợp lệ.");
         if(sessionId!=null){PaymentSession s=repository.sessionById(p.id(),invoiceId,sessionId).orElseThrow(()->bad("PAYMENT_SESSION_INVALID","Phiên thanh toán không hợp lệ."));
             if(s.expiresAt().isBefore(LocalDateTime.now())||!"AWAITING_TRANSFER".equals(s.status()))throw bad("PAYMENT_SESSION_EXPIRED","Phiên thanh toán đã hết hạn hoặc không còn hiệu lực.");
-            if(!"BANK_TRANSFER".equals(s.paymentMethod())||s.amount().compareTo(amount)!=0)throw bad("PAYMENT_SESSION_MISMATCH","Minh chứng không khớp với phiên thanh toán.");}
+            if(!"BANK_TRANSFER".equals(s.paymentMethod())||s.amount().compareTo(amount)!=0)throw bad("PAYMENT_SESSION_MISMATCH","Minh chứng không khớp với phiên thanh toán.");
+            if(repository.proofExistsForSession(sessionId))throw conflict("PAYMENT_PROOF_DUPLICATE","Phiên thanh toán đã có minh chứng đang chờ hoặc đã được duyệt.");}
+        if(reference!=null&&!reference.isBlank()&&repository.proofReferenceExists(p.id(),invoiceId,reference))throw conflict("PAYMENT_PROOF_REFERENCE_DUPLICATE","Mã giao dịch này đã được gửi cho hóa đơn.");
         long id=repository.createProof(sessionId,invoiceId,p.id(),amount,at,bank,reference,safeName(file.getOriginalFilename()),mime,bytes,note);
         repository.history(invoiceId,"PAYMENT_PROOF_SUBMITTED",String.valueOf(i.get("status")),p.id());
         return repository.proofs(invoiceId).stream().filter(x->x.id()==id).findFirst().orElseThrow();
@@ -109,7 +111,7 @@ public class TenantInvoiceServiceImpl implements TenantInvoiceService {
     private static boolean has(Map<String,Object>m,String k){return str(m,k)!=null&&!str(m,k).isBlank();}private static String str(Map<String,Object>m,String k){Object v=m.get(k);return v==null?null:String.valueOf(v);}
     private static String clean(String v){return v==null||v.isBlank()?null:v.trim();}private static String string(Map<String,Object>m,String k){Object v=m.get(k);return v==null?null:String.valueOf(v);}
     private static BigDecimal money(Map<String,Object>m,String k){Object v=m.get(k);return v==null?BigDecimal.ZERO:v instanceof BigDecimal b?b:new BigDecimal(String.valueOf(v));}private static long longValue(Map<String,Object>m,String k){return ((Number)m.get(k)).longValue();}
-    private static LocalDate date(Map<String,Object>m,String k){Object v=m.get(k);return v instanceof LocalDate d?d:null;}private static String period(LocalDate d){return d==null?null:String.format("%02d/%d",d.getMonthValue(),d.getYear());}
+    private static LocalDate date(Map<String,Object>m,String k){Object v=m.get(k);if(v instanceof LocalDate d)return d;if(v instanceof java.sql.Date d)return d.toLocalDate();if(v instanceof LocalDateTime d)return d.toLocalDate();if(v instanceof java.sql.Timestamp d)return d.toLocalDateTime().toLocalDate();return null;}private static String period(LocalDate d){return d==null?null:String.format("%02d/%d",d.getMonthValue(),d.getYear());}
     private static String effective(Map<String,Object>i){String s=String.valueOf(i.get("status"));return !Set.of("PAID","CANCELLED","DRAFT").contains(s)&&money(i,"remaining_amount").signum()>0&&date(i,"due_date").isBefore(LocalDate.now())?"OVERDUE":s;}
     private static AuthException bad(String c,String m){return new AuthException(HttpStatus.BAD_REQUEST,c,m);}private static AuthException conflict(String c,String m){return new AuthException(HttpStatus.CONFLICT,c,m);}private static AuthException notFound(String m){return new AuthException(HttpStatus.NOT_FOUND,"TENANT_INVOICE_NOT_FOUND",m);}
 }

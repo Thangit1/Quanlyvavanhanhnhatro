@@ -29,7 +29,7 @@ public class TenantContractRepository {
         };
         String sql = """
                 SELECT c.id,c.code,p.name property_name,p.address property_address,r.code room_code,
-                       c.start_date,c.end_date,r.monthly_rent,c.deposit_amount,c.status,
+                       c.start_date,c.end_date,COALESCE((SELECT rv.unit_price FROM billing_rate_versions rv WHERE rv.contract_id=c.id AND rv.code='RENT' AND rv.effective_date<=CURRENT_DATE ORDER BY rv.effective_date DESC LIMIT 1),c.agreed_monthly_rent) monthly_rent,c.deposit_amount,c.status,
                        EXISTS(SELECT 1 FROM contract_documents d
                               WHERE d.contract_id=c.id AND d.tenant_visible=TRUE AND d.file_content IS NOT NULL) has_document,
                        EXISTS(SELECT 1 FROM contract_extension_requests er
@@ -85,7 +85,7 @@ public class TenantContractRepository {
                        c.reservation_amount,c.management_fee,c.fixed_service_fee,c.discount_amount,
                        p.id property_id,p.name property_name,p.address property_address,
                        r.building_name,r.floor_name,r.id room_id,r.code room_code,r.room_type,r.area,
-                       r.capacity,r.status room_status,r.image_url,r.monthly_rent,c.occupant_count,
+                       r.capacity,r.status room_status,r.image_url,COALESCE((SELECT rv.unit_price FROM billing_rate_versions rv WHERE rv.contract_id=c.id AND rv.code='RENT' AND rv.effective_date<=CURRENT_DATE ORDER BY rv.effective_date DESC LIMIT 1),c.agreed_monthly_rent) monthly_rent,c.occupant_count,
                        owner.full_name landlord_name,owner.phone landlord_phone,owner.email landlord_email,
                        tenant.full_name tenant_name,tenant.phone tenant_phone,tenant.email tenant_email
                 FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id
@@ -134,9 +134,17 @@ public class TenantContractRepository {
 
     public List<OccupantInfo> occupants(Long contractId) {
         return jdbc.sql("""
-                SELECT id,full_name,relationship,move_in_date,residence_status,
-                       temporary_residence_status,identity_last_four
-                FROM contract_occupants WHERE contract_id=:id ORDER BY move_in_date
+                SELECT tr.id,tp.full_name,tr.relationship,tr.move_in_date,tr.status residence_status,
+                       'NOT_DECLARED' temporary_residence_status,RIGHT(tp.identity_number,4) identity_last_four
+                FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id
+                WHERE tr.contract_id=:id AND tr.residence_role<>'REPRESENTATIVE'
+                UNION ALL
+                SELECT co.id,co.full_name,co.relationship,co.move_in_date,co.residence_status,
+                       co.temporary_residence_status,co.identity_last_four
+                FROM contract_occupants co WHERE co.contract_id=:id AND NOT EXISTS(
+                  SELECT 1 FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id
+                  WHERE tr.contract_id=co.contract_id AND tp.full_name=co.full_name AND tr.move_in_date=co.move_in_date)
+                ORDER BY move_in_date
                 """).param("id", contractId).query((rs, row) -> new OccupantInfo(
                 rs.getLong("id"), rs.getString("full_name"), rs.getString("relationship"),
                 rs.getObject("move_in_date", LocalDate.class), rs.getString("residence_status"),

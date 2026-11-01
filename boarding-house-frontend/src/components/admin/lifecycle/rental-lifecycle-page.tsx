@@ -1,5 +1,9 @@
 "use client";
+
+import { ContractOnboardingPanel } from "@/components/shared/contract-onboarding-panel";
+import { CheckoutSettlementPanel } from "@/components/shared/checkout-settlement-panel";
 import { useState } from "react";
+import { DepositLedgerPanel } from "@/components/shared/deposit-ledger-panel";
 import {
   ArrowRight,
   CalendarCheck,
@@ -34,6 +38,7 @@ import type {
 type Tab = "booking" | "checkin" | "checkout";
 type Dialog =
   | { kind: "booking" }
+  | { kind: "extend-booking"; row: BookingRow }
   | { kind: "contract"; row: BookingRow }
   | { kind: "prepare-checkin" }
   | { kind: "complete-checkin"; row: CheckinRow }
@@ -69,6 +74,7 @@ export function RentalLifecyclePage() {
             mutations={mutations}
           />
         )}
+        <DepositLedgerPanel portal="admin" propertyId={propertyId} />
       </div>
       {dialog && query.data && (
         <WorkflowDialog
@@ -247,6 +253,11 @@ function BookingTable({
   if (!rows.length) return <EmptyState text="Chưa có booking giữ phòng." />;
   return (
     <div className="overflow-x-auto">
+      {mutation.isError && (
+        <p role="alert" className="mb-3 text-sm text-red-700">
+          {apiErrorMessage(mutation.error)}
+        </p>
+      )}
       <table className={table}>
         <thead>
           <tr>
@@ -273,6 +284,12 @@ function BookingTable({
               <td>
                 {formatDate(r.reservationStart)}
                 <small>đến {formatDate(r.reservationEnd)}</small>
+                {["RESERVED", "DEPOSITED"].includes(r.status) &&
+                  r.reservationEnd <= today && (
+                    <small className="text-amber-700">
+                      Đã quá hạn; chờ tác vụ hết hạn. Không thể lập hợp đồng.
+                    </small>
+                  )}
               </td>
               <td>
                 {formatCurrency(r.depositAmount)}
@@ -284,33 +301,37 @@ function BookingTable({
               <td>
                 <div className="flex justify-end gap-2">
                   {r.status === "RESERVED" && (
-                    <button
-                      className={linkButton}
-                      onClick={() =>
-                        void mutation.mutateAsync({
-                          id: r.id,
-                          status: "DEPOSITED",
-                          reason: "Đã xác nhận tiền giữ chỗ",
-                          version: r.version,
-                        })
-                      }
-                    >
-                      Xác nhận cọc
-                    </button>
+                    <span className="text-xs text-slate-500">
+                      Thu tiền qua sổ giữ chỗ bên dưới
+                    </span>
                   )}
-                  {["RESERVED", "DEPOSITED"].includes(r.status) && (
-                    <button
-                      className={linkButton}
-                      onClick={() => setDialog({ kind: "contract", row: r })}
-                    >
-                      Tạo HĐ
-                    </button>
-                  )}
+                  {r.reservationEnd > today &&
+                    (r.status === "DEPOSITED" ||
+                      (r.status === "RESERVED" &&
+                        Number(r.depositAmount) === 0)) && (
+                      <button
+                        className={linkButton}
+                        onClick={() => setDialog({ kind: "contract", row: r })}
+                      >
+                        Tạo HĐ
+                      </button>
+                    )}
+                  {["RESERVED", "DEPOSITED"].includes(r.status) &&
+                    r.reservationEnd > today && (
+                      <button
+                        className={linkButton}
+                        onClick={() =>
+                          setDialog({ kind: "extend-booking", row: r })
+                        }
+                      >
+                        Gia hạn giữ chỗ
+                      </button>
+                    )}
                   {["RESERVED", "DEPOSITED"].includes(r.status) && (
                     <button
                       className="text-xs font-semibold text-red-600"
                       onClick={() =>
-                        void mutation.mutateAsync({
+                        mutation.mutate({
                           id: r.id,
                           status: "CANCELLED",
                           reason: "Hủy bởi quản lý",
@@ -436,9 +457,9 @@ function CheckoutTable({
                 <small>Nợ {formatCurrency(r.outstandingDebt)}</small>
               </td>
               <td>
-                {r.status === "COMPLETED" ? (
+                {["COMPLETED", "SETTLEMENT"].includes(r.status) ? (
                   <>
-                    Hoàn {formatCurrency(r.refundAmount)}
+                    Phải hoàn {formatCurrency(r.refundAmount)}
                     <small>Thu thêm {formatCurrency(r.balanceDue)}</small>
                   </>
                 ) : (
@@ -449,7 +470,7 @@ function CheckoutTable({
                 <StatusBadge status={r.status} />
               </td>
               <td className="text-right">
-                {r.status !== "COMPLETED" && (
+                {r.id > 0 && (
                   <button
                     className={linkButton}
                     onClick={() =>
@@ -484,6 +505,7 @@ function WorkflowDialog({
   const [property, setProperty] = useState(data.properties[0]?.id ?? 0);
   const title = {
     booking: "Giữ phòng mới",
+    "extend-booking": "Gia hạn giữ chỗ",
     contract: "Tạo hợp đồng từ booking",
     "prepare-checkin": "Lập phiếu check-in",
     "complete-checkin": "Hoàn tất nhận phòng",
@@ -498,6 +520,13 @@ function WorkflowDialog({
       num = (k: string) => Number(f.get(k) || 0),
       str = (k: string) => String(f.get(k) || "");
     try {
+      if (dialog.kind === "extend-booking")
+        await mutations.extendBooking.mutateAsync({
+          id: dialog.row.id,
+          reservationEnd: str("end"),
+          reason: str("note"),
+          version: dialog.row.version,
+        });
       if (dialog.kind === "booking")
         await mutations.createBooking.mutateAsync({
           tenantProfileId: num("tenant"),
@@ -516,6 +545,21 @@ function WorkflowDialog({
           depositAmount: num("deposit"),
           paymentDueDay: num("due"),
           noticePeriodDays: num("notice"),
+          reservationTransferAmount: num("reservationTransfer"),
+          monthlyRent: num("monthlyRent"),
+          initialPaymentRequired: f.get("initialPaymentRequired") === "on",
+          utilityRates: ["ELECTRICITY", "WATER"].map((code) => ({
+            code,
+            name: code === "ELECTRICITY" ? "Điện" : "Nước",
+            calculationMethod: str(`${code}-method`),
+            unitPrice: num(`${code}-price`),
+            unit:
+              str(`${code}-method`) === "METER"
+                ? code === "ELECTRICITY"
+                  ? "kWh"
+                  : "m3"
+                : "tháng",
+          })),
         });
       if (dialog.kind === "prepare-checkin")
         await mutations.prepareCheckin.mutateAsync({
@@ -570,7 +614,36 @@ function WorkflowDialog({
       setBusy(false);
     }
   };
+  if (dialog.kind === "complete-checkin")
+    return (
+      <div className="fixed inset-0 z-[80] overflow-y-auto bg-slate-950/50 p-6">
+        <div className="mx-auto max-w-3xl rounded-2xl bg-white p-5">
+          <button className="mb-4 text-blue-700" onClick={close}>
+            Đóng
+          </button>
+          <ContractOnboardingPanel
+            portal="admin"
+            contractId={dialog.row.contractId}
+          />
+        </div>
+      </div>
+    );
+  if (dialog.kind === "complete-checkout")
+    return (
+      <div className="fixed inset-0 z-[80] overflow-y-auto bg-slate-950/50 p-6">
+        <div className="mx-auto max-w-4xl rounded-2xl bg-white p-5">
+          <button className="mb-4 text-blue-700" onClick={close}>
+            Đóng
+          </button>
+          <CheckoutSettlementPanel
+            portal="admin"
+            contractId={dialog.row.contractId}
+          />
+        </div>
+      </div>
+    );
   const availableRooms = data.rooms.filter(
+    // Availability is still enforced again at the backend.
     (x) => x.parentId === property && ["VACANT", "READY"].includes(x.status),
   );
   const tenants = data.tenants.filter((x) => x.parentId === property);
@@ -595,8 +668,24 @@ function WorkflowDialog({
               {error}
             </p>
           )}
+          {dialog.kind === "extend-booking" && (
+            <Field label="Ngày hết hạn mới (không bao gồm)">
+              <input
+                required
+                type="date"
+                name="end"
+                min={dialog.row.reservationEnd}
+                defaultValue={dialog.row.reservationEnd}
+                className={input}
+              />
+            </Field>
+          )}
           {dialog.kind === "booking" && (
             <>
+              <p className="text-xs text-slate-500">
+                Phòng được giữ ngay khi tạo booking. Hệ thống chưa nhận nhiều
+                lịch giữ chỗ tương lai trên cùng phòng.
+              </p>
               <Field label="Nhà trọ">
                 <select
                   required
@@ -658,6 +747,46 @@ function WorkflowDialog({
                 {dialog.row.roomCode}
               </p>
               <DatePair />
+              <Field label="Giá thuê thỏa thuận mỗi tháng">
+                <input
+                  required
+                  min="0"
+                  step="0.01"
+                  name="monthlyRent"
+                  type="number"
+                  className={input}
+                />
+              </Field>
+              {["ELECTRICITY", "WATER"].map((code) => (
+                <div key={code} className="grid grid-cols-2 gap-3">
+                  <Field
+                    label={
+                      code === "ELECTRICITY"
+                        ? "Cách tính điện"
+                        : "Cách tính nước"
+                    }
+                  >
+                    <select required name={`${code}-method`} className={input}>
+                      <option value="METER">Đồng hồ riêng</option>
+                      <option value="FIXED">Phí cố định / không thu</option>
+                    </select>
+                  </Field>
+                  <Field label="Đơn giá thỏa thuận">
+                    <input
+                      required
+                      min="0"
+                      step="0.01"
+                      name={`${code}-price`}
+                      type="number"
+                      className={input}
+                    />
+                  </Field>
+                </div>
+              ))}
+              <label className="flex gap-2 text-sm">
+                <input type="checkbox" name="initialPaymentRequired" />
+                Yêu cầu thanh toán hóa đơn thuê đầu kỳ trước nhận phòng
+              </label>
               <Field label="Tiền cọc hợp đồng">
                 <input
                   required
@@ -668,6 +797,20 @@ function WorkflowDialog({
                   className={input}
                 />
               </Field>
+              <Field label="Tiền giữ chỗ được thống nhất chuyển sang cọc">
+                <input
+                  required
+                  min="0"
+                  name="reservationTransfer"
+                  type="number"
+                  defaultValue={dialog.row.depositAmount}
+                  className={input}
+                />
+              </Field>
+              <p className="text-xs text-slate-500">
+                Chỉ chuyển tiền đã thực nhận. Phần giữ chỗ còn dư được theo dõi
+                riêng và phải xử lý theo thỏa thuận.
+              </p>
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Ngày hạn thanh toán">
                   <input
@@ -716,47 +859,6 @@ function WorkflowDialog({
               </Field>
             </>
           )}
-          {dialog.kind === "complete-checkin" && (
-            <>
-              <p className="rounded-xl bg-blue-50 p-3 text-sm">
-                {dialog.row.contractCode} · {dialog.row.tenantName} · Phòng{" "}
-                {dialog.row.roomCode}
-              </p>
-              <Checklist />
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Chỉ số điện">
-                  <input
-                    required
-                    min="0"
-                    step="0.01"
-                    name="electricity"
-                    type="number"
-                    className={input}
-                  />
-                </Field>
-                <Field label="Chỉ số nước">
-                  <input
-                    required
-                    min="0"
-                    step="0.01"
-                    name="water"
-                    type="number"
-                    className={input}
-                  />
-                </Field>
-              </div>
-              <Field label="Số khóa/thẻ bàn giao">
-                <input
-                  required
-                  min="0"
-                  name="keys"
-                  type="number"
-                  defaultValue="1"
-                  className={input}
-                />
-              </Field>
-            </>
-          )}
           {dialog.kind === "request-checkout" && (
             <>
               <Field label="Hợp đồng đang thuê">
@@ -788,77 +890,13 @@ function WorkflowDialog({
               </Field>
             </>
           )}
-          {dialog.kind === "complete-checkout" && (
-            <>
-              <div className="rounded-xl bg-amber-50 p-3 text-sm">
-                <strong>
-                  {dialog.row.contractCode} · Phòng {dialog.row.roomCode}
-                </strong>
-                <p className="mt-1">
-                  Cọc {formatCurrency(dialog.row.depositHeld)} · Công nợ hiện
-                  tại {formatCurrency(dialog.row.outstandingDebt)}
-                </p>
-              </div>
-              <Field label="Ngày trả thực tế">
-                <input
-                  required
-                  name="date"
-                  type="date"
-                  defaultValue={today}
-                  className={input}
-                />
-              </Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Chỉ số điện cuối">
-                  <input
-                    min="0"
-                    step="0.01"
-                    name="electricity"
-                    type="number"
-                    className={input}
-                  />
-                </Field>
-                <Field label="Chỉ số nước cuối">
-                  <input
-                    min="0"
-                    step="0.01"
-                    name="water"
-                    type="number"
-                    className={input}
-                  />
-                </Field>
-              </div>
-              <div className="rounded-xl border border-slate-200 p-3">
-                <p className="mb-3 text-sm font-bold">
-                  Chi phí phát sinh (nếu có)
-                </p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <select name="chargeType" className={input}>
-                    <option value="DAMAGE">Hư hỏng</option>
-                    <option value="UTILITY">Điện nước cuối kỳ</option>
-                    <option value="CLEANING">Vệ sinh</option>
-                    <option value="PENALTY">Phạt</option>
-                    <option value="OTHER">Khác</option>
-                  </select>
-                  <input
-                    min="0"
-                    name="chargeAmount"
-                    type="number"
-                    defaultValue="0"
-                    className={input}
-                  />
-                </div>
-                <input
-                  name="chargeDescription"
-                  placeholder="Mô tả khoản phí"
-                  className={`${input} mt-3`}
-                />
-              </div>
-            </>
-          )}
           {!["request-checkout"].includes(dialog.kind) && (
             <Field label="Ghi chú">
-              <textarea name="note" className={`${input} min-h-20`} />
+              <textarea
+                required={dialog.kind === "extend-booking"}
+                name="note"
+                className={`${input} min-h-20`}
+              />
             </Field>
           )}
           <div className="flex justify-end gap-2 border-t pt-4">
@@ -894,7 +932,7 @@ function DatePair() {
           className={input}
         />
       </Field>
-      <Field label="Ngày kết thúc">
+      <Field label="Ngày kết thúc (không bao gồm)">
         <input
           required
           name="end"
@@ -903,25 +941,6 @@ function DatePair() {
           className={input}
         />
       </Field>
-    </div>
-  );
-}
-function Checklist() {
-  return (
-    <div className="space-y-2 rounded-xl border border-slate-200 p-4">
-      {[
-        ["identity", "Đã đối chiếu CCCD"],
-        ["contractVerified", "Hợp đồng đã ký/xác nhận"],
-        ["depositVerified", "Đã xác nhận tiền cọc"],
-      ].map(([name, label]) => (
-        <label
-          key={name}
-          className="flex items-center gap-3 text-sm font-semibold"
-        >
-          <input required name={name} type="checkbox" className="size-4" />
-          {label}
-        </label>
-      ))}
     </div>
   );
 }

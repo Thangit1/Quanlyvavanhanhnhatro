@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { MonthlyBillingPanel } from "@/components/shared/monthly-billing-panel";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/admin-shell";
@@ -94,6 +95,9 @@ export function InvoiceFormPage() {
       readOnly
     >
       <div className="mx-auto max-w-5xl space-y-5">
+        {form.contractId > 0 && (
+          <MonthlyBillingPanel contractId={form.contractId} />
+        )}
         <div className="flex gap-2 overflow-x-auto">
           {[
             "Phòng & kỳ",
@@ -313,7 +317,7 @@ export function InvoiceFormPage() {
                       })
                     }
                   />
-                  Chuyển công nợ kỳ trước
+                  Hiển thị nợ cũ để đối chiếu (không cộng vào hóa đơn mới)
                 </label>
                 <Field label="Ghi chú">
                   <textarea

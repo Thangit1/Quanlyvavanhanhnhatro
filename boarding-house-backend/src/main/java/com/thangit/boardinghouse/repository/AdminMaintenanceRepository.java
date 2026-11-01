@@ -19,8 +19,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AdminMaintenanceRepository {
     private final JdbcClient jdbc;
+    public void requireExport(com.thangit.boardinghouse.security.AuthenticatedUser p,Long property){new com.thangit.boardinghouse.security.PropertyAuthorization(jdbc,new com.thangit.boardinghouse.security.SecurityAudit(jdbc)).requireExport(p,property);}
 
-    public AdminMaintenanceRepository(JdbcClient jdbc) { this.jdbc = jdbc; }
+    private final com.thangit.boardinghouse.service.RoomLifecycleGuard rooms;
+    public AdminMaintenanceRepository(JdbcClient jdbc,com.thangit.boardinghouse.service.RoomLifecycleGuard rooms) { this.jdbc = jdbc;this.rooms=rooms; }
 
     private String scope(RoleCode role, String propertyAlias) {
         if (role == RoleCode.OWNER) return propertyAlias + ".owner_id=:userId";
@@ -101,7 +103,7 @@ public class AdminMaintenanceRepository {
                        String priority, boolean risk, LocalDateTime detectedAt,
                        LocalDateTime preferredAt, LocalDateTime slaDueAt, BigDecimal estimated,
                        String responsibility) {
-        KeyHolder keys = new GeneratedKeyHolder();
+        if(roomId!=null)rooms.maintenanceOpened(roomId,userId);KeyHolder keys = new GeneratedKeyHolder();
         jdbc.sql("""
                 INSERT INTO maintenance_requests(property_id,building_id,floor_id,room_id,asset_id,tenant_id,reporter_id,reporter_type,source,maintenance_type,code,title,description,issue_type,priority,safety_risk,detected_at,preferred_service_time,sla_due_at,estimated_cost,cost_responsibility,created_by)
                 SELECT :propertyId,r.building_id,r.floor_id,:roomId,:assetId,CASE WHEN :source='TENANT' THEN :reporterId END,:reporterId,:source,:source,:type,CONCAT('BT-',DATE_FORMAT(NOW(),'%Y%m%d'),'-',LPAD(FLOOR(RAND()*100000),5,'0')),:title,:description,:category,:priority,:risk,:detectedAt,:preferredAt,:slaDueAt,:estimated,:responsibility,:userId
@@ -204,6 +206,7 @@ public class AdminMaintenanceRepository {
     }
 
     public void history(long id, String action, String previous, String next, String description, long actor) {
+        if("REOPENED".equals(next))jdbc.sql("SELECT room_id FROM maintenance_requests WHERE id=:id AND room_id IS NOT NULL").param("id",id).query(Long.class).optional().ifPresent(room->rooms.maintenanceOpened(room,actor));
         jdbc.sql("INSERT INTO maintenance_history(maintenance_request_id,action,previous_status,new_status,description,performed_by) VALUES(:id,:action,:previous,:next,:description,:actor)")
                 .param("id", id).param("action", action).param("previous", previous).param("next", next)
                 .param("description", description).param("actor", actor).update();

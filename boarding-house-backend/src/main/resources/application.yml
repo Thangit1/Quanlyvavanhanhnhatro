@@ -7,6 +7,10 @@ spring:
       - optional:file:.env[.properties]
   profiles:
     default: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 32MB
   jpa:
     open-in-view: false
     hibernate:
@@ -25,6 +29,15 @@ server:
     include-message: never
     include-stacktrace: never
 
+logging:
+  level:
+    org.springframework.jdbc.core: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.http: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO
+
 springdoc:
   api-docs:
     path: /api-docs
@@ -34,7 +47,7 @@ springdoc:
 app:
   security:
     jwt:
-      secret: ${JWT_SECRET:change_me_for_local_development_only_32_bytes}
+      secret: ${JWT_SECRET}
       access-expiration: ${JWT_ACCESS_EXPIRATION:900000}
       refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
     cookie:

@@ -16,7 +16,8 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    public JwtAuthenticationFilter(JwtService jwtService) { this.jwtService = jwtService; }
+    private final LiveSessionVerifier sessions;
+    public JwtAuthenticationFilter(JwtService jwtService,LiveSessionVerifier sessions) { this.jwtService = jwtService;this.sessions=sessions; }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -24,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith("Bearer ") && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                AuthenticatedUser principal = jwtService.parseAccessToken(header.substring(7));
+                AuthenticatedUser principal = sessions.verify(jwtService.parseAccessToken(header.substring(7)));
                 var auth = new UsernamePasswordAuthenticationToken(principal, null,
                         List.of(new SimpleGrantedAuthority("ROLE_" + principal.activeRole().name())));
                 SecurityContextHolder.getContext().setAuthentication(auth);

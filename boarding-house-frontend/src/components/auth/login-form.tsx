@@ -12,19 +12,18 @@ import { roleHome, roles, type Role } from "@/types/auth";
 import { Brand } from "./brand";
 import { PasswordInput } from "./password-input";
 import { RoleSelector } from "./role-selector";
+import { emailOrVietnamPhoneSchema } from "@/lib/phone-validation";
+
+const REMEMBERED_IDENTIFIER_KEY = "auth:remembered-identifier";
 
 const schema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Vui lòng nhập email.")
-    .email("Email không đúng định dạng."),
+  email: emailOrVietnamPhoneSchema,
   password: z.string().min(1, "Vui lòng nhập mật khẩu."),
   requestedRole: z.enum(roles, { error: "Vui lòng chọn vai trò truy cập." }),
 });
 type LoginValues = z.infer<typeof schema>;
 const errorMessages: Record<string, string> = {
-  INVALID_CREDENTIALS: "Email hoặc mật khẩu không chính xác.",
+  INVALID_CREDENTIALS: "Email, số điện thoại hoặc mật khẩu không chính xác.",
   ROLE_NOT_ALLOWED: "Tài khoản không có quyền truy cập với vai trò đã chọn.",
   ACCOUNT_LOCKED: "Tài khoản đã bị khóa hoặc ngừng hoạt động.",
   ACCOUNT_INACTIVE: "Tài khoản đã bị khóa hoặc ngừng hoạt động.",
@@ -35,6 +34,7 @@ export function LoginForm() {
   const router = useRouter();
   const [apiError, setApiError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [rememberAccount, setRememberAccount] = useState(false);
   const {
     register,
     handleSubmit,
@@ -43,13 +43,21 @@ export function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "", password: "" },
+    mode: "onChange",
+    defaultValues: { email: "", password: "", requestedRole: "OWNER" },
   });
   useEffect(() => {
     if (!isBootstrapping && user) router.replace(roleHome[user.activeRole]);
   }, [isBootstrapping, router, user]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
+      const rememberedIdentifier = localStorage.getItem(
+        REMEMBERED_IDENTIFIER_KEY,
+      );
+      if (rememberedIdentifier) {
+        setValue("email", rememberedIdentifier);
+        setRememberAccount(true);
+      }
       const reason = new URLSearchParams(window.location.search).get("reason");
       if (reason === "logout") setNotice("Đăng xuất thành công.");
       if (reason === "expired") setApiError("Phiên đăng nhập đã hết hạn.");
@@ -69,6 +77,11 @@ export function LoginForm() {
     setApiError(null);
     try {
       const currentUser = await login(values);
+      if (rememberAccount) {
+        localStorage.setItem(REMEMBERED_IDENTIFIER_KEY, values.email.trim());
+      } else {
+        localStorage.removeItem(REMEMBERED_IDENTIFIER_KEY);
+      }
       const params = new URLSearchParams(window.location.search);
       const redirect = params.get("redirect");
       const safePrefix = `/${currentUser.activeRole.toLowerCase()}/`;
@@ -96,8 +109,22 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-xl rounded-[2rem] border border-slate-200 bg-white px-5 py-8 shadow-2xl shadow-slate-300/60 sm:px-10 sm:py-10">
-      <Brand />
-      <div className="mt-9">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <Brand />
+        <RoleSelector
+          value={selectedRole}
+          disabled={isSubmitting}
+          onChange={(role: Role) =>
+            setValue("requestedRole", role, { shouldValidate: true })
+          }
+        />
+      </div>
+      {errors.requestedRole && (
+        <p className="mt-2 text-right text-sm text-red-600">
+          {errors.requestedRole.message}
+        </p>
+      )}
+      <div className="mt-8">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           Chào mừng trở lại
         </h1>
@@ -131,16 +158,18 @@ export function LoginForm() {
             htmlFor="email"
             className="mb-2 block font-semibold text-slate-700"
           >
-            Email đăng nhập
+            Email hoặc số điện thoại
           </label>
           <input
             id="email"
-            type="email"
-            autoComplete="email"
+            type="text"
+            inputMode="text"
+            autoComplete="username"
             disabled={isSubmitting}
-            placeholder="manager@smarthome.ai"
+            placeholder="Nhập email hoặc số điện thoại"
             {...register("email")}
-            className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 disabled:opacity-60"
+            aria-invalid={Boolean(errors.email)}
+            className={`h-12 w-full rounded-xl border bg-slate-50 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 disabled:opacity-60 ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-100" : "border-slate-300 focus:border-blue-600 focus:ring-blue-100"}`}
           />
           {errors.email && (
             <p className="mt-1.5 text-sm text-red-600">
@@ -172,23 +201,20 @@ export function LoginForm() {
             </p>
           )}
         </div>
-        <fieldset>
-          <legend className="mb-3 font-semibold text-slate-700">
-            Chọn vai trò truy cập
-          </legend>
-          <RoleSelector
-            value={selectedRole}
+        <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600">
+          <input
+            type="checkbox"
+            checked={rememberAccount}
             disabled={isSubmitting}
-            onChange={(role: Role) =>
-              setValue("requestedRole", role, { shouldValidate: true })
-            }
+            onChange={(event) => {
+              const checked = event.target.checked;
+              setRememberAccount(checked);
+              if (!checked) localStorage.removeItem(REMEMBERED_IDENTIFIER_KEY);
+            }}
+            className="size-4 rounded border-slate-300 accent-blue-600"
           />
-          {errors.requestedRole && (
-            <p className="mt-1.5 text-sm text-red-600">
-              {errors.requestedRole.message}
-            </p>
-          )}
-        </fieldset>
+          Ghi nhớ tài khoản
+        </label>
         <button
           type="submit"
           disabled={isSubmitting || isBootstrapping}

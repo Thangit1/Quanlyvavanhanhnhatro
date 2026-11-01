@@ -1,6 +1,10 @@
 "use client";
 import Link from "next/link";
 import {
+  FinancialSummary,
+  FinanceVoucherPanel,
+} from "@/components/shared/management-finance-panel";
+import {
   Bar,
   BarChart,
   CartesianGrid,
@@ -102,22 +106,22 @@ export function ReportOverviewPage() {
           "Hồ sơ cư trú đang hoạt động.",
         ],
         [
-          "Doanh thu thực thu",
+          "Thu dịch vụ sau hoàn tiền",
           formatCurrency(s.confirmedRevenue),
           CircleDollarSign,
           "Chỉ thanh toán CONFIRMED, đã trừ hoàn tiền.",
         ],
         [
-          "Chi phí hợp lệ",
+          "Phiếu chi đã thanh toán",
           formatCurrency(s.confirmedExpense),
           WalletCards,
-          "Khoản chi CONFIRMED hoặc APPROVED trong kỳ.",
+          "Chỉ phiếu PAID, theo ngày thực chi; không gồm chi phí chưa trả.",
         ],
         [
-          "Lợi nhuận",
+          "Dòng tiền thuần",
           formatCurrency(s.profit),
           TrendingUp,
-          "Doanh thu thực thu trừ chi phí hợp lệ.",
+          "Tổng tiền vào trừ tiền ra, gồm cọc; không phải lợi nhuận kế toán.",
         ],
         [
           "Tổng công nợ",
@@ -200,10 +204,15 @@ export function ReportOverviewPage() {
                 />
               ))}
             </section>
+            <FinancialSummary summary={data.summary} />
+            <FinanceVoucherPanel
+              portal="admin"
+              propertyIds={data.scope.propertyIds}
+            />
             <div className="grid gap-5 xl:grid-cols-2">
               <ReportPanel
-                title="Doanh thu và chi phí theo tháng"
-                description="Doanh thu dựa trên thanh toán đã xác nhận; chi phí dựa trên khoản chi hợp lệ."
+                title="Tiền vào và tiền ra theo tháng"
+                description="Giao dịch đã xác nhận, bao gồm thu và hoàn cọc; không phải doanh thu dồn tích."
               >
                 {data.revenueTrend.length ? (
                   <div className="h-72">
@@ -216,13 +225,13 @@ export function ReportOverviewPage() {
                         <Legend />
                         <Bar
                           dataKey="value"
-                          name="Doanh thu"
+                          name="Tiền vào"
                           fill="#2563eb"
                           radius={[5, 5, 0, 0]}
                         />
                         <Bar
                           dataKey="secondaryValue"
-                          name="Chi phí"
+                          name="Tiền ra"
                           fill="#f59e0b"
                           radius={[5, 5, 0, 0]}
                         />

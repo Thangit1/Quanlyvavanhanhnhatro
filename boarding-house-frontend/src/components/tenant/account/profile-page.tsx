@@ -32,6 +32,7 @@ import {
   StatusPill,
 } from "./account-ui";
 import { ErrorState } from "@/components/shared/dashboard-ui";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 export function ProfilePage() {
   const { user } = useAuth(),
     profile = useTenantProfile(user?.activeRole === "TENANT"),
@@ -69,11 +70,25 @@ function ProfileForm({
     [progress, setProgress] = useState(0),
     [requestOpen, setRequestOpen] = useState(false),
     [legalName, setLegalName] = useState(initial.profile.fullName),
-    [reason, setReason] = useState("");
+    [reason, setReason] = useState(""),
+    [phoneTouched, setPhoneTouched] = useState(false),
+    [emergencyPhoneTouched, setEmergencyPhoneTouched] = useState(false);
   const dirty = useMemo(
     () => JSON.stringify(value) !== JSON.stringify(payload(initial)),
     [value, initial],
   );
+  const primaryPhone = value.phone ?? "";
+  const phoneValidation = validateVietnamPhone(primaryPhone);
+  const emergencyPhoneValidation = validateVietnamPhone(
+    value.emergencyContact.phone ?? "",
+    false,
+  );
+  const phoneError = phoneValidation.valid ? "" : phoneValidation.message;
+  const emergencyPhoneError = emergencyPhoneValidation.valid
+    ? ""
+    : emergencyPhoneValidation.message;
+  const hasPhoneError =
+    !phoneValidation.valid || !emergencyPhoneValidation.valid;
   useEffect(() => {
     const warn = (e: BeforeUnloadEvent) => {
       if (dirty) {
@@ -90,6 +105,8 @@ function ProfileForm({
     actions.updateProfile.mutate(value, {
       onSuccess: (data) => {
         setValue(payload(data.profile));
+        setPhoneTouched(false);
+        setEmergencyPhoneTouched(false);
         setMessage("Thông tin cá nhân đã được cập nhật.");
       },
       onError: (e) => setMessage(apiErrorMessage(e)),
@@ -246,10 +263,15 @@ function ProfileForm({
           <Field
             label="Số điện thoại"
             value={value.phone}
+            type="tel"
             inputMode="tel"
             autoComplete="tel"
             required
-            onChange={(v) => change("phone", v)}
+            error={phoneTouched ? phoneError : ""}
+            onChange={(v) => {
+              setPhoneTouched(true);
+              change("phone", v);
+            }}
           />
           <Field
             label="Email liên hệ"
@@ -293,13 +315,17 @@ function ProfileForm({
           <Field
             label="Số điện thoại"
             value={value.emergencyContact.phone}
+            type="tel"
             inputMode="tel"
-            onChange={(v) =>
+            autoComplete="tel"
+            error={emergencyPhoneTouched ? emergencyPhoneError : ""}
+            onChange={(v) => {
+              setEmergencyPhoneTouched(true);
               setValue((x) => ({
                 ...x,
                 emergencyContact: { ...x.emergencyContact, phone: v },
-              }))
-            }
+              }));
+            }}
           />
           <Field
             label="Địa chỉ"
@@ -317,13 +343,17 @@ function ProfileForm({
         <div className="sticky bottom-20 z-10 flex flex-wrap items-center gap-3 rounded-2xl bg-slate-900 p-4 text-white shadow-xl lg:bottom-4">
           <b className="mr-auto">Có thay đổi chưa được lưu</b>
           <button
-            onClick={() => setValue(payload(initial))}
+            onClick={() => {
+              setValue(payload(initial));
+              setPhoneTouched(false);
+              setEmergencyPhoneTouched(false);
+            }}
             className="rounded-xl bg-white/10 px-4 py-2 font-bold"
           >
             Hủy thay đổi
           </button>
           <button
-            disabled={actions.updateProfile.isPending}
+            disabled={actions.updateProfile.isPending || hasPhoneError}
             onClick={save}
             className="rounded-xl bg-blue-500 px-5 py-2 font-bold"
           >
@@ -439,12 +469,14 @@ function Field({
   value,
   onChange,
   type = "text",
+  error,
   ...props
 }: {
   label: string;
   value?: string;
   onChange: (v: string) => void;
   type?: string;
+  error?: string;
   [key: string]: unknown;
 }) {
   return (
@@ -455,8 +487,14 @@ function Field({
         type={type}
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-xl border px-3 py-2.5 font-normal"
+        aria-invalid={Boolean(error)}
+        className={`mt-1 w-full rounded-xl border px-3 py-2.5 font-normal ${error ? "border-red-500 focus:border-red-500 focus:outline-red-200" : ""}`}
       />
+      {error && (
+        <span className="mt-1 block text-xs font-medium text-red-600">
+          {error}
+        </span>
+      )}
     </label>
   );
 }

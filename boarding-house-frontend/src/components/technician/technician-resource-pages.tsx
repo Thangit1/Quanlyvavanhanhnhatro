@@ -33,6 +33,7 @@ import {
   useAccountMutations,
 } from "@/hooks/use-technician";
 import { technicianService } from "@/services/technician.service";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 import { apiErrorMessage } from "@/lib/api-error";
 import {
   Empty,
@@ -539,7 +540,8 @@ export function AccountPage() {
   const q = useTechnicianAccount(),
     m = useAccountMutations();
   const [notice, setNotice] = useState(""),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [phoneError, setPhoneError] = useState("");
   const act = async (fn: () => Promise<unknown>, text: string) => {
     setError("");
     try {
@@ -561,11 +563,18 @@ export function AccountPage() {
   const profile = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
+    const phone = String(f.get("phone") ?? "");
+    const validation = validateVietnamPhone(phone, false);
+    if (!validation.valid) {
+      setPhoneError(validation.message);
+      return;
+    }
+    setPhoneError("");
     void act(
       () =>
         m.profile.mutateAsync({
           email: f.get("email"),
-          phone: f.get("phone"),
+          phone,
           version: t.version,
         }),
       "Đã cập nhật thông tin liên hệ.",
@@ -639,9 +648,19 @@ export function AccountPage() {
             Số điện thoại
             <input
               name="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
               defaultValue={t.phone ?? ""}
-              className="mt-1 min-h-11 w-full rounded-xl border px-3"
+              aria-invalid={Boolean(phoneError)}
+              onChange={() => phoneError && setPhoneError("")}
+              className={`mt-1 min-h-11 w-full rounded-xl border px-3 ${phoneError ? "border-red-500" : ""}`}
             />
+            {phoneError && (
+              <span className="mt-1 block text-xs text-red-600">
+                {phoneError}
+              </span>
+            )}
           </label>
           <button className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">
             Lưu liên hệ

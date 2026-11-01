@@ -142,7 +142,12 @@ export const adminPropertyService = {
   },
   async roomStatus(
     id: number,
-    payload: { status: string; reason?: string; version: number },
+    payload: {
+      status: string;
+      reason?: string;
+      version: number;
+      readinessConfirmed?: boolean;
+    },
   ) {
     const { data } = await apiClient.patch<ApiEnvelope<RoomDetail>>(
       `/admin/rooms/${id}/status`,

@@ -6,6 +6,15 @@ import type {
 } from "@/types/rental-lifecycle";
 
 export const rentalLifecycleService = {
+  async extendBooking(
+    id: number,
+    payload: { reservationEnd: string; reason: string; version: number },
+  ) {
+    await apiClient.patch(
+      `/admin/rental-lifecycle/bookings/${id}/expiry`,
+      payload,
+    );
+  },
   async board(propertyId?: number, signal?: AbortSignal) {
     const { data } = await apiClient.get<ApiEnvelope<LifecycleBoard>>(
       "/admin/rental-lifecycle",
@@ -45,6 +54,16 @@ export const rentalLifecycleService = {
       depositAmount: number;
       paymentDueDay: number;
       noticePeriodDays: number;
+      reservationTransferAmount?: number;
+      monthlyRent?: number;
+      initialPaymentRequired?: boolean;
+      utilityRates?: {
+        code: string;
+        name: string;
+        calculationMethod: string;
+        unitPrice: number;
+        unit: string;
+      }[];
     },
   ) {
     const { data } = await apiClient.post<ApiEnvelope<CreatedWorkflow>>(

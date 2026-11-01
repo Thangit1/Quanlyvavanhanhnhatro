@@ -17,6 +17,7 @@ import {
 } from "@/hooks/use-tenant-maintenance";
 import { tenantMaintenanceService } from "@/services/tenant-maintenance.service";
 import { apiErrorMessage } from "@/lib/api-error";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 import {
   EmptyState,
   ErrorState,
@@ -53,6 +54,7 @@ export function MaintenanceDetailPage({ requestId }: { requestId: number }) {
       </main>
     );
   const d = q.data;
+  const phoneValidation = validateVietnamPhone(phone, false);
   async function action() {
     setNotice("");
     try {
@@ -482,10 +484,18 @@ export function MaintenanceDetailPage({ requestId }: { requestId: number }) {
               <label className="mt-3 block text-sm font-semibold">
                 Số điện thoại (không bắt buộc)
                 <input
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="mt-1 block w-full rounded-xl border p-3"
+                  className={`mt-1 block w-full rounded-xl border p-3 ${phone && !phoneValidation.valid ? "border-red-500" : ""}`}
                 />
+                {phone && !phoneValidation.valid && (
+                  <span className="mt-1 block text-xs text-red-600">
+                    {phoneValidation.message}
+                  </span>
+                )}
               </label>
             )}
             <div className="mt-5 flex justify-end gap-2">
@@ -497,7 +507,11 @@ export function MaintenanceDetailPage({ requestId }: { requestId: number }) {
               </button>
               <button
                 disabled={
-                  !text.trim() || (dialog === "reschedule" && !dateValue)
+                  !text.trim() ||
+                  (dialog === "reschedule" && !dateValue) ||
+                  (dialog === "additional" &&
+                    Boolean(phone) &&
+                    !phoneValidation.valid)
                 }
                 onClick={action}
                 className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40"

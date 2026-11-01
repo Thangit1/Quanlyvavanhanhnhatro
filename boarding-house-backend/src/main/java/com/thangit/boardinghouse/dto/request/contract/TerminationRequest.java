@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.contract;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,6 @@ public record TerminationRequest(
         @Size(max = 1000, message = "Ghi chú không được vượt quá 1000 ký tự.")
         String note,
         @NotBlank(message = "Vui lòng nhập số điện thoại liên hệ.")
-        @Pattern(regexp = "^[0-9+]{9,15}$", message = "Số điện thoại không đúng định dạng.")
+        @Pattern(regexp = VietnamPhones.REGEX, message = VietnamPhones.INVALID_MESSAGE)
         String contactPhone
 ) {}

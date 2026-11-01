@@ -4,6 +4,7 @@ export type ContractStatus =
   | "EXPIRING"
   | "EXPIRED"
   | "TERMINATION_REQUESTED"
+  | "SETTLING"
   | "TERMINATED"
   | "CANCELLED";
 

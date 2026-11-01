@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.auth;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +18,8 @@ public record RegisterRequest(
         @Size(max = 255, message = "Email không được vượt quá 255 ký tự.")
         String email,
 
-        @Pattern(regexp = "^$|^[0-9+]{9,15}$", message = "Số điện thoại không đúng định dạng.")
+        @NotBlank(message = "Số điện thoại là bắt buộc.")
+        @Pattern(regexp = VietnamPhones.REGEX, message = VietnamPhones.INVALID_MESSAGE)
         String phone,
 
         @NotBlank(message = "Vui lòng nhập mật khẩu.")

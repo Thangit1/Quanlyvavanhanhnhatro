@@ -1,7 +1,14 @@
 "use client";
 import Link from "next/link";
+import { AccountingPeriodPanel } from "@/components/shared/accounting-period-panel";
+import {
+  FinancialSummary,
+  FinanceVoucherPanel,
+} from "@/components/shared/management-finance-panel";
+import { DepositLedgerPanel } from "@/components/shared/deposit-ledger-panel";
+import { CheckoutSettlementPanel } from "@/components/shared/checkout-settlement-panel";
 import { useParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import {
   AlertCircle,
   ArrowRight,
@@ -100,7 +107,8 @@ const labels: Record<
   },
   reports: {
     title: "Báo cáo tài chính",
-    subtitle: "Doanh thu, chi phí, công nợ và tuổi nợ",
+    subtitle:
+      "Thu chi quản trị, công nợ và tuổi nợ; không phải báo cáo doanh thu dồn tích",
     empty: "Chưa có dữ liệu báo cáo.",
   },
   exports: {
@@ -203,12 +211,12 @@ export function AccountantDashboardPage() {
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Metric
-          label="Đã thu trong kỳ"
+          label="Thu dịch vụ sau hoàn tiền"
           value={formatCurrency(Number(s.collected ?? 0))}
           icon={TrendingUp}
         />
         <Metric
-          label="Đã chi trong kỳ"
+          label="Phiếu chi đã thanh toán"
           value={formatCurrency(Number(s.spent ?? 0))}
           icon={TrendingDown}
         />
@@ -223,6 +231,15 @@ export function AccountantDashboardPage() {
           icon={ShieldCheck}
         />
       </div>
+      <FinancialSummary summary={s} />
+      <AccountingPeriodPanel
+        propertyId={scope.propertyId}
+        period={scope.period}
+      />
+      <FinanceVoucherPanel
+        portal="accountant"
+        propertyIds={scope.propertyId ? [scope.propertyId] : undefined}
+      />
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Panel title="Thanh toán gần đây">
           <MiniRows rows={d.recentPayments} />
@@ -268,6 +285,12 @@ export function AccountantResourcePage({
         ? [payload as Record<string, unknown>]
         : [];
   const total = (payload as ApiPage | undefined)?.totalElements ?? rows.length;
+  if (resource === "deposits")
+    return (
+      <Main title={meta.title} subtitle={meta.subtitle}>
+        <DepositLedgerPanel portal="accountant" propertyId={scope.propertyId} />
+      </Main>
+    );
   return (
     <Main
       title={meta.title}
@@ -399,6 +422,22 @@ export function AccountantDetailPage({ resource }: { resource: string }) {
       { resource, id, action, payload, key },
       { onSuccess: () => void query.refetch() },
     );
+  if (resource === "deposits")
+    return (
+      <Main
+        title="Chi tiết sổ cọc"
+        subtitle="Giao dịch thực thu, điều chuyển, khấu trừ và hoàn cọc"
+      >
+        <DepositLedgerPanel portal="accountant" depositId={id} />
+        {Number(data?.contract_id ?? data?.contractId) > 0 && (
+          <CheckoutSettlementPanel
+            portal="accountant"
+            contractId={Number(data?.contract_id ?? data?.contractId)}
+            showLedger={false}
+          />
+        )}
+      </Main>
+    );
   if (query.isLoading) return <Loading />;
   if (query.isError || !data)
     return (
@@ -423,6 +462,13 @@ export function AccountantDetailPage({ resource }: { resource: string }) {
               onClick={() => run("issue", { version: Number(data.version) })}
             >
               Phát hành
+            </Primary>
+          )}
+          {resource === "payment-vouchers" && data.status === "DRAFT" && (
+            <Primary
+              onClick={() => run("submit", { version: Number(data.version) })}
+            >
+              Gửi duyệt phiếu chi
             </Primary>
           )}
           {resource === "payment-proofs" && data.status === "PENDING" && (
@@ -658,6 +704,9 @@ function CreateDialog({
 }) {
   const actions = useAccountantActions();
   const [error, setError] = useState("");
+  const paymentAttempt = useRef<{ signature: string; key: string } | null>(
+    null,
+  );
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
@@ -668,7 +717,7 @@ function CreateDialog({
             invoiceId: Number(f.get("invoiceId")),
             amount: Number(f.get("amount")),
             paymentMethod: f.get("method"),
-            paidAt: new Date(String(f.get("date"))).toISOString().slice(0, 19),
+            paidAt: String(f.get("date")),
             referenceCode: f.get("reference") || null,
             note: f.get("description") || null,
             issueReceipt: true,
@@ -678,15 +727,30 @@ function CreateDialog({
             payeeName: f.get("payeeName"),
             amount: Number(f.get("amount")),
             category: f.get("category"),
+            expenseId: f.get("expenseId") ? Number(f.get("expenseId")) : null,
             paymentMethod: f.get("method"),
             voucherDate: f.get("date"),
             description: f.get("description"),
           };
-    const mutation = type === "payment" ? actions.payment : actions.voucher;
-    mutation.mutate(payload, {
-      onSuccess: close,
-      onError: (e) => setError(getApiErrorMessage(e)),
-    });
+    const callbacks = {
+      onSuccess: () => {
+        paymentAttempt.current = null;
+        close();
+      },
+      onError: (e: Error) => setError(getApiErrorMessage(e)),
+    };
+    if (type === "payment") {
+      const signature = JSON.stringify(payload);
+      if (paymentAttempt.current?.signature !== signature)
+        paymentAttempt.current = {
+          signature,
+          key: globalThis.crypto.randomUUID(),
+        };
+      actions.payment.mutate(
+        { payload, idempotencyKey: paymentAttempt.current.key },
+        callbacks,
+      );
+    } else actions.voucher.mutate(payload, callbacks);
   };
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4">
@@ -719,6 +783,15 @@ function CreateDialog({
                 defaultValue={propertyId}
               />
               <Field name="payeeName" label="Người nhận" />
+              <label className="grid gap-1 text-sm">
+                ID chi phí đã ghi nhận (nếu thanh toán khoản có sẵn)
+                <input
+                  name="expenseId"
+                  type="number"
+                  min="1"
+                  className="rounded-xl border border-slate-200 px-3 py-2"
+                />
+              </label>
             </>
           )}
           <Field name="amount" label="Số tiền" type="number" />
@@ -727,7 +800,33 @@ function CreateDialog({
             label="Ngày chứng từ"
             type={type === "payment" ? "datetime-local" : "date"}
           />
-          {type === "voucher" && <Field name="category" label="Nhóm chi phí" />}
+          {type === "voucher" && (
+            <label className="grid gap-1 text-sm">
+              Nhóm chi phí
+              <select
+                name="category"
+                required
+                className="rounded-xl border border-slate-200 px-3 py-2"
+              >
+                {Object.entries({
+                  REPAIR: "Sửa chữa",
+                  MAINTENANCE: "Bảo trì",
+                  MATERIAL: "Vật tư",
+                  UTILITIES: "Điện nước chủ trọ",
+                  PAYROLL: "Nhân sự",
+                  OPERATING: "Vận hành",
+                  OUTSOURCING: "Dịch vụ thuê ngoài",
+                  ASSET_PURCHASE:
+                    "Mua tài sản (không tự tính chi phí vận hành)",
+                  OTHER: "Khác",
+                }).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <label className="text-sm font-medium">
             Phương thức
             <select

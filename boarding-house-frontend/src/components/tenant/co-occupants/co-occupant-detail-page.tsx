@@ -9,6 +9,7 @@ import { tenantCoOccupantService } from "@/services/tenant-co-occupant.service";
 import { ErrorState, PageLoading } from "@/components/shared/dashboard-ui";
 import { apiErrorMessage } from "@/lib/api-error";
 import { formatDate } from "@/lib/format";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 import { Badge, initials } from "./co-occupant-ui";
 
 const today = new Date().toISOString().slice(0, 10);
@@ -33,9 +34,14 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
       </main>
     );
   const d = q.data;
+  const phoneValidation = validateVietnamPhone(phone);
   const submit = async () => {
     if (!date || reason.trim().length < 3 || !phone) {
       setError("Vui lòng nhập đầy đủ ngày, lý do và số điện thoại liên hệ.");
+      return;
+    }
+    if (!phoneValidation.valid) {
+      setError(phoneValidation.message);
       return;
     }
     setPending(true);
@@ -202,10 +208,18 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
               <label className="block text-sm font-semibold">
                 Số điện thoại liên hệ
                 <input
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="mt-1 block w-full rounded-xl border p-3"
+                  className={`mt-1 block w-full rounded-xl border p-3 ${phone && !phoneValidation.valid ? "border-red-500" : ""}`}
                 />
+                {phone && !phoneValidation.valid && (
+                  <span className="mt-1 block text-xs text-red-600">
+                    {phoneValidation.message}
+                  </span>
+                )}
               </label>
               <label className="block text-sm font-semibold">
                 Ghi chú
@@ -225,7 +239,7 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
                 Đóng
               </button>
               <button
-                disabled={pending}
+                disabled={pending || Boolean(phone && !phoneValidation.valid)}
                 onClick={() => void submit()}
                 className="flex-1 rounded-xl bg-red-600 p-3 font-bold text-white disabled:opacity-50"
               >

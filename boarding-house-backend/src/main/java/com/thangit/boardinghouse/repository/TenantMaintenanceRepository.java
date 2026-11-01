@@ -18,7 +18,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TenantMaintenanceRepository {
     private final JdbcClient jdbc;
-    public TenantMaintenanceRepository(JdbcClient jdbc){this.jdbc=jdbc;}
+    private final com.thangit.boardinghouse.service.RoomLifecycleGuard rooms;
+    public TenantMaintenanceRepository(JdbcClient jdbc,com.thangit.boardinghouse.service.RoomLifecycleGuard rooms){this.jdbc=jdbc;this.rooms=rooms;}
 
     public Summary summary(long tenant){return jdbc.sql("""
         SELECT SUM(status NOT IN ('RESOLVED','REJECTED','CANCELLED')) open_count,
@@ -87,7 +88,7 @@ public class TenantMaintenanceRepository {
 
     public Created create(long tenant,AvailableLocation available,Long asset,String area,String title,String description,String category,String priority,
         LocalDateTime detected,boolean risk,boolean continuous,Boolean usable,LocalDate date,String slot,boolean presence,String access,String phone,String note,boolean pets,String key){
-        KeyHolder kh=new GeneratedKeyHolder();Location l=available.location();LocalDateTime preferred=slotStart(date,slot);
+        KeyHolder kh=new GeneratedKeyHolder();Location l=available.location();rooms.maintenanceOpened(l.roomId(),tenant);LocalDateTime preferred=slotStart(date,slot);
         int inserted=jdbc.sql("""
           INSERT IGNORE INTO maintenance_requests(property_id,building_id,floor_id,room_id,area_code,asset_id,tenant_id,reporter_id,reporter_type,source,
             maintenance_type,code,title,description,issue_type,priority,reported_priority,status,safety_risk,continuous_issue,asset_usable,detected_at,
@@ -127,7 +128,7 @@ public class TenantMaintenanceRepository {
         SELECT h.*,u.full_name actor_name FROM maintenance_history h JOIN users u ON u.id=h.performed_by
         WHERE h.maintenance_request_id=:request AND h.visibility='TENANT_VISIBLE' ORDER BY h.created_at
         """).param("request",request).query((r,n)->new Timeline(r.getLong("id"),r.getString("action"),r.getString("previous_status"),r.getString("new_status"),r.getString("description"),r.getString("actor_name"),dt(r,"created_at"))).list();}
-    public void history(long request,String action,String before,String after,String description,long actor){jdbc.sql("INSERT INTO maintenance_history(maintenance_request_id,action,previous_status,new_status,description,visibility,performed_by) VALUES(:request,:action,:before,:after,:description,'TENANT_VISIBLE',:actor)").param("request",request).param("action",action).param("before",before).param("after",after).param("description",description).param("actor",actor).update();}
+    public void history(long request,String action,String before,String after,String description,long actor){if("REOPENED".equals(after))jdbc.sql("SELECT room_id FROM maintenance_requests WHERE id=:id AND room_id IS NOT NULL").param("id",request).query(Long.class).optional().ifPresent(room->rooms.maintenanceOpened(room,actor));jdbc.sql("INSERT INTO maintenance_history(maintenance_request_id,action,previous_status,new_status,description,visibility,performed_by) VALUES(:request,:action,:before,:after,:description,'TENANT_VISIBLE',:actor)").param("request",request).param("action",action).param("before",before).param("after",after).param("description",description).param("actor",actor).update();}
 
     public Schedule schedule(long request){return jdbc.sql("""
         SELECT s.*,sr.response tenant_response,sr.created_at response_at FROM maintenance_schedules s

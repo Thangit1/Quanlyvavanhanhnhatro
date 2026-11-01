@@ -15,9 +15,9 @@ import type { PropertyOption, ReportFilters } from "@/types/admin-report";
 export const reportNav = [
   ["Tổng quan", "/admin/reports"],
   ["Vận hành phòng", "/admin/reports/occupancy"],
-  ["Doanh thu", "/admin/reports/revenue"],
+  ["Thu dịch vụ", "/admin/reports/revenue"],
   ["Chi phí", "/admin/reports/expenses"],
-  ["Lợi nhuận", "/admin/reports/profit"],
+  ["Dòng tiền", "/admin/reports/profit"],
   ["Hóa đơn & công nợ", "/admin/reports/debt"],
   ["Hợp đồng", "/admin/reports/contracts"],
   ["Người thuê", "/admin/reports/tenants"],

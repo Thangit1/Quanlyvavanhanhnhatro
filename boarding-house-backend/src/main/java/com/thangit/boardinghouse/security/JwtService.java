@@ -25,13 +25,16 @@ public class JwtService {
         this.accessExpirationMs = properties.jwt().accessExpiration();
     }
 
-    public String createAccessToken(User user, RoleCode activeRole) {
+    public String createAccessToken(User user, RoleCode activeRole) {return createAccessToken(user,activeRole,null);}
+    public String createAccessToken(User user, RoleCode activeRole,String family) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(user.getId().toString())
                 .id(UUID.randomUUID().toString())
                 .claim("email", user.getEmail())
                 .claim("activeRole", activeRole.name())
+                .claim("securityVersion",user.getSecurityVersion())
+                .claim("sessionFamily",family)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(accessExpirationMs)))
                 .signWith(key)
@@ -43,7 +46,10 @@ public class JwtService {
         return new AuthenticatedUser(
                 Long.valueOf(claims.getSubject()),
                 claims.get("email", String.class),
-                RoleCode.valueOf(claims.get("activeRole", String.class))
+                RoleCode.valueOf(claims.get("activeRole", String.class)),
+                claims.get("securityVersion",Long.class),
+                claims.getIssuedAt()==null?null:claims.getIssuedAt().toInstant(),
+                claims.get("sessionFamily",String.class)
         );
     }
 

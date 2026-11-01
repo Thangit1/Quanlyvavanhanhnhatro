@@ -21,13 +21,11 @@ import {
   FileText,
   Gauge,
   Hammer,
-  Home,
   House,
   Menu,
   Receipt,
   UserRound,
   Users,
-  Wrench,
   X,
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
@@ -41,17 +39,11 @@ import {
   StatusBadge,
 } from "@/components/shared/dashboard-ui";
 import { TenantUserMenu } from "@/components/tenant/tenant-user-menu";
-
-const navigation = [
-  ["Tổng quan", "/tenant/home", Home],
-  ["Hợp đồng", "/tenant/contracts", FileText],
-  ["Hóa đơn", "/tenant/invoices", Receipt],
-  ["Thanh toán", "/tenant/payments", CircleDollarSign],
-  ["Sửa chữa", "/tenant/maintenance", Wrench],
-  ["Người ở cùng", "/tenant/co-occupants", Users],
-  ["Thông báo", "/tenant/notifications", Bell],
-  ["Tài khoản", "/tenant/account", UserRound],
-] as const;
+import {
+  isTenantNavigationActive,
+  tenantMobileNavigationItems,
+  tenantNavigationItems,
+} from "@/constants/tenant-navigation";
 const quickActions = [
   ["Xem hóa đơn", "/tenant/invoices", Receipt],
   ["Thanh toán", "/tenant/payments", CircleDollarSign],
@@ -158,17 +150,21 @@ export function TenantHomeDashboard() {
               </button>
             </div>
             <nav className="mt-6 space-y-1">
-              {navigation.map(([label, href, Icon]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setMenuOpen(false)}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-3 ${href === "/tenant/home" ? "bg-blue-50 font-semibold text-blue-700" : "text-slate-600 hover:bg-slate-50"}`}
-                >
-                  <Icon className="size-5" />
-                  {label}
-                </Link>
-              ))}
+              {tenantNavigationItems.map(({ label, href, icon: Icon }) => {
+                const active = isTenantNavigationActive(pathname, href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${active ? "bg-blue-600 font-semibold text-white shadow-md shadow-blue-200" : "text-slate-600 hover:bg-slate-50"}`}
+                  >
+                    <Icon className="size-5" />
+                    {label}
+                  </Link>
+                );
+              })}
             </nav>
           </aside>
         </div>
@@ -177,16 +173,20 @@ export function TenantHomeDashboard() {
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[220px_1fr]">
         <aside className="hidden lg:block">
           <nav className="sticky top-24 space-y-1">
-            {navigation.map(([label, href, Icon]) => (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm ${href === "/tenant/home" ? "bg-blue-600 font-semibold text-white shadow-md shadow-blue-200" : "text-slate-600 hover:bg-white"}`}
-              >
-                <Icon className="size-5" />
-                {label}
-              </Link>
-            ))}
+            {tenantNavigationItems.map(({ label, href, icon: Icon }) => {
+              const active = isTenantNavigationActive(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${active ? "bg-blue-600 font-semibold text-white shadow-md shadow-blue-200" : "text-slate-600 hover:bg-white"}`}
+                >
+                  <Icon className="size-5" />
+                  {label}
+                </Link>
+              );
+            })}
           </nav>
         </aside>
         <main className="min-w-0 space-y-6">
@@ -496,26 +496,24 @@ export function TenantHomeDashboard() {
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white px-1 pb-[env(safe-area-inset-bottom)] lg:hidden">
-        {[
-          ["Trang chủ", "/tenant/home", Home],
-          ["Hóa đơn", "/tenant/invoices", Receipt],
-          ["Sửa chữa", "/tenant/maintenance", Wrench],
-          ["Thông báo", "/tenant/notifications", Bell],
-          ["Tài khoản", "/tenant/account", UserRound],
-        ].map(([label, href, Icon]) => (
-          <Link
-            key={href as string}
-            href={href as string}
-            className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] ${
-              href === "/tenant/home"
-                ? "font-semibold text-blue-700"
-                : "text-slate-500"
-            }`}
-          >
-            <Icon className="size-5" />
-            {label as string}
-          </Link>
-        ))}
+        {tenantMobileNavigationItems.map(({ label, href, icon: Icon }) => {
+          const active = isTenantNavigationActive(pathname, href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              aria-current={active ? "page" : undefined}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] ${active ? "font-semibold text-blue-700" : "text-slate-500"}`}
+            >
+              <Icon className="size-5" />
+              {label === "Tổng quan"
+                ? "Trang chủ"
+                : label === "Yêu cầu sửa chữa"
+                  ? "Sửa chữa"
+                  : label}
+            </Link>
+          );
+        })}
       </nav>
 
       <button

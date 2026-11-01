@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.maintenance;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -22,9 +23,9 @@ public final class TenantMaintenanceRequests {
         @NotBlank @Pattern(regexp="ELECTRICAL|WATER|INTERNET|AIR_CONDITIONER|WATER_HEATER|DOOR_LOCK|FURNITURE|APPLIANCE|STRUCTURE|LEAKAGE|SANITATION|SECURITY|FIRE_SAFETY|COMMON_AREA|ELEVATOR|OTHER") String category,
         @NotBlank @Pattern(regexp="LOW|MEDIUM|HIGH|URGENT") String reportedPriority,@NotNull LocalDateTime detectedAt,
         boolean safetyRisk,boolean continuousIssue,Boolean assetUsable,@Valid @NotNull PreferredSchedule preferredSchedule,
-        @NotBlank @Pattern(regexp="^[0-9+() .-]{8,30}$") String contactPhone,@Size(max=1000) String note) {}
+        @NotBlank @Pattern(regexp=VietnamPhones.REGEX,message=VietnamPhones.INVALID_MESSAGE) String contactPhone,@Size(max=1000) String note) {}
     public record AdditionalInformation(@NotBlank @Size(max=2000) String content,
-        @Pattern(regexp="^[0-9+() .-]{8,30}$") String contactPhone,@NotNull Long version) {}
+        @Pattern(regexp=VietnamPhones.OPTIONAL_REGEX,message=VietnamPhones.INVALID_MESSAGE) String contactPhone,@NotNull Long version) {}
     public record Message(@NotBlank @Size(max=2000) String content) {}
     public record ScheduleResponse(@NotBlank @Pattern(regexp="CONFIRMED|REQUEST_RESCHEDULE") String response,
         LocalDateTime preferredStart,@Size(max=1000) String note,@NotNull Long version) {}

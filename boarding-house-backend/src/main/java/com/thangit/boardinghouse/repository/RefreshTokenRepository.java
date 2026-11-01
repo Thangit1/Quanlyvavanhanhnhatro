@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("select t from RefreshToken t join fetch t.user u left join fetch u.roles where t.tokenHash = :hash")
     Optional<RefreshToken> findDetailedByTokenHash(String hash);
 

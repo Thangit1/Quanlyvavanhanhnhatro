@@ -60,7 +60,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public void revoke(String rawToken) {
         if (rawToken == null || rawToken.isBlank()) return;
         repository.findDetailedByTokenHash(hash(rawToken)).ifPresent(token -> {
-            if (!token.isRevoked()) token.revoke(Instant.now());
+            repository.revokeFamily(token.getFamilyId(),Instant.now());
         });
     }
 

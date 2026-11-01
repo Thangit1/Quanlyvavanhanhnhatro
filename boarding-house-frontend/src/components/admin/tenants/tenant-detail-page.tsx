@@ -85,14 +85,25 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
           </Link>
           {canWrite && (
             <div className="flex flex-wrap gap-2">
-              {d.status === "ACTIVE" && (
-                <button
-                  onClick={() => setAction("transfer")}
-                  className={outlineButton}
-                >
-                  <RefreshCw className="size-4" /> Chuyển phòng
-                </button>
-              )}
+              {d.status === "ACTIVE" &&
+                current &&
+                current.residenceRole !== "REPRESENTATIVE" && (
+                  <button
+                    onClick={() => setAction("transfer")}
+                    className={outlineButton}
+                  >
+                    <RefreshCw className="size-4" /> Chuyển phòng
+                  </button>
+                )}
+              {d.status === "ACTIVE" &&
+                current?.residenceRole === "REPRESENTATIVE" && (
+                  <Link
+                    href="/admin/rental-lifecycle"
+                    className={outlineButton}
+                  >
+                    Chuyển phòng qua bàn giao và hợp đồng
+                  </Link>
+                )}
               <button
                 onClick={() => setAction("temporary")}
                 className={outlineButton}
@@ -703,7 +714,7 @@ function ActionDialog({
                 <select name="toRoomId" required className={inputClass}>
                   <option value="">Chọn phòng</option>
                   {rooms
-                    .filter((r) => ["VACANT", "RESERVED"].includes(r.status))
+                    .filter((r) => ["OCCUPIED", "NOTICE"].includes(r.status))
                     .map((r) => (
                       <option key={r.id} value={r.id}>
                         Phòng {r.code} ·{" "}
@@ -734,10 +745,10 @@ function ActionDialog({
                   className={inputClass}
                 />
               </Field>
-              <label className="flex items-center gap-2 text-sm">
-                <input name="closeContract" type="checkbox" />
-                Đồng thời kết thúc hợp đồng hiện tại
-              </label>
+              <p className="text-sm text-slate-500">
+                Kết thúc hợp đồng phải qua Vòng đời thuê sau bàn giao và quyết
+                toán.
+              </p>
             </>
           )}
           {action === "temporary" && (

@@ -20,6 +20,7 @@ import { ErrorState, PageLoading } from "@/components/shared/dashboard-ui";
 import { apiErrorMessage } from "@/lib/api-error";
 import { formatDate } from "@/lib/format";
 import type { CreateCoOccupant } from "@/types/tenant-co-occupant";
+import { validateVietnamPhone } from "@/lib/phone-validation";
 
 const steps = [
   "Thông tin cá nhân",
@@ -292,7 +293,9 @@ export function CoOccupantNewPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field labelText="Số điện thoại" required>
                   <input
+                    type="tel"
                     inputMode="tel"
+                    autoComplete="tel"
                     value={form.phone}
                     onChange={(e) => set("phone", e.target.value)}
                     className={input}
@@ -325,7 +328,9 @@ export function CoOccupantNewPage() {
                 </Field>
                 <Field labelText="Số điện thoại khẩn cấp">
                   <input
+                    type="tel"
                     inputMode="tel"
+                    autoComplete="tel"
                     value={form.emergencyContact?.phone}
                     onChange={(e) => setEmergency("phone", e.target.value)}
                     className={input}
@@ -604,7 +609,6 @@ function normalize(x: CreateCoOccupant): CreateCoOccupant {
   };
 }
 function validate(step: number, x: CreateCoOccupant, accepted: boolean) {
-  const phone = /^(?:\+84|0)(?:3|5|7|8|9)\d{8}$/;
   if (
     step === 0 &&
     (!x.fullName.trim() ||
@@ -615,10 +619,11 @@ function validate(step: number, x: CreateCoOccupant, accepted: boolean) {
     return "Vui lòng nhập đầy đủ và đúng thông tin cá nhân bắt buộc.";
   if (
     step === 1 &&
-    (!phone.test(x.phone.trim()) ||
+    (!validateVietnamPhone(x.phone).valid ||
       !x.permanentAddress.trim() ||
       (x.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x.email)) ||
-      (x.emergencyContact?.phone && !phone.test(x.emergencyContact.phone)))
+      (x.emergencyContact?.phone &&
+        !validateVietnamPhone(x.emergencyContact.phone, false).valid))
   )
     return "Vui lòng kiểm tra số điện thoại, email và địa chỉ thường trú.";
   if (

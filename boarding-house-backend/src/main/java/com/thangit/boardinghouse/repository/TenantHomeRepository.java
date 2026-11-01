@@ -27,7 +27,7 @@ public class TenantHomeRepository {
         return jdbc.sql("""
                 SELECT c.id contract_id, c.code contract_code, c.start_date, c.end_date, c.deposit_amount,
                        c.occupant_count, c.status contract_status, r.id room_id, r.code room_code, r.area,
-                       r.monthly_rent, r.image_url, r.building_name, r.floor_name,
+                       c.agreed_monthly_rent monthly_rent, r.image_url, r.building_name, r.floor_name,
                        p.name property_name, p.address property_address
                 FROM contracts c
                 JOIN rooms r ON r.id=c.room_id
@@ -47,10 +47,10 @@ public class TenantHomeRepository {
     public Optional<InvoiceRow> findCurrentInvoice(Long contractId) {
         return jdbc.sql("""
                 SELECT id, code, billing_period, total_amount, paid_amount,
-                       GREATEST(total_amount-paid_amount,0) remaining_amount,
+                       remaining_amount,
                        due_date, DATEDIFF(due_date,CURRENT_DATE) days_until_due, status, paid_at
                 FROM invoices
-                WHERE contract_id=:contractId AND status<>'CANCELLED'
+                WHERE contract_id=:contractId AND status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED')
                 ORDER BY billing_period DESC LIMIT 1
                 """).param("contractId", contractId).query((rs, n) -> new InvoiceRow(
                 rs.getLong("id"), rs.getString("code"), rs.getObject("billing_period", LocalDate.class),
@@ -69,14 +69,14 @@ public class TenantHomeRepository {
                 rs.getBigDecimal("electricity_previous"), rs.getBigDecimal("electricity_current"),
                 rs.getBigDecimal("electricity_unit_price"), rs.getBigDecimal("electricity_amount"),
                 rs.getBigDecimal("water_previous"), rs.getBigDecimal("water_current"),
-                rs.getBigDecimal("water_unit_price"), rs.getBigDecimal("water_amount"))).optional();
+                rs.getBigDecimal("water_unit_price"), rs.getBigDecimal("water_amount"),rs.getBigDecimal("electricity_consumption"),rs.getBigDecimal("water_consumption"))).optional();
     }
 
     public List<UtilityHistoryRow> findUtilityHistory(Long contractId) {
         return jdbc.sql("""
                 SELECT billing_period,
-                       electricity_current-electricity_previous electricity_usage,
-                       water_current-water_previous water_usage
+                       COALESCE(electricity_consumption,electricity_current-electricity_previous) electricity_usage,
+                       COALESCE(water_consumption,water_current-water_previous) water_usage
                 FROM utility_readings WHERE contract_id=:contractId
                 ORDER BY billing_period DESC LIMIT 6
                 """).param("contractId", contractId).query((rs, n) -> new UtilityHistoryRow(
@@ -115,7 +115,9 @@ public class TenantHomeRepository {
     public record UtilityRow(LocalDate period, BigDecimal electricityPrevious, BigDecimal electricityCurrent,
                              BigDecimal electricityUnitPrice, BigDecimal electricityAmount,
                              BigDecimal waterPrevious, BigDecimal waterCurrent,
-                             BigDecimal waterUnitPrice, BigDecimal waterAmount) {}
+                             BigDecimal waterUnitPrice, BigDecimal waterAmount,BigDecimal electricityConsumption,BigDecimal waterConsumption) {
+        public UtilityRow(LocalDate p,BigDecimal ep,BigDecimal ec,BigDecimal eprice,BigDecimal ea,BigDecimal wp,BigDecimal wc,BigDecimal wprice,BigDecimal wa){this(p,ep,ec,eprice,ea,wp,wc,wprice,wa,null,null);}
+    }
     public record UtilityHistoryRow(LocalDate period, BigDecimal electricityUsage, BigDecimal waterUsage) {}
     public record MaintenanceRow(Long id, String code, String title, String issueType, String priority,
                                  String status, String assigneeName, LocalDateTime createdAt) {}

@@ -9,7 +9,15 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
-import { refreshAccessToken, setAccessToken } from "@/services/api-client";
+import {
+  refreshAccessToken,
+  setAccessToken,
+  getAccessToken,
+  resetApiSession,
+  currentSessionEpoch,
+} from "@/services/api-client";
+import { useQueryClient } from "@tanstack/react-query";
+import { clearSessionCache } from "@/services/session-cache";
 import type { AuthUser, LoginPayload } from "@/types/auth";
 
 interface AuthContextValue {
@@ -25,16 +33,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isBootstrapping, setBootstrapping] = useState(true);
   const router = useRouter();
+  const queries = useQueryClient();
   const clearSession = useCallback(() => {
-    setAccessToken(null);
+    resetApiSession();
+    clearSessionCache(queries);
     setUser(null);
-  }, []);
+  }, [queries]);
   useEffect(() => {
     let active = true;
     refreshAccessToken()
       .then(() => authService.me())
       .then((value) => active && setUser(value))
-      .catch(clearSession)
+      .catch(() => {
+        if (active) clearSession();
+      })
       .finally(() => active && setBootstrapping(false));
     return () => {
       active = false;
@@ -46,24 +58,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.replace("/login?reason=expired");
     };
     window.addEventListener("auth:expired", expired);
-    return () => window.removeEventListener("auth:expired", expired);
-  }, [clearSession, router]);
-  const login = useCallback(async (payload: LoginPayload) => {
-    const envelope = await authService.login({
-      ...payload,
-      email: payload.email.trim().toLowerCase(),
-    });
-    setAccessToken(envelope.data.accessToken);
-    setUser(envelope.data.user);
-    return envelope.data.user;
-  }, []);
+    const revoked = () => {
+      const token = getAccessToken();
+      resetApiSession();
+      setAccessToken(token);
+      clearSessionCache(queries);
+      setUser((value) => (value ? { ...value } : null));
+    };
+    window.addEventListener("access:revoked", revoked);
+    return () => {
+      window.removeEventListener("auth:expired", expired);
+      window.removeEventListener("access:revoked", revoked);
+    };
+  }, [clearSession, queries, router]);
+  const login = useCallback(
+    async (payload: LoginPayload) => {
+      clearSession();
+      const envelope = await authService.login({
+        ...payload,
+        email: payload.email.trim().toLowerCase(),
+      });
+      setAccessToken(envelope.data.accessToken);
+      setUser(envelope.data.user);
+      return envelope.data.user;
+    },
+    [clearSession],
+  );
   const logout = useCallback(async () => {
+    clearSession();
+    const epoch = currentSessionEpoch();
     try {
       await authService.logout();
     } catch {
       /* local logout still completes */
     }
-    clearSession();
+    if (currentSessionEpoch() !== epoch) return;
     router.replace("/login?reason=logout");
     router.refresh();
   }, [clearSession, router]);

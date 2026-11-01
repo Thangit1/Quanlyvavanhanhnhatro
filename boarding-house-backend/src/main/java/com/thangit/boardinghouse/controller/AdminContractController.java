@@ -16,11 +16,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/contracts")
 public class AdminContractController {
+    public record ExtensionDecision(@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max=1000) String reason) {}
     private final AdminContractService service;
 
     public AdminContractController(AdminContractService service) {
         this.service = service;
     }
+    @PostMapping("/{contractId}/extensions/{requestId}/approve")
+    public ApiResponse<Void> approveExtension(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId,@PathVariable long requestId,@jakarta.validation.Valid @RequestBody ExtensionDecision r){service.approveExtension(p,contractId,requestId,r.reason());return ApiResponse.success("Đã duyệt nội dung, chờ người thuê xác nhận phụ lục",null);}
+    @GetMapping("/{contractId}/extensions")
+    public ApiResponse<java.util.List<java.util.Map<String,Object>>> extensions(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId){return ApiResponse.success("Danh sách yêu cầu gia hạn",service.extensions(p,contractId));}
 
     @GetMapping
     public ApiResponse<ContractList> list(@AuthenticationPrincipal AuthenticatedUser principal,

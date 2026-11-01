@@ -1,5 +1,6 @@
 package com.thangit.boardinghouse.dto.request.invoice;
 
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -18,6 +19,6 @@ public final class TenantInvoiceRequests {
             @NotBlank @Pattern(regexp = "WRONG_READING|WRONG_PRICE|WRONG_QUANTITY|MISSING_DISCOUNT|OTHER") String issueType,
             @NotBlank @Size(max = 1000) String description,
             @Size(max = 255) String expectedValue,
-            @Size(max = 30) String contactPhone,
+            @Pattern(regexp = VietnamPhones.OPTIONAL_REGEX, message = VietnamPhones.INVALID_MESSAGE) String contactPhone,
             @Size(max = 100) String preferredContactTime) {}
 }

@@ -1,6 +1,7 @@
 package com.thangit.boardinghouse.service.impl;
 
 import com.thangit.boardinghouse.common.exception.AuthException;
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import com.thangit.boardinghouse.config.AuthProperties;
 import com.thangit.boardinghouse.domain.auth.*;
 import com.thangit.boardinghouse.dto.request.auth.LoginRequest;
@@ -40,8 +41,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override @Transactional(noRollbackFor = AuthException.class)
     public AuthResult login(LoginRequest request, String userAgent, String ipAddress) {
-        String email = request.email().trim().toLowerCase(Locale.ROOT);
-        User user = users.findForAuthenticationByEmailIgnoreCase(email).orElse(null);
+        String identifier = request.email().trim();
+        User user = VietnamPhones.isValid(identifier)
+                ? users.findForAuthenticationByPhoneIn(VietnamPhones.aliases(identifier)).orElse(null)
+                : users.findForAuthenticationByEmailIgnoreCase(identifier.toLowerCase(Locale.ROOT)).orElse(null);
         if (user == null) {
             passwordEncoder.matches(request.password(), dummyPasswordHash);
             log.warn("Failed login for unknown account from ip={}", ipAddress);
@@ -71,8 +74,9 @@ public class AuthServiceImpl implements AuthService {
                     "Tài khoản không có quyền truy cập với vai trò đã chọn.");
         }
         user.registerSuccessfulLogin(now);
-        String access = jwtService.createAccessToken(user, request.requestedRole());
-        var refresh = refreshTokens.issue(user, request.requestedRole(), UUID.randomUUID().toString(), userAgent, ipAddress);
+        String family=UUID.randomUUID().toString();
+        String access = jwtService.createAccessToken(user, request.requestedRole(),family);
+        var refresh = refreshTokens.issue(user, request.requestedRole(), family, userAgent, ipAddress);
         log.info("Login succeeded for userId={} role={}", user.getId(), request.requestedRole());
         return new AuthResult(new LoginResponse(access, "Bearer", jwtService.accessExpirationSeconds(),
                 mapUser(user, request.requestedRole())), null, refresh.rawToken());
@@ -89,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
         if (!stillAllowed) throw new AuthException(HttpStatus.FORBIDDEN, "ROLE_NOT_ALLOWED",
                 "Tài khoản không có quyền truy cập với vai trò đã chọn.");
         var next = refreshTokens.issue(user, old.getActiveRole(), old.getFamilyId(), userAgent, ipAddress);
-        String access = jwtService.createAccessToken(user, old.getActiveRole());
+        String access = jwtService.createAccessToken(user, old.getActiveRole(),old.getFamilyId());
         return new AuthResult(null, new RefreshTokenResponse(access, jwtService.accessExpirationSeconds()), next.rawToken());
     }
 
@@ -119,6 +123,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private AuthException invalidCredentials() {
-        return new AuthException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không chính xác.");
+        return new AuthException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS",
+                "Email, số điện thoại hoặc mật khẩu không chính xác.");
     }
+
 }

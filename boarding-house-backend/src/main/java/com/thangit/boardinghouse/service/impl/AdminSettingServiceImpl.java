@@ -1,6 +1,7 @@
 package com.thangit.boardinghouse.service.impl;
 
 import com.thangit.boardinghouse.common.exception.AuthException;
+import com.thangit.boardinghouse.common.validation.VietnamPhones;
 import com.thangit.boardinghouse.domain.auth.RoleCode;
 import com.thangit.boardinghouse.dto.request.setting.AdminSettingRequests.*;
 import com.thangit.boardinghouse.dto.response.setting.AdminSettingResponses.*;
@@ -110,6 +111,11 @@ public class AdminSettingServiceImpl implements AdminSettingService {
         validateGroup(group);
         if (OWNER_ONLY.contains(group)) requireOwner(principal);
         Map<String, Object> values = sanitize(request.values());
+        Object phone = values.get("phone");
+        if (("profile".equals(group) || "organization".equals(group))
+                && phone != null && !phone.toString().isBlank() && !VietnamPhones.isValid(phone.toString())) {
+            throw badRequest("PHONE_INVALID", VietnamPhones.INVALID_MESSAGE);
+        }
         long ownerId = groupScopeId(principal, group);
         Map<String, Object> old = repository.group(ownerId, group);
         repository.saveGroup(ownerId, group, values, principal.id());

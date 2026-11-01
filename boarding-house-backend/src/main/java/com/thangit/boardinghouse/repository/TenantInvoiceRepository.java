@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TenantInvoiceRepository {
     private static final String EFFECTIVE_STATUS = """
-        CASE WHEN i.status NOT IN ('PAID','CANCELLED','DRAFT') AND i.remaining_amount>0 AND i.due_date<CURRENT_DATE
+        CASE WHEN i.status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND i.remaining_amount>0 AND i.due_date<CURRENT_DATE
              THEN 'OVERDUE' ELSE i.status END
         """;
     private final JdbcClient jdbc;
@@ -31,18 +31,18 @@ public class TenantInvoiceRepository {
               CONCAT_WS(' · ',r.building_name,r.floor_name) room_location,c.code contract_code
             FROM invoices i JOIN contracts c ON c.id=i.contract_id JOIN rooms r ON r.id=i.room_id
               JOIN properties p ON p.id=i.property_id
-            WHERE i.id=:invoiceId AND i.tenant_id=:tenantId AND i.status<>'DRAFT'
+            WHERE i.id=:invoiceId AND i.tenant_id=:tenantId AND i.status NOT IN ('DRAFT','PENDING_REVIEW')
             """ + (lock ? " FOR UPDATE" : ""))
-            .param("invoiceId",invoiceId).param("tenantId",tenantId).query(Map.class).optional()
+            .param("invoiceId",invoiceId).param("tenantId",tenantId).query(new org.springframework.jdbc.core.ColumnMapRowMapper()).optional()
             .map(row -> (Map<String,Object>) row);
     }
 
     public Summary summary(long tenantId) {
         Map<String,Object> totals=jdbc.sql("""
             SELECT COALESCE(SUM(CASE WHEN status<>'CANCELLED' THEN remaining_amount ELSE 0 END),0) outstanding,
-              SUM(CASE WHEN status NOT IN ('PAID','CANCELLED','DRAFT') AND remaining_amount>0 AND due_date<CURRENT_DATE THEN 1 ELSE 0 END) overdue_count,
-              SUM(CASE WHEN status NOT IN ('PAID','CANCELLED','DRAFT') AND remaining_amount>0 THEN 1 ELSE 0 END) unpaid_count
-            FROM invoices WHERE tenant_id=:tenantId AND status<>'DRAFT'
+              SUM(CASE WHEN status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND remaining_amount>0 AND due_date<CURRENT_DATE THEN 1 ELSE 0 END) overdue_count,
+              SUM(CASE WHEN status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND remaining_amount>0 THEN 1 ELSE 0 END) unpaid_count
+            FROM invoices WHERE tenant_id=:tenantId AND status NOT IN ('DRAFT','PENDING_REVIEW')
             """).param("tenantId",tenantId).query().singleRow();
         Payment last=jdbc.sql("""
             SELECT py.id,py.receipt_code,i.code invoice_code,py.amount,py.payment_method,py.reference_code,
@@ -61,7 +61,7 @@ public class TenantInvoiceRepository {
         if(to!=null) filters += " AND i.billing_period<=:to";
         String base="""
             FROM invoices i JOIN properties p ON p.id=i.property_id JOIN rooms r ON r.id=i.room_id
-            WHERE i.tenant_id=:tenantId AND i.status<>'DRAFT'
+            WHERE i.tenant_id=:tenantId AND i.status NOT IN ('DRAFT','PENDING_REVIEW')
             """+filters;
         JdbcClient.StatementSpec count=bind(jdbc.sql("SELECT COUNT(*) "+base),tenantId,status,search,from,to);
         long total=count.query(Long.class).single();
@@ -95,17 +95,17 @@ public class TenantInvoiceRepository {
 
     public List<UtilityReading> readings(long contractId,LocalDate period){return jdbc.sql("""
         SELECT id,'ELECTRICITY' type,electricity_previous previous_value,electricity_current current_value,
-          electricity_current-electricity_previous consumption,electricity_unit_price unit_price,electricity_amount amount
+          COALESCE(electricity_consumption,electricity_current-electricity_previous) consumption,electricity_unit_price unit_price,electricity_amount amount
         FROM utility_readings WHERE contract_id=:contractId AND billing_period=:period AND electricity_current IS NOT NULL
         UNION ALL
-        SELECT id,'WATER',water_previous,water_current,water_current-water_previous,water_unit_price,water_amount
+        SELECT id,'WATER',water_previous,water_current,COALESCE(water_consumption,water_current-water_previous),water_unit_price,water_amount
         FROM utility_readings WHERE contract_id=:contractId AND billing_period=:period AND water_current IS NOT NULL
         """).param("contractId",contractId).param("period",period).query((r,n)->new UtilityReading(r.getLong("id"),r.getString("type"),
             r.getBigDecimal("previous_value"),r.getBigDecimal("current_value"),r.getBigDecimal("consumption"),r.getBigDecimal("unit_price"),r.getBigDecimal("amount"))).list();}
 
     public List<UtilityHistory> utilityHistory(long contractId){return jdbc.sql("""
-        SELECT billing_period,electricity_current-electricity_previous electricity_consumption,
-          water_current-water_previous water_consumption FROM utility_readings
+        SELECT billing_period,COALESCE(electricity_consumption,electricity_current-electricity_previous) electricity_consumption,
+          COALESCE(water_consumption,water_current-water_previous) water_consumption FROM utility_readings
         WHERE contract_id=:id ORDER BY billing_period DESC LIMIT 6
         """).param("id",contractId).query((r,n)->new UtilityHistory(period(r.getObject("billing_period",LocalDate.class)),
             r.getBigDecimal("electricity_consumption"),r.getBigDecimal("water_consumption"))).list();}
@@ -156,9 +156,12 @@ public class TenantInvoiceRepository {
             r.getString("payment_method"),r.getString("status"),r.getString("transfer_content"),r.getObject("expires_at",LocalDateTime.class))).optional();}
     public Optional<PaymentSession> sessionById(long tenantId,long invoiceId,long sessionId){return jdbc.sql("""
         SELECT id,invoice_id,amount,payment_method,status,transfer_content,expires_at FROM tenant_payment_sessions
-        WHERE id=:id AND tenant_id=:tenant AND invoice_id=:invoice
+        WHERE id=:id AND tenant_id=:tenant AND invoice_id=:invoice FOR UPDATE
         """).param("id",sessionId).param("tenant",tenantId).param("invoice",invoiceId).query((r,n)->new PaymentSession(r.getLong("id"),r.getLong("invoice_id"),r.getBigDecimal("amount"),
             r.getString("payment_method"),r.getString("status"),r.getString("transfer_content"),r.getObject("expires_at",LocalDateTime.class))).optional();}
+    public boolean proofExistsForSession(long sessionId){return jdbc.sql("SELECT COUNT(*) FROM tenant_payment_proofs WHERE session_id=:session AND status IN ('PENDING','APPROVED')").param("session",sessionId).query(Long.class).single()>0;}
+    public boolean proofReferenceExists(long tenantId,long invoiceId,String reference){return jdbc.sql("SELECT COUNT(*) FROM tenant_payment_proofs WHERE tenant_id=:tenant AND invoice_id=:invoice AND transaction_reference=:reference AND status IN ('PENDING','APPROVED')").param("tenant",tenantId).param("invoice",invoiceId).param("reference",reference.trim()).query(Long.class).single()>0;}
+    public void markSessionProofSubmitted(long sessionId){jdbc.sql("UPDATE tenant_payment_sessions SET status='PROOF_SUBMITTED' WHERE id=:id AND status='AWAITING_TRANSFER'").param("id",sessionId).update();}
     public PaymentSession createSession(long invoiceId,long tenantId,BigDecimal amount,String method,String key,String content){
         KeyHolder kh=new GeneratedKeyHolder();LocalDateTime expires=LocalDateTime.now().plusHours(24);
         int inserted=jdbc.sql("""
@@ -174,7 +177,7 @@ public class TenantInvoiceRepository {
         INSERT INTO tenant_payment_proofs(session_id,invoice_id,tenant_id,amount,transferred_at,bank_name,transaction_reference,
           original_name,mime_type,file_size,file_content,note) VALUES(:session,:invoice,:tenant,:amount,:at,:bank,:reference,:name,:mime,:size,:content,:note)
         """).param("session",sessionId).param("invoice",invoiceId).param("tenant",tenantId).param("amount",amount).param("at",transferredAt)
-        .param("bank",blank(bank)).param("reference",blank(reference)).param("name",name).param("mime",mime).param("size",content.length).param("content",content).param("note",blank(note)).update(kh,"id");return kh.getKey().longValue();}
+        .param("bank",blank(bank)).param("reference",blank(reference)).param("name",name).param("mime",mime).param("size",content.length).param("content",content).param("note",blank(note)).update(kh,"id");long id=kh.getKey().longValue();if(sessionId!=null)markSessionProofSubmitted(sessionId);return id;}
     public CreatedReview createReview(long invoiceId,long tenantId,Long itemId,String type,String description,String expected,String phone,String preferred){
         KeyHolder kh=new GeneratedKeyHolder();String code="YC-"+System.currentTimeMillis();jdbc.sql("""
         INSERT INTO tenant_invoice_review_requests(request_code,invoice_id,tenant_id,invoice_item_id,issue_type,description,expected_value,contact_phone,preferred_contact_time)

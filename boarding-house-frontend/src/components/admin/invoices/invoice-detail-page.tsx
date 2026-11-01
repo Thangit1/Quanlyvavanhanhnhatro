@@ -1,6 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/services/api-client";
+import { MonthlyBillingPanel } from "@/components/shared/monthly-billing-panel";
+import { useRef, useState } from "react";
 import { Download, Printer, Send, WalletCards } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { ErrorState, PageLoading } from "@/components/shared/dashboard-ui";
@@ -20,6 +23,8 @@ function localDateTime() {
   return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}:00`;
 }
 export function InvoiceDetailPage({ id }: { id: number }) {
+  const client = useQueryClient();
+  const [recalculating, setRecalculating] = useState(false);
   const q = useInvoiceDetail(id);
   const m = useInvoiceMutations(id);
   const [dialog, setDialog] = useState<
@@ -30,6 +35,11 @@ export function InvoiceDetailPage({ id }: { id: number }) {
   const [method, setMethod] = useState("BANK_TRANSFER");
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
+  const paymentAttempt = useRef<{
+    signature: string;
+    key: string;
+    paidAt: string;
+  } | null>(null);
   if (q.isLoading) return <PageLoading />;
   if (q.isError || !q.data)
     return (
@@ -41,14 +51,32 @@ export function InvoiceDetailPage({ id }: { id: number }) {
   const action = async () => {
     setError("");
     try {
-      if (dialog === "payment")
-        await m.payment.mutateAsync({
+      if (dialog === "payment") {
+        const signature = JSON.stringify({
           amount,
-          paymentMethod: method,
-          paidAt: localDateTime(),
-          note: reason,
+          method,
+          reason,
           version: d.version,
         });
+        if (paymentAttempt.current?.signature !== signature)
+          paymentAttempt.current = {
+            signature,
+            key: globalThis.crypto.randomUUID(),
+            paidAt: localDateTime(),
+          };
+        const payload = {
+          amount,
+          paymentMethod: method,
+          paidAt: paymentAttempt.current.paidAt,
+          note: reason,
+          version: d.version,
+        };
+        await m.payment.mutateAsync({
+          ...payload,
+          idempotencyKey: paymentAttempt.current.key,
+        });
+        paymentAttempt.current = null;
+      }
       if (dialog === "adjust")
         await m.adjust.mutateAsync({
           adjustmentType: type,
@@ -72,6 +100,94 @@ export function InvoiceDetailPage({ id }: { id: number }) {
       readOnly
     >
       <div className="mx-auto max-w-6xl space-y-5">
+        {d.status === "DRAFT" && (
+          <>
+            <MonthlyBillingPanel contractId={d.contract.id} />
+            <details className="rounded-2xl border bg-white p-5">
+              <summary>Kiểm tra nguồn và tính lại bản nháp</summary>
+              <form
+                className="mt-3 space-y-3"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const f = new FormData(e.currentTarget);
+                  setError("");
+                  setRecalculating(true);
+                  try {
+                    const [month, year] = d.billingPeriod.split("/");
+                    const period = d.billingPeriod.includes("/")
+                      ? `${year}-${month.padStart(2, "0")}`
+                      : d.billingPeriod;
+                    await apiClient.put(`/admin/invoices/${id}/recalculate`, {
+                      roomId: d.room.id,
+                      contractId: d.contract.id,
+                      billingPeriod: period,
+                      periodStartDate: d.periodStartDate,
+                      periodEndDate: d.periodEndDate,
+                      issueDate:
+                        d.issueDate ?? new Date().toISOString().slice(0, 10),
+                      dueDate: f.get("due"),
+                      additionalItems: d.items
+                        .filter((x) => x.sourceType === "MANUAL")
+                        .map((x) => ({
+                          name: x.name,
+                          quantity: x.quantity,
+                          unit: x.unit,
+                          unitPrice: x.unitPrice,
+                          reason: x.description,
+                        })),
+                      discountAmount: Number(f.get("discount")),
+                      includePreviousDebt: false,
+                      note: f.get("reason"),
+                      action: "SAVE_DRAFT",
+                      version: d.version,
+                    });
+                    await client.invalidateQueries();
+                  } catch (e) {
+                    setError(apiErrorMessage(e));
+                  } finally {
+                    setRecalculating(false);
+                  }
+                }}
+              >
+                <label className="block text-sm">
+                  Giảm giá
+                  <input
+                    required
+                    name="discount"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    defaultValue={d.discountAmount}
+                    className={input}
+                  />
+                </label>
+                <label className="block text-sm">
+                  Hạn thanh toán
+                  <input
+                    required
+                    name="due"
+                    type="date"
+                    defaultValue={d.dueDate}
+                    className={input}
+                  />
+                </label>
+                <input
+                  required
+                  name="reason"
+                  maxLength={1000}
+                  placeholder="Lý do điều chỉnh và căn cứ giảm giá (nếu có)"
+                  className={input}
+                />
+                <button
+                  disabled={recalculating}
+                  className="rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40"
+                >
+                  Tính lại theo nguồn đã kiểm tra
+                </button>
+              </form>
+            </details>
+          </>
+        )}
         <div className="flex flex-wrap justify-between gap-3">
           <Link
             href="/admin/invoices"
@@ -193,7 +309,10 @@ export function InvoiceDetailPage({ id }: { id: number }) {
           <div className="ml-auto mt-5 max-w-md space-y-2 text-sm">
             <Line label="Cộng tiền hàng" value={d.subtotalAmount} />
             <Line label="Giảm giá" value={-d.discountAmount} />
-            <Line label="Công nợ kỳ trước" value={d.previousDebtAmount} />
+            <Line
+              label="Nợ cũ tham khảo (không cộng vào tổng)"
+              value={d.previousDebtAmount}
+            />
             <Line label="Phí chậm thanh toán" value={d.lateFeeAmount} />
             <Line label="Tổng cộng" value={d.totalAmount} strong />
             <Line label="Đã thanh toán" value={d.paidAmount} />
@@ -210,10 +329,19 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                 <span>
                   <strong>{x.receiptCode}</strong>
                   <small className="block text-slate-500">
-                    {x.paymentMethod} · {formatDate(x.paidAt, true)}
+                    {x.paymentMethod} · {formatDate(x.paidAt, true)} ·{" "}
+                    {x.status === "REVERSED" ? "Đã đảo" : "Đã xác nhận"}
                   </small>
                 </span>
-                <strong>{formatCurrency(x.amount)}</strong>
+                <strong
+                  className={
+                    x.status === "REVERSED"
+                      ? "text-slate-400 line-through"
+                      : "text-emerald-700"
+                  }
+                >
+                  {formatCurrency(x.amount)}
+                </strong>
               </div>
             ))}
             {!d.payments.length && (
