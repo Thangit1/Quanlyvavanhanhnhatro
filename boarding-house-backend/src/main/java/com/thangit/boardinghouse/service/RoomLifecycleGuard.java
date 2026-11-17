@@ -65,6 +65,18 @@ public class RoomLifecycleGuard {
         if(physicalOccupancy(room,null))throw error("ROOM_OCCUPANCY_CONFLICT","Hợp đồng cũ hoặc người ở chưa bàn giao phòng.");
         if(maintenance(room))throw error("ROOM_MAINTENANCE_PENDING","Cần nghiệm thu bảo trì trước khi lập hợp đồng.");
     }
+    /** Digitization only for one verified, unlinked existing residence; never displace another tenancy. */
+    public Long directContract(long room,LocalDate start,LocalDate end,Long excluded,Long profile) {
+        var r=lockRoom(room);
+        if(!"OCCUPIED".equals(r.get("status"))){availableForBooking(room);contractDates(room,start,end,excluded,null);return null;}
+        if(!"ACTIVE".equals(r.get("property_status"))||profile==null||maintenance(room))throw error("LEGACY_RESIDENCE_REQUIRES_RECONCILIATION","Phòng đang ở cần đối soát hồ sơ và bảo trì trước khi số hóa.");
+        contractDates(room,start,end,excluded,null);
+        if(!jdbc.sql("SELECT c.id FROM contracts c WHERE c.room_id=:room AND (:excluded IS NULL OR c.id<>:excluded) AND c.status IN ("+LIVE+") AND NOT "+HANDOVER+" FOR UPDATE").param("room",room).param("excluded",excluded).query(Long.class).list().isEmpty())throw error("ROOM_OCCUPANCY_CONFLICT","Phòng đã có hợp đồng vận hành; dùng quy trình thay đổi hợp đồng.");
+        var residents=jdbc.sql("SELECT id,tenant_profile_id,property_id,contract_id,move_in_date,move_out_date FROM tenant_residences WHERE room_id=:room AND status='ACTIVE' FOR UPDATE").param("room",room).query(RoomLifecycleGuard::row).list();
+        if(residents.stream().anyMatch(resident->num(resident,"property_id")!=num(r,"property_id")))throw error("LEGACY_RESIDENCE_REQUIRES_RECONCILIATION","Cư trú và phòng không cùng nhà trọ; cần đối soát.");
+        if(residents.size()!=1||num(residents.getFirst(),"tenant_profile_id")!=profile||residents.getFirst().get("contract_id")!=null||date(residents.getFirst().get("move_in_date")).isAfter(LocalDate.now())||(residents.getFirst().get("move_out_date")!=null&&!date(residents.getFirst().get("move_out_date")).isAfter(LocalDate.now())))throw error("LEGACY_RESIDENCE_REQUIRES_RECONCILIATION","Chỉ số hóa đúng người đang ở khi chưa có hợp đồng; dữ liệu nhiều người ở cần đối soát riêng.");
+        return num(residents.getFirst(),"id");
+    }
     public void checkout(long contract,LocalDate actual){lockContract(contract);
         var c=jdbc.sql("SELECT * FROM contracts WHERE id=:id FOR UPDATE").param("id",contract).query(RoomLifecycleGuard::row).single();var r=lockRoom(num(c,"room_id"));
         if(!Set.of("ACTIVE","EXPIRING","EXPIRED","TERMINATION_REQUESTED").contains(c.get("status"))||!Set.of("OCCUPIED","NOTICE").contains(r.get("status")))throw error("CHECKOUT_OCCUPANCY_INVALID","Phòng/hợp đồng không còn trong lượt cư trú cần bàn giao.");
@@ -85,11 +97,14 @@ public class RoomLifecycleGuard {
         lockContract(contract);var c=jdbc.sql("SELECT * FROM contracts WHERE id=:id FOR UPDATE").param("id",contract).query(RoomLifecycleGuard::row).single();long room=num(c,"room_id");var r=lockRoom(room);
         if(!"PENDING_CONFIRMATION".equals(c.get("status")))throw error("CONTRACT_NOT_READY_FOR_CHECKIN","Hợp đồng không còn chờ nhận phòng.");
         if(today.isBefore(date(c.get("start_date")))||!today.isBefore(date(c.get("end_date"))))throw error("CHECKIN_DATE_INVALID","Ngày nhận phòng nằm ngoài khoảng thuê đã thỏa thuận.");
-        if(!"ACTIVE".equals(r.get("property_status"))||!Set.of("RESERVED","VACANT","READY").contains(r.get("status")))throw error("ROOM_NOT_READY_FOR_CHECKIN","Phòng đang có người ở, vệ sinh, bảo trì hoặc ngừng khai thác.");
+        boolean legacy="DIRECT".equals(c.get("creation_source"))&&c.get("legacy_residence_id")!=null&&jdbc.sql("SELECT COUNT(*) FROM tenant_residences WHERE id=:residence AND contract_id=:contract AND room_id=:room AND tenant_profile_id=:profile AND status='ACTIVE'").param("residence",c.get("legacy_residence_id")).param("contract",contract).param("room",room).param("profile",c.get("tenant_profile_id")).query(Long.class).single()==1;
+        if(!"ACTIVE".equals(r.get("property_status"))||(!Set.of("RESERVED","VACANT","READY").contains(r.get("status"))&&!(legacy&&"OCCUPIED".equals(r.get("status")))))throw error("ROOM_NOT_READY_FOR_CHECKIN","Phòng đang có người ở, vệ sinh, bảo trì hoặc ngừng khai thác.");
         var linked=jdbc.sql("SELECT id FROM rental_bookings WHERE contract_id=:id AND room_id=:room AND status='CONTRACT_CREATED' FOR UPDATE").param("id",contract).param("room",room).query(Long.class).list();
-        if(linked.size()!=1)throw error("BOOKING_CONTRACT_MISMATCH","Hợp đồng chờ nhận phòng cần đúng một booking tương ứng.");
-        if(physicalOccupancy(room,contract)||bookings(room,linked.getFirst()))throw error("ROOM_OCCUPANCY_CONFLICT","Phòng còn người ở, hợp đồng hoặc check-in khác chưa bàn giao.");
-        contractDates(room,date(c.get("start_date")),date(c.get("end_date")),contract,linked.getFirst());
+        boolean direct="DIRECT".equals(c.get("creation_source"));
+        if(direct?!linked.isEmpty():linked.size()!=1)throw error("BOOKING_CONTRACT_MISMATCH","Nguồn hợp đồng không khớp booking nhận phòng.");
+        Long booking=direct?null:linked.getFirst();
+        if(physicalOccupancy(room,contract)||bookings(room,booking))throw error("ROOM_OCCUPANCY_CONFLICT","Phòng còn người ở, hợp đồng hoặc check-in khác chưa bàn giao.");
+        contractDates(room,date(c.get("start_date")),date(c.get("end_date")),contract,booking);
         if(maintenance(room))throw error("ROOM_MAINTENANCE_PENDING","Công việc bảo trì của phòng chưa được nghiệm thu.");
     }
     @Transactional(propagation=org.springframework.transaction.annotation.Propagation.MANDATORY)

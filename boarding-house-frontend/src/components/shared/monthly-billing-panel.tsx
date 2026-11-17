@@ -1,4 +1,5 @@
 "use client";
+import { NumberInput, CurrencyInput } from "@/components/ui/number-input";
 import { useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, type ApiEnvelope } from "@/services/api-client";
@@ -182,7 +183,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                   <label key={String(r.code)} className="block text-sm">
                     {labels[String(r.code)]} · Đầu kỳ:{" "}
                     {String(d.previous[String(r.code)] ?? "Thiếu mốc bàn giao")}
-                    <input
+                    <NumberInput
                       required
                       name={String(r.code)}
                       type="number"
@@ -267,7 +268,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                 />
                 <label className="block text-sm">
                   Chỉ số khi tháo
-                  <input
+                  <NumberInput
                     required
                     name="removed"
                     type="number"
@@ -278,7 +279,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                 </label>
                 <label className="block text-sm">
                   Chỉ số khi lắp
-                  <input
+                  <NumberInput
                     required
                     name="installed"
                     type="number"
@@ -341,7 +342,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                     className={input}
                   />
                 </label>
-                <input
+                <CurrencyInput
                   required
                   name="price"
                   type="number"
@@ -481,7 +482,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                         });
                       }}
                     >
-                      <input
+                      <NumberInput
                         required
                         name="quantity"
                         type="number"
@@ -557,7 +558,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                     placeholder="Đơn vị tính"
                     className={input}
                   />
-                  <input
+                  <CurrencyInput
                     required
                     name="price"
                     type="number"
@@ -566,7 +567,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                     placeholder="Đơn giá"
                     className={input}
                   />
-                  <input
+                  <NumberInput
                     name="quantity"
                     type="number"
                     min={0}
@@ -670,12 +671,12 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
                 ].map(([name, label, value]) => (
                   <label key={String(name)} className="block text-sm">
                     {String(label)}
-                    <input
+                    <NumberInput
                       required
                       name={String(name)}
                       type="number"
                       min={1}
-                      max={28}
+                      max={31}
                       defaultValue={value == null ? undefined : Number(value)}
                       className={input}
                     />

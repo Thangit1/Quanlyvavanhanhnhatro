@@ -87,7 +87,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     public RoomDetail room(AuthenticatedUser principal,long id){
         requireRole(principal); RoomRow room=repository.roomView(id,principal).orElseThrow(()->notFound("Không tìm thấy phòng.")); requireProperty(principal,room.propertyId());
         Map<String,Object> raw=repository.roomRaw(id).orElseThrow(); boolean write=canWrite(principal);
-        return new RoomDetail(room,string(raw,"description"),repository.occupants(id),repository.roomAmenities(id),repository.roomAssets(id),repository.roomMeters(id),repository.roomImages(id),repository.priceHistory(id),repository.statusHistory(id),repository.visibleActivities(room.propertyId(),principal),write,write,write);
+        return new RoomDetail(room,string(raw,"description"),repository.occupants(id),repository.roomAmenities(id),repository.roomAssets(id),repository.roomMeters(id),repository.roomImages(id),repository.priceHistory(id),repository.statusHistory(id),repository.visibleActivities(room.propertyId(),principal),write,write,write,repository.meterManagement(id,principal));
     }
     @Override @Transactional
     public Created createRoom(AuthenticatedUser principal,SaveRoom request){

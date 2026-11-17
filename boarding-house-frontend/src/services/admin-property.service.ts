@@ -16,21 +16,23 @@ import type {
 
 type Created = { id: number; code: string };
 export const adminPropertyService = {
-  async list(filters: PropertyFilters) {
+  async list(filters: PropertyFilters, signal?: AbortSignal) {
     const { data } = await apiClient.get<
       ApiEnvelope<{ summary: PropertySummary; page: PageData<PropertyRow> }>
-    >("/admin/properties", { params: filters });
+    >("/admin/properties", { params: filters, signal });
     return data.data;
   },
-  async detail(id: number) {
+  async detail(id: number, signal?: AbortSignal) {
     const { data } = await apiClient.get<ApiEnvelope<PropertyDetail>>(
       `/admin/properties/${id}`,
+      { signal },
     );
     return data.data;
   },
-  async options() {
+  async options(signal?: AbortSignal) {
     const { data } = await apiClient.get<ApiEnvelope<PropertyOptions>>(
       "/admin/properties/options",
+      { signal },
     );
     return data.data;
   },
@@ -79,15 +81,16 @@ export const adminPropertyService = {
     );
     return data.data;
   },
-  async rooms(filters: RoomFilters) {
+  async rooms(filters: RoomFilters, signal?: AbortSignal) {
     const { data } = await apiClient.get<
       ApiEnvelope<{ summary: RoomSummary; page: PageData<RoomRow> }>
-    >("/admin/rooms", { params: filters });
+    >("/admin/rooms", { params: filters, signal });
     return data.data;
   },
-  async room(id: number) {
+  async room(id: number, signal?: AbortSignal) {
     const { data } = await apiClient.get<ApiEnvelope<RoomDetail>>(
       `/admin/rooms/${id}`,
+      { signal },
     );
     return data.data;
   },

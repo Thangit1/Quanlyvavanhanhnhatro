@@ -39,14 +39,14 @@ class TechnicianPortalServiceImplTest {
     }
 
     @Test void staleVersionCannotAcceptTask(){
-        when(repository.taskData(25L,9L,true)).thenReturn(Optional.of(new HashMap<>(Map.of("id",9L,"status","ASSIGNED","code","SC-9","version",3L))));
+        when(repository.taskData(25L,9L,true)).thenReturn(Optional.of(new HashMap<>(Map.of("id",9L,"property_id",1L,"status","ASSIGNED","code","SC-9","version",3L))));
         when(repository.transition(eq(25L),eq(9L),eq(2L),anyList(),eq("ACCEPTED"),anyString())).thenReturn(0);
         AuthException ex=assertThrows(AuthException.class,()->service.accept(technician,9L,new Versioned(2L)));
         assertEquals("TASK_VERSION_CONFLICT",ex.code());
     }
 
     @Test void completionRequiresDiagnosisBeforeInspection(){
-        when(repository.taskData(25L,9L,true)).thenReturn(Optional.of(new HashMap<>(Map.of("id",9L,"status","IN_PROGRESS","code","SC-9","version",3L))));
+        when(repository.taskData(25L,9L,true)).thenReturn(Optional.of(new HashMap<>(Map.of("id",9L,"property_id",1L,"status","IN_PROGRESS","code","SC-9","version",3L))));
         when(repository.diagnosis(9L)).thenReturn(Optional.empty());
         var request=new Complete(3L,"Nguyên nhân","Đã xử lý",null,LocalDateTime.now(),"GOOD","Chạy thử đạt",false,null,null,null);
         AuthException ex=assertThrows(AuthException.class,()->service.complete(technician,9L,request));

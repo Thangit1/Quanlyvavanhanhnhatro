@@ -101,7 +101,7 @@ public class AdminContractRepository {
                 FROM contracts c
                 JOIN rooms r ON r.id=c.room_id
                 JOIN properties p ON p.id=r.property_id
-                JOIN users u ON u.id=c.tenant_id
+                LEFT JOIN users u ON u.id=c.tenant_id
                 LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id
                 """;
         long total = jdbc.sql("SELECT COUNT(*) " + joins + " WHERE " + parts.where())
@@ -135,9 +135,9 @@ public class AdminContractRepository {
                   c.reservation_amount,c.management_fee,c.fixed_service_fee,c.discount_amount,c.occupant_count,
                   (SELECT COUNT(*) FROM contract_documents d WHERE d.contract_id=c.id) document_count,
                   EXISTS(SELECT 1 FROM contract_documents d WHERE d.contract_id=c.id) has_document,
-                  NULL note
+                  c.note
                 FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id
-                JOIN users u ON u.id=c.tenant_id LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id
+                LEFT JOIN users u ON u.id=c.tenant_id LEFT JOIN tenant_profiles tp ON tp.id=c.tenant_profile_id
                 WHERE c.id=:contractId AND %s
                 """.formatted(effectiveStatus("c"), propertyScope(role, "p")))
                 .param("userId", userId).param("contractId", contractId)

@@ -58,6 +58,14 @@ export function useInvoiceActions(id: number) {
     }),
   };
 }
+export const useActivePaymentSession = (enabled: boolean, id: number) =>
+  useQuery({
+    queryKey: ["tenant-payment-session", id],
+    queryFn: ({ signal }) => tenantInvoiceService.activeSession(id, signal),
+    enabled: enabled && id > 0,
+    refetchInterval: 10000,
+    retry: 1,
+  });
 export const useTenantPayments = (enabled: boolean, page: number) =>
   useQuery({
     queryKey: ["tenant-payments", page],

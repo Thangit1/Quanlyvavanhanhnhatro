@@ -58,6 +58,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.replace("/login?reason=expired");
     };
     window.addEventListener("auth:expired", expired);
+    const passwordRequired = () => {
+      setUser((value) =>
+        value ? { ...value, mustChangePassword: true } : value,
+      );
+      router.replace("/change-password");
+    };
+    window.addEventListener("auth:password-change-required", passwordRequired);
     const revoked = () => {
       const token = getAccessToken();
       resetApiSession();
@@ -68,9 +75,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener("access:revoked", revoked);
     return () => {
       window.removeEventListener("auth:expired", expired);
+      window.removeEventListener(
+        "auth:password-change-required",
+        passwordRequired,
+      );
       window.removeEventListener("access:revoked", revoked);
     };
   }, [clearSession, queries, router]);
+  useEffect(() => {
+    if (
+      user?.mustChangePassword &&
+      window.location.pathname !== "/change-password"
+    )
+      router.replace("/change-password");
+  }, [user, router]);
   const login = useCallback(
     async (payload: LoginPayload) => {
       clearSession();

@@ -1,4 +1,9 @@
 "use client";
+import { Suspense } from "react";
+import {
+  ContractCreatedNotice,
+  DirectContractDraftPanel,
+} from "./direct-contract-draft-panel";
 import { ContractChangesPanel } from "@/components/shared/contract-changes-panel";
 import { CheckoutSettlementPanel } from "@/components/shared/checkout-settlement-panel";
 
@@ -51,7 +56,19 @@ export function AdminContractDetailPage({
           Quay lại danh sách
         </Link>
         {query.isError && <ErrorState onRetry={() => void query.refetch()} />}
+        <Suspense fallback={null}>
+          <ContractCreatedNotice />
+        </Suspense>
+        {query.data && (
+          <ContractOnboardingPanel portal="admin" contractId={contractId} />
+        )}
         {query.data && <ContractContent contract={query.data} />}
+        {query.data?.status === "DRAFT" && (
+          <DirectContractDraftPanel
+            contractId={contractId}
+            tenantId={query.data.tenantId}
+          />
+        )}
         {query.data && <ContractExtensionReview contractId={contractId} />}
         {query.data && (
           <ContractChangesPanel portal="admin" contractId={contractId} />
@@ -60,9 +77,6 @@ export function AdminContractDetailPage({
           <CheckoutSettlementPanel portal="admin" contractId={contractId} />
         )}
         {query.data && <MonthlyBillingPanel contractId={contractId} />}
-        {query.data && (
-          <ContractOnboardingPanel portal="admin" contractId={contractId} />
-        )}
       </div>
     </AdminShell>
   );

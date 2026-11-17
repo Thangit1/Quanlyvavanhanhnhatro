@@ -149,9 +149,22 @@ public class TenantInvoiceRepository {
           AND issue_type=:type AND status IN ('PENDING','IN_REVIEW') AND (invoice_item_id<=>:item)
         """).param("invoice",invoiceId).param("tenant",tenantId).param("type",type).param("item",itemId).query(Long.class).single()>0;}
 
+    public void expireUnsubmittedSessions(long invoiceId){jdbc.sql("""
+        UPDATE tenant_payment_sessions s JOIN invoices i ON i.id=s.invoice_id SET s.status='EXPIRED'
+        WHERE s.invoice_id=:invoice AND s.status='AWAITING_TRANSFER' AND (s.expires_at<=CURRENT_TIMESTAMP OR s.amount<>i.remaining_amount)
+          AND NOT EXISTS(SELECT 1 FROM tenant_payment_proofs p WHERE p.session_id=s.id AND p.status IN ('PENDING','APPROVED'))
+        """).param("invoice",invoiceId).update();}
+    public Optional<PaymentSession> activeSession(long tenantId,long invoiceId){return jdbc.sql("""
+        SELECT id,invoice_id,amount,payment_method,status,transfer_content,expires_at
+        FROM tenant_payment_sessions WHERE tenant_id=:tenant AND invoice_id=:invoice
+          AND (status IN ('PROOF_SUBMITTED','PROCESSING','PENDING') OR (status='AWAITING_TRANSFER' AND expires_at>CURRENT_TIMESTAMP))
+        ORDER BY id DESC LIMIT 1
+        """).param("tenant",tenantId).param("invoice",invoiceId)
+        .query((r,n)->new PaymentSession(r.getLong("id"),r.getLong("invoice_id"),r.getBigDecimal("amount"),r.getString("payment_method"),r.getString("status"),r.getString("transfer_content"),r.getObject("expires_at",LocalDateTime.class))).optional();}
+
     public Optional<PaymentSession> session(long tenantId,String key){return jdbc.sql("""
         SELECT id,invoice_id,amount,payment_method,status,transfer_content,expires_at FROM tenant_payment_sessions
-        WHERE tenant_id=:tenant AND idempotency_key=:key
+        WHERE tenant_id=:tenant AND idempotency_key=:key FOR UPDATE
         """).param("tenant",tenantId).param("key",key).query((r,n)->new PaymentSession(r.getLong("id"),r.getLong("invoice_id"),r.getBigDecimal("amount"),
             r.getString("payment_method"),r.getString("status"),r.getString("transfer_content"),r.getObject("expires_at",LocalDateTime.class))).optional();}
     public Optional<PaymentSession> sessionById(long tenantId,long invoiceId,long sessionId){return jdbc.sql("""

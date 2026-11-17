@@ -51,6 +51,8 @@ Set-Location .\boarding-house-backend
 .\mvnw.cmd spring-boot:run
 ```
 
+Không chỉ định profile sẽ dùng `dev`. Có thể chạy rõ môi trường local bằng `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"`. Profile `local` dùng chung cấu hình MySQL của `dev`, lấy `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` từ `.env`. Profile `prod` vẫn tách riêng và yêu cầu cấu hình database tương ứng.
+
 Kiểm tra http://localhost:8080/api/v1/health.
 
 ## 4. Chạy frontend

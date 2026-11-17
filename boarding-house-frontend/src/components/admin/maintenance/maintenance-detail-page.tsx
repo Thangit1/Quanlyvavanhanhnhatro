@@ -1,4 +1,6 @@
 "use client";
+import { FormInput } from "@/components/ui/number-input";
+import { parseNumericFields } from "@/lib/numeric-input";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
 import { useState } from "react";
@@ -337,7 +339,20 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
                 reopen: () => mutations.reopen.mutateAsync(payload),
                 cancel: () => mutations.cancel.mutateAsync(payload),
               };
-              await act(map[action]);
+              await act(async () => {
+                payload = parseNumericFields(payload, [
+                  "progressPercent",
+                  "quantity",
+                  "unitPrice",
+                  "laborCost",
+                  "materialCost",
+                  "externalServiceCost",
+                  "otherCost",
+                  "tenantShareAmount",
+                  "rating",
+                ]);
+                return map[action]();
+              });
             }}
           />
         )}
@@ -452,9 +467,7 @@ function ActionDialog({
           label="Tiến độ (%)"
           type="number"
           value={form.progressPercent}
-          onChange={(v: string) =>
-            setForm({ ...form, progressPercent: Number(v) })
-          }
+          onChange={(v: string) => setForm({ ...form, progressPercent: v })}
         />
         <Input
           label="Công việc đã thực hiện"
@@ -473,13 +486,13 @@ function ActionDialog({
           label="Số lượng"
           type="number"
           value={form.quantity}
-          onChange={(v: string) => setForm({ ...form, quantity: Number(v) })}
+          onChange={(v: string) => setForm({ ...form, quantity: v })}
         />
         <Input
           label="Đơn giá"
           type="number"
           value={form.unitPrice}
-          onChange={(v: string) => setForm({ ...form, unitPrice: Number(v) })}
+          onChange={(v: string) => setForm({ ...form, unitPrice: v })}
         />
       </>
     ) : action === "cost" ? (
@@ -488,23 +501,19 @@ function ActionDialog({
           label="Nhân công"
           type="number"
           value={form.laborCost}
-          onChange={(v: string) => setForm({ ...form, laborCost: Number(v) })}
+          onChange={(v: string) => setForm({ ...form, laborCost: v })}
         />
         <Input
           label="Vật tư"
           type="number"
           value={form.materialCost}
-          onChange={(v: string) =>
-            setForm({ ...form, materialCost: Number(v) })
-          }
+          onChange={(v: string) => setForm({ ...form, materialCost: v })}
         />
         <Input
           label="Dịch vụ ngoài"
           type="number"
           value={form.externalServiceCost}
-          onChange={(v: string) =>
-            setForm({ ...form, externalServiceCost: Number(v) })
-          }
+          onChange={(v: string) => setForm({ ...form, externalServiceCost: v })}
         />
       </>
     ) : action === "complete" ? (
@@ -538,22 +547,26 @@ function ActionDialog({
       className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4"
       onMouseDown={(e) => e.target === e.currentTarget && close()}
     >
-      <div
+      <form
         role="dialog"
         aria-modal="true"
         className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submit(form);
+        }}
       >
         <h2 className="mb-5 text-xl font-black">Cập nhật yêu cầu bảo trì</h2>
         <div className="space-y-4">{fields}</div>
         <div className="mt-6 flex justify-end gap-2">
-          <button onClick={close} className="btn-secondary">
+          <button type="button" onClick={close} className="btn-secondary">
             Đóng
           </button>
-          <button onClick={() => submit(form)} className="btn-primary">
+          <button type="submit" className="btn-primary">
             Xác nhận
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
@@ -623,8 +636,18 @@ function Input({
   return (
     <label className="block">
       <span className="mb-1 block text-sm font-semibold">{label}</span>
-      <input
+      <FormInput
         type={type}
+        numericKind={
+          /giá|phí|tiền/iu.test(label)
+            ? "currency"
+            : /tiến độ/iu.test(label)
+              ? "integer"
+              : "decimal"
+        }
+        required={type === "number"}
+        min={type === "number" ? 0 : undefined}
+        max={type === "number" && /tiến độ/iu.test(label) ? 100 : undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="input"

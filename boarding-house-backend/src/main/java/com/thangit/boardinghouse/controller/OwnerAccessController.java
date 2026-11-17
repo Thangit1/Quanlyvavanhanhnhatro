@@ -9,6 +9,7 @@ import java.util.Map;
 public class OwnerAccessController {
  private final PropertyAuthorization access;public OwnerAccessController(PropertyAuthorization access){this.access=access;}
  public record Reason(@NotBlank @Size(max=500) String reason){}
+ @PutMapping("/managers") public ApiResponse<Void> assignBatch(@AuthenticationPrincipal AuthenticatedUser p,@Valid @RequestBody PropertyAuthorization.ManagerBatchAssignment r){access.assignManagerBatch(p,r);return ApiResponse.success("Đã cập nhật phân công cho các nhà trọ đã chọn",null);}
  @GetMapping("/{id}") public ApiResponse<Map<String,Object>> detail(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id){return ApiResponse.success("Phân công và quyền được cấp",access.detail(p,id));}
  @PutMapping("/{id}/managers") public ApiResponse<Void> assign(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody PropertyAuthorization.ManagerAssignment r){access.assignManager(p,id,r);return ApiResponse.success("Đã cập nhật phân công và lưu lịch sử",null);}
  @PostMapping("/{id}/managers/{manager}/revoke") public ApiResponse<Void> revoke(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@PathVariable long manager,@Valid @RequestBody Reason r){access.revokeManager(p,id,manager,r.reason());return ApiResponse.success("Đã thu hồi phân công",null);}

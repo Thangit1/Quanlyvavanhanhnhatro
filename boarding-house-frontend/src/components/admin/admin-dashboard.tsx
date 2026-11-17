@@ -54,7 +54,8 @@ import { AdminUserMenu } from "@/components/admin/admin-user-menu";
 const navigation = [
   ["Tổng quan", "/owner/dashboard", LayoutDashboard],
   ["Nhà và phòng", "/admin/properties", Building2],
-  ["Người thuê", "/admin/tenants", Users],
+  ["Khu vực & Phân công", "/admin/areas", Building2],
+  ["Tài khoản & Nhân sự", "/admin/accounts", Users],
   ["Hợp đồng", "/admin/contracts", ClipboardList],
   ["Vòng đời thuê", "/admin/rental-lifecycle", Workflow],
   ["Hóa đơn", "/admin/invoices", Receipt],
@@ -101,17 +102,21 @@ function SideNavigation({
 }) {
   return (
     <nav className="space-y-1">
-      {navigation.map(([label, rawHref, Icon], index) => (
-        <Link
-          key={label}
-          href={index === 0 ? home : rawHref}
-          onClick={onNavigate}
-          className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm ${index === 0 ? "bg-blue-600 font-semibold text-white shadow-md shadow-blue-200" : "text-slate-600 hover:bg-slate-50"}`}
-        >
-          <Icon className="size-5" />
-          {label}
-        </Link>
-      ))}
+      {navigation
+        .filter(
+          ([, href]) => href !== "/admin/areas" || home.startsWith("/owner/"),
+        )
+        .map(([label, rawHref, Icon], index) => (
+          <Link
+            key={label}
+            href={index === 0 ? home : rawHref}
+            onClick={onNavigate}
+            className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm ${index === 0 ? "bg-blue-600 font-semibold text-white shadow-md shadow-blue-200" : "text-slate-600 hover:bg-slate-50"}`}
+          >
+            <Icon className="size-5" />
+            {label}
+          </Link>
+        ))}
     </nav>
   );
 }

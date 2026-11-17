@@ -1,11 +1,12 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useScopedQuery } from "./use-scoped-query";
+
 import { dashboardService } from "@/services/dashboard.service";
 
 export function useTenantHome(enabled: boolean) {
-  return useQuery({
+  return useScopedQuery({
     queryKey: ["tenant-home"],
-    queryFn: dashboardService.tenantHome,
+    queryFn: ({ signal }) => dashboardService.tenantHome(signal),
     enabled,
     retry: 1,
   });
@@ -15,9 +16,9 @@ export function useAdminDashboard(
   propertyId?: number,
   period = "MONTH",
 ) {
-  return useQuery({
+  return useScopedQuery({
     queryKey: ["admin-dashboard", propertyId, period],
-    queryFn: () => dashboardService.admin(propertyId, period),
+    queryFn: ({ signal }) => dashboardService.admin(propertyId, period, signal),
     enabled,
     retry: 1,
   });

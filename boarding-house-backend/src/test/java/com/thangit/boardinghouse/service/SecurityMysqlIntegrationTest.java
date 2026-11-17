@@ -31,7 +31,7 @@ import org.springframework.mock.web.MockMultipartFile;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SecurityMysqlIntegrationTest {
  static final CheckoutSettlementMysqlTest b=new CheckoutSettlementMysqlTest();static final DepositLedgerMysqlTest f=b.f;
- @DynamicPropertySource static void database(DynamicPropertyRegistry r)throws Exception{f.setup("prompt09_security_test_",null);r.add("spring.datasource.url",f.dataSource::getUrl);r.add("spring.datasource.username",f.dataSource::getUsername);r.add("spring.datasource.password",f.dataSource::getPassword);}
+ @DynamicPropertySource static void database(DynamicPropertyRegistry r)throws Exception{f.setup("prompt09_security_test_",null);r.add("spring.datasource.url",f.dataSource::getUrl);r.add("spring.datasource.username",f.dataSource::getUsername);r.add("spring.datasource.password",f.dataSource::getPassword);r.add("spring.flyway.url",f.dataSource::getUrl);r.add("spring.flyway.user",f.dataSource::getUsername);r.add("spring.flyway.password",f.dataSource::getPassword);}
  @Autowired WebApplicationContext context;@Autowired JwtService jwt;@Autowired PasswordEncoder encoder;@Autowired RequestPrivacyFilter privacy;
  @Autowired PropertyAuthorization access;@Autowired AdminTenantServiceImpl tenants;@Autowired AdminReportServiceImpl reports;
  @Autowired AccountantPortalServiceImpl accountant;@Autowired AuthProperties auth;
@@ -58,6 +58,62 @@ class SecurityMysqlIntegrationTest {
  @BeforeEach void reset(){f.db.sql("UPDATE users SET status='ACTIVE',locked_until=NULL WHERE id IN (2,3,5)").update();f.db.sql("INSERT IGNORE INTO user_roles(user_id,role_id) SELECT 5,id FROM roles WHERE code='TENANT'").update();f.db.sql("UPDATE accountant_profiles SET can_issue_invoice=TRUE,can_record_payment=TRUE,can_create_adjustment=TRUE WHERE user_id=3").update();access.assignManager(f.owner,a.property(),new PropertyAuthorization.ManagerAssignment(2L,EnumSet.allOf(PropertyAuthorization.Capability.class),"Restore explicit test permissions"));}
  String token(long user,RoleCode role){var u=new User();ReflectionTestUtils.setField(u,"id",user);ReflectionTestUtils.setField(u,"email","user-"+user+"@test.invalid");long v=f.db.sql("SELECT security_version FROM users WHERE id=:id").param("id",user).query(Long.class).single();ReflectionTestUtils.setField(u,"securityVersion",v);String family=UUID.randomUUID().toString();f.db.sql("INSERT INTO refresh_tokens(user_id,token_hash,family_id,active_role,expires_at) VALUES(:user,SHA2(:nonce,256),:family,:role,DATE_ADD(UTC_TIMESTAMP(),INTERVAL 1 HOUR))").param("user",user).param("nonce",UUID.randomUUID().toString()).param("family",family).param("role",role.name()).update();return jwt.createAccessToken(u,role,family);}
  ResultActions getAs(long user,RoleCode role,String path)throws Exception{return mvc.perform(get(path).header("Authorization","Bearer "+token(user,role)));}
+ @Test void directlyCreatedManagerMustChangePasswordBeforeAnyBusinessApi()throws Exception{
+  var json=tools.jackson.databind.json.JsonMapper.builder().build();String phone="09%08d".formatted(new java.security.SecureRandom().nextInt(100000000));
+  var payload=Map.of("fullName","Direct HTTP manager","phone",phone,"roles",List.of("MANAGER"),"initialStatus","ACTIVE","propertyIds",List.of(a.property()),"permissions",Map.of("MANAGER",List.of("FINANCE_READ")),"reason","Direct HTTP provisioning","primary",false,"identityConfirmed",false);
+  String created=mvc.perform(post("/api/admin/account-provisioning").header("Authorization","Bearer "+token(1,RoleCode.OWNER)).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(payload))).andExpect(status().isCreated()).andExpect(header().string("Cache-Control","no-store")).andReturn().getResponse().getContentAsString();
+  var account=json.readTree(created).path("data");String temporary=account.path("initialPassword").asText();long user=account.path("id").asLong();
+  String login=mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("email",phone,"password",temporary,"requestedRole","MANAGER")))).andExpect(status().isOk()).andExpect(jsonPath("$.data.user.mustChangePassword").value(true)).andReturn().getResponse().getContentAsString();
+  String access=json.readTree(login).path("data").path("accessToken").asText();
+  mvc.perform(get("/api/admin/properties").header("Authorization","Bearer "+access)).andExpect(status().isForbidden()).andExpect(jsonPath("$.errorCode").value("PASSWORD_CHANGE_REQUIRED"));
+  mvc.perform(post("/api/auth/change-initial-password").header("Authorization","Bearer "+access).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("currentPassword",temporary,"newPassword","Private-Http-123","confirmPassword","Private-Http-123")))).andExpect(status().isOk());
+  mvc.perform(get("/api/auth/me").header("Authorization","Bearer "+access)).andExpect(status().isUnauthorized());
+  String nextLogin=mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("email",phone,"password","Private-Http-123","requestedRole","MANAGER")))).andExpect(status().isOk()).andExpect(jsonPath("$.data.user.mustChangePassword").value(false)).andReturn().getResponse().getContentAsString();
+  String nextToken=json.readTree(nextLogin).path("data").path("accessToken").asText();
+  mvc.perform(get("/api/admin/properties").header("Authorization","Bearer "+nextToken)).andExpect(status().isOk());
+  mvc.perform(get("/api/admin/properties/"+propertyB).header("Authorization","Bearer "+nextToken)).andExpect(status().isForbidden());
+  mvc.perform(put("/api/admin/account-provisioning/"+user+"/status").header("Authorization","Bearer "+token(1,RoleCode.OWNER)).contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"LOCKED\",\"reason\":\"Lock test\"}")).andExpect(status().isOk());
+  mvc.perform(get("/api/admin/properties").header("Authorization","Bearer "+nextToken)).andExpect(status().isUnauthorized());
+ }
+ @Test void directlyCreatedTenantCanLoginWithoutAnyResidenceAndCannotReadOthers()throws Exception{
+  var json=tools.jackson.databind.json.JsonMapper.builder().build();String phone="09%08d".formatted(new java.security.SecureRandom().nextInt(100000000));long residences=f.db.sql("SELECT COUNT(*) FROM tenant_residences").query(Long.class).single();
+  var payload=Map.of("fullName","Direct HTTP tenant","phone",phone,"roles",List.of("TENANT"),"initialStatus","ACTIVE","propertyIds",List.of(),"permissions",Map.of(),"reason","Tenant before residence");
+  String created=mvc.perform(post("/api/admin/account-provisioning").header("Authorization","Bearer "+token(1,RoleCode.OWNER)).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(payload))).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+  var account=json.readTree(created).path("data");String temporary=account.path("initialPassword").asText();
+  String login=mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("email",phone,"password",temporary,"requestedRole","TENANT")))).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();String access=json.readTree(login).path("data").path("accessToken").asText();
+  mvc.perform(post("/api/auth/change-initial-password").header("Authorization","Bearer "+access).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("currentPassword",temporary,"newPassword","Tenant-Private-123","confirmPassword","Tenant-Private-123")))).andExpect(status().isOk());
+  String next=mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("email",phone,"password","Tenant-Private-123","requestedRole","TENANT")))).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();String token=json.readTree(next).path("data").path("accessToken").asText();
+  mvc.perform(get("/api/tenant/contracts/"+contractB).header("Authorization","Bearer "+token)).andExpect(status().isForbidden()).andExpect(jsonPath("$.errorCode").value("CONTRACT_ACCESS_DENIED"));
+  assertThat(f.db.sql("SELECT COUNT(*) FROM tenant_residences").query(Long.class).single()).isEqualTo(residences);
+ }
+ @Test void accountCenterEnforcesOwnerScopeThroughLiveJwt()throws Exception{
+  getAs(1,RoleCode.OWNER,"/api/owner/accounts").andExpect(status().isOk()).andExpect(jsonPath("$.data.items").isArray());
+  getAs(2,RoleCode.MANAGER,"/api/owner/accounts").andExpect(status().isForbidden());
+  getAs(5,RoleCode.TENANT,"/api/owner/accounts/options").andExpect(status().isForbidden());
+  getAs(7,RoleCode.OWNER,"/api/owner/accounts/2?role=MANAGER").andExpect(status().isForbidden());
+ }
+ @Test void accountInvitationCanBeAcceptedWithoutLoginOnlyForANewAccount()throws Exception{
+  String email="new-center-"+UUID.randomUUID()+"@test.invalid";
+  String response=mvc.perform(post("/api/owner/accounts/invitations").header("Authorization","Bearer "+token(1,RoleCode.OWNER)).contentType(MediaType.APPLICATION_JSON).content("{\"email\":\""+email+"\",\"fullName\":\"Invited center manager\",\"role\":\"MANAGER\",\"reason\":\"Security test\"}"))
+    .andExpect(status().isOk()).andExpect(jsonPath("$.data.token").isString()).andReturn().getResponse().getContentAsString();
+  var match=java.util.regex.Pattern.compile("\"token\"\\s*:\\s*\"([A-Za-z0-9_-]{43})\"").matcher(response);assertThat(match.find()).isTrue();String invitationToken=match.group(1);
+  mvc.perform(post("/api/auth/invitations/accept").contentType(MediaType.APPLICATION_JSON).content("{\"token\":\""+invitationToken+"\",\"password\":\"New-Secure-123\"}")).andExpect(status().isOk());
+  mvc.perform(post("/api/auth/invitations/accept").contentType(MediaType.APPLICATION_JSON).content("{\"token\":\""+invitationToken+"\",\"password\":\"New-Secure-123\"}")).andExpect(status().isConflict());
+  getAs(1,RoleCode.OWNER,"/api/owner/accounts?keyword="+email).andExpect(status().isOk()).andExpect(jsonPath("$.data.items[0].full_name").value("Invited center manager"));
+ }
+ @Test void ownerAssignmentApiEnforcesScopeAndRevokesExistingBearerImmediately()throws Exception{
+  String endpoint="/api/owner/access/properties/managers";
+  String body="{\"propertyIds\":["+a.property()+"],\"userId\":2,\"capabilities\":[],\"reason\":\"Explicit operational assignment\"}";
+  mvc.perform(put(endpoint).header("Authorization","Bearer "+token(2,RoleCode.MANAGER)).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+  mvc.perform(put(endpoint).header("Authorization","Bearer "+token(7,RoleCode.OWNER)).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+  getAs(1,RoleCode.OWNER,"/api/owner/access/properties/"+a.property()).andExpect(status().isOk()).andExpect(jsonPath("$.data.availableManagers").isArray()).andExpect(jsonPath("$.data.properties").isArray());
+  mvc.perform(put(endpoint).header("Authorization","Bearer "+token(1,RoleCode.OWNER)).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk());
+  String managerToken=token(2,RoleCode.MANAGER);
+  mvc.perform(get("/api/admin/properties/"+a.property()).header("Authorization","Bearer "+managerToken)).andExpect(status().isOk());
+  mvc.perform(post("/api/owner/access/properties/"+a.property()+"/managers/2/revoke").header("Authorization","Bearer "+token(1,RoleCode.OWNER)).contentType(MediaType.APPLICATION_JSON).content("{\"reason\":\"Owner revoked assignment\"}")).andExpect(status().isOk());
+  mvc.perform(get("/api/admin/properties/"+a.property()).header("Authorization","Bearer "+managerToken)).andExpect(status().isForbidden());
+  mvc.perform(get("/api/admin/rooms/"+a.room()).header("Authorization","Bearer "+managerToken)).andExpect(status().isForbidden());
+ }
  String refreshCookie(MvcResult result){String header=result.getResponse().getHeader("Set-Cookie");return header.substring(header.indexOf('=')+1,header.indexOf(';'));}
  MvcResult login(long id,RoleCode role)throws Exception{return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content("{\"email\":\"p03-"+id+"@test.invalid\",\"password\":\"Test-Password-123\",\"requestedRole\":\""+role+"\"}")).andExpect(status().isOk()).andReturn();}
  @Test void bearerOnlyLogoutImmediatelyRevokesTheSession()throws Exception{String old=token(5,RoleCode.TENANT);mvc.perform(post("/api/auth/logout").header("Authorization","Bearer "+old)).andExpect(status().isOk());mvc.perform(get("/api/auth/me").header("Authorization","Bearer "+old)).andExpect(status().isUnauthorized());}

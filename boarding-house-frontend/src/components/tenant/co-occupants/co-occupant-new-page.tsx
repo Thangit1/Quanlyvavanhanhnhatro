@@ -1,4 +1,6 @@
 "use client";
+import { NoCoOccupantResidence } from "./co-occupant-empty-state";
+import { isMissingCoOccupantResidence } from "@/lib/co-occupant-error";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -120,10 +122,18 @@ export function CoOccupantNewPage() {
     [step, form, accepted],
   );
   if (overview.isLoading) return <PageLoading />;
+  if (isMissingCoOccupantResidence(overview.error))
+    return <NoCoOccupantResidence />;
   if (overview.isError || !overview.data)
     return (
       <main className="p-6">
-        <ErrorState onRetry={() => void overview.refetch()} />
+        <ErrorState
+          onRetry={() => void overview.refetch()}
+          message={apiErrorMessage(
+            overview.error,
+            "Kh?ng th? t?i d? li?u ng??i ? c?ng. Vui l?ng th? l?i.",
+          )}
+        />
       </main>
     );
   if (!overview.data.permissions.canCreateOccupantRequest)

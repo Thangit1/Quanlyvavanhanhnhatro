@@ -1,4 +1,5 @@
 "use client";
+import { parseNumericFields } from "@/lib/numeric-input";
 
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { ErrorState, PageLoading } from "@/components/shared/dashboard-ui";
 import { SettingsForm } from "@/components/admin/settings/settings-form";
 import { SettingsNavigation } from "@/components/admin/settings/settings-navigation";
+import { OrganizationSettingsPanel } from "@/components/admin/settings/organization-settings-panel";
 import { groupFields, settingNavigation } from "@/constants/setting-groups";
 import { adminSettingService } from "@/services/admin-setting.service";
 import { useAuth } from "@/providers/auth-provider";
@@ -111,6 +113,7 @@ export function SettingsPage({ section }: { section: SettingSection }) {
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
             <SettingsNavigation section={section} isOwner={isOwner} />
             <main className="min-w-0">
+              {section === "organization" && <OrganizationSettingsPanel />}
               {section === "overview" && overviewQuery.data ? (
                 <OverviewPanel data={overviewQuery.data} />
               ) : section === "audit-logs" ? (
@@ -508,7 +511,14 @@ function preparePayload(
   section: SettingSection,
   values: Record<string, unknown>,
 ) {
-  const payload = { ...values };
+  const numericFields = (groupFields[section] ?? [])
+    .filter((field) => field.type === "number")
+    .map((field) => field.key);
+  const payload = parseNumericFields<Record<string, unknown>>(
+    values,
+    numericFields,
+    numericFields,
+  );
   if (section === "general") delete payload.logoUrl;
   if (section === "properties")
     ["propertyId", "propertyCode", "address"].forEach(

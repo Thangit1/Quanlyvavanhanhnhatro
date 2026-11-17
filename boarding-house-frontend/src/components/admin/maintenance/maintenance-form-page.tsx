@@ -1,4 +1,6 @@
 "use client";
+import { parseNumericValue } from "@/lib/numeric-input";
+import { CurrencyInput } from "@/components/ui/number-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,7 +26,7 @@ const empty: MaintenancePayload = {
 };
 export function MaintenanceFormPage() {
   const router = useRouter();
-  const [form, setForm] = useState(empty);
+  const [form, setForm] = useState({ ...empty, estimatedCost: "0" });
   const [error, setError] = useState("");
   const { options } = useMaintenanceData({ page: 0, size: 10 });
   const mutations = useMaintenanceMutations();
@@ -52,6 +54,7 @@ export function MaintenanceFormPage() {
     try {
       const result = await mutations.create.mutateAsync({
         ...form,
+        estimatedCost: parseNumericValue(form.estimatedCost) ?? 0,
         title: form.title.trim(),
         description: form.description.trim(),
       });
@@ -241,13 +244,13 @@ export function MaintenanceFormPage() {
               </select>
             </Field>
             <Field label="Chi phí dự kiến">
-              <input
+              <CurrencyInput
                 type="number"
                 min="0"
                 className="input"
                 value={form.estimatedCost}
                 onChange={(e) =>
-                  setForm({ ...form, estimatedCost: Number(e.target.value) })
+                  setForm({ ...form, estimatedCost: e.target.value })
                 }
               />
             </Field>

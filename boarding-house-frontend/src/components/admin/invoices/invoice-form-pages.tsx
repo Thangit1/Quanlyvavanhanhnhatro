@@ -1,4 +1,11 @@
 "use client";
+import {
+  parseNumericFields,
+  numericPreview,
+  type NumericDraftFields,
+} from "@/lib/numeric-input";
+import { DecimalInput, CurrencyInput } from "@/components/ui/number-input";
+
 import Link from "next/link";
 import { MonthlyBillingPanel } from "@/components/shared/monthly-billing-panel";
 import { useState } from "react";
@@ -41,7 +48,9 @@ export function InvoiceFormPage() {
   const [property, setProperty] = useState(0);
   const [building, setBuilding] = useState(0);
   const [floor, setFloor] = useState(0);
-  const [form, setForm] = useState<InvoicePayload>({
+  const [form, setForm] = useState<
+    NumericDraftFields<InvoicePayload, "discountAmount">
+  >({
     roomId: 0,
     contractId: 0,
     billingPeriod: current,
@@ -54,7 +63,9 @@ export function InvoiceFormPage() {
     includePreviousDebt: true,
     action: "SAVE_DRAFT",
   });
-  const [extra, setExtra] = useState<AdditionalItem>({
+  const [extra, setExtra] = useState<
+    NumericDraftFields<AdditionalItem, "quantity" | "unitPrice">
+  >({
     name: "",
     quantity: 1,
     unit: "lần",
@@ -71,7 +82,12 @@ export function InvoiceFormPage() {
   const submit = async (action: "SAVE_DRAFT" | "ISSUE") => {
     setError("");
     try {
-      const result = await m.create.mutateAsync({ ...form, action });
+      const result = await m.create.mutateAsync({
+        ...parseNumericFields<InvoicePayload>(form, ["discountAmount"], [], {
+          discountAmount: 0,
+        }),
+        action,
+      });
       router.push(`/admin/invoices/${result.id}`);
     } catch (e) {
       setError(apiErrorMessage(e, "Không thể tạo hóa đơn."));
@@ -81,11 +97,21 @@ export function InvoiceFormPage() {
     if (
       !extra.name ||
       !extra.reason ||
-      extra.quantity <= 0 ||
-      extra.unitPrice < 0
+      numericPreview(extra.quantity) <= 0 ||
+      extra.unitPrice === "" ||
+      numericPreview(extra.unitPrice) < 0
     )
       return;
-    setForm({ ...form, additionalItems: [...form.additionalItems, extra] });
+    try {
+      const item = parseNumericFields<AdditionalItem>(extra, [
+        "quantity",
+        "unitPrice",
+      ]);
+      setForm({ ...form, additionalItems: [...form.additionalItems, item] });
+    } catch (e) {
+      setError((e as Error).message);
+      return;
+    }
     setExtra({ name: "", quantity: 1, unit: "lần", unitPrice: 0, reason: "" });
   };
   return (
@@ -245,22 +271,22 @@ export function InvoiceFormPage() {
                   onChange={(e) => setExtra({ ...extra, name: e.target.value })}
                   placeholder="Tên khoản thu"
                 />
-                <input
+                <DecimalInput
                   type="number"
                   min="0.001"
                   className={input}
                   value={extra.quantity}
                   onChange={(e) =>
-                    setExtra({ ...extra, quantity: Number(e.target.value) })
+                    setExtra({ ...extra, quantity: e.target.value })
                   }
                 />
-                <input
+                <CurrencyInput
                   type="number"
                   min="0"
                   className={input}
                   value={extra.unitPrice}
                   onChange={(e) =>
-                    setExtra({ ...extra, unitPrice: Number(e.target.value) })
+                    setExtra({ ...extra, unitPrice: e.target.value })
                   }
                 />
                 <button
@@ -293,7 +319,7 @@ export function InvoiceFormPage() {
               </div>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <Field label="Giảm giá">
-                  <input
+                  <CurrencyInput
                     type="number"
                     min="0"
                     className={input}
@@ -301,7 +327,7 @@ export function InvoiceFormPage() {
                     onChange={(e) =>
                       setForm({
                         ...form,
-                        discountAmount: Number(e.target.value),
+                        discountAmount: e.target.value,
                       })
                     }
                   />
@@ -355,7 +381,7 @@ export function InvoiceFormPage() {
                 />
                 <Review
                   label="Giảm giá"
-                  value={formatCurrency(form.discountAmount)}
+                  value={formatCurrency(numericPreview(form.discountAmount))}
                 />
               </div>
               <p className="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">

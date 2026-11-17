@@ -1,4 +1,5 @@
 "use client";
+import { CurrencyInput } from "@/components/ui/number-input";
 
 import { useRef, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -30,11 +31,15 @@ export function DepositLedgerPanel({
   contractId,
   propertyId,
   depositId,
+  writeAllowed,
+  approvalAllowed,
 }: {
   portal: "admin" | "accountant" | "tenant";
   contractId?: number;
   propertyId?: number;
   depositId?: number;
+  writeAllowed?: boolean;
+  approvalAllowed?: boolean;
 }) {
   const base = `/${portal}/deposit-ledger`;
   const { user } = useAuth();
@@ -71,9 +76,14 @@ export function DepositLedgerPanel({
     queryFn: async () =>
       (await apiClient.get<ApiEnvelope<Detail>>(`${base}/${id}`)).data.data,
   });
-  const canWrite = portal !== "tenant";
+  const canWrite = portal !== "tenant" && writeAllowed !== false;
   const canApprove =
-    user?.activeRole === "OWNER" || user?.activeRole === "MANAGER";
+    approvalAllowed !== false &&
+    (user?.activeRole === "OWNER" || user?.activeRole === "MANAGER");
+  const canApproveRefund =
+    canApprove ||
+    (user?.activeRole === "ACCOUNTANT" &&
+      Number(detail.data?.can_approve_refund) === 1);
   async function perform(path: string, payload?: unknown, idempotent = false) {
     setBusy(true);
     setError("");
@@ -139,7 +149,10 @@ export function DepositLedgerPanel({
     );
   }
   return (
-    <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section
+      id={`deposit-ledger-${contractId}`}
+      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-bold">Sổ tiền giữ chỗ và tiền cọc</h2>
         <button
@@ -272,7 +285,7 @@ export function DepositLedgerPanel({
             >
               <label className="text-sm">
                 Số tiền
-                <input
+                <CurrencyInput
                   className={`${input} mt-1 w-full`}
                   name="amount"
                   type="number"
@@ -288,7 +301,7 @@ export function DepositLedgerPanel({
               {action.kind === "refund" && current?.booking_id && (
                 <label className="text-sm">
                   Giữ lại theo thỏa thuận
-                  <input
+                  <CurrencyInput
                     className={`${input} mt-1 w-full`}
                     name="retained"
                     type="number"
@@ -401,7 +414,7 @@ export function DepositLedgerPanel({
                 {labels[String(r.status)] ?? r.status}
               </span>
               <span>{r.reason}</span>
-              {canApprove && r.status === "REQUESTED" && (
+              {canApproveRefund && r.status === "REQUESTED" && (
                 <button
                   disabled={busy}
                   className={input}

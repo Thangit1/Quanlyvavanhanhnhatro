@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
+import { PropertyManagersPanel } from "./property-managers-panel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
@@ -287,7 +288,6 @@ export function PropertyFormPage({ id }: { id?: number }) {
         email: detail.data.email,
         operationStartDate: detail.data.operationStartDate,
         thumbnailUrl: detail.data.thumbnailUrl,
-        managerId: detail.data.manager?.id,
         version: detail.data.version,
       });
   }, [detail.data]);
@@ -554,6 +554,7 @@ export function PropertyDetailPage({ id }: { id: number }) {
             </div>
           </div>
         </section>
+        <PropertyManagersPanel key={id} propertyId={id} />
         <section className="grid gap-4 md:grid-cols-3">
           <Info
             label="Doanh thu tháng"

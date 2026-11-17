@@ -15,6 +15,7 @@ import {
   Hourglass,
   Search,
   UserRoundX,
+  Plus,
 } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminContractStatusBadge } from "@/components/admin/contracts/contract-status-badge";
@@ -34,7 +35,7 @@ import type {
 
 const statusOptions: { value: AdminContractStatus; label: string }[] = [
   { value: "DRAFT", label: "Bản nháp" },
-  { value: "PENDING_CONFIRMATION", label: "Chờ xác nhận" },
+  { value: "PENDING_CONFIRMATION", label: "Chờ hoàn tất nhận phòng" },
   { value: "ACTIVE", label: "Đang hiệu lực" },
   { value: "EXPIRING", label: "Sắp hết hạn" },
   { value: "TERMINATION_REQUESTED", label: "Chờ chấm dứt" },
@@ -116,6 +117,13 @@ export function AdminContractListPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/contracts/new"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800"
+            >
+              <Plus className="size-4" />
+              Thêm hợp đồng
+            </Link>
             <button
               type="button"
               disabled={exporting || !data}
@@ -155,7 +163,7 @@ export function AdminContractListPage() {
                 tone="amber"
               />
               <Metric
-                label="Chờ xác nhận"
+                label="Chờ hoàn tất nhận phòng"
                 value={data.summary.pendingConfirmation}
                 icon={Hourglass}
                 tone="sky"

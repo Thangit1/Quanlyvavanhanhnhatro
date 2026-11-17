@@ -1,4 +1,5 @@
 "use client";
+import { FormInput } from "@/components/ui/number-input";
 
 import { Check, LoaderCircle, RotateCcw, Save } from "lucide-react";
 import type { SettingField } from "@/constants/setting-groups";
@@ -180,8 +181,18 @@ function Field({
           ))}
         </select>
       ) : (
-        <input
+        <FormInput
           type={field.type}
+          numericKind={
+            /price|amount|cost|fee|rent|deposit/i.test(field.key) &&
+            !/day|month|percent|rate|enabled|method|value/i.test(field.key)
+              ? "currency"
+              : /temperature|confidence|threshold|rate|percent|feeValue/i.test(
+                    field.key,
+                  )
+                ? "decimal"
+                : "integer"
+          }
           inputMode={field.type === "tel" ? "tel" : undefined}
           autoComplete={field.type === "tel" ? "tel" : undefined}
           pattern={
@@ -195,15 +206,7 @@ function Field({
           required={field.required}
           min={field.min}
           max={field.max}
-          onChange={(event) =>
-            onChange(
-              field.type === "number"
-                ? event.target.value === ""
-                  ? ""
-                  : Number(event.target.value)
-                : event.target.value,
-            )
-          }
+          onChange={(event) => onChange(event.target.value)}
           className={`${common} invalid:border-red-500 invalid:focus:ring-red-100`}
         />
       )}

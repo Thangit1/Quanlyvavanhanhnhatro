@@ -1,4 +1,5 @@
 "use client";
+import { CurrencyInput } from "@/components/ui/number-input";
 import { useState, useRef, type FormEvent } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -202,7 +203,7 @@ export function ContractChangesPanel({
                 </label>
                 <label>
                   Giá thuê đã thỏa thuận (VNĐ/tháng)
-                  <input
+                  <CurrencyInput
                     className={input}
                     name="rent"
                     type="number"
@@ -214,7 +215,7 @@ export function ContractChangesPanel({
                 </label>
                 <label>
                   Cọc yêu cầu (không phải tiền đã thu)
-                  <input
+                  <CurrencyInput
                     className={input}
                     name="deposit"
                     type="number"
@@ -433,7 +434,7 @@ export function ContractChangesPanel({
                   >
                     <label>
                       Cọc thực chuyển sau quyết toán (VNĐ)
-                      <input
+                      <CurrencyInput
                         className={input}
                         name="amount"
                         type="number"

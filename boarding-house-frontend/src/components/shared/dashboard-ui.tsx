@@ -14,16 +14,20 @@ export function PageLoading() {
     </main>
   );
 }
-export function ErrorState({ onRetry }: { onRetry: () => void }) {
+export function ErrorState({
+  onRetry,
+  message = "Không thể tải dữ liệu. Vui lòng kiểm tra kết nối và thử lại.",
+}: {
+  onRetry: () => void;
+  message?: string;
+}) {
   return (
     <div
       role="alert"
       className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center"
     >
       <AlertTriangle className="mx-auto size-8 text-red-600" />
-      <p className="mt-3 font-semibold text-red-800">
-        Không thể tải dữ liệu. Vui lòng kiểm tra kết nối và thử lại.
-      </p>
+      <p className="mt-3 font-semibold text-red-800">{message}</p>
       <button
         onClick={onRetry}
         className="mt-4 inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-semibold text-white"

@@ -1,4 +1,6 @@
 "use client";
+import { FormInput } from "@/components/ui/number-input";
+import { parseNumericFields } from "@/lib/numeric-input";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -84,7 +86,8 @@ export function PreventivePage() {
     active: true,
   });
   const create = useMutation({
-    mutationFn: api.createPlan,
+    mutationFn: (data: Parameters<typeof api.createPlan>[0]) =>
+      api.createPlan(parseNumericFields(data, ["frequencyInterval"])),
     onSuccess: async () => {
       setShow(false);
       await qc.invalidateQueries({ queryKey: ["maintenance-plans"] });
@@ -133,7 +136,7 @@ export function PreventivePage() {
             label="Khoảng lặp"
             type="number"
             value={form.frequencyInterval}
-            onChange={(v) => setForm({ ...form, frequencyInterval: Number(v) })}
+            onChange={(v) => setForm({ ...form, frequencyInterval: v })}
           />
         </ResourceForm>
       )}
@@ -180,7 +183,10 @@ export function MaterialsPage() {
     unitPrice: 0,
   });
   const create = useMutation({
-    mutationFn: api.createMaterial,
+    mutationFn: (data: Parameters<typeof api.createMaterial>[0]) =>
+      api.createMaterial(
+        parseNumericFields(data, ["stockQuantity", "unitPrice"]),
+      ),
     onSuccess: async () =>
       qc.invalidateQueries({ queryKey: ["maintenance-materials"] }),
   });
@@ -215,13 +221,13 @@ export function MaterialsPage() {
           label="Tồn kho"
           type="number"
           value={form.stockQuantity}
-          onChange={(v) => setForm({ ...form, stockQuantity: Number(v) })}
+          onChange={(v) => setForm({ ...form, stockQuantity: v })}
         />
         <Input
           label="Đơn giá"
           type="number"
           value={form.unitPrice}
-          onChange={(v) => setForm({ ...form, unitPrice: Number(v) })}
+          onChange={(v) => setForm({ ...form, unitPrice: v })}
         />
       </ResourceForm>
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
@@ -364,13 +370,19 @@ function ResourceForm({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+      className="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+    >
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">{children}</div>
-      <button onClick={onSubmit} className="btn-primary mt-4">
+      <button type="submit" className="btn-primary mt-4">
         <Plus className="size-4" />
         Lưu dữ liệu
       </button>
-    </div>
+    </form>
   );
 }
 function Input({
@@ -387,9 +399,18 @@ function Input({
   return (
     <label>
       <span className="mb-1 block text-xs font-bold">{label}</span>
-      <input
+      <FormInput
         className="input"
         type={type}
+        numericKind={
+          /giá|phí|tiền/iu.test(label)
+            ? "currency"
+            : /tần suất/iu.test(label)
+              ? "integer"
+              : "decimal"
+        }
+        required={type === "number"}
+        min={type === "number" ? 0 : undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />

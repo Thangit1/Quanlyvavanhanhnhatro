@@ -61,8 +61,10 @@ public final class AdminPropertyRequests {
     public record SaveAsset(
             @NotBlank @Size(max = 150) String name,
             @NotNull @Min(1) Integer quantity,
-            @NotBlank @Pattern(regexp = "GOOD|FAIR|DAMAGED|LOST") String conditionStatus,
-            @Size(max = 500) String note) {}
+            @NotBlank @Pattern(regexp = "NEW|GOOD|FAIR|DAMAGED|MISSING|LOST") String conditionStatus,
+            @Size(max = 500) String note, @jakarta.validation.constraints.Positive Long id) {
+        public SaveAsset(String name,Integer quantity,String conditionStatus,String note){this(name,quantity,conditionStatus,note,null);}
+    }
 
     public record BulkCreateRooms(
             @NotNull Long propertyId,

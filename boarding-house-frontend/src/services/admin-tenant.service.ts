@@ -7,16 +7,17 @@ import type {
 } from "@/types/admin-tenant";
 
 export const adminTenantService = {
-  async list(filters: TenantFilters) {
+  async list(filters: TenantFilters, signal?: AbortSignal) {
     const { data } = await apiClient.get<ApiEnvelope<TenantListData>>(
       "/admin/tenants",
-      { params: filters },
+      { params: filters, signal },
     );
     return data.data;
   },
-  async detail(id: number) {
+  async detail(id: number, signal?: AbortSignal) {
     const { data } = await apiClient.get<ApiEnvelope<TenantDetail>>(
       `/admin/tenants/${id}`,
+      { signal },
     );
     return data.data;
   },

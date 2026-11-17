@@ -72,6 +72,7 @@ public class DepositLedgerService {
     public Map<String,Object> detail(AuthenticatedUser p,long id) {
         Map<String,Object> d=account(p,id,false);
         Map<String,Object> result=new LinkedHashMap<>(d);
+        result.put("can_approve_refund",p.activeRole()==RoleCode.ACCOUNTANT&&accounting.permission(p.id(),"can_approve_refund")?1:0);
         result.put("transactions",jdbc.sql("SELECT * FROM deposit_transactions WHERE deposit_id=:id ORDER BY id DESC").param("id",id).query().listOfRows());
         result.put("refunds",jdbc.sql("SELECT * FROM deposit_refund_requests WHERE deposit_id=:id ORDER BY id DESC").param("id",id).query().listOfRows());
         return result;
@@ -123,7 +124,7 @@ public class DepositLedgerService {
 
     @Transactional
     public void approveRefund(AuthenticatedUser p,long id,long requestId) {
-        approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,LocalDate.now());var r=refund(id,requestId);
+        requireUser(p);if(p.activeRole()==RoleCode.ACCOUNTANT){if(!accounting.permission(p.id(),"can_approve_refund"))throw new AuthException(HttpStatus.FORBIDDEN,"DEPOSIT_APPROVAL_DENIED","Chưa được ủy quyền duyệt hoàn cọc.");}else approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,LocalDate.now());var r=refund(id,requestId);
         requireNoCheckoutDispute(d);
         if(!"REQUESTED".equals(r.get("status")))throw fail("REFUND_ALREADY_REVIEWED","Đề nghị đã được xử lý.");
         if(pending(id).compareTo(money(d,"balance_amount"))>0)throw fail("REFUND_EXCEEDS_BALANCE","Số dư không đủ để duyệt.");

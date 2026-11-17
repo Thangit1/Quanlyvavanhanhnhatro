@@ -47,6 +47,13 @@ export const tenantInvoiceService = {
         { signal },
       )
     ).data.data,
+  activeSession: async (id: number, signal?: AbortSignal) =>
+    (
+      await apiClient.get<ApiEnvelope<PaymentSession | null>>(
+        `/tenant/invoices/${id}/payment-session`,
+        { signal },
+      )
+    ).data.data,
   createSession: async (
     id: number,
     amount: number,

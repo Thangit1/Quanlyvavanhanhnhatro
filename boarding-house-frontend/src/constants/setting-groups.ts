@@ -47,7 +47,7 @@ export const settingNavigation: SettingNavItem[] = [
   },
   {
     section: "organization",
-    label: "Thông tin đơn vị",
+    label: "Chủ sở hữu / Tổ chức",
     description: "Chủ nhà và doanh nghiệp",
     icon: Landmark,
     ownerOnly: true,

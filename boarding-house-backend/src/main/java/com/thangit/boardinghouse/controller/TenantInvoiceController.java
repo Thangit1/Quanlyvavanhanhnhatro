@@ -28,6 +28,7 @@ public class TenantInvoiceController {
         @RequestParam(required=false)@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)LocalDate to,@RequestParam(defaultValue="0")int page,
         @RequestParam(defaultValue="10")int size,@RequestParam(defaultValue="createdAt,desc")String sort){return ApiResponse.success("Lấy danh sách hóa đơn thành công.",service.invoices(p,status,search,from,to,page,size,sort));}
     @GetMapping("/{id}") public ApiResponse<InvoiceDetail> detail(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id){return ApiResponse.success("Lấy hóa đơn thành công.",service.detail(p,id));}
+    @GetMapping("/{id}/payment-session") public ApiResponse<PaymentSession> activeSession(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id){return ApiResponse.success("Lấy phiên thanh toán hiện tại.",service.activePaymentSession(p,id));}
     @PostMapping("/{id}/payment-session") public ResponseEntity<ApiResponse<PaymentSession>> session(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,
         @RequestHeader("Idempotency-Key")String key,@Valid@RequestBody CreatePaymentSession r){return ResponseEntity.status(201).body(ApiResponse.success("Tạo phiên thanh toán thành công.",service.createPaymentSession(p,id,key,r)));}
     @PostMapping(value="/{id}/payment-proofs",consumes=MediaType.MULTIPART_FORM_DATA_VALUE) public ResponseEntity<ApiResponse<Proof>> proof(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,

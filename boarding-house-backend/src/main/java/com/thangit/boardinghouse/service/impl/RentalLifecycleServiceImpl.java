@@ -68,12 +68,14 @@ public class RentalLifecycleServiceImpl implements RentalLifecycleService {
     @Override @Transactional
     public Created prepareCheckin(AuthenticatedUser p,PrepareCheckin r){role(p);Map<String,Object>c=contract(p,r.contractId());if(!"PENDING_CONFIRMATION".equals(text(c,"status")))throw conflict("CONTRACT_NOT_READY_FOR_CHECKIN","Hợp đồng phải ở trạng thái chờ xác nhận.");
         rooms.checkin(r.contractId(),r.scheduledDate());if(repository.hasCheckin(r.contractId()))throw conflict("CHECKIN_EXISTS","Hợp đồng đã có phiếu check-in.");if(r.bookingId()!=null){Map<String,Object>b=booking(p,r.bookingId());if(b.get("contract_id")==null||number(b,"contract_id")!=r.contractId())throw bad("BOOKING_CONTRACT_MISMATCH","Booking không thuộc hợp đồng đã chọn.");}
+        if(p.activeRole()==RoleCode.MANAGER)rooms.capability(p,number(c,"property_id"),com.thangit.boardinghouse.security.PropertyAuthorization.Capability.CONTRACT_APPROVE);
         onboarding.validatePrepare(r.contractId(),r.assets());return repository.prepareCheckin(r,p.id());}
 
     @Override @Transactional
     public void completeCheckin(AuthenticatedUser p,long id,CompleteCheckin r){role(p);Map<String,Object>ci=checkin(p,id);if(!r.identityVerified()||!r.contractVerified()||!r.depositVerified())throw bad("CHECKIN_CHECKLIST_INCOMPLETE","Phải xác minh CCCD, hợp đồng và tiền cọc trước khi nhận phòng.");
 
         Map<String,Object> c=contract(p,number(ci,"contract_id"));
+        if(p.activeRole()==RoleCode.MANAGER)rooms.capability(p,number(c,"property_id"),com.thangit.boardinghouse.security.PropertyAuthorization.Capability.CONTRACT_APPROVE);
         if(!"PENDING_CONFIRMATION".equals(text(c,"status")))throw conflict("CONTRACT_NOT_READY_FOR_CHECKIN","Hợp đồng không còn chờ nhận phòng.");
         rooms.checkin(number(ci,"contract_id"),LocalDate.now());deposits.requireFunded(number(ci,"contract_id"));
         onboarding.requireReady(number(ci,"contract_id"),r);if(repository.completeCheckin(id,r,p.id())==0)throw conflict("CHECKIN_VERSION_CONFLICT","Phiếu check-in đã thay đổi hoặc không còn sẵn sàng.");repository.activateAfterCheckin(ci,r,p.id());onboarding.activated(number(ci,"contract_id"),id,p.id());repository.activity(number(ci,"property_id"),p.id(),"CHECKIN_COMPLETED","Hoàn tất check-in hợp đồng #"+ci.get("contract_id"),"/admin/rental-lifecycle");}

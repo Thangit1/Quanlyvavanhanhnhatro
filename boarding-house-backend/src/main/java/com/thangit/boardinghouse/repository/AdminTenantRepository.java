@@ -41,15 +41,12 @@ public class AdminTenantRepository {
                 .param("userId", userId).param("propertyId", propertyId).query(Long.class).single() > 0;
     }
 
+    private String tenantScope(RoleCode role) {
+        return "("+propertyScope(role,"p")+(role==RoleCode.OWNER?" OR (p.id IS NULL AND tp.created_by=:userId)":"")+")";
+    }
     public boolean canAccessTenant(long userId, RoleCode role, long tenantId) {
-        return jdbc.sql("""
-                SELECT COUNT(*) FROM tenant_residences tr
-                JOIN properties p ON p.id=tr.property_id
-                WHERE tr.id=(SELECT tr2.id FROM tenant_residences tr2
-                  WHERE tr2.tenant_profile_id=:tenantId
-                  ORDER BY (tr2.status='ACTIVE') DESC,tr2.id DESC LIMIT 1) AND %s
-                """.formatted(propertyScope(role, "p")))
-                .param("userId", userId).param("tenantId", tenantId).query(Long.class).single() > 0;
+        return jdbc.sql("SELECT COUNT(*) FROM tenant_profiles tp LEFT JOIN tenant_residences tr ON tr.id=(SELECT tr2.id FROM tenant_residences tr2 WHERE tr2.tenant_profile_id=tp.id ORDER BY (tr2.status='ACTIVE') DESC,tr2.id DESC LIMIT 1) LEFT JOIN properties p ON p.id=COALESCE(tr.property_id,tp.management_property_id) WHERE tp.id=:tenantId AND "+tenantScope(role))
+            .param("userId",userId).param("tenantId",tenantId).query(Long.class).single()>0;
     }
 
     public List<PropertyOption> properties(long userId, RoleCode role) {
@@ -73,7 +70,7 @@ public class AdminTenantRepository {
     }
 
     private String lifecycleStatus() {
-        return "CASE WHEN " + ResidentSql.current("tr")
+        return "CASE WHEN tr.id IS NULL THEN 'PENDING' WHEN " + ResidentSql.current("tr")
                 + " THEN CASE WHEN r.status='NOTICE' OR EXISTS(SELECT 1 FROM rental_checkouts rc WHERE rc.contract_id=c.id AND rc.status IN ('REQUESTED','INSPECTING')) THEN 'NOTICE' ELSE 'ACTIVE' END"
                 + " WHEN c.status IN ('DRAFT','PENDING_CONFIRMATION') THEN 'PENDING'"
                 + " WHEN tr.status='MOVED_OUT' OR c.status='TERMINATED' THEN 'CHECKED_OUT'"
@@ -85,7 +82,7 @@ public class AdminTenantRepository {
     private QueryParts filters(long userId, RoleCode role, Long propertyId, Long roomId, String status,
                                String temporaryStatus, String accountStatus, String keyword,
                                String debtStatus, String contractStatus) {
-        StringBuilder where = new StringBuilder(propertyScope(role, "p"));
+        StringBuilder where = new StringBuilder(tenantScope(role));
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("isManager",role==RoleCode.MANAGER?1:0);
@@ -152,23 +149,23 @@ public class AdminTenantRepository {
                 AND ix.due_date<CURRENT_DATE AND ix.remaining_amount>0) THEN tp.id END) overdue,
                   COUNT(DISTINCT CASE WHEN tr.status='MOVED_OUT' THEN tp.id END) moved_out,
                   COUNT(DISTINCT CASE WHEN tpr.status='REGISTERED' THEN tp.id END) temp_registered,
-                  COUNT(DISTINCT CASE WHEN COALESCE(tpr.status,'NOT_DECLARED') IN ('NOT_DECLARED','PENDING') THEN tp.id END) temp_pending,
+                  COUNT(DISTINCT CASE WHEN tr.id IS NOT NULL AND COALESCE(tpr.status,'NOT_DECLARED') IN ('NOT_DECLARED','PENDING') THEN tp.id END) temp_pending,
                   COUNT(DISTINCT CASE WHEN tp.user_id IS NULL THEN tp.id END) no_account,
                   COUNT(DISTINCT CASE WHEN EXISTS(SELECT 1 FROM invoices ix JOIN contracts cx ON cx.id=ix.contract_id
                 WHERE (cx.tenant_profile_id=tp.id OR cx.tenant_id=tp.user_id) AND ix.property_id=p.id AND (:isManager=0 OR EXISTS(SELECT 1 FROM manager_property_capabilities mc WHERE mc.manager_id=:userId AND mc.property_id=p.id AND mc.capability='FINANCE_READ')) AND ix.status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED')
                 AND ix.remaining_amount>0) THEN tp.id END) debtors,
                   COUNT(DISTINCT CASE WHEN c.status IN ('DRAFT','PENDING_CONFIRMATION') THEN tp.id END) pending_checkin
                 FROM tenant_profiles tp
-                JOIN tenant_residences tr ON tr.id=(
+                LEFT JOIN tenant_residences tr ON tr.id=(
                     SELECT tr2.id FROM tenant_residences tr2 WHERE tr2.tenant_profile_id=tp.id
                     ORDER BY (tr2.status='ACTIVE') DESC,tr2.id DESC LIMIT 1)
-                JOIN properties p ON p.id=tr.property_id
+                LEFT JOIN properties p ON p.id=COALESCE(tr.property_id,tp.management_property_id)
                 LEFT JOIN contracts c ON c.id=(SELECT c2.id FROM contracts c2
                     WHERE (c2.tenant_profile_id=tp.id OR c2.tenant_id=tp.user_id) AND (SELECT scoped_room.property_id FROM rooms scoped_room WHERE scoped_room.id=c2.room_id)=tr.property_id
                     ORDER BY (c2.status IN ('ACTIVE','EXPIRING','PENDING_CONFIRMATION','DRAFT')) DESC,c2.id DESC LIMIT 1)
                 LEFT JOIN temporary_residence_records tpr ON tpr.tenant_profile_id=tp.id AND tpr.property_id=p.id
                 WHERE %s AND (:propertyId IS NULL OR p.id=:propertyId)
-                """.formatted(ResidentSql.current("tr"), propertyScope(role, "p")))
+                """.formatted(ResidentSql.current("tr"), tenantScope(role)))
                 .param("userId", userId).param("isManager",role==RoleCode.MANAGER?1:0).param("propertyId", propertyId)
                 .query((rs, n) -> new Summary(rs.getLong("total"), rs.getLong("active_count"),
                         rs.getLong("expiring"), rs.getLong("overdue"), rs.getLong("moved_out"),
@@ -194,14 +191,14 @@ public class AdminTenantRepository {
         String sortDirection = "desc".equalsIgnoreCase(direction) ? "DESC" : "ASC";
         String joins = """
                 FROM tenant_profiles tp
-                JOIN tenant_residences tr ON tr.id=(
+                LEFT JOIN tenant_residences tr ON tr.id=(
                     SELECT tr2.id FROM tenant_residences tr2 WHERE tr2.tenant_profile_id=tp.id
                     ORDER BY (tr2.status='ACTIVE') DESC,tr2.id DESC LIMIT 1)
                 LEFT JOIN contracts c ON c.id=(SELECT c2.id FROM contracts c2
                     WHERE (c2.tenant_profile_id=tp.id OR c2.tenant_id=tp.user_id) AND (SELECT scoped_room.property_id FROM rooms scoped_room WHERE scoped_room.id=c2.room_id)=tr.property_id
                     ORDER BY (c2.status IN ('ACTIVE','EXPIRING','PENDING_CONFIRMATION','DRAFT')) DESC,c2.id DESC LIMIT 1)
                 LEFT JOIN rooms r ON r.id=COALESCE(c.room_id,tr.room_id)
-                JOIN properties p ON p.id=COALESCE(r.property_id,tr.property_id)
+                LEFT JOIN properties p ON p.id=COALESCE(r.property_id,tr.property_id,tp.management_property_id)
                 LEFT JOIN users u ON u.id=tp.user_id
                 LEFT JOIN temporary_residence_records tpr ON tpr.tenant_profile_id=tp.id AND tpr.property_id=p.id
                 """;
@@ -292,7 +289,7 @@ public class AdminTenantRepository {
                   email=:email,permanent_address=:address,hometown=:hometown,occupation=:occupation,workplace=:workplace,
                   emergency_contact_name=:emergencyName,emergency_contact_phone=:emergencyPhone,
                   identity_type=:identityType,identity_number=COALESCE(:identityNumber,identity_number),
-                  identity_issued_date=:identityIssuedDate,identity_issued_place=:identityIssuedPlace,note=:note
+                  identity_issued_date=:identityIssuedDate,identity_issued_place=:identityIssuedPlace,note=:note,version=version+1
                 WHERE id=:id
                 """).param("id", id).param("fullName", r.fullName().trim()).param("dob", r.dateOfBirth())
                 .param("gender", blank(r.gender())).param("phone", r.phone().trim()).param("email", blank(r.email()))
