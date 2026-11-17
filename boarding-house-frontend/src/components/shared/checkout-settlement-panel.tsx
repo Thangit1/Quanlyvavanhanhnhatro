@@ -1,4 +1,5 @@
 "use client";
+import { NumberInput, CurrencyInput } from "@/components/ui/number-input";
 import { useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, type ApiEnvelope } from "@/services/api-client";
@@ -398,7 +399,7 @@ export function CheckoutSettlementPanel({
                       </p>
                       <label className="block text-sm">
                         Số lượng trả
-                        <input
+                        <NumberInput
                           required
                           name={`qty-${a.id}`}
                           type="number"
@@ -467,7 +468,7 @@ export function CheckoutSettlementPanel({
                       {r.code === "ELECTRICITY"
                         ? "Chỉ số điện cuối"
                         : "Chỉ số nước cuối"}
-                      <input
+                      <NumberInput
                         required
                         type="number"
                         min={0}
@@ -495,7 +496,7 @@ export function CheckoutSettlementPanel({
                 <label className="block text-sm">
                   Khóa/thẻ trả lại (đã nhận{" "}
                   {d.initialKeys ?? "chưa có chứng cứ"})
-                  <input
+                  <NumberInput
                     required
                     name="keys"
                     type="number"
@@ -722,7 +723,7 @@ export function CheckoutSettlementPanel({
                     placeholder="Nội dung khoản đề xuất"
                     className={input}
                   />
-                  <input
+                  <CurrencyInput
                     required
                     name="amount"
                     type="number"
@@ -745,7 +746,7 @@ export function CheckoutSettlementPanel({
                     placeholder="Căn cứ và trách nhiệm, không mặc định giá mua mới"
                     className={input}
                   />
-                  <input
+                  <NumberInput
                     name="maintenance"
                     type="number"
                     min={1}

@@ -7,6 +7,8 @@ spring:
       - optional:file:.env[.properties]
   profiles:
     default: dev
+    group:
+      local: dev
   servlet:
     multipart:
       max-file-size: 10MB
@@ -21,6 +23,8 @@ spring:
           time_zone: UTC
   flyway:
     enabled: true
+    user: ${FLYWAY_USERNAME:${spring.datasource.username}}
+    password: ${FLYWAY_PASSWORD:${spring.datasource.password}}
     locations: classpath:db/migration
     validate-migration-naming: true
 
@@ -45,6 +49,8 @@ springdoc:
     path: /swagger-ui.html
 
 app:
+  onboarding:
+    max-keys-cards: ${HANDOVER_MAX_KEYS_CARDS:20}
   security:
     jwt:
       secret: ${JWT_SECRET}

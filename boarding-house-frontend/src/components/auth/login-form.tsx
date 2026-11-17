@@ -13,6 +13,7 @@ import { Brand } from "./brand";
 import { PasswordInput } from "./password-input";
 import { RoleSelector } from "./role-selector";
 import { emailOrVietnamPhoneSchema } from "@/lib/phone-validation";
+import { invitationRedirect } from "@/lib/invitation-routing";
 
 const REMEMBERED_IDENTIFIER_KEY = "auth:remembered-identifier";
 
@@ -23,6 +24,8 @@ const schema = z.object({
 });
 type LoginValues = z.infer<typeof schema>;
 const errorMessages: Record<string, string> = {
+  PASSWORD_SETUP_EXPIRED:
+    "Mật khẩu khởi tạo đã hết hạn. Liên hệ người quản trị để cấp lại mật khẩu an toàn.",
   INVALID_CREDENTIALS: "Email, số điện thoại hoặc mật khẩu không chính xác.",
   ROLE_NOT_ALLOWED: "Tài khoản không có quyền truy cập với vai trò đã chọn.",
   ACCOUNT_LOCKED: "Tài khoản đã bị khóa hoặc ngừng hoạt động.",
@@ -47,7 +50,13 @@ export function LoginForm() {
     defaultValues: { email: "", password: "", requestedRole: "OWNER" },
   });
   useEffect(() => {
-    if (!isBootstrapping && user) router.replace(roleHome[user.activeRole]);
+    if (!isBootstrapping && user)
+      router.replace(
+        user.mustChangePassword
+          ? "/change-password"
+          : (invitationRedirect(window.location.hash) ??
+              roleHome[user.activeRole]),
+      );
   }, [isBootstrapping, router, user]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -87,9 +96,12 @@ export function LoginForm() {
       const safePrefix = `/${currentUser.activeRole.toLowerCase()}/`;
       sessionStorage.setItem("auth:notice", "Đăng nhập thành công.");
       router.replace(
-        redirect?.startsWith(safePrefix)
-          ? redirect
-          : roleHome[currentUser.activeRole],
+        currentUser.mustChangePassword
+          ? "/change-password"
+          : (invitationRedirect(window.location.hash) ??
+              (redirect?.startsWith(safePrefix)
+                ? redirect
+                : roleHome[currentUser.activeRole])),
       );
     } catch (error) {
       if (axios.isAxiosError(error)) {

@@ -1,14 +1,15 @@
 "use client";
+import { NoCoOccupantResidence } from "./co-occupant-empty-state";
+import { isMissingCoOccupantResidence } from "@/lib/co-occupant-error";
+import { apiErrorMessage } from "@/lib/api-error";
 import { RepresentativeInvitations } from "@/components/shared/contract-changes-panel";
 import Link from "next/link";
 import { useState } from "react";
-import { isAxiosError } from "axios";
 import {
   Building2,
   CalendarDays,
   FileClock,
   History,
-  House,
   MapPin,
   Plus,
   RefreshCw,
@@ -42,10 +43,10 @@ export function CoOccupantOverviewPage() {
   );
   if (overview.isLoading || occupants.isLoading) return <PageLoading />;
   if (
-    isMissingResidence(overview.error) ||
-    isMissingResidence(occupants.error)
+    isMissingCoOccupantResidence(overview.error) ||
+    isMissingCoOccupantResidence(occupants.error)
   ) {
-    return <NoResidenceState />;
+    return <NoCoOccupantResidence />;
   }
   if (
     overview.isError ||
@@ -57,6 +58,10 @@ export function CoOccupantOverviewPage() {
       <main className="min-h-[calc(100vh-4rem)] bg-[#e7eef8] p-4 sm:p-6">
         <div className="mx-auto max-w-7xl">
           <ErrorState
+            message={apiErrorMessage(
+              overview.error ?? occupants.error,
+              "Kh?ng th? t?i d? li?u ng??i ? c?ng. Vui l?ng th? l?i.",
+            )}
             onRetry={() => {
               void overview.refetch();
               void occupants.refetch();
@@ -302,61 +307,6 @@ export function CoOccupantOverviewPage() {
               )}
             </div>
           )}
-        </section>
-      </div>
-    </main>
-  );
-}
-
-function isMissingResidence(error: unknown) {
-  if (!isAxiosError(error)) return false;
-  const data = error.response?.data as { errorCode?: string } | undefined;
-  return (
-    error.response?.status === 404 &&
-    data?.errorCode === "CO_OCCUPANT_NOT_FOUND"
-  );
-}
-
-function NoResidenceState() {
-  return (
-    <main className="min-h-[calc(100vh-4rem)] bg-[#e7eef8] p-4 pb-28 sm:p-6 lg:pb-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <RepresentativeInvitations />
-        <header>
-          <p className="text-sm text-slate-500">Trang chủ / Người ở cùng</p>
-          <h1 className="mt-1 text-3xl font-black text-slate-950">
-            Người ở cùng
-          </h1>
-          <p className="mt-1 text-slate-600">
-            Quản lý thông tin những người đang cư trú cùng phòng với bạn.
-          </p>
-        </header>
-        <section className="rounded-3xl border border-blue-200 bg-white px-6 py-12 text-center shadow-lg shadow-slate-300/40 sm:px-10">
-          <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-blue-100 text-blue-700">
-            <House className="size-8" />
-          </span>
-          <h2 className="mt-5 text-xl font-extrabold text-slate-950">
-            Chưa có phòng đang cư trú
-          </h2>
-          <p className="mx-auto mt-2 max-w-xl text-slate-600">
-            Tài khoản của bạn chưa được liên kết với phòng và hợp đồng thuê đang
-            hiệu lực. Sau khi quản lý xác nhận thông tin cư trú, danh sách người
-            ở cùng sẽ hiển thị tại đây.
-          </p>
-          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href="/tenant/contracts"
-              className="rounded-xl bg-blue-600 px-5 py-3 font-bold text-white shadow-sm hover:bg-blue-700"
-            >
-              Kiểm tra hợp đồng
-            </Link>
-            <Link
-              href="/tenant/home"
-              className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 hover:bg-slate-50"
-            >
-              Về trang chủ
-            </Link>
-          </div>
         </section>
       </div>
     </main>

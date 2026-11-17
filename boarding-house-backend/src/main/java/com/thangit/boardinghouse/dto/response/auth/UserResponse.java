@@ -9,5 +9,11 @@ public record UserResponse(
         String email,
         String avatarUrl,
         List<RoleCode> availableRoles,
-        RoleCode activeRole
-) {}
+        RoleCode activeRole,
+        String phone,
+        boolean mustChangePassword
+) {
+    public UserResponse(Long id,String fullName,String email,String avatarUrl,List<RoleCode> availableRoles,RoleCode activeRole) {
+        this(id,fullName,email,avatarUrl,availableRoles,activeRole,null,false);
+    }
+}

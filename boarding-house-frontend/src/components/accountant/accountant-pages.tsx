@@ -1,4 +1,7 @@
 "use client";
+import { FormInput } from "@/components/ui/number-input";
+import { NumberInput } from "@/components/ui/number-input";
+
 import Link from "next/link";
 import { AccountingPeriodPanel } from "@/components/shared/accounting-period-panel";
 import {
@@ -785,7 +788,7 @@ function CreateDialog({
               <Field name="payeeName" label="Người nhận" />
               <label className="grid gap-1 text-sm">
                 ID chi phí đã ghi nhận (nếu thanh toán khoản có sẵn)
-                <input
+                <NumberInput
                   name="expenseId"
                   type="number"
                   min="1"
@@ -875,13 +878,15 @@ function Field({
   return (
     <label className="text-sm font-medium">
       {label}
-      <input
+      <FormInput
         name={name}
         type={type}
+        numericKind={name.endsWith("Id") ? "integer" : "currency"}
         defaultValue={defaultValue}
         required={required}
-        min={type === "number" ? "0.01" : undefined}
-        step={type === "number" ? "0.01" : undefined}
+        min={
+          type === "number" ? (name.endsWith("Id") ? "1" : "0.01") : undefined
+        }
         className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 px-3 outline-none focus:border-emerald-500"
       />
     </label>

@@ -1,4 +1,5 @@
 "use client";
+import { CurrencyInput, NumberInput } from "@/components/ui/number-input";
 
 import { ContractOnboardingPanel } from "@/components/shared/contract-onboarding-panel";
 import { CheckoutSettlementPanel } from "@/components/shared/checkout-settlement-panel";
@@ -722,7 +723,7 @@ function WorkflowDialog({
               </Field>
               <DatePair />
               <Field label="Tiền giữ chỗ">
-                <input
+                <CurrencyInput
                   required
                   min="0"
                   name="deposit"
@@ -748,7 +749,7 @@ function WorkflowDialog({
               </p>
               <DatePair />
               <Field label="Giá thuê thỏa thuận mỗi tháng">
-                <input
+                <CurrencyInput
                   required
                   min="0"
                   step="0.01"
@@ -772,7 +773,7 @@ function WorkflowDialog({
                     </select>
                   </Field>
                   <Field label="Đơn giá thỏa thuận">
-                    <input
+                    <CurrencyInput
                       required
                       min="0"
                       step="0.01"
@@ -788,7 +789,7 @@ function WorkflowDialog({
                 Yêu cầu thanh toán hóa đơn thuê đầu kỳ trước nhận phòng
               </label>
               <Field label="Tiền cọc hợp đồng">
-                <input
+                <CurrencyInput
                   required
                   min="0"
                   name="deposit"
@@ -798,7 +799,7 @@ function WorkflowDialog({
                 />
               </Field>
               <Field label="Tiền giữ chỗ được thống nhất chuyển sang cọc">
-                <input
+                <CurrencyInput
                   required
                   min="0"
                   name="reservationTransfer"
@@ -813,7 +814,7 @@ function WorkflowDialog({
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Ngày hạn thanh toán">
-                  <input
+                  <NumberInput
                     required
                     min="1"
                     max="28"
@@ -824,7 +825,7 @@ function WorkflowDialog({
                   />
                 </Field>
                 <Field label="Báo trước (ngày)">
-                  <input
+                  <NumberInput
                     required
                     min="0"
                     name="notice"

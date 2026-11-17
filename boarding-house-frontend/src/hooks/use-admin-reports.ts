@@ -1,20 +1,21 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useScopedQuery } from "./use-scoped-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminReportService as api } from "@/services/admin-report.service";
 import type { ReportFilters } from "@/types/admin-report";
 
 export const useReportOverview = (filters: ReportFilters) =>
-  useQuery({
+  useScopedQuery({
     queryKey: ["report-overview", filters],
-    queryFn: () => api.overview(filters),
+    queryFn: ({ signal }) => api.overview(filters, signal),
   });
 export const useReportData = (type: string, filters: ReportFilters) =>
-  useQuery({
+  useScopedQuery({
     queryKey: ["report", type, filters],
-    queryFn: () => api.report(type, filters),
+    queryFn: ({ signal }) => api.report(type, filters, signal),
   });
 export const useReportExports = () =>
-  useQuery({ queryKey: ["report-exports"], queryFn: api.exports });
+  useScopedQuery({ queryKey: ["report-exports"], queryFn: api.exports });
 export function useCreateReportExport() {
   const client = useQueryClient();
   return useMutation({

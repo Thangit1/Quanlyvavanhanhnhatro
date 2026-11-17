@@ -1,7 +1,14 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
+import {
+  parseNumericFields,
+  parseNumericValue,
+  type NumericDraftFields,
+} from "@/lib/numeric-input";
+import { NumberInput, CurrencyInput } from "@/components/ui/number-input";
 import Link from "next/link";
-import { InitialRoomMeterForm } from "@/components/shared/initial-room-meter-form";
+import { RoomMeterManagement } from "@/components/shared/room-meter-management";
+import { RoomAssetsEditor } from "./room-assets-editor";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   createElement,
@@ -388,11 +395,17 @@ export function RoomFormPage({ id }: { id?: number }) {
   const options = usePropertyOptions();
   const detail = useAdminRoom(id || 0);
   const mutations = useRoomMutations(id);
-  const [form, setForm] = useState<RoomPayload>(blank);
-  const [assetName, setAssetName] = useState("");
+  const [form, setForm] =
+    useState<
+      NumericDraftFields<
+        RoomPayload,
+        "area" | "monthlyRent" | "depositAmount" | "capacity" | "assets"
+      >
+    >(blank);
+  const [hydratedId, setHydratedId] = useState<number>();
   const [error, setError] = useState("");
   useEffect(() => {
-    if (detail.data) {
+    if (detail.data && hydratedId !== id) {
       const d = detail.data;
       setForm({
         propertyId: d.room.propertyId,
@@ -411,9 +424,19 @@ export function RoomFormPage({ id }: { id?: number }) {
         assets: d.assets,
         version: d.room.version,
       });
+      setHydratedId(id);
     }
-  }, [detail.data]);
+  }, [detail.data, hydratedId, id]);
   if (options.isLoading || (id && detail.isLoading)) return <PageLoading />;
+  if (options.isError || (id && detail.isError))
+    return (
+      <ErrorState
+        onRetry={() => {
+          void options.refetch();
+          if (id) void detail.refetch();
+        }}
+      />
+    );
   const buildings =
     options.data?.buildings.filter((b) => b.parentId === form.propertyId) || [];
   const floors =
@@ -423,7 +446,14 @@ export function RoomFormPage({ id }: { id?: number }) {
     e.preventDefault();
     setError("");
     try {
-      const result = await mutation.mutateAsync(form);
+      const result = await mutation.mutateAsync(
+        parseNumericFields<RoomPayload>(
+          form,
+          ["area", "monthlyRent", "depositAmount", "capacity", "quantity"],
+          ["area"],
+          { depositAmount: 0 },
+        ),
+      );
       router.push(
         id
           ? `/admin/rooms/${id}`
@@ -438,257 +468,206 @@ export function RoomFormPage({ id }: { id?: number }) {
       );
     }
   };
-  const addAsset = () => {
-    if (!assetName.trim()) return;
-    setForm({
-      ...form,
-      assets: [
-        ...form.assets,
-        { name: assetName.trim(), quantity: 1, conditionStatus: "GOOD" },
-      ],
-    });
-    setAssetName("");
-  };
   return (
     <AdminShell
       title={id ? "Cập nhật phòng" : "Thêm phòng"}
       subtitle="Cấu hình vị trí, giá, tiện nghi và tài sản"
     >
-      <form onSubmit={submit} className="mx-auto max-w-5xl space-y-5">
-        <section className="rounded-2xl border bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold">Thông tin phòng</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Field label="Nhà trọ *">
-              <Select
-                value={form.propertyId || undefined}
-                placeholder="Chọn nhà trọ"
-                items={options.data?.properties || []}
-                onChange={(v) =>
-                  setForm({
-                    ...form,
-                    propertyId: v || 0,
-                    buildingId: 0,
-                    floorId: 0,
-                  })
-                }
-              />
-            </Field>
-            <Field label="Tòa *">
-              <Select
-                value={form.buildingId || undefined}
-                placeholder="Chọn tòa"
-                items={buildings}
-                onChange={(v) =>
-                  setForm({ ...form, buildingId: v || 0, floorId: 0 })
-                }
-              />
-            </Field>
-            <Field label="Tầng *">
-              <Select
-                value={form.floorId || undefined}
-                placeholder="Chọn tầng"
-                items={floors}
-                onChange={(v) => setForm({ ...form, floorId: v || 0 })}
-              />
-            </Field>
-            <Field label="Mã phòng *">
-              <input
-                required
-                className={input}
-                value={form.code}
-                onChange={(e) =>
-                  setForm({ ...form, code: normalizeAdminCode(e.target.value) })
-                }
-              />
-            </Field>
-            <Field label="Tên phòng *">
-              <input
-                required
-                className={input}
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </Field>
-            <Field label="Loại phòng">
-              <input
-                className={input}
-                value={form.roomType || ""}
-                onChange={(e) => setForm({ ...form, roomType: e.target.value })}
-                placeholder="Studio, khép kín..."
-              />
-            </Field>
-            <Field label="Diện tích (m²)">
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                className={input}
-                value={form.area ?? ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    area: e.target.value ? Number(e.target.value) : undefined,
-                  })
-                }
-              />
-            </Field>
-            <Field label="Giá thuê/tháng *">
-              <input
-                required
-                type="number"
-                min="0"
-                className={input}
-                value={form.monthlyRent}
-                onChange={(e) =>
-                  setForm({ ...form, monthlyRent: Number(e.target.value) })
-                }
-              />
-            </Field>
-            <Field label="Tiền cọc">
-              <input
-                type="number"
-                min="0"
-                className={input}
-                value={form.depositAmount || 0}
-                onChange={(e) =>
-                  setForm({ ...form, depositAmount: Number(e.target.value) })
-                }
-              />
-            </Field>
-            <Field label="Số người tối đa *">
-              <input
-                required
-                type="number"
-                min="1"
-                max="100"
-                className={input}
-                value={form.capacity}
-                onChange={(e) =>
-                  setForm({ ...form, capacity: Number(e.target.value) })
-                }
-              />
-            </Field>
-            <Field label="URL ảnh đại diện" wide>
-              <input
-                className={input}
-                value={form.imageUrl || ""}
-                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                placeholder="https://..."
-              />
-            </Field>
-            <Field label="Mô tả" wide>
-              <textarea
-                className={`${input} min-h-24`}
-                value={form.description || ""}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-              />
-            </Field>
-          </div>
-        </section>
-        <section className="grid gap-5 lg:grid-cols-2">
-          <div className="rounded-2xl border bg-white p-6 shadow-sm">
-            <h2 className="font-bold">Tiện nghi</h2>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {options.data?.amenities.map((a) => (
-                <label
-                  key={a.id}
-                  className="flex items-center gap-2 rounded-xl border p-3 text-sm"
-                >
-                  <input
-                    type="checkbox"
-                    checked={form.amenityIds.includes(a.id)}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        amenityIds: e.target.checked
-                          ? [...form.amenityIds, a.id]
-                          : form.amenityIds.filter((x) => x !== a.id),
-                      })
-                    }
-                  />
-                  {a.name}
-                </label>
-              ))}
+      <div className="mx-auto max-w-5xl space-y-5">
+        <form onSubmit={submit} className="space-y-5">
+          <section className="rounded-2xl border bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-bold">Thông tin phòng</h2>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <Field label="Nhà trọ *">
+                <Select
+                  value={form.propertyId || undefined}
+                  placeholder="Chọn nhà trọ"
+                  items={options.data?.properties || []}
+                  onChange={(v) =>
+                    setForm({
+                      ...form,
+                      propertyId: v || 0,
+                      buildingId: 0,
+                      floorId: 0,
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Tòa *">
+                <Select
+                  value={form.buildingId || undefined}
+                  placeholder="Chọn tòa"
+                  items={buildings}
+                  onChange={(v) =>
+                    setForm({ ...form, buildingId: v || 0, floorId: 0 })
+                  }
+                />
+              </Field>
+              <Field label="Tầng *">
+                <Select
+                  value={form.floorId || undefined}
+                  placeholder="Chọn tầng"
+                  items={floors}
+                  onChange={(v) => setForm({ ...form, floorId: v || 0 })}
+                />
+              </Field>
+              <Field label="Mã phòng *">
+                <input
+                  required
+                  className={input}
+                  value={form.code}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      code: normalizeAdminCode(e.target.value),
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Tên phòng *">
+                <input
+                  required
+                  className={input}
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </Field>
+              <Field label="Loại phòng">
+                <input
+                  className={input}
+                  value={form.roomType || ""}
+                  onChange={(e) =>
+                    setForm({ ...form, roomType: e.target.value })
+                  }
+                  placeholder="Studio, khép kín..."
+                />
+              </Field>
+              <Field label="Diện tích (m²)">
+                <NumberInput
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  className={input}
+                  value={form.area ?? ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      area: e.target.value,
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Giá thuê/tháng *">
+                <CurrencyInput
+                  required
+                  type="number"
+                  min="0"
+                  className={input}
+                  value={form.monthlyRent}
+                  onChange={(e) =>
+                    setForm({ ...form, monthlyRent: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label="Tiền cọc">
+                <CurrencyInput
+                  type="number"
+                  min="0"
+                  className={input}
+                  value={form.depositAmount ?? ""}
+                  onChange={(e) =>
+                    setForm({ ...form, depositAmount: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label="Số người tối đa *">
+                <NumberInput
+                  required
+                  type="number"
+                  min="1"
+                  max="100"
+                  className={input}
+                  value={form.capacity}
+                  onChange={(e) =>
+                    setForm({ ...form, capacity: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label="URL ảnh đại diện" wide>
+                <input
+                  className={input}
+                  value={form.imageUrl || ""}
+                  onChange={(e) =>
+                    setForm({ ...form, imageUrl: e.target.value })
+                  }
+                  placeholder="https://..."
+                />
+              </Field>
+              <Field label="Mô tả" wide>
+                <textarea
+                  className={`${input} min-h-24`}
+                  value={form.description || ""}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                />
+              </Field>
             </div>
-          </div>
-          <div className="rounded-2xl border bg-white p-6 shadow-sm">
-            <h2 className="font-bold">Tài sản bàn giao</h2>
-            <div className="mt-4 flex gap-2">
-              <input
-                className={input}
-                value={assetName}
-                onChange={(e) => setAssetName(e.target.value)}
-                placeholder="Tên tài sản"
-              />
-              <button
-                type="button"
-                onClick={addAsset}
-                className="rounded-xl bg-slate-900 px-4 text-white"
-              >
-                Thêm
-              </button>
-            </div>
-            <div className="mt-3 space-y-2">
-              {form.assets.map((a, index) => (
-                <div
-                  key={`${a.name}-${index}`}
-                  className="flex items-center gap-2 rounded-xl bg-slate-50 p-2"
-                >
-                  <span className="flex-1 text-sm">{a.name}</span>
-                  <input
-                    type="number"
-                    min="1"
-                    className="w-16 rounded-lg border px-2 py-1"
-                    value={a.quantity}
-                    onChange={(e) => {
-                      const assets = [...form.assets];
-                      assets[index] = {
-                        ...a,
-                        quantity: Number(e.target.value),
-                      };
-                      setForm({ ...form, assets });
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setForm({
-                        ...form,
-                        assets: form.assets.filter((_, i) => i !== index),
-                      })
-                    }
-                    className="px-2 text-red-600"
+          </section>
+          <section className="grid gap-5 lg:grid-cols-2">
+            <div className="rounded-2xl border bg-white p-6 shadow-sm">
+              <h2 className="font-bold">Tiện nghi</h2>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {options.data?.amenities.map((a) => (
+                  <label
+                    key={a.id}
+                    className="flex items-center gap-2 rounded-xl border p-3 text-sm"
                   >
-                    ×
-                  </button>
-                </div>
-              ))}
+                    <input
+                      type="checkbox"
+                      checked={form.amenityIds.includes(a.id)}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          amenityIds: e.target.checked
+                            ? [...form.amenityIds, a.id]
+                            : form.amenityIds.filter((x) => x !== a.id),
+                        })
+                      }
+                    />
+                    {a.name}
+                  </label>
+                ))}
+              </div>
             </div>
+            <RoomAssetsEditor
+              assets={form.assets}
+              onChange={(assets) => setForm({ ...form, assets })}
+            />
+          </section>
+          {error && (
+            <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </p>
+          )}
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="rounded-xl border bg-white px-5 py-2.5 font-semibold"
+            >
+              Hủy
+            </button>
+            <button
+              disabled={mutation.isPending}
+              className="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white disabled:opacity-50"
+            >
+              {mutation.isPending ? "Đang lưu..." : "Lưu phòng"}
+            </button>
           </div>
-        </section>
-        {error && (
-          <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-            {error}
-          </p>
-        )}
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-xl border bg-white px-5 py-2.5 font-semibold"
-          >
-            Hủy
-          </button>
-          <button
-            disabled={mutation.isPending}
-            className="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white disabled:opacity-50"
-          >
-            {mutation.isPending ? "Đang lưu..." : "Lưu phòng"}
-          </button>
-        </div>
-      </form>
+        </form>
+        {id && detail.data && <RoomMeterManagement detail={detail.data} />}
+      </div>
     </AdminShell>
   );
 }
@@ -715,7 +694,7 @@ export function RoomDetailPage({ id }: { id: number }) {
   const query = useAdminRoom(id);
   const mutations = useRoomMutations(id);
   const [dialog, setDialog] = useState<"price" | "status" | null>(null);
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState<number | string>(0);
   const [status, setStatus] = useState("");
   const [reason, setReason] = useState("");
   const [actionError, setActionError] = useState("");
@@ -734,7 +713,7 @@ export function RoomDetailPage({ id }: { id: number }) {
     try {
       if (dialog === "price")
         await mutations.price.mutateAsync({
-          newPrice: price,
+          newPrice: parseNumericValue(price)!,
           effectiveDate: localToday(),
           reason,
           version: r.version,
@@ -896,22 +875,8 @@ export function RoomDetailPage({ id }: { id: number }) {
               <EmptyState text="Chưa khai báo tiện nghi hoặc tài sản." />
             )}
           </Card>
-          <Card title="Công tơ">
-            <div className="space-y-2">
-              {d.meters.map((m) => (
-                <div key={m.id} className="rounded-xl border p-3 text-sm">
-                  <strong>
-                    {m.meterType} · {m.meterCode}
-                  </strong>
-                  <p className="mt-1 text-slate-500">
-                    Chỉ số {m.currentReading} · {formatDate(m.readingDate)}
-                  </p>
-                </div>
-              ))}
-              {!d.meters.length && <EmptyState text="Chưa gắn công tơ." />}
-              <InitialRoomMeterForm roomId={id} />
-            </div>
-          </Card>
+          <RoomMeterManagement detail={d} />
+
           <Card title="Lịch sử giá">
             <div className="space-y-3">
               {d.priceHistory.map((h) => (
@@ -965,12 +930,12 @@ export function RoomDetailPage({ id }: { id: number }) {
                 : "Thay đổi trạng thái"}
             </h3>
             {dialog === "price" ? (
-              <input
+              <CurrencyInput
                 type="number"
                 min="0"
                 className={`${input} mt-4`}
                 value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
+                onChange={(e) => setPrice(e.target.value)}
               />
             ) : (
               <select
@@ -1028,7 +993,9 @@ export function RoomDetailPage({ id }: { id: number }) {
               <button
                 onClick={() => void submit()}
                 disabled={
-                  (dialog === "price" ? price < 0 : !status) ||
+                  (dialog === "price"
+                    ? price === "" || Number(price) < 0
+                    : !status) ||
                   (dialog === "status" &&
                     (!reason.trim() ||
                       (status === "READY" && !readinessConfirmed))) ||

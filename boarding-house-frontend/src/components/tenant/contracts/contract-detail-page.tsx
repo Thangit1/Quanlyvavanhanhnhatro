@@ -237,6 +237,7 @@ export function ContractDetailPage({
           <p className="text-sm font-semibold">{alert.message}</p>
         </div>
       )}
+      <ContractOnboardingPanel portal="tenant" contractId={contractId} />
       <div className="grid gap-6 xl:grid-cols-2">
         <ContractGeneralSections data={data} />
         <ContractFinancialSections data={data} />
@@ -246,7 +247,6 @@ export function ContractDetailPage({
           showLedger={false}
         />
         <DepositLedgerPanel portal="tenant" contractId={contractId} />
-        <ContractOnboardingPanel portal="tenant" contractId={contractId} />
         <ContractChangesPanel portal="tenant" contractId={contractId} />
         <ContractPeopleAssets data={data} />
         <ContractTermsDocuments

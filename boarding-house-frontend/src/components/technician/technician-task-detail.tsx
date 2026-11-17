@@ -1,4 +1,6 @@
 "use client";
+import { FormInput } from "@/components/ui/number-input";
+import { NumberInput } from "@/components/ui/number-input";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import {
@@ -480,7 +482,7 @@ function DiagnosisLogs({
           <div className="grid grid-cols-2 gap-3">
             <label className="text-sm font-medium">
               Tiến độ %
-              <input
+              <NumberInput
                 name="progress"
                 type="number"
                 min="0"
@@ -491,7 +493,7 @@ function DiagnosisLogs({
             </label>
             <label className="text-sm font-medium">
               Số phút
-              <input
+              <NumberInput
                 name="duration"
                 type="number"
                 min="1"
@@ -1018,9 +1020,12 @@ function Input({
   return (
     <label className="block text-sm font-medium">
       {label}
-      <input
+      <FormInput
         name={name}
         type={type}
+        numericKind={/price|cost|amount/i.test(name) ? "currency" : "decimal"}
+        min={type === "number" ? 0 : undefined}
+        step={type === "number" && name === "quantity" ? "0.001" : undefined}
         defaultValue={defaultValue}
         required={required}
         className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 px-3 outline-none focus:border-blue-500"

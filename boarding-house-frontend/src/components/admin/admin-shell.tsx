@@ -24,7 +24,8 @@ import { roleHome } from "@/types/auth";
 const nav = [
   ["Tổng quan", "dashboard", LayoutDashboard],
   ["Nhà và phòng", "/admin/properties", Building2],
-  ["Người thuê", "/admin/tenants", Users],
+  ["Khu vực & Phân công", "/admin/areas", Building2],
+  ["Tài khoản & Nhân sự", "/admin/accounts", Users],
   ["Hợp đồng", "/admin/contracts", ClipboardList],
   ["Vòng đời thuê", "/admin/rental-lifecycle", Workflow],
   ["Hóa đơn", "/admin/invoices", Receipt],
@@ -63,6 +64,7 @@ export function AdminShell({
   const navigation = (
     <nav className="space-y-1">
       {nav.map(([label, href, Icon]) => {
+        if (href === "/admin/areas" && user.activeRole !== "OWNER") return null;
         const target = href === "dashboard" ? home : href;
         const active =
           href === "dashboard" ? pathname === home : pathname.startsWith(href);

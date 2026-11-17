@@ -1,5 +1,6 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useScopedQuery } from "./use-scoped-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminInvoiceService } from "@/services/admin-invoice.service";
 import type {
   BulkInvoicePayload,
@@ -7,26 +8,25 @@ import type {
   InvoicePayload,
 } from "@/types/admin-invoice";
 export function useInvoiceData(filters: InvoiceFilters) {
-  const summary = useQuery({
+  const summary = useScopedQuery({
     queryKey: ["invoice-summary", filters.propertyId, filters.billingPeriod],
-    queryFn: () => adminInvoiceService.summary(filters),
+    queryFn: ({ signal }) => adminInvoiceService.summary(filters, signal),
   });
-  const list = useQuery({
+  const list = useScopedQuery({
     queryKey: ["admin-invoices", filters],
-    queryFn: () => adminInvoiceService.list(filters),
-    placeholderData: (p) => p,
+    queryFn: ({ signal }) => adminInvoiceService.list(filters, signal),
   });
-  const options = useQuery({
+  const options = useScopedQuery({
     queryKey: ["invoice-options"],
-    queryFn: adminInvoiceService.options,
+    queryFn: ({ signal }) => adminInvoiceService.options(signal),
     staleTime: 60_000,
   });
   return { summary, list, options };
 }
 export function useInvoiceDetail(id: number) {
-  return useQuery({
+  return useScopedQuery({
     queryKey: ["admin-invoice", id],
-    queryFn: () => adminInvoiceService.detail(id),
+    queryFn: ({ signal }) => adminInvoiceService.detail(id, signal),
     enabled: id > 0,
   });
 }
@@ -35,7 +35,7 @@ export function useInvoiceMutations(id?: number) {
   const refresh = async () => {
     await qc.invalidateQueries({ queryKey: ["admin-invoices"] });
     await qc.invalidateQueries({ queryKey: ["invoice-summary"] });
-    if (id) await qc.invalidateQueries({ queryKey: ["admin-invoice", id] });
+    if (id) await qc.invalidateQueries({ queryKey: ["admin-invoice"] });
   };
   return {
     create: useMutation({

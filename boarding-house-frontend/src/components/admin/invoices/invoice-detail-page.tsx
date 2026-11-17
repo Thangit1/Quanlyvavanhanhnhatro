@@ -1,4 +1,7 @@
 "use client";
+import { requiredNumericValue, numericPreview } from "@/lib/numeric-input";
+import { CurrencyInput } from "@/components/ui/number-input";
+
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/services/api-client";
@@ -30,7 +33,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
   const [dialog, setDialog] = useState<
     "payment" | "adjust" | "cancel" | "remind" | null
   >(null);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState<number | string>(0);
   const [type, setType] = useState("DECREASE");
   const [method, setMethod] = useState("BANK_TRANSFER");
   const [reason, setReason] = useState("");
@@ -53,7 +56,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
     try {
       if (dialog === "payment") {
         const signature = JSON.stringify({
-          amount,
+          amount: requiredNumericValue(amount),
           method,
           reason,
           version: d.version,
@@ -65,7 +68,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
             paidAt: localDateTime(),
           };
         const payload = {
-          amount,
+          amount: requiredNumericValue(amount),
           paymentMethod: method,
           paidAt: paymentAttempt.current.paidAt,
           note: reason,
@@ -80,7 +83,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
       if (dialog === "adjust")
         await m.adjust.mutateAsync({
           adjustmentType: type,
-          amount,
+          amount: requiredNumericValue(amount),
           reason,
           version: d.version,
         });
@@ -151,7 +154,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
               >
                 <label className="block text-sm">
                   Giảm giá
-                  <input
+                  <CurrencyInput
                     required
                     name="discount"
                     type="number"
@@ -403,13 +406,13 @@ export function InvoiceDetailPage({ id }: { id: number }) {
             </h2>
             {dialog === "payment" && (
               <>
-                <input
+                <CurrencyInput
                   type="number"
                   min="1"
                   max={d.remainingAmount}
                   className={`${input} mt-4`}
                   value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
+                  onChange={(e) => setAmount(e.target.value)}
                 />
                 <select
                   className={`${input} mt-3`}
@@ -432,12 +435,12 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                   <option value="DECREASE">Giảm phải thu</option>
                   <option value="INCREASE">Tăng phải thu</option>
                 </select>
-                <input
+                <CurrencyInput
                   type="number"
                   min="1"
                   className={`${input} mt-3`}
                   value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
+                  onChange={(e) => setAmount(e.target.value)}
                 />
               </>
             )}
@@ -481,7 +484,8 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                 onClick={() => void action()}
                 disabled={
                   (dialog !== "remind" && dialog !== "payment" && !reason) ||
-                  ((dialog === "payment" || dialog === "adjust") && amount <= 0)
+                  ((dialog === "payment" || dialog === "adjust") &&
+                    numericPreview(amount) <= 0)
                 }
                 className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40"
               >

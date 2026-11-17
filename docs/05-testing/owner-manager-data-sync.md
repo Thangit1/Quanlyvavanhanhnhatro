@@ -1,5 +1,7 @@
 # Kiểm tra đồng bộ Owner – Manager
 
+> Đây là ghi nhận ngày 02/11/2026. Kết quả kiểm tra dữ liệu hiện tại, giao diện phân công và kiểm thử mới ngày 03/11/2026 nằm trong [Phân công và đồng bộ Owner – Manager](owner-manager-assignment.md).
+
 Ngày kiểm tra: 02/11/2026 (Asia/Bangkok). Database ứng dụng chỉ được truy vấn đọc; không chạy migration, sửa phân công, sửa hồ sơ hay xóa dữ liệu trên đó.
 
 ## Nguyên nhân đã xác minh

@@ -13,17 +13,23 @@ const params = (filters: ReportFilters) => ({
     ? filters.propertyIds.join(",")
     : undefined,
 });
-const getReport = async (type: string, filters: ReportFilters) =>
+const getReport = async (
+  type: string,
+  filters: ReportFilters,
+  signal?: AbortSignal,
+) =>
   (
     await apiClient.get<ApiEnvelope<ReportData>>(`${base}/${type}`, {
       params: params(filters),
+      signal,
     })
   ).data.data;
 export const adminReportService = {
-  overview: async (filters: ReportFilters) =>
+  overview: async (filters: ReportFilters, signal?: AbortSignal) =>
     (
       await apiClient.get<ApiEnvelope<ReportOverview>>(`${base}/overview`, {
         params: params(filters),
+        signal,
       })
     ).data.data,
   report: getReport,

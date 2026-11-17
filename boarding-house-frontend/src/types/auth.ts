@@ -9,7 +9,9 @@ export type Role = (typeof roles)[number];
 export interface AuthUser {
   id: number;
   fullName: string;
-  email: string;
+  email: string | null;
+  phone?: string | null;
+  mustChangePassword?: boolean;
   avatarUrl: string | null;
   availableRoles: Role[];
   activeRole: Role;

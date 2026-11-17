@@ -78,7 +78,7 @@ public class AdminPropertyRepository {
                   COALESCE((SELECT SUM(i.remaining_amount) FROM invoices i
                     JOIN contracts c ON c.id=i.contract_id JOIN rooms rr ON rr.id=c.room_id
                     WHERE rr.property_id=p.id AND (:financeManager=0 OR EXISTS(SELECT 1 FROM manager_property_capabilities mc WHERE mc.property_id=p.id AND mc.manager_id=:userId AND mc.capability='FINANCE_READ')) AND i.status NOT IN ('PAID','DRAFT','PENDING_REVIEW','CANCELLED')),0) debt
-                FROM properties p LEFT JOIN property_managers pm ON pm.property_id=p.id AND pm.manager_id=(SELECT MIN(primary_pm.manager_id) FROM property_managers primary_pm WHERE primary_pm.property_id=p.id)
+                FROM properties p LEFT JOIN property_managers pm ON pm.property_id=p.id AND pm.manager_id=(SELECT primary_pm.manager_id FROM property_managers primary_pm WHERE primary_pm.property_id=p.id ORDER BY primary_pm.is_primary DESC,primary_pm.manager_id LIMIT 1)
                 LEFT JOIN users m ON m.id=pm.manager_id LEFT JOIN buildings b ON b.property_id=p.id
                 LEFT JOIN floors f ON f.building_id=b.id LEFT JOIN rooms r ON r.property_id=p.id
                 WHERE %s AND (:status IS NULL OR p.status=:status)
@@ -91,7 +91,7 @@ public class AdminPropertyRepository {
     }
 
     public Optional<Map<String,Object>> property(long propertyId) {
-        return jdbc.sql("SELECT p.*,m.id manager_id,m.full_name manager_name FROM properties p LEFT JOIN property_managers pm ON pm.property_id=p.id AND pm.manager_id=(SELECT MIN(primary_pm.manager_id) FROM property_managers primary_pm WHERE primary_pm.property_id=p.id) LEFT JOIN users m ON m.id=pm.manager_id WHERE p.id=:id LIMIT 1")
+        return jdbc.sql("SELECT p.*,m.id manager_id,m.full_name manager_name FROM properties p LEFT JOIN property_managers pm ON pm.property_id=p.id AND pm.manager_id=(SELECT primary_pm.manager_id FROM property_managers primary_pm WHERE primary_pm.property_id=p.id ORDER BY primary_pm.is_primary DESC,primary_pm.manager_id LIMIT 1) LEFT JOIN users m ON m.id=pm.manager_id WHERE p.id=:id LIMIT 1")
                 .param("id", propertyId).query(AdminPropertyRepository::map).optional();
     }
 
@@ -227,9 +227,21 @@ public class AdminPropertyRepository {
     private void replaceRoomChildren(long roomId,SaveRoom request) {
         jdbc.sql("DELETE FROM room_amenities WHERE room_id=:id").param("id",roomId).update();
         if(request.amenityIds()!=null) request.amenityIds().stream().distinct().forEach(id -> jdbc.sql("INSERT INTO room_amenities(room_id,amenity_id) SELECT :room,:amenity WHERE EXISTS(SELECT 1 FROM amenities WHERE id=:amenity)").param("room",roomId).param("amenity",id).update());
-        jdbc.sql("DELETE FROM room_assets WHERE room_id=:id").param("id",roomId).update();
-        if(request.assets()!=null) request.assets().forEach(a -> jdbc.sql("INSERT INTO room_assets(room_id,name,quantity,condition_status,note) VALUES(:room,:name,:quantity,:condition,:note)").param("room",roomId).param("name",a.name().trim()).param("quantity",a.quantity()).param("condition",a.conditionStatus()).param("note",blank(a.note())).update());
+        var retained=new java.util.HashSet<Long>();
+        if(request.assets()!=null)for(var a:request.assets())if(a.id()!=null){
+            if(!retained.add(a.id())||jdbc.sql("SELECT COUNT(*) FROM room_assets WHERE id=:id AND room_id=:room").param("id",a.id()).param("room",roomId).query(Long.class).single()!=1)throw new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.CONFLICT,"ROOM_ASSET_INVALID","Tài sản bị trùng hoặc không thuộc phòng này.");
+        }
+        // Retain links to existing handover snapshots when updating an unchanged asset.
+        for(long asset:jdbc.sql("SELECT id FROM room_assets WHERE room_id=:room").param("room",roomId).query(Long.class).list())if(!retained.contains(asset)){
+            if(jdbc.sql("SELECT COUNT(*) FROM rental_checkin_assets a JOIN rental_checkins ci ON ci.id=a.checkin_id WHERE a.room_asset_id=:id AND (ci.status='COMPLETED' OR EXISTS(SELECT 1 FROM handover_versions hv WHERE hv.checkin_id=ci.id))").param("id",asset).query(Long.class).single()>0)throw new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.CONFLICT,"ROOM_ASSET_IN_USE","Tài sản đã thuộc biên bản được chốt; không thể xóa liên kết lịch sử. Có thể cập nhật tình trạng, ghi chú hoặc bổ sung tài sản mới.");
+            jdbc.sql("DELETE FROM room_assets WHERE id=:id AND room_id=:room").param("id",asset).param("room",roomId).update();
+        }
+        if(request.assets()!=null)for(var a:request.assets()){
+            if(a.id()==null)jdbc.sql("INSERT INTO room_assets(room_id,name,quantity,condition_status,note) VALUES(:room,:name,:quantity,:condition,:note)").param("room",roomId).param("name",a.name().trim()).param("quantity",a.quantity()).param("condition",a.conditionStatus()).param("note",blank(a.note())).update();
+            else jdbc.sql("UPDATE room_assets SET name=:name,quantity=:quantity,condition_status=:condition,note=:note WHERE id=:id AND room_id=:room").param("id",a.id()).param("room",roomId).param("name",a.name().trim()).param("quantity",a.quantity()).param("condition",a.conditionStatus()).param("note",blank(a.note())).update();
+        }
     }
+    public java.util.Map<String,Object> meterManagement(long room,com.thangit.boardinghouse.security.AuthenticatedUser actor){return new com.thangit.boardinghouse.service.RoomMeterService(jdbc,new com.thangit.boardinghouse.service.RoomLifecycleGuard(jdbc)).management(actor,room);}
 
     public long countRooms(long userId,RoleCode role,Long propertyId,Long buildingId,Long floorId,String status,String keyword) {
         return roomStatement("SELECT COUNT(*) FROM rooms r JOIN properties p ON p.id=r.property_id WHERE ",userId,role,propertyId,buildingId,floorId,status,keyword).query(Long.class).single();
@@ -253,14 +265,14 @@ public class AdminPropertyRepository {
                 SELECT r.id,r.code room_code,r.name,r.image_url,p.id property_id,p.name property_name,b.id building_id,b.name building_name,
                   f.id floor_id,f.name floor_name,r.room_type,r.area,r.monthly_rent,r.deposit_amount,r.capacity,r.status,r.version,r.updated_at,
                   c.id contract_id,c.code contract_code,c.start_date,c.end_date,c.status contract_status,u.id tenant_id,u.full_name tenant_name,u.phone tenant_phone,
-                  CASE WHEN c.status='PENDING_CONFIRMATION' THEN 0 ELSE COALESCE((SELECT COUNT(*) FROM contract_occupants co WHERE co.contract_id=c.id AND co.residence_status='ACTIVE'),IF(c.id IS NULL,0,c.occupant_count)) END current_occupants,
+                  (SELECT COUNT(DISTINCT tr.tenant_profile_id) FROM tenant_residences tr WHERE tr.room_id=r.id AND tr.status='ACTIVE' AND tr.move_in_date<=CURRENT_DATE AND (tr.move_out_date IS NULL OR tr.move_out_date>CURRENT_DATE)) current_occupants,
                   COALESCE((SELECT SUM(i.remaining_amount) FROM invoices i WHERE i.contract_id=c.id AND (:financeManager=0 OR EXISTS(SELECT 1 FROM manager_property_capabilities mc WHERE mc.property_id=p.id AND mc.manager_id=:userId AND mc.capability='FINANCE_READ')) AND i.status NOT IN ('PAID','DRAFT','PENDING_REVIEW','CANCELLED')),0) debt,
                   (SELECT COUNT(*) FROM maintenance_requests m WHERE m.room_id=r.id AND m.status NOT IN ('RESOLVED','CANCELLED','REJECTED')) maintenance_count
                 FROM rooms r JOIN properties p ON p.id=r.property_id LEFT JOIN buildings b ON b.id=r.building_id LEFT JOIN floors f ON f.id=r.floor_id
                 LEFT JOIN contracts c ON c.id=(SELECT cc.id FROM contracts cc WHERE cc.room_id=r.id AND cc.status IN ('PENDING_CONFIRMATION','ACTIVE','EXPIRING','TERMINATION_REQUESTED','EXPIRED','SETTLING') AND NOT EXISTS(SELECT 1 FROM rental_checkouts x WHERE x.contract_id=cc.id AND x.actual_checkout_at IS NOT NULL AND x.status IN ('SETTLEMENT','COMPLETED')) ORDER BY cc.start_date DESC LIMIT 1)
                 LEFT JOIN users u ON u.id=c.tenant_id WHERE
                 """;
-        return roomStatement(select,userId,role,propertyId,buildingId,floorId,status,keyword).param("size",size).param("offset",offset)
+        return roomStatement(select,userId,role,propertyId,buildingId,floorId,status,keyword).param("financeManager",role==RoleCode.MANAGER?1:0).param("size",size).param("offset",offset)
                 .query((rs,n)->roomRow(rs)).list();
     }
     public Optional<RoomRow> room(long id) {
@@ -268,7 +280,7 @@ public class AdminPropertyRepository {
                 SELECT r.id,r.code room_code,r.name,r.image_url,p.id property_id,p.name property_name,b.id building_id,b.name building_name,
                   f.id floor_id,f.name floor_name,r.room_type,r.area,r.monthly_rent,r.deposit_amount,r.capacity,r.status,r.version,r.updated_at,
                   c.id contract_id,c.code contract_code,c.start_date,c.end_date,c.status contract_status,u.id tenant_id,u.full_name tenant_name,u.phone tenant_phone,
-                  CASE WHEN c.status='PENDING_CONFIRMATION' THEN 0 ELSE COALESCE((SELECT COUNT(*) FROM contract_occupants co WHERE co.contract_id=c.id AND co.residence_status='ACTIVE'),IF(c.id IS NULL,0,c.occupant_count)) END current_occupants,
+                  (SELECT COUNT(DISTINCT tr.tenant_profile_id) FROM tenant_residences tr WHERE tr.room_id=r.id AND tr.status='ACTIVE' AND tr.move_in_date<=CURRENT_DATE AND (tr.move_out_date IS NULL OR tr.move_out_date>CURRENT_DATE)) current_occupants,
                   COALESCE((SELECT SUM(i.remaining_amount) FROM invoices i WHERE i.contract_id=c.id AND i.status NOT IN ('PAID','DRAFT','PENDING_REVIEW','CANCELLED')),0) debt,
                   (SELECT COUNT(*) FROM maintenance_requests m WHERE m.room_id=r.id AND m.status NOT IN ('RESOLVED','CANCELLED','REJECTED')) maintenance_count
                 FROM rooms r JOIN properties p ON p.id=r.property_id LEFT JOIN buildings b ON b.id=r.building_id LEFT JOIN floors f ON f.id=r.floor_id
@@ -280,8 +292,11 @@ public class AdminPropertyRepository {
     public Optional<Map<String,Object>> roomRaw(long id) { return jdbc.sql("SELECT * FROM rooms WHERE id=:id").param("id",id).query(AdminPropertyRepository::map).optional(); }
     public List<Tenant> occupants(long id) {
         return jdbc.sql("""
-                SELECT u.id,u.full_name,u.phone,TRUE representative FROM contracts c JOIN users u ON u.id=c.tenant_id WHERE c.room_id=:id AND c.status='ACTIVE'
-                UNION ALL SELECT NULL,co.full_name,NULL,FALSE FROM contract_occupants co JOIN contracts c ON c.id=co.contract_id WHERE c.room_id=:id AND c.status='ACTIVE' AND co.residence_status='ACTIVE'
+                SELECT tp.id,tp.full_name,tp.phone,MAX(tr.residence_role='REPRESENTATIVE') representative
+                FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id
+                WHERE tr.room_id=:id AND tr.status='ACTIVE' AND tr.move_in_date<=CURRENT_DATE
+                  AND (tr.move_out_date IS NULL OR tr.move_out_date>CURRENT_DATE)
+                GROUP BY tp.id,tp.full_name,tp.phone ORDER BY representative DESC,tp.full_name,tp.id
                 """).param("id",id).query((rs,n)->new Tenant(nullableLong(rs,"id"),rs.getString("full_name"),rs.getString("phone"),rs.getBoolean("representative"))).list();
     }
     public List<Amenity> roomAmenities(long id) { return jdbc.sql("SELECT a.id,a.code,a.name,a.icon FROM amenities a JOIN room_amenities ra ON ra.amenity_id=a.id WHERE ra.room_id=:id ORDER BY a.name").param("id",id).query((rs,n)->new Amenity(rs.getLong("id"),rs.getString("code"),rs.getString("name"),rs.getString("icon"))).list(); }

@@ -183,6 +183,12 @@ export type History = {
   createdAt: string;
 };
 export type RoomDetail = {
+  meterManagement?: {
+    canInstall: boolean;
+    installableTypes: string[];
+    reason: string | null;
+    events: Record<string, string | number | null>[];
+  };
   room: RoomRow;
   description?: string;
   occupants: TenantBrief[];

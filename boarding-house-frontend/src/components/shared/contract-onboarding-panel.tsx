@@ -1,34 +1,25 @@
 "use client";
+import { CurrencyInput, NumberInput } from "@/components/ui/number-input";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
+import { OnboardingIdentityProfile } from "./onboarding-identity-profile";
+import { OnboardingProcedures } from "./onboarding-procedures";
+import { OnboardingHandoverEditor } from "./onboarding-handover-editor";
+import Link from "next/link";
+import { ContractMeterReadiness } from "./contract-meter-readiness";
+import { ContractConfirmationProgress } from "./contract-confirmation-progress";
+import { DepositLedgerPanel } from "./deposit-ledger-panel";
+import type {
+  OnboardingDetail as Detail,
+  OnboardingRow as Row,
+} from "@/types/contract-onboarding";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, type ApiEnvelope } from "@/services/api-client";
 import { useAuth } from "@/providers/auth-provider";
 import { apiErrorMessage } from "@/lib/api-error";
 import { formatCurrency } from "@/lib/format";
+import { HandoverDocumentPanel } from "./handover-document";
 
-type Row = Record<string, string | number | boolean | null>;
-type Detail = {
-  draft: Row;
-  services: Row[];
-  terms: Row[];
-  monthlyRent: number | null;
-  identityVerified: boolean;
-  contractConfirmed: boolean;
-  initialPaymentSatisfied: boolean;
-  initialPaymentRequired: boolean;
-  initialInvoiceId: number | null;
-  contractVersion: Row | null;
-  handoverVersion?: Row | null;
-  checkin: Row | null;
-  contractConfirmations: Row[];
-  handoverConfirmations?: Row[];
-  utilityRates: Row[];
-  assets?: Row[];
-  meters: Row[];
-  deposit: Row | null;
-  confirmationNotice: string;
-};
 const input = "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm";
 const button =
   "rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40";
@@ -53,11 +44,12 @@ export function ContractOnboardingPanel({
       user?.activeRole,
       contractId,
     ],
-    queryFn: async () =>
-      (await apiClient.get<ApiEnvelope<Detail>>(base)).data.data,
+    queryFn: async ({ signal }) =>
+      (await apiClient.get<ApiEnvelope<Detail>>(base, { signal })).data.data,
+    enabled: !!user,
+    refetchInterval: 15_000,
   });
-  const staff =
-    portal === "admin" && ["OWNER", "MANAGER"].includes(user?.activeRole ?? "");
+  const staff = portal === "admin" && !!query.data?.progress?.canManageHandover;
   async function act(path: string, payload: unknown, put = false) {
     setBusy(true);
     setError("");
@@ -65,124 +57,102 @@ export function ContractOnboardingPanel({
       if (put) await apiClient.put(`${base}/${path}`, payload);
       else await apiClient.post(`${base}/${path}`, payload);
       await client.invalidateQueries();
+      return true;
     } catch (e) {
       setError(apiErrorMessage(e));
+      return false;
     } finally {
       setBusy(false);
     }
   }
   if (query.isPending) return <p>Đang tải điều kiện nhận phòng…</p>;
   if (query.isError) return <p role="alert">{apiErrorMessage(query.error)}</p>;
+  if (!query.data.progress)
+    return (
+      <p
+        role="alert"
+        className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900"
+      >
+        Backend chưa có dữ liệu tiến độ xác nhận mới. Cần khởi động lại backend
+        sau khi biên dịch bản cập nhật.
+      </p>
+    );
   const d = query.data,
     ci = d.checkin;
-  const confirmedHandover =
-    new Set((d.handoverConfirmations ?? []).map((x) => x.party)).size === 2;
-  const ownParty = portal === "tenant" ? "TENANT" : "LANDLORD";
   function confirm(path: string, v: Row) {
     void act(path, { version: Number(v.version), contentHash: v.content_hash });
   }
-  function evidence(e: FormEvent<HTMLFormElement>, path: string) {
-    e.preventDefault();
-    void act(path, {
-      reference: new FormData(e.currentTarget).get("reference"),
-    });
-  }
   return (
     <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
-      <h2 className="text-lg font-bold">Hồ sơ xác nhận và bàn giao</h2>
-      <p className="text-sm text-slate-600">{d.confirmationNotice}</p>
+      {portal === "admin" && (
+        <ContractMeterReadiness
+          roomId={Number(d.context.room_id)}
+          requiredTypes={d.utilityRates
+            .filter((r) => r.calculation_method === "METER")
+            .map((r) => String(r.code))}
+        />
+      )}
+      <OnboardingProcedures detail={d} contractId={contractId} />
+      <ContractConfirmationProgress
+        key={`${user?.id}:${user?.activeRole}:${d.contractVersion?.content_hash ?? "none"}`}
+        detail={d}
+        busy={busy}
+        onConfirm={(v) => confirm("confirmations", v)}
+      />
       {error && (
-        <p role="alert" className="text-sm text-red-700">
+        <p
+          role="alert"
+          className="rounded-xl bg-red-50 p-3 text-sm text-red-700"
+        >
           {error}
         </p>
       )}
-      <p>
-        Giá thuê đã chốt:{" "}
-        {d.monthlyRent === null
-          ? "Cần đối soát hợp đồng cũ"
-          : formatCurrency(d.monthlyRent)}
-      </p>
-      <ul className="space-y-1 text-sm">
-        <li>
-          Hồ sơ định danh:{" "}
-          {d.identityVerified
-            ? "Đã xác minh"
-            : "Chưa xác minh hoặc đã thay đổi"}
-        </li>
-        <li>
-          Hợp đồng:{" "}
-          {d.contractConfirmed
-            ? "Hai bên đã xác nhận cùng phiên bản"
-            : "Đang chờ xác nhận"}
-        </li>
-        <li>
-          Cọc còn thiếu:{" "}
-          {d.deposit
-            ? formatCurrency(Number(d.deposit.remaining_due))
-            : "Chưa có tài khoản cọc"}
-        </li>
-        <li>
-          Thu đầu kỳ:{" "}
-          {d.initialPaymentSatisfied
-            ? "Đã đáp ứng chính sách"
-            : "Chưa thanh toán đủ hóa đơn đầu kỳ"}
-          {d.initialInvoiceId ? ` · Hóa đơn #${d.initialInvoiceId}` : ""}
-        </li>
-        <li>
-          Bàn giao:{" "}
-          {confirmedHandover
-            ? "Hai bên đã xác nhận"
-            : "Đang chờ lập hoặc xác nhận"}
-        </li>
-      </ul>
-      {d.contractVersion && (
-        <details className="rounded-xl bg-slate-50 p-3">
-          <summary>
-            Nội dung hợp đồng · phiên bản {String(d.contractVersion.version)}
-          </summary>
-          <pre className="mt-3 whitespace-pre-wrap break-words text-xs">
-            {String(d.contractVersion.content)}
-          </pre>
-        </details>
+      {d.serviceEstimate && (
+        <p className="rounded-xl bg-blue-50 p-3 text-sm">
+          Dự kiến kỳ đầu theo thỏa thuận đã lưu: dịch vụ định kỳ{" "}
+          {formatCurrency(Number(d.serviceEstimate.recurringEstimate))}, phí một
+          lần {formatCurrency(Number(d.serviceEstimate.onceEstimate))}, tổng gồm
+          thuê/cọc/định mức{" "}
+          {formatCurrency(Number(d.serviceEstimate.initialEstimate))}. Chưa phân
+          bổ ngày lẻ hoặc tính lượt sử dụng; đây chưa phải số đã thanh toán. Số
+          phải thu theo hóa đơn và sổ cọc.
+        </p>
       )}
-      <p className="text-xs">
-        Đã xác nhận:{" "}
-        {d.contractConfirmations
-          .map(
-            (x) =>
-              `${x.party === "TENANT" ? "Người thuê" : "Bên cho thuê"} (${x.confirmed_at})`,
-          )
-          .join("; ") || "Chưa có"}
-      </p>
-      {(staff || portal === "tenant") &&
-        d.contractVersion &&
-        !d.contractConfirmations.some((x) => x.party === ownParty) && (
-          <button
-            disabled={busy}
-            className={button}
-            onClick={() => confirm("confirmations", d.contractVersion!)}
+      {d.progress.canWriteFinance && (
+        <p>
+          <a
+            className="text-sm font-semibold text-blue-700 underline"
+            href={`#deposit-ledger-${contractId}`}
           >
-            Tôi đã đọc và xác nhận phiên bản hợp đồng này
-          </button>
-        )}
-      {staff && !d.identityVerified && (
-        <form
-          className="flex gap-2"
-          onSubmit={(e) => evidence(e, "identity-verification")}
-        >
-          <input
-            required
-            maxLength={500}
-            name="reference"
-            className={input}
-            placeholder="Mã hồ sơ/chứng từ đã đối chiếu định danh"
-          />
-          <button disabled={busy} className={button}>
-            Xác minh hồ sơ
-          </button>
-        </form>
+            Ghi nhận tiền cọc trong sổ cọc
+          </a>
+        </p>
       )}
-      {staff && (
+      {d.progress.canReadFinance && d.deposit && (
+        <p className="text-sm">
+          Cọc phải thu: {formatCurrency(Number(d.deposit.required_amount))} · Đã
+          thu: {formatCurrency(Number(d.deposit.balance_amount))} · Còn thiếu:{" "}
+          {formatCurrency(Number(d.deposit.remaining_due))}
+        </p>
+      )}
+      {portal !== "tenant" &&
+        d.draft.status === "PENDING_CONFIRMATION" &&
+        d.progress.canReadFinance && (
+          <DepositLedgerPanel
+            portal={portal}
+            contractId={contractId}
+            writeAllowed={d.progress.canWriteFinance}
+            approvalAllowed={d.progress.canApproveDeposit}
+          />
+        )}
+      <OnboardingIdentityProfile
+        key={`${user?.id}:${user?.activeRole}:${contractId}:${d.identityProfile?.dataHash}`}
+        detail={d}
+        portal={portal}
+        busy={busy}
+        act={act}
+      />
+      {d.progress.canRevise && (
         <form
           className="flex gap-2"
           onSubmit={(e) => {
@@ -204,31 +174,138 @@ export function ContractOnboardingPanel({
           </button>
         </form>
       )}
-      {portal !== "tenant" &&
-        d.initialPaymentRequired &&
-        !d.initialInvoiceId && (
-          <form
-            className="flex gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void act("initial-invoice", {
-                invoiceId: Number(new FormData(e.currentTarget).get("invoice")),
+      {d.initialPaymentRequired && !d.progress.checkinCompleted && (
+        <section className="space-y-3 rounded-xl border p-4">
+          <h3 className="font-semibold">Hóa đơn thuê đầu kỳ</h3>
+          {d.initialInvoice && (
+            <p className="text-sm">
+              <Link
+                className="text-blue-700 underline"
+                href={`/${portal}/invoices/${d.initialInvoice.id}`}
+              >
+                {String(d.initialInvoice.code)}
+              </Link>{" "}
+              · Còn phải thanh toán:{" "}
+              {formatCurrency(Number(d.initialInvoice.remaining_amount))}
+            </p>
+          )}
+          {d.progress.canWriteFinance &&
+            !d.initialInvoiceId &&
+            d.initialInvoiceOptions.length > 0 && (
+              <form
+                className="flex flex-wrap gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void act("initial-invoice", {
+                    invoiceId: Number(
+                      new FormData(e.currentTarget).get("invoice"),
+                    ),
+                  });
+                }}
+              >
+                <label className="min-w-0 flex-1 text-sm">
+                  Chọn hóa đơn đã phát hành hợp lệ
+                  <select
+                    name="invoice"
+                    required
+                    className={input}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Chọn hóa đơn đầu kỳ
+                    </option>
+                    {d.initialInvoiceOptions.map((i) => (
+                      <option key={String(i.id)} value={String(i.id)}>
+                        {String(i.code)} · Còn phải trả{" "}
+                        {formatCurrency(Number(i.remaining_amount))}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button disabled={busy} className={button}>
+                  Gắn hóa đơn đầu kỳ
+                </button>
+              </form>
+            )}
+          {d.initialDraftInvoice &&
+            (d.progress.canWriteFinance ||
+              d.progress.canCreateInitialInvoice) && (
+              <Link
+                className="inline-block text-sm font-semibold text-blue-700 underline"
+                href={`/${portal}/invoices/${d.initialDraftInvoice.id}`}
+              >
+                Kiểm tra và phát hành hóa đơn nháp{" "}
+                {String(d.initialDraftInvoice.code)}
+              </Link>
+            )}
+          {d.progress.canCreateInitialInvoice &&
+            !d.initialInvoiceId &&
+            !d.initialDraftInvoice && (
+              <button
+                disabled={busy}
+                className={button}
+                type="button"
+                onClick={() => void act("initial-invoice/draft", {})}
+              >
+                Tạo hóa đơn đầu kỳ nháp
+              </button>
+            )}
+          {!d.initialPaymentSatisfied && (
+            <p className="text-xs text-slate-600">
+              Hóa đơn phải được phát hành, liên kết đúng hợp đồng và thanh toán
+              bằng chứng từ. Tạo hóa đơn nháp không ghi nhận đã thu.
+            </p>
+          )}
+        </section>
+      )}
+      {staff && !ci && (
+        <form
+          id="handover-editor"
+          className="space-y-3 rounded-xl border p-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const date = new FormData(e.currentTarget).get("date");
+            setBusy(true);
+            setError("");
+            try {
+              await apiClient.post("/admin/rental-lifecycle/checkins", {
+                contractId,
+                scheduledDate: date,
+                assets: [],
+                note: "Chuẩn bị bàn giao từ hợp đồng",
               });
-            }}
-          >
+              await client.invalidateQueries();
+            } catch (err) {
+              setError(apiErrorMessage(err));
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          <h3 className="font-semibold">Chuẩn bị biên bản bàn giao</h3>
+          <label className="block text-sm">
+            Ngày dự kiến nhận phòng
             <input
               required
-              name="invoice"
-              type="number"
-              min={1}
+              type="date"
+              name="date"
+              min={String(d.draft.start_date)}
+              max={String(d.draft.end_date)}
+              defaultValue={String(
+                d.context.expected_checkin_date ?? d.draft.start_date,
+              )}
               className={input}
-              placeholder="ID hóa đơn thuê đã phát hành đúng tháng bắt đầu"
             />
-            <button disabled={busy} className={button}>
-              Gắn hóa đơn đầu kỳ
-            </button>
-          </form>
-        )}
+          </label>
+          <p className="text-xs text-slate-600">
+            Tự điền danh mục tài sản của phòng. Cần kiểm kê, chỉ số thực tế và
+            xác nhận hai bên trước khi hoàn tất.
+          </p>
+          <button disabled={busy} className={button}>
+            Lập biên bản bàn giao
+          </button>
+        </form>
+      )}
       {staff &&
         d.draft.status === "PENDING_CONFIRMATION" &&
         !d.initialInvoiceId && (
@@ -269,6 +346,24 @@ export function ContractOnboardingPanel({
                         name: s.name,
                         calculationMethod: s.calculation_method,
                         unitPrice: Number(s.unit_price),
+                        ...(Number(s.snapshot_version) > 0
+                          ? {
+                              catalogServiceId:
+                                s.catalog_service_id ?? undefined,
+                              description: s.description ?? undefined,
+                              unit: s.unit,
+                              quantity:
+                                s.quantity === null
+                                  ? undefined
+                                  : Number(s.quantity),
+                              billingCycle: s.billing_cycle,
+                              effectiveDate: s.effective_date,
+                              endDate: s.end_date ?? undefined,
+                              status: s.status,
+                              note: s.note ?? undefined,
+                              prorate: s.prorate,
+                            }
+                          : {}),
                       })),
                       terms: [
                         ...d.terms.map((t) => ({
@@ -297,7 +392,7 @@ export function ContractOnboardingPanel({
               </p>
               <label className="block text-sm">
                 Giá thuê tháng
-                <input
+                <CurrencyInput
                   required
                   name="rent"
                   type="number"
@@ -329,7 +424,7 @@ export function ContractOnboardingPanel({
               </label>
               <label className="block text-sm">
                 Ngày hạn thanh toán
-                <input
+                <NumberInput
                   required
                   name="due"
                   type="number"
@@ -341,7 +436,7 @@ export function ContractOnboardingPanel({
               </label>
               <label className="block text-sm">
                 Báo trước (ngày)
-                <input
+                <NumberInput
                   required
                   name="notice"
                   type="number"
@@ -368,7 +463,7 @@ export function ContractOnboardingPanel({
                     </label>
                     <label>
                       Đơn giá
-                      <input
+                      <CurrencyInput
                         required
                         name={`${code}-price`}
                         type="number"
@@ -415,142 +510,12 @@ export function ContractOnboardingPanel({
           </details>
         )}
       {staff && ci?.status === "READY" && (
-        <form
-          key={String(ci.version)}
-          className="space-y-3 border-t pt-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const f = new FormData(e.currentTarget);
-            void act(
-              "handover",
-              {
-                version: Number(ci.version),
-                scheduledDate: f.get("date"),
-                electricityReading: f.has("ELECTRICITY")
-                  ? Number(f.get("ELECTRICITY"))
-                  : null,
-                waterReading: f.has("WATER") ? Number(f.get("WATER")) : null,
-                keysCardsCount: Number(f.get("keys")),
-                reference: f.get("reference"),
-                assets:
-                  f.get("refreshInventory") === "on"
-                    ? []
-                    : (d.assets ?? []).map((a, i) => ({
-                        roomAssetId: a.room_asset_id,
-                        assetName: a.asset_name,
-                        quantity: Number(a.quantity),
-                        conditionStatus: f.get(`condition-${i}`),
-                        note: f.get(`note-${i}`),
-                      })),
-              },
-              true,
-            );
-          }}
-        >
-          <h3 className="font-semibold">Kiểm kê và lập phiên bản bàn giao</h3>
-          <label className="flex gap-2 text-sm">
-            <input type="checkbox" name="refreshInventory" />
-            Nạp lại danh mục tài sản hiện tại vào biên bản mới (cần kiểm kê và
-            xác nhận lại)
-          </label>
-          <label className="block text-sm">
-            Ngày bàn giao
-            <input
-              required
-              type="date"
-              name="date"
-              defaultValue={String(ci.scheduled_date)}
-              className={input}
-            />
-          </label>
-          {d.utilityRates.map((r) => (
-            <div key={String(r.code)} className="text-sm">
-              {String(r.name)} · {formatCurrency(Number(r.unit_price))} /{" "}
-              {String(r.unit)} ·{" "}
-              {r.calculation_method === "METER"
-                ? "Theo đồng hồ"
-                : "Phí cố định"}
-              {r.calculation_method === "METER" && (
-                <label className="block">
-                  Chỉ số thực tế (
-                  {String(
-                    d.meters.find((m) => m.meter_type === r.code)?.meter_code ??
-                      "Thiếu đồng hồ",
-                  )}
-                  )
-                  <input
-                    required
-                    name={String(r.code)}
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    defaultValue={
-                      ci[
-                        r.code === "ELECTRICITY"
-                          ? "electricity_reading"
-                          : "water_reading"
-                      ] === null
-                        ? undefined
-                        : Number(
-                            ci[
-                              r.code === "ELECTRICITY"
-                                ? "electricity_reading"
-                                : "water_reading"
-                            ],
-                          )
-                    }
-                    className={input}
-                  />
-                </label>
-              )}
-            </div>
-          ))}
-          {(d.assets ?? []).map((a, i) => (
-            <div key={i} className="grid gap-2 rounded-xl bg-slate-50 p-3">
-              <p>
-                {String(a.asset_name)} · Số lượng {String(a.quantity)}
-              </p>
-              <select
-                name={`condition-${i}`}
-                defaultValue={String(a.condition_status)}
-                className={input}
-              >
-                {["NEW", "GOOD", "FAIR", "DAMAGED", "MISSING"].map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-              <input
-                name={`note-${i}`}
-                maxLength={500}
-                defaultValue={String(a.note ?? "")}
-                placeholder="Tình trạng thực tế và ghi chú"
-                className={input}
-              />
-            </div>
-          ))}
-          <label className="block text-sm">
-            Số khóa/thẻ
-            <input
-              required
-              type="number"
-              min={0}
-              name="keys"
-              defaultValue={Number(ci.keys_cards_count ?? 0)}
-              className={input}
-            />
-          </label>
-          <input
-            required
-            name="reference"
-            maxLength={500}
-            defaultValue={String(ci.handover_reference ?? "")}
-            placeholder="Mã biên bản/ảnh bàn giao"
-            className={input}
-          />
-          <button disabled={busy} className={button}>
-            Lưu biên bản và xác nhận bên cho thuê
-          </button>
-        </form>
+        <OnboardingHandoverEditor
+          key={`${contractId}:${ci.version}:${d.handoverContextHash}`}
+          detail={d}
+          busy={busy}
+          act={act}
+        />
       )}
       {staff &&
         d.draft.status === "PENDING_CONFIRMATION" &&
@@ -586,7 +551,7 @@ export function ContractOnboardingPanel({
                 placeholder="Mã đồng hồ sau thay/reset"
                 className={input}
               />
-              <input
+              <NumberInput
                 required
                 name="reading"
                 type="number"
@@ -620,43 +585,28 @@ export function ContractOnboardingPanel({
             </form>
           </details>
         )}
-      {d.handoverVersion && (
-        <details className="rounded-xl bg-slate-50 p-3">
-          <summary>
-            Biên bản bàn giao · phiên bản {String(d.handoverVersion.version)}
-          </summary>
-          <pre className="mt-3 whitespace-pre-wrap break-words text-xs">
-            {String(d.handoverVersion.content)}
-          </pre>
-        </details>
+      {ci && (
+        <HandoverDocumentPanel
+          key={`${user?.id}:${user?.activeRole}:${contractId}`}
+          detail={d}
+          portal={portal}
+          contractId={contractId}
+          busy={busy}
+          onConfirm={(payload) => void act("handover-confirmations", payload)}
+        />
       )}
-      {portal === "tenant" &&
-        ci?.status === "READY" &&
-        d.handoverVersion &&
-        !(d.handoverConfirmations ?? []).some((x) => x.party === "TENANT") && (
-          <button
-            disabled={busy}
-            className={button}
-            onClick={() =>
-              confirm("handover-confirmations", d.handoverVersion!)
-            }
-          >
-            Tôi đã đối chiếu và xác nhận biên bản bàn giao này
-          </button>
-        )}
       {staff && ci?.status === "READY" && (
         <button
+          id="complete-checkin"
           className={button}
-          disabled={
-            busy ||
-            !d.identityVerified ||
-            !d.contractConfirmed ||
-            !d.initialPaymentSatisfied ||
-            !confirmedHandover ||
-            !d.deposit ||
-            Number(d.deposit.remaining_due) > 0
-          }
+          disabled={busy || !d.progress.canCompleteCheckin}
           onClick={async () => {
+            if (
+              !window.confirm(
+                "Xác nhận đã bàn giao phòng thực tế và hoàn tất nhận phòng? Hợp đồng sẽ chuyển sang hiệu lực.",
+              )
+            )
+              return;
             setBusy(true);
             setError("");
             try {

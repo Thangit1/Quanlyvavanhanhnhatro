@@ -20,7 +20,7 @@ const statusConfig: Record<
     icon: FilePenLine,
   },
   PENDING_CONFIRMATION: {
-    label: "Chờ xác nhận",
+    label: "Chờ hoàn tất nhận phòng",
     className: "border-blue-200 bg-blue-50 text-blue-700",
     icon: Hourglass,
   },

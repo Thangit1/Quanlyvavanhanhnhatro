@@ -21,7 +21,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class TechnicianPortalRepository {
-    private static final String ASSIGNED = "(m.assigned_to=:userId OR EXISTS(SELECT 1 FROM maintenance_assignments ax WHERE ax.maintenance_request_id=m.id AND ax.user_id=:userId AND ax.unassigned_at IS NULL))";
+    private static final String ASSIGNED = "(m.assigned_to=:userId OR EXISTS(SELECT 1 FROM maintenance_assignments ax WHERE ax.maintenance_request_id=m.id AND ax.user_id=:userId AND ax.unassigned_at IS NULL)) AND NOT EXISTS(SELECT 1 FROM technician_property_assignments tpa WHERE tpa.technician_id=:userId AND tpa.property_id=m.property_id AND tpa.revoked_at IS NOT NULL)";
     private static final String TASK_FROM = """
         FROM maintenance_requests m
         JOIN properties p ON p.id=m.property_id
@@ -40,6 +40,12 @@ public class TechnicianPortalRepository {
 
     private final JdbcClient jdbc;
     public TechnicianPortalRepository(JdbcClient jdbc) { this.jdbc=jdbc; }
+
+    public void requireWorkPermission(long user,long property,boolean cost) {
+        String column=cost?"can_record_cost":"can_update";
+        var rows=jdbc.sql("SELECT "+column+" allowed,revoked_at FROM technician_property_assignments WHERE technician_id=:user AND property_id=:property FOR UPDATE").param("user",user).param("property",property).query().listOfRows();
+        if(!rows.isEmpty()&&(rows.getFirst().get("revoked_at")!=null||!Boolean.TRUE.equals(rows.getFirst().get("allowed"))))throw new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.FORBIDDEN,"TECHNICIAN_PERMISSION_DENIED","Chưa được cấp quyền cập nhật hoặc ghi chi phí tại cơ sở này.");
+    }
 
     public Optional<Technician> technician(long userId) {
         return jdbc.sql("""

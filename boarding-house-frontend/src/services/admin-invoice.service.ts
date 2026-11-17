@@ -13,29 +13,32 @@ import type {
 export const adminInvoiceService = {
   summary: async (
     params: Pick<InvoiceFilters, "propertyId" | "billingPeriod">,
+    signal?: AbortSignal,
   ) => {
     const { data } = await apiClient.get<ApiEnvelope<InvoiceSummary>>(
       "/admin/invoices/summary",
-      { params },
+      { params, signal },
     );
     return data.data;
   },
-  options: async () => {
+  options: async (signal?: AbortSignal) => {
     const { data } = await apiClient.get<ApiEnvelope<InvoiceOptions>>(
       "/admin/invoices/options",
+      { signal },
     );
     return data.data;
   },
-  list: async (params: InvoiceFilters) => {
+  list: async (params: InvoiceFilters, signal?: AbortSignal) => {
     const { data } = await apiClient.get<ApiEnvelope<Page<InvoiceRow>>>(
       "/admin/invoices",
-      { params },
+      { params, signal },
     );
     return data.data;
   },
-  detail: async (id: number) => {
+  detail: async (id: number, signal?: AbortSignal) => {
     const { data } = await apiClient.get<ApiEnvelope<InvoiceDetail>>(
       `/admin/invoices/${id}`,
+      { signal },
     );
     return data.data;
   },

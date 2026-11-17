@@ -61,6 +61,8 @@ public class AuthServiceImpl implements AuthService {
         if (user.isTemporarilyLocked(now)) {
             throw new AuthException(HttpStatus.LOCKED, "ACCOUNT_LOCKED", "Tài khoản đã bị khóa hoặc ngừng hoạt động.");
         }
+        if(user.isMustChangePassword()&&user.getInitialPasswordExpiresAt()!=null&&!user.getInitialPasswordExpiresAt().isAfter(now))
+            throw new AuthException(HttpStatus.LOCKED,"PASSWORD_SETUP_EXPIRED","Mật khẩu khởi tạo đã hết hạn. Liên hệ người quản trị để cấp lại.");
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             user.registerFailedLogin(properties.login().maxAttempts(),
                     now.plusMillis(properties.login().lockDuration()));
@@ -114,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
     private UserResponse mapUser(User user, RoleCode role) {
         return new UserResponse(user.getId(), user.getFullName(), user.getEmail(), user.getAvatarUrl(),
                 user.getRoles().stream().map(Role::getCode).filter(this::isSupportedRole).map(RoleCode::valueOf)
-                        .sorted(Comparator.comparing(Enum::name)).toList(), role);
+                        .sorted(Comparator.comparing(Enum::name)).toList(), role,user.getPhone(),user.isMustChangePassword());
     }
 
     private boolean isSupportedRole(String code) {

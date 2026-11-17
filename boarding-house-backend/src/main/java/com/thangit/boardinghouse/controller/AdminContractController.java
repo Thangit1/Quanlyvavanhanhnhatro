@@ -16,6 +16,36 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/contracts")
 public class AdminContractController {
+    private com.thangit.boardinghouse.service.DirectContractService direct;
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setDirectContracts(com.thangit.boardinghouse.service.DirectContractService direct) {this.direct=direct;}
+    @GetMapping("/creation-options")
+    public ApiResponse<java.util.Map<String,Object>> creationOptions(@AuthenticationPrincipal AuthenticatedUser p,
+            @RequestParam(required=false) Long propertyId,@RequestParam(required=false) String keyword) {
+        return ApiResponse.success("Dữ liệu lập hợp đồng",direct.options(p,propertyId,keyword));
+    }
+    @PostMapping
+    public ResponseEntity<ApiResponse<com.thangit.boardinghouse.dto.response.lifecycle.RentalLifecycleResponses.Created>> create(
+            @AuthenticationPrincipal AuthenticatedUser p,
+            @RequestHeader("Idempotency-Key") @jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max=100) String key,
+            @jakarta.validation.Valid @RequestBody com.thangit.boardinghouse.service.DirectContractService.Request r) {
+        return ResponseEntity.status(201).body(ApiResponse.success("Đã tạo hợp đồng trực tiếp",direct.create(p,key,r)));
+    }
+    @PostMapping("/{contractId}/submit")
+    public ApiResponse<com.thangit.boardinghouse.dto.response.lifecycle.RentalLifecycleResponses.Created> submit(
+            @AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId) {
+        return ApiResponse.success("Hợp đồng chờ xác nhận",direct.submit(p,contractId));
+    }
+    @GetMapping("/{contractId}/draft")
+    public ApiResponse<java.util.Map<String,Object>> draft(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId) {
+        return ApiResponse.success("Bản nháp hợp đồng",direct.draft(p,contractId));
+    }
+    @PutMapping("/{contractId}/draft")
+    public ApiResponse<com.thangit.boardinghouse.dto.response.lifecycle.RentalLifecycleResponses.Created> updateDraft(
+            @AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId,@RequestParam long version,
+            @jakarta.validation.Valid @RequestBody com.thangit.boardinghouse.service.DirectContractService.Request r) {
+        return ApiResponse.success("Đã lưu bản nháp",direct.updateDraft(p,contractId,version,r));
+    }
     public record ExtensionDecision(@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max=1000) String reason) {}
     private final AdminContractService service;
 

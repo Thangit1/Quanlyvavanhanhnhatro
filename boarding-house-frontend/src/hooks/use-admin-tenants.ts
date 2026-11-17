@@ -1,20 +1,21 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useScopedQuery } from "./use-scoped-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminTenantService } from "@/services/admin-tenant.service";
 import type { SaveTenantPayload, TenantFilters } from "@/types/admin-tenant";
 
 export function useAdminTenants(filters: TenantFilters, enabled = true) {
-  return useQuery({
+  return useScopedQuery({
     queryKey: ["admin-tenants", filters],
-    queryFn: () => adminTenantService.list(filters),
+    queryFn: ({ signal }) => adminTenantService.list(filters, signal),
     enabled,
     staleTime: 20_000,
   });
 }
 export function useAdminTenant(id: number, enabled = true) {
-  return useQuery({
+  return useScopedQuery({
     queryKey: ["admin-tenant", id],
-    queryFn: () => adminTenantService.detail(id),
+    queryFn: ({ signal }) => adminTenantService.detail(id, signal),
     enabled,
   });
 }
@@ -22,7 +23,7 @@ export function useTenantMutations(id?: number) {
   const client = useQueryClient();
   const refresh = async () => {
     await client.invalidateQueries({ queryKey: ["admin-tenants"] });
-    if (id) await client.invalidateQueries({ queryKey: ["admin-tenant", id] });
+    if (id) await client.invalidateQueries({ queryKey: ["admin-tenant"] });
   };
   return {
     create: useMutation({

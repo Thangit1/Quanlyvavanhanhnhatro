@@ -15,8 +15,14 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
+
+    @Column(name="must_change_password",nullable=false)
+    private boolean mustChangePassword;
+
+    @Column(name="initial_password_expires_at")
+    private Instant initialPasswordExpiresAt;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
@@ -86,5 +92,7 @@ public class User {
     public void changePassword(String encodedPassword) {
         this.passwordHash = encodedPassword;
         this.passwordChangedAt = Instant.now();
+        this.mustChangePassword = false;
+        this.initialPasswordExpiresAt = null;
     }
 }

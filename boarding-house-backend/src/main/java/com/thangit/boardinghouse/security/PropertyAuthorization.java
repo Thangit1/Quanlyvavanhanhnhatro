@@ -11,6 +11,13 @@ import java.util.*;
 public class PropertyAuthorization {
  public enum Capability { FINANCE_READ,FINANCE_WRITE,DEPOSIT_APPROVE,CONTRACT_APPROVE,EXPORT }
  public record ManagerAssignment(@NotNull @Positive Long userId,@NotNull @Size(max=5) Set<Capability> capabilities,@NotBlank @Size(max=500) String reason){}
+ public record ManagerBatchAssignment(@NotEmpty @Size(max=100) List<@NotNull @Positive Long> propertyIds,@NotNull @Positive Long userId,@NotNull @Size(max=5) Set<Capability> capabilities,@NotBlank @Size(max=500) String reason){}
+ @Transactional public void assignManagerBatch(AuthenticatedUser p,ManagerBatchAssignment r){
+  if(p==null||p.activeRole()!=RoleCode.OWNER)throw denied();
+  var ids=r.propertyIds().stream().distinct().sorted().toList();
+  for(long id:ids)if(!owns(p,id))throw denied();
+  for(long id:ids)assignManager(p,id,new ManagerAssignment(r.userId(),r.capabilities(),r.reason()));
+ }
  public void requireExport(AuthenticatedUser p,Long property){if(p.activeRole()!=RoleCode.MANAGER)return;if(property!=null){require(p,property,Capability.EXPORT);return;}for(long id:db.sql("SELECT property_id FROM property_managers WHERE manager_id=:user").param("user",p.id()).query(Long.class).list())require(p,id,Capability.EXPORT);}
  private final JdbcClient db;private final SecurityAudit audit;
  public PropertyAuthorization(JdbcClient db,SecurityAudit audit){this.db=db;this.audit=audit;}
@@ -32,6 +39,6 @@ public class PropertyAuthorization {
   audit.record(p.id(),"MANAGER_ASSIGNED","PROPERTY",property,"SUCCESS","manager="+r.userId()+"; previous="+before+"; capabilities="+r.capabilities()+"; "+r.reason());
  }
  @Transactional public void revokeManager(AuthenticatedUser p,long property,long manager,String reason){if(p==null||p.activeRole()!=RoleCode.OWNER||!owns(p,property))throw denied();db.sql("SELECT id FROM users WHERE id=:id FOR UPDATE").param("id",p.id()).query(Long.class).single();db.sql("DELETE FROM manager_property_capabilities WHERE property_id=:property AND manager_id=:manager").param("property",property).param("manager",manager).update();db.sql("DELETE FROM property_managers WHERE property_id=:property AND manager_id=:manager").param("property",property).param("manager",manager).update();audit.record(p.id(),"MANAGER_REVOKED","PROPERTY",property,"SUCCESS","manager="+manager+"; "+reason);}
- @Transactional(readOnly=true) public Map<String,Object> detail(AuthenticatedUser p,long property){if(p==null||p.activeRole()!=RoleCode.OWNER||!owns(p,property))throw denied();return Map.of("assignments",db.sql("SELECT pm.manager_id,u.full_name FROM property_managers pm JOIN users u ON u.id=pm.manager_id WHERE pm.property_id=:id").param("id",property).query().listOfRows(),"capabilities",db.sql("SELECT manager_id,capability,source FROM manager_property_capabilities WHERE property_id=:id ORDER BY manager_id,capability").param("id",property).query().listOfRows());}
+ @Transactional(readOnly=true) public Map<String,Object> detail(AuthenticatedUser p,long property){if(p==null||p.activeRole()!=RoleCode.OWNER||!owns(p,property))throw denied();return Map.of("assignments",db.sql("SELECT pm.manager_id,u.full_name,u.status,EXISTS(SELECT 1 FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=u.id AND r.code='MANAGER') has_manager_role FROM property_managers pm JOIN users u ON u.id=pm.manager_id WHERE pm.property_id=:id ORDER BY u.full_name,u.id").param("id",property).query().listOfRows(),"capabilities",db.sql("SELECT manager_id,capability,source FROM manager_property_capabilities WHERE property_id=:id ORDER BY manager_id,capability").param("id",property).query().listOfRows(),"availableManagers",db.sql("SELECT u.id,u.full_name FROM users u WHERE u.status='ACTIVE' AND EXISTS(SELECT 1 FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=u.id AND r.code='MANAGER') ORDER BY u.full_name,u.id").query().listOfRows(),"properties",db.sql("SELECT id,name FROM properties WHERE owner_id=:owner ORDER BY name,id").param("owner",p.id()).query().listOfRows());}
  private AuthException denied(){return new AuthException(HttpStatus.FORBIDDEN,"PROPERTY_CAPABILITY_DENIED","Không được cấp quyền cho thao tác trong khu trọ này.");}
 }

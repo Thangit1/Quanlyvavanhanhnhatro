@@ -40,9 +40,9 @@ public final class RentalLifecycleRequests {
             @Min(0) int noticePeriodDays,
             @DecimalMin("0") @Digits(integer=13,fraction=2) BigDecimal reservationTransferAmount,
             @DecimalMin("0") @Digits(integer=13,fraction=2) BigDecimal monthlyRent,
-            @Valid @Size(max=2) List<AgreedRate> utilityRates,
-            @Valid @Size(max=30) List<AgreedService> services,
-            @Valid @Size(max=30) List<AgreedTerm> terms,
+            @Size(max=2) List<@NotNull @Valid AgreedRate> utilityRates,
+            @Size(max=30) List<@NotNull @Valid AgreedService> services,
+            @Size(max=30) List<@NotNull @Valid AgreedTerm> terms,
             boolean initialPaymentRequired) {
         public CreateContract(LocalDate start,LocalDate end,BigDecimal deposit,int due,int notice) {this(start,end,deposit,due,notice,null,null,null,null,null,false);}
         public CreateContract(LocalDate start,LocalDate end,BigDecimal deposit,int due,int notice,BigDecimal transfer) {this(start,end,deposit,due,notice,transfer,null,null,null,null,false);}
@@ -51,7 +51,13 @@ public final class RentalLifecycleRequests {
             @NotBlank @Size(max=100) String name,@NotBlank @Pattern(regexp="METER|FIXED") String calculationMethod,
             @NotNull @DecimalMin("0") @Digits(integer=13,fraction=2) BigDecimal unitPrice,@NotBlank @Size(max=30) String unit) {}
     public record AgreedService(@NotBlank @Size(max=30) String code,@NotBlank @Size(max=100) String name,
-            @NotBlank @Pattern(regexp="FIXED|PER_PERSON") String calculationMethod,@NotNull @DecimalMin("0") @Digits(integer=13,fraction=2) BigDecimal unitPrice) {}
+            @NotBlank @Pattern(regexp="FIXED|PER_PERSON|QUANTITY|USAGE|ONCE") String calculationMethod,@NotNull @DecimalMin("0") @Digits(integer=13,fraction=2) BigDecimal unitPrice,
+            @Min(1) Long catalogServiceId,@Size(max=5000) String description,@Size(max=30) String unit,
+            @DecimalMin(value="0",inclusive=false) @Digits(integer=9,fraction=3) BigDecimal quantity,
+            @Pattern(regexp="MONTHLY|ON_USAGE|ONCE") String billingCycle,LocalDate effectiveDate,LocalDate endDate,
+            @Pattern(regexp="ACTIVE|INACTIVE") String status,@Size(max=2000) String note,boolean prorate) {
+        public AgreedService(String code,String name,String method,BigDecimal price){this(code,name,method,price,null,null,null,null,null,null,null,null,null,false);}
+    }
     public record AgreedTerm(@NotBlank @Size(max=200) String title,@NotBlank @Size(max=5000) String content) {}
 
     public record AssetSnapshot(

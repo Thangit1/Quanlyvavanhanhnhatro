@@ -55,5 +55,5 @@ public final class AdminPropertyResponses {
                              List<Asset> assets, List<Meter> meters, List<String> images,
                              List<History> priceHistory, List<History> statusHistory,
                              List<Activity> activities, boolean canEdit, boolean canChangePrice,
-                             boolean canChangeStatus) {}
+                             boolean canChangeStatus, java.util.Map<String,Object> meterManagement) {}
 }

@@ -40,17 +40,30 @@ public class TenantInvoiceServiceImpl implements TenantInvoiceService {
 
     @Override @Transactional public PaymentSession createPaymentSession(AuthenticatedUser p,long invoiceId,String key,CreatePaymentSession request){
         tenant(p);if(key==null||key.isBlank()||key.length()>100)throw bad("IDEMPOTENCY_KEY_REQUIRED","Thiếu khóa chống gửi trùng hợp lệ.");
+        if(request==null||request.amount()==null)throw bad("PAYMENT_AMOUNT_INVALID","Thiếu số tiền thanh toán.");
+        Map<String,Object> i=owned(p,invoiceId,true);
+        // A competing request may have committed while this request waited for the invoice lock.
         PaymentSession prior=repository.session(p.id(),key.trim()).orElse(null);
-        if(prior!=null){if(prior.invoiceId()!=invoiceId||prior.amount().compareTo(request.amount())!=0||!prior.paymentMethod().equals(request.paymentMethod()))throw conflict("IDEMPOTENCY_KEY_REUSED","Khóa chống gửi trùng đã được dùng với nội dung thanh toán khác.");return prior;}
-        Map<String,Object> i=owned(p,invoiceId,true);assertPayable(i,request.amount());
+        if(prior!=null){if(prior.invoiceId()!=invoiceId||prior.amount().compareTo(request.amount())!=0||!prior.paymentMethod().equals(request.paymentMethod()))throw conflict("IDEMPOTENCY_KEY_REUSED","Khóa chống gửi trùng đã được dùng với nội dung thanh toán khác.");if("AWAITING_TRANSFER".equals(prior.status())&&prior.amount().compareTo(money(i,"remaining_amount"))!=0)throw conflict("PAYMENT_SESSION_BALANCE_CHANGED","Số dư đã thay đổi. Vui lòng tạo phiên thanh toán mới.");return prior;}
+        assertPayable(i,request.amount());
+        if(request.amount().compareTo(money(i,"remaining_amount"))!=0)throw bad("PARTIAL_PAYMENT_DISABLED","Vui lòng thanh toán toàn bộ số tiền còn lại.");
+        repository.expireUnsubmittedSessions(invoiceId);
+        PaymentSession active=repository.activeSession(p.id(),invoiceId).orElse(null);
+        if(active!=null){if(active.amount().compareTo(request.amount())==0&&active.paymentMethod().equals(request.paymentMethod()))return active;throw conflict("PAYMENT_ALREADY_PENDING","Đang chờ kết quả thanh toán. Vui lòng kiểm tra phiên hiện tại.");}
         List<PaymentMethod> methods=methods(i);PaymentMethod method=methods.stream().filter(x->x.code().equals(request.paymentMethod())).findFirst()
             .orElseThrow(()->bad("PAYMENT_METHOD_UNAVAILABLE","Phương thức thanh toán chưa được chủ trọ cấu hình."));
-        boolean partial=method.allowPartialPayment();BigDecimal remaining=money(i,"remaining_amount");
-        if(!partial&&request.amount().compareTo(remaining)!=0)throw bad("PARTIAL_PAYMENT_DISABLED","Hóa đơn này yêu cầu thanh toán toàn bộ số tiền còn lại.");
         String content="BANK_TRANSFER".equals(method.code())?transferContent(method.transferContent(),String.valueOf(i.get("code")),p.id()):null;
         PaymentSession created=repository.createSession(invoiceId,p.id(),request.amount(),request.paymentMethod(),key.trim(),content);
         if(created.invoiceId()!=invoiceId||created.amount().compareTo(request.amount())!=0||!created.paymentMethod().equals(request.paymentMethod()))throw conflict("IDEMPOTENCY_KEY_REUSED","Khóa chống gửi trùng đã được dùng với nội dung thanh toán khác.");
         return created;
+    }
+
+    @Override @Transactional(readOnly=true) public PaymentSession activePaymentSession(AuthenticatedUser p,long invoiceId){
+        tenant(p);Map<String,Object> i=owned(p,invoiceId,false);
+        if(money(i,"remaining_amount").signum()<=0||"CANCELLED".equals(i.get("status")))return null;
+        PaymentSession active=repository.activeSession(p.id(),invoiceId).orElse(null);
+        if(active!=null&&"AWAITING_TRANSFER".equals(active.status())&&active.amount().compareTo(money(i,"remaining_amount"))!=0)return null;
+        return active;
     }
 
     @Override @Transactional public Proof submitProof(AuthenticatedUser p,long invoiceId,Long sessionId,BigDecimal amount,LocalDateTime at,
@@ -89,17 +102,17 @@ public class TenantInvoiceServiceImpl implements TenantInvoiceService {
         return html(d.payment().receiptCode()+".html",body);}
 
     private InvoiceDetail mapDetail(Map<String,Object> i){long id=longValue(i,"id"),contract=longValue(i,"contract_id"),owner=longValue(i,"owner_id");String status=effective(i);
-        boolean payable=!Set.of("PAID","CANCELLED","DRAFT").contains(status)&&money(i,"remaining_amount").signum()>0;
+        boolean payable=!Set.of("PAID","CANCELLED","DRAFT","PENDING_REVIEW").contains(status)&&money(i,"remaining_amount").signum()>0;
         return new InvoiceDetail(id,String.valueOf(i.get("code")),period(date(i,"billing_period")),date(i,"period_start_date"),date(i,"period_end_date"),date(i,"issue_date"),date(i,"due_date"),status,
             new Party(longValue(i,"property_id"),String.valueOf(i.get("property_name")),string(i,"property_address")),new Party(longValue(i,"room_id"),String.valueOf(i.get("room_code")),string(i,"room_location")),
             new Party(contract,String.valueOf(i.get("contract_code")),null),repository.items(id),repository.readings(contract,date(i,"billing_period")),repository.utilityHistory(contract),
             money(i,"subtotal_amount"),money(i,"discount_amount"),money(i,"previous_debt_amount"),money(i,"late_fee_amount"),money(i,"total_amount"),money(i,"paid_amount"),money(i,"remaining_amount"),
             repository.invoicePayments(id),repository.adjustments(id),repository.proofs(id),repository.reviews(id),methods(i),new Permissions(payable,true,true,true),longValue(i,"version"));}
-    private List<PaymentMethod> methods(Map<String,Object> i){long owner=longValue(i,"owner_id");Map<String,Object>s=repository.paymentSettings(owner);boolean partial=repository.allowPartial(owner);List<PaymentMethod> out=new ArrayList<>();
+    private List<PaymentMethod> methods(Map<String,Object> i){long owner=longValue(i,"owner_id");Map<String,Object>s=repository.paymentSettings(owner);boolean partial=false;List<PaymentMethod> out=new ArrayList<>();
         if(Boolean.TRUE.equals(s.get("cashEnabled")))out.add(new PaymentMethod("CASH","Tiền mặt tại văn phòng",null,null,null,null,null,false,partial));
         if(Boolean.TRUE.equals(s.get("bankTransferEnabled"))&&has(s,"bankName")&&has(s,"accountName")&&has(s,"accountNumber"))out.add(new PaymentMethod("BANK_TRANSFER","Chuyển khoản ngân hàng",str(s,"bankName"),str(s,"accountName"),str(s,"accountNumber"),str(s,"bankBranch"),str(s,"transferContent"),Boolean.TRUE.equals(s.get("qrEnabled")),partial));
         return out;}
-    private void assertPayable(Map<String,Object> i,BigDecimal amount){if(Set.of("PAID","CANCELLED","DRAFT").contains(effective(i)))throw bad("INVOICE_NOT_PAYABLE","Hóa đơn không ở trạng thái có thể thanh toán.");if(amount==null||amount.signum()<=0)throw bad("PAYMENT_AMOUNT_INVALID","Số tiền phải lớn hơn 0.");if(amount.compareTo(money(i,"remaining_amount"))>0)throw bad("PAYMENT_EXCEEDS_DEBT","Số tiền vượt quá công nợ còn lại.");}
+    private void assertPayable(Map<String,Object> i,BigDecimal amount){if(Set.of("PAID","CANCELLED","DRAFT","PENDING_REVIEW").contains(effective(i)))throw bad("INVOICE_NOT_PAYABLE","Hóa đơn không ở trạng thái có thể thanh toán.");if(amount==null||amount.signum()<=0)throw bad("PAYMENT_AMOUNT_INVALID","Số tiền phải lớn hơn 0.");if(amount.compareTo(money(i,"remaining_amount"))>0)throw bad("PAYMENT_EXCEEDS_DEBT","Số tiền vượt quá công nợ còn lại.");}
     private Map<String,Object> owned(AuthenticatedUser p,long id,boolean lock){tenant(p);return repository.invoice(p.id(),id,lock).orElseThrow(()->notFound("Không tìm thấy hóa đơn."));}
     private void tenant(AuthenticatedUser p){if(p==null||p.activeRole()!=RoleCode.TENANT)throw new AuthException(HttpStatus.FORBIDDEN,"TENANT_INVOICE_ACCESS_DENIED","Bạn không có quyền truy cập hóa đơn người thuê.");}
     private void validateFile(MultipartFile f){if(f==null||f.isEmpty())throw bad("PROOF_REQUIRED","Vui lòng chọn tệp minh chứng.");if(f.getSize()>MAX_FILE)throw bad("PROOF_TOO_LARGE","Tệp minh chứng không được vượt quá 5 MB.");}
@@ -112,6 +125,6 @@ public class TenantInvoiceServiceImpl implements TenantInvoiceService {
     private static String clean(String v){return v==null||v.isBlank()?null:v.trim();}private static String string(Map<String,Object>m,String k){Object v=m.get(k);return v==null?null:String.valueOf(v);}
     private static BigDecimal money(Map<String,Object>m,String k){Object v=m.get(k);return v==null?BigDecimal.ZERO:v instanceof BigDecimal b?b:new BigDecimal(String.valueOf(v));}private static long longValue(Map<String,Object>m,String k){return ((Number)m.get(k)).longValue();}
     private static LocalDate date(Map<String,Object>m,String k){Object v=m.get(k);if(v instanceof LocalDate d)return d;if(v instanceof java.sql.Date d)return d.toLocalDate();if(v instanceof LocalDateTime d)return d.toLocalDate();if(v instanceof java.sql.Timestamp d)return d.toLocalDateTime().toLocalDate();return null;}private static String period(LocalDate d){return d==null?null:String.format("%02d/%d",d.getMonthValue(),d.getYear());}
-    private static String effective(Map<String,Object>i){String s=String.valueOf(i.get("status"));return !Set.of("PAID","CANCELLED","DRAFT").contains(s)&&money(i,"remaining_amount").signum()>0&&date(i,"due_date").isBefore(LocalDate.now())?"OVERDUE":s;}
+    private static String effective(Map<String,Object>i){return com.thangit.boardinghouse.service.InvoicePaymentRules.effectiveStatus(String.valueOf(i.get("status")),money(i,"remaining_amount"),date(i,"due_date"),LocalDate.now(com.thangit.boardinghouse.service.InvoicePaymentRules.ZONE));}
     private static AuthException bad(String c,String m){return new AuthException(HttpStatus.BAD_REQUEST,c,m);}private static AuthException conflict(String c,String m){return new AuthException(HttpStatus.CONFLICT,c,m);}private static AuthException notFound(String m){return new AuthException(HttpStatus.NOT_FOUND,"TENANT_INVOICE_NOT_FOUND",m);}
 }

@@ -19,11 +19,23 @@ export function QueryProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    const channel =
+      typeof BroadcastChannel !== "undefined"
+        ? new BroadcastChannel("smarthome-business-changed")
+        : null;
     const changed = () => {
       void queryClient.invalidateQueries();
+      channel?.postMessage("changed");
     };
+    if (channel)
+      channel.onmessage = () => {
+        void queryClient.invalidateQueries();
+      };
     window.addEventListener("business:changed", changed);
-    return () => window.removeEventListener("business:changed", changed);
+    return () => {
+      window.removeEventListener("business:changed", changed);
+      channel?.close();
+    };
   }, [queryClient]);
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

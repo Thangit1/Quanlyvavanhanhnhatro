@@ -127,6 +127,15 @@ apiClient.interceptors.response.use(
     const isAuthEndpoint = config?.url?.startsWith("/auth/");
     if (
       error.response?.status === 403 &&
+      (error.response.data as { errorCode?: string } | undefined)?.errorCode ===
+        "PASSWORD_CHANGE_REQUIRED" &&
+      typeof window !== "undefined"
+    ) {
+      window.dispatchEvent(new Event("auth:password-change-required"));
+      return Promise.reject(error);
+    }
+    if (
+      error.response?.status === 403 &&
       config &&
       successfulReads.delete(resourceKey(config)) &&
       typeof window !== "undefined"

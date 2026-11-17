@@ -6,10 +6,11 @@ import { useAuth } from "@/providers/auth-provider";
 import {
   useInvoiceActions,
   useTenantInvoice,
+  useActivePaymentSession,
 } from "@/hooks/use-tenant-invoices";
 import { apiErrorMessage } from "@/lib/api-error";
 import { ErrorState, PageLoading } from "@/components/shared/dashboard-ui";
-import type { PaymentMethod, PaymentSession } from "@/types/tenant-invoice";
+import type { PaymentMethod } from "@/types/tenant-invoice";
 import { money } from "./invoice-ui";
 function nowLocal() {
   const d = new Date(),
@@ -20,9 +21,12 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
   const { user } = useAuth();
   const q = useTenantInvoice(user?.activeRole === "TENANT", invoiceId);
   const a = useInvoiceActions(invoiceId);
+  const active = useActivePaymentSession(
+    user?.activeRole === "TENANT",
+    invoiceId,
+  );
   const [method, setMethod] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [session, setSession] = useState<PaymentSession>();
+  const session = active.data;
   const [file, setFile] = useState<File>();
   const [at, setAt] = useState(nowLocal());
   const [bank, setBank] = useState("");
@@ -30,11 +34,16 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
   const idempotencyKey = useRef<string | null>(null);
-  if (q.isLoading) return <PageLoading />;
-  if (q.isError || !q.data)
+  if (q.isLoading || active.isLoading) return <PageLoading />;
+  if (q.isError || active.isError || !q.data)
     return (
       <main className="p-6">
-        <ErrorState onRetry={() => void q.refetch()} />
+        <ErrorState
+          onRetry={() => {
+            void q.refetch();
+            void active.refetch();
+          }}
+        />
       </main>
     );
   const d = q.data;
@@ -60,12 +69,17 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
         globalThis.crypto?.randomUUID?.() ??
         `tenant-payment-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const s = await a.session.mutateAsync({
-        amount,
+        amount: d.remainingAmount,
         paymentMethod: method,
         idempotencyKey: idempotencyKey.current,
       });
-      setSession(s);
-      setMessage("Đã tạo hướng dẫn thanh toán.");
+      await active.refetch();
+      idempotencyKey.current = null;
+      setMessage(
+        s.status === "EXPIRED"
+          ? "Phiên đã hết hạn. Vui lòng thử lại."
+          : "Đã tạo hướng dẫn thanh toán.",
+      );
     } catch (e) {
       setMessage(apiErrorMessage(e, "Không thể tạo phiên thanh toán."));
     }
@@ -87,6 +101,7 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
         "Đã gửi minh chứng. Khoản tiền chỉ được ghi nhận sau khi quản lý xác nhận.",
       );
       setFile(undefined);
+      await active.refetch();
     } catch (e) {
       setMessage(apiErrorMessage(e, "Không thể gửi minh chứng."));
     }
@@ -112,6 +127,12 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
           {message}
         </div>
       )}
+      {d.status === "OVERDUE" && (
+        <p className="rounded-xl bg-amber-50 p-4 text-amber-800">
+          Hóa đơn của bạn đã quá hạn. Vui lòng thanh toán toàn bộ số tiền còn
+          phải trả.
+        </p>
+      )}
       {!session ? (
         <section className="rounded-2xl border bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold">1. Chọn phương thức</h2>
@@ -128,7 +149,7 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
                     key={x.code}
                     onClick={() => {
                       setMethod(x.code);
-                      setAmount(d.remainingAmount);
+                      idempotencyKey.current = null;
                     }}
                     className={`rounded-xl border p-4 text-left ${method === x.code ? "border-blue-600 bg-blue-50" : "border-slate-200"}`}
                   >
@@ -145,27 +166,15 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
               {method && (
                 <div className="mt-5">
                   <label className="text-sm font-semibold">Số tiền</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={d.remainingAmount}
-                    disabled={
-                      !d.paymentMethods.find((x) => x.code === method)
-                        ?.allowPartialPayment
-                    }
-                    value={amount}
-                    onChange={(e) => setAmount(Number(e.target.value))}
-                    className="mt-1 w-full rounded-xl border p-3 disabled:bg-slate-100"
-                  />
+                  <p className="mt-1 rounded-xl bg-slate-100 p-3 font-bold">
+                    {money(d.remainingAmount)}
+                  </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    Không được vượt quá {money(d.remainingAmount)}.
+                    Thanh toán toàn bộ số dư, bao gồm phần còn thiếu sau đối
+                    soát.
                   </p>
                   <button
-                    disabled={
-                      amount <= 0 ||
-                      amount > d.remainingAmount ||
-                      a.session.isPending
-                    }
+                    disabled={d.remainingAmount <= 0 || a.session.isPending}
                     onClick={create}
                     className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-50"
                   >
@@ -184,7 +193,26 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
               Phiên hết hạn lúc{" "}
               {new Date(session.expiresAt).toLocaleString("vi-VN")}
             </p>
-            {session.paymentMethod === "CASH" ? (
+            <p className="mt-2 font-semibold">
+              {session.status === "PROOF_SUBMITTED"
+                ? "Đang chờ đối soát chuyển khoản"
+                : "Đang chờ kết quả thanh toán"}
+            </p>
+            <button
+              className="mt-2 text-blue-700 underline"
+              onClick={() => {
+                void active.refetch();
+                void q.refetch();
+              }}
+            >
+              Kiểm tra lại trạng thái
+            </button>
+            {session.status === "PROOF_SUBMITTED" ? (
+              <p className="mt-4 rounded-xl bg-amber-50 p-4 text-amber-800">
+                Minh chứng đã được gửi. Vui lòng chờ nhân viên kiểm tra khoản
+                thực thu trước khi chuyển thêm tiền.
+              </p>
+            ) : session.paymentMethod === "CASH" ? (
               <p className="mt-4 rounded-xl bg-blue-50 p-4 text-blue-800">
                 Vui lòng thanh toán {money(session.amount)} trực tiếp tại văn
                 phòng quản lý và nhận biên nhận sau khi nhân viên xác nhận.
@@ -195,60 +223,62 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
                   (x) => x.code === "BANK_TRANSFER",
                 )}
                 content={session.transferContent}
+                amount={session.amount}
               />
             )}
           </section>
-          {session.paymentMethod === "BANK_TRANSFER" && (
-            <section className="rounded-2xl border bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-bold">
-                3. Gửi minh chứng chuyển khoản
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                JPG, PNG, WEBP hoặc PDF; tối đa 5 MB. Minh chứng không tự động
-                xác nhận thanh toán.
-              </p>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <Field
-                  label="Thời gian chuyển"
-                  type="datetime-local"
-                  value={at}
-                  onChange={setAt}
-                />
-                <Field
-                  label="Ngân hàng đã chuyển"
-                  value={bank}
-                  onChange={setBank}
-                />
-                <Field
-                  label="Mã giao dịch"
-                  value={reference}
-                  onChange={setReference}
-                />
-                <Field label="Ghi chú" value={note} onChange={setNote} />
-              </div>
-              <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-blue-300 bg-blue-50 p-4 text-blue-700">
-                <Upload className="size-5" />
-                <span>{file?.name ?? "Chọn tệp minh chứng"}</span>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,application/pdf"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f && f.size <= 5 * 1024 * 1024) setFile(f);
-                    else if (f) setMessage("Tệp không được vượt quá 5 MB.");
-                  }}
-                />
-              </label>
-              <button
-                disabled={!file || !at || a.proof.isPending}
-                onClick={proof}
-                className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-50"
-              >
-                Gửi minh chứng
-              </button>
-            </section>
-          )}
+          {session.paymentMethod === "BANK_TRANSFER" &&
+            session.status === "AWAITING_TRANSFER" && (
+              <section className="rounded-2xl border bg-white p-6 shadow-sm">
+                <h2 className="text-xl font-bold">
+                  3. Gửi minh chứng chuyển khoản
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  JPG, PNG, WEBP hoặc PDF; tối đa 5 MB. Minh chứng không tự động
+                  xác nhận thanh toán.
+                </p>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <Field
+                    label="Thời gian chuyển"
+                    type="datetime-local"
+                    value={at}
+                    onChange={setAt}
+                  />
+                  <Field
+                    label="Ngân hàng đã chuyển"
+                    value={bank}
+                    onChange={setBank}
+                  />
+                  <Field
+                    label="Mã giao dịch"
+                    value={reference}
+                    onChange={setReference}
+                  />
+                  <Field label="Ghi chú" value={note} onChange={setNote} />
+                </div>
+                <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-blue-300 bg-blue-50 p-4 text-blue-700">
+                  <Upload className="size-5" />
+                  <span>{file?.name ?? "Chọn tệp minh chứng"}</span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,application/pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f && f.size <= 5 * 1024 * 1024) setFile(f);
+                      else if (f) setMessage("Tệp không được vượt quá 5 MB.");
+                    }}
+                  />
+                </label>
+                <button
+                  disabled={!file || !at || a.proof.isPending}
+                  onClick={proof}
+                  className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-50"
+                >
+                  Gửi minh chứng
+                </button>
+              </section>
+            )}
         </>
       )}
     </main>
@@ -257,13 +287,18 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
 function BankInfo({
   method,
   content,
+  amount,
 }: {
   method?: PaymentMethod;
   content?: string;
+  amount: number;
 }) {
   if (!method) return null;
   return (
     <div className="mt-4 space-y-2 rounded-xl bg-slate-50 p-4">
+      <p>
+        Số tiền: <b>{money(amount)}</b>
+      </p>
       <p>
         Ngân hàng: <b>{method.bankName}</b>
       </p>
