@@ -49,19 +49,19 @@ export function AccountOverviewPage() {
     <main className="mx-auto max-w-7xl space-y-6 p-4 pb-28 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-bold text-blue-600">
+          <p className="text-sm font-bold text-link">
             Trang chủ / Tài khoản
           </p>
-          <h1 className="mt-1 text-3xl font-black text-slate-950">
+          <h1 className="mt-1 text-3xl font-black text-foreground">
             Tài khoản của tôi
           </h1>
-          <p className="mt-1 text-slate-500">
+          <p className="mt-1 text-muted-foreground">
             Quản lý thông tin cá nhân, bảo mật và tùy chọn sử dụng.
           </p>
         </div>
         <Link
           href="/tenant/account/profile"
-          className="rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"
+          className="rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white"
         >
           Chỉnh sửa hồ sơ
         </Link>
@@ -95,14 +95,14 @@ export function AccountOverviewPage() {
           </div>
         </div>
         {p.completionPercent < 100 && (
-          <div className="mt-5 rounded-2xl bg-white/10 p-4">
+          <div className="mt-5 rounded-2xl bg-card/10 p-4">
             <div className="flex justify-between text-sm font-bold">
               <span>Hoàn thiện hồ sơ</span>
               <span>{p.completionPercent}%</span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/20">
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-card/20">
               <div
-                className="h-full rounded-full bg-white"
+                className="h-full rounded-full bg-card"
                 style={{ width: `${p.completionPercent}%` }}
               />
             </div>
@@ -114,7 +114,7 @@ export function AccountOverviewPage() {
       </section>
       <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <div className="space-y-5">
-          <section className="rounded-2xl border bg-white p-5 shadow-sm">
+          <section className="surface-card p-5 sm:p-6 ">
             <h2 className="text-xl font-black">Thông tin cư trú hiện tại</h2>
             {x.residence ? (
               <>
@@ -161,7 +161,7 @@ export function AccountOverviewPage() {
                   {x.contract && (
                     <Link
                       href={`/tenant/contracts/${x.contract.id}`}
-                      className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white"
+                      className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-bold text-white"
                     >
                       Xem hợp đồng
                     </Link>
@@ -169,7 +169,7 @@ export function AccountOverviewPage() {
                 </div>
               </>
             ) : (
-              <p className="mt-4 rounded-xl bg-slate-50 p-5 text-slate-500">
+              <p className="mt-4 rounded-xl bg-muted p-5 text-muted-foreground">
                 Bạn chưa có thông tin cư trú đang hoạt động.
               </p>
             )}
@@ -179,39 +179,39 @@ export function AccountOverviewPage() {
               <Link
                 key={href}
                 href={href}
-                className="flex items-center gap-3 rounded-2xl border bg-white p-4 shadow-sm hover:border-blue-300"
+                className="flex items-center gap-3 rounded-2xl border bg-card p-4 shadow-card hover:border-blue-300"
               >
-                <span className="grid size-11 place-items-center rounded-xl bg-blue-50 text-blue-700">
+                <span className="grid size-11 place-items-center rounded-xl bg-accent text-link">
                   <Icon className="size-5" />
                 </span>
                 <b className="flex-1">{name}</b>
-                <ChevronRight className="size-4 text-slate-400" />
+                <ChevronRight className="size-4 text-muted-foreground" />
               </Link>
             ))}
           </section>
         </div>
         <aside className="space-y-5">
-          <section className="rounded-2xl border bg-white p-3 shadow-sm">
+          <section className="surface-card p-3 ">
             <AccountMenu />
           </section>
-          <section className="rounded-2xl border bg-white p-5 shadow-sm">
+          <section className="surface-card p-5 sm:p-6 ">
             <h2 className="font-black">Cần xử lý</h2>
             <div className="mt-3 space-y-2 text-sm">
               <p>
-                <FileKey2 className="mr-2 inline size-4 text-amber-600" />
+                <FileKey2 className="mr-2 inline size-4 text-warning" />
                 {x.pendingActions.documentCount} giấy tờ cần chú ý
               </p>
               <p>
-                <SlidersHorizontal className="mr-2 inline size-4 text-blue-600" />
+                <SlidersHorizontal className="mr-2 inline size-4 text-link" />
                 {x.pendingActions.profileUpdateRequestCount} yêu cầu đang chờ
               </p>
             </div>
           </section>
           <Link
             href="/tenant/account/support"
-            className="flex items-center gap-3 rounded-2xl border bg-white p-4 font-bold"
+            className="flex items-center gap-3 rounded-2xl border bg-card p-4 font-bold"
           >
-            <Headphones className="text-blue-600" />
+            <Headphones className="text-link" />
             Hỗ trợ tài khoản
           </Link>
         </aside>
@@ -222,10 +222,10 @@ export function AccountOverviewPage() {
 function Info({ label: caption, value }: { label: string; value?: string }) {
   return (
     <div>
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
         {caption}
       </p>
-      <p className="mt-1 font-semibold text-slate-800">
+      <p className="mt-1 font-semibold text-foreground">
         {value || "Chưa cập nhật"}
       </p>
     </div>

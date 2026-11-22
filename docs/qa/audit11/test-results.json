@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-18",
+  "typescriptFinal": "PASS",
+  "productionBuildWebpack": "PASS",
+  "lintChangedFiles": "PASS",
+  "frontendUnitAndRegression": {"passed": 66, "failed": 0},
+  "backend": {
+    "CommunicationMysqlTest": {"passed": 58, "failed": 0},
+    "TenantWorkspaceMysqlTest": {"passed": 15, "failed": 0},
+    "CommunicationControllerTest": {"passed": 5, "failed": 0},
+    "SystemAcceptanceMysqlTestFinalWithoutBrowserHook": {"passed": 6, "failed": 0, "maven": "BUILD SUCCESS"}
+  },
+  "communicationsRealHttp": {"passed": 56, "failed": 0},
+  "browser": {
+    "status": "INCOMPLETE_WITH_FAILURES",
+    "allSystemPassed": false,
+    "remaining": ["Investigate login/logout failures", "Recheck tenant pages and duplicate-key fix after Windows resource recovery"]
+  },
+  "privateAuditListenersStopped": [13000, 18082, 19222, 3317],
+  "liveBackendPidUnchanged": 12660,
+  "liveMysqlPidUnchanged": 6816,
+  "liveDatabaseMigrated": false
+}

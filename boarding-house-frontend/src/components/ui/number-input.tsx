@@ -231,7 +231,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
         {touched && validation && (
           <span
             id={errorId}
-            className="mt-1 block text-xs text-red-700"
+            className="mt-1 block text-xs text-danger"
             role="alert"
           >
             {validation}

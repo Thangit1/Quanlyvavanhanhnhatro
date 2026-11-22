@@ -1,10 +1,9 @@
 import { Suspense } from "react";
-import { ReportOverviewPage } from "@/components/admin/reports/report-overview-page";
-import { PageLoading } from "@/components/shared/dashboard-ui";
+import { ManagementReportWorkspace } from "@/components/admin/reports/management-report-workspace";
 export default function Page() {
   return (
-    <Suspense fallback={<PageLoading />}>
-      <ReportOverviewPage />
+    <Suspense fallback={<p>Đang tải báo cáo...</p>}>
+      <ManagementReportWorkspace initialType="overview" />
     </Suspense>
   );
 }

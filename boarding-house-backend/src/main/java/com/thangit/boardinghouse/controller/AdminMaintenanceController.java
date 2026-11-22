@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,7 +50,7 @@ public class AdminMaintenanceController {
     }
 
     @GetMapping("/{id}") public ApiResponse<Detail> detail(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id){return ApiResponse.success("Lấy chi tiết bảo trì thành công.",service.detail(p,id));}
-    @PostMapping public ResponseEntity<ApiResponse<Created>> create(@AuthenticationPrincipal AuthenticatedUser p,@Valid @RequestBody CreateRequest r){return ResponseEntity.status(201).body(ApiResponse.success("Tạo yêu cầu bảo trì thành công.",service.create(p,r)));}
+    @PostMapping public ResponseEntity<ApiResponse<Created>> create(@AuthenticationPrincipal AuthenticatedUser p,@Valid @RequestBody CreateRequest r,@RequestHeader("Idempotency-Key") String key){return ResponseEntity.status(201).body(ApiResponse.success("Tạo yêu cầu bảo trì thành công.",service.create(p,r,key)));}
     @PostMapping("/{id}/triage") public ApiResponse<Detail> triage(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody TriageRequest r){return ApiResponse.success("Phân loại yêu cầu thành công.",service.triage(p,id,r));}
     @PostMapping("/{id}/assign") public ApiResponse<Detail> assign(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody AssignRequest r){return ApiResponse.success("Phân công nhân viên thành công.",service.assign(p,id,r));}
     @PostMapping("/{id}/schedule") public ApiResponse<Detail> schedule(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id,@Valid @RequestBody ScheduleRequest r){return ApiResponse.success("Lịch xử lý đã được cập nhật.",service.schedule(p,id,r));}

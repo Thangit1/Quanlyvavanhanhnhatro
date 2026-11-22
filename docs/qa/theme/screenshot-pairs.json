@@ -1,0 +1,70 @@
+[
+  {
+    "role": "tenant",
+    "theme": "light",
+    "before": {
+      "file": "before-tenant-light.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "a0cf47e53c7344650600d6686e9de117735e97abd14dbc02c0855c31bc6d4d32"
+    },
+    "after": {
+      "file": "after-tenant-light.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "5863b0b6e070d7762b6ad9bef8d900c7df0612f77d7ee51ea11cf08dfe97efa2"
+    },
+    "sameViewport": true
+  },
+  {
+    "role": "owner",
+    "theme": "light",
+    "before": {
+      "file": "before-owner-light.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "d1b8cab2b24642be06568677dcadf4fce16412c22be25da93b7c96ad10439dc5"
+    },
+    "after": {
+      "file": "after-owner-light.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "44b050d88e77311130d03c435c69a58f87337f0f6605297510c236a2c781ed68"
+    },
+    "sameViewport": true
+  },
+  {
+    "role": "tenant",
+    "theme": "dark",
+    "before": {
+      "file": "before-tenant-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "e640eaaa89d743b184ffdca14b74d3c3b6384729be9a0123c760f5c34500be8e"
+    },
+    "after": {
+      "file": "after-tenant-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "1b53ed687b1c4a24f1c61d8e07da561c0d67d36b2f408e8f343128263dd61cfb"
+    },
+    "sameViewport": true
+  },
+  {
+    "role": "owner",
+    "theme": "dark",
+    "before": {
+      "file": "before-owner-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7f0ed0541bd03817d7baa4addb2789dc280e747ea8c6b62d646f919dc342f642"
+    },
+    "after": {
+      "file": "after-owner-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "5e1980b121f9a6a6bf63bbcb379441d5f26de600de24591771975979cece1769"
+    },
+    "sameViewport": true
+  }
+]

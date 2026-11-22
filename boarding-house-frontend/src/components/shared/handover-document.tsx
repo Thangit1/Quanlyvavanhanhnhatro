@@ -38,7 +38,7 @@ export function HandoverDocumentView({
   const s = d.snapshot,
     g = s.general;
   return (
-    <article className="handover-document space-y-5 rounded-xl border bg-white p-5 text-sm">
+    <article className="handover-document space-y-5 rounded-xl border bg-card p-5 text-sm">
       <header className="border-b pb-4 text-center">
         <h3 className="text-xl font-bold">BIÊN BẢN BÀN GIAO PHÒNG TRỌ</h3>
         <p className="mt-2">
@@ -47,7 +47,7 @@ export function HandoverDocumentView({
         <p>{statuses[d.status]}</p>
       </header>
       {!d.integrityValid && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="text-danger">
           Không xác minh được tính toàn vẹn nội dung lưu. Chưa thể tiếp tục xác
           nhận phiên bản này.
         </p>
@@ -75,14 +75,14 @@ export function HandoverDocumentView({
             ["Tình trạng phòng", g.roomCondition],
           ].map(([label, v]) => (
             <div key={String(label)}>
-              <dt className="text-slate-500">{String(label)}</dt>
+              <dt className="text-muted-foreground">{String(label)}</dt>
               <dd className="whitespace-pre-wrap font-medium">{value(v)}</dd>
             </div>
           ))}
         </dl>
       </section>
       {Number(s.schemaVersion) < 2 && (
-        <p className="rounded-lg bg-amber-50 p-3 text-amber-900">
+        <p className="rounded-lg bg-warning-muted p-3 text-amber-900">
           Phiên bản cũ chỉ lưu một phần thông tin. Nội dung dưới đây được đọc từ
           bản đã lưu; không lấy thông tin hiện tại để điền thay dữ liệu lịch sử
           còn thiếu.
@@ -191,7 +191,7 @@ export function HandoverDocumentView({
         <p>
           Tổng số chìa khóa / thẻ: <strong>{value(s.keysCardsCount)}</strong>
         </p>
-        <p className="text-slate-500">
+        <p className="text-muted-foreground">
           Phiên bản này lưu tổng số, chưa tách số chìa khóa và số thẻ riêng.
         </p>
         <p>Tham chiếu biên bản: {value(g.reference)}</p>
@@ -227,7 +227,7 @@ export function HandoverDocumentView({
           })}
         </div>
       </section>
-      <p className="border-t pt-3 text-xs text-slate-600">
+      <p className="border-t pt-3 text-xs text-secondary-foreground">
         Xác nhận nội bộ theo nội dung và phiên bản được lưu; không mặc nhiên là
         chữ ký điện tử được chứng thực. Xác nhận của phiên bản khác không thay
         thế xác nhận cho phiên bản này.
@@ -334,16 +334,16 @@ export function HandoverDocumentPanel({
         <button
           type="button"
           onClick={() => setHistoryOpen(!historyOpen)}
-          className="text-sm text-blue-700 underline"
+          className="text-sm text-link underline"
         >
           Xem lịch sử phiên bản
         </button>
       </div>
       {historyOpen && (
-        <div className="space-y-2 rounded-lg bg-slate-50 p-3">
+        <div className="space-y-2 rounded-lg bg-muted p-3">
           <button
             type="button"
-            className="text-blue-700 underline"
+            className="text-link underline"
             onClick={() => {
               setSelected(null);
               setReviewedHash("");
@@ -360,7 +360,7 @@ export function HandoverDocumentPanel({
               <button
                 type="button"
                 key={String(v.id)}
-                className="block text-sm text-blue-700 underline"
+                className="block text-sm text-link underline"
                 onClick={() => {
                   setSelected(Number(v.version));
                   setReviewedHash("");
@@ -383,7 +383,7 @@ export function HandoverDocumentPanel({
           {document.latest && !document.current && (
             <div
               role="alert"
-              className="space-y-2 rounded-xl bg-amber-50 p-4 text-sm text-amber-950"
+              className="space-y-2 rounded-xl bg-warning-muted p-4 text-sm text-amber-950"
             >
               <p>
                 Thông tin bàn giao đã thay đổi so với phiên bản{" "}
@@ -404,13 +404,13 @@ export function HandoverDocumentPanel({
                 <div className="flex flex-wrap gap-3">
                   <a
                     href="#handover-editor"
-                    className="font-semibold text-blue-700 underline"
+                    className="font-semibold text-link underline"
                   >
                     Cập nhật biên bản
                   </a>
                   <a
                     href="#handover-editor"
-                    className="font-semibold text-blue-700 underline"
+                    className="font-semibold text-link underline"
                   >
                     Kiểm tra và chốt phiên bản mới
                   </a>
@@ -425,7 +425,7 @@ export function HandoverDocumentPanel({
             d.progress.canManageHandover && (
               <a
                 href="#handover-editor"
-                className="block text-sm font-semibold text-blue-700 underline"
+                className="block text-sm font-semibold text-link underline"
               >
                 Kiểm tra thực tế và chốt phiên bản đầy đủ thông tin
               </a>

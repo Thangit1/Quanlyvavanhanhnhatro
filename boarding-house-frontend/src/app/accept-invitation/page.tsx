@@ -38,21 +38,21 @@ export default function Page() {
       setBusy(false);
     }
   }
-  const field = "min-h-11 w-full rounded-xl border border-slate-300 p-3";
+  const field = "min-h-11 w-full rounded-xl border border-input p-3";
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-50 p-5">
-      <section className="w-full max-w-lg space-y-5 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="text-sm font-bold text-blue-600">SmartHome AI</p>
+    <main className="grid min-h-screen place-items-center bg-muted p-5">
+      <section className="w-full max-w-lg space-y-5 surface-card p-8 ">
+        <p className="text-sm font-bold text-link">SmartHome AI</p>
         <h1 className="text-2xl font-extrabold">Kích hoạt tài khoản</h1>
         {isBootstrapping || token === null ? (
           <p role="status">Đang kiểm tra phiên đăng nhập...</p>
         ) : done ? (
           <>
-            <p role="status" className="text-emerald-700">
+            <p role="status" className="text-success">
               Đã chấp nhận lời mời. Vui lòng đăng nhập lại để nhận vai trò mới.
             </p>
             <button
-              className="inline-block font-bold text-blue-600"
+              className="inline-block font-bold text-link"
               onClick={() => {
                 if (user) void logout();
                 else window.location.assign("/login");
@@ -70,23 +70,23 @@ export default function Page() {
             {error && (
               <p
                 role="alert"
-                className="rounded-xl bg-red-50 p-3 text-sm text-red-700"
+                className="rounded-xl bg-danger-muted p-3 text-sm text-danger"
               >
                 {error}
               </p>
             )}
             {user ? (
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-secondary-foreground">
                 Bạn đang đăng nhập bằng {user.email}. Xác nhận tham gia với tài
                 khoản này; mật khẩu được giữ nguyên.
               </p>
             ) : (
               <>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-secondary-foreground">
                   Nếu email đã có tài khoản, hãy{" "}
                   <Link
                     href={`/login#invitation=${token}`}
-                    className="font-bold text-blue-600"
+                    className="font-bold text-link"
                   >
                     đăng nhập
                   </Link>{" "}
@@ -119,14 +119,14 @@ export default function Page() {
             )}
             <button
               disabled={busy}
-              className="w-full rounded-xl bg-blue-600 p-3 font-bold text-white disabled:opacity-50"
+              className="w-full rounded-xl bg-primary hover:bg-primary-hover p-3 font-bold text-white disabled:opacity-50"
             >
               {busy ? "Đang kích hoạt..." : "Chấp nhận lời mời"}
             </button>
             {user && (
               <button
                 type="button"
-                className="text-sm font-bold text-blue-600"
+                className="text-sm font-bold text-link"
                 onClick={() =>
                   void logout().then(() =>
                     window.location.assign(`/login#invitation=${token}`),

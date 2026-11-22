@@ -31,7 +31,7 @@ export function Badge({
   const Icon = danger ? AlertCircle : warning ? Clock3 : CheckCircle2;
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${danger ? "bg-red-50 text-red-700" : warning ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${danger ? "bg-danger-muted text-danger" : warning ? "bg-warning-muted text-warning" : "bg-success-muted text-success"}`}
     >
       <Icon className="size-3.5" />
       {label(map, value)}

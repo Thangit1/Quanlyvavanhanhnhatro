@@ -44,10 +44,10 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
             href={href}
             onClick={() => setMenuOpen(false)}
             aria-current={active ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-4 focus:ring-blue-100 ${
+            className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-4 focus:ring-ring ${
               active
-                ? "bg-blue-600 font-semibold text-white shadow-md shadow-blue-200"
-                : "text-slate-600 hover:bg-slate-50"
+                ? "bg-accent font-semibold text-link"
+                : "text-secondary-foreground hover:bg-muted"
             }`}
           >
             <Icon className="size-5" />
@@ -62,14 +62,14 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 lg:pb-0">
+    <div className="min-h-screen bg-background pb-20 lg:pb-0">
       <TenantPreferenceBridge />
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-slate-200 bg-white p-5 lg:block print:hidden">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-border bg-card p-5 lg:block print:hidden">
         <Link
           href="/tenant/home"
-          className="flex items-center gap-3 text-xl font-extrabold text-blue-700"
+          className="flex items-center gap-3 text-xl font-extrabold text-link"
         >
-          <span className="grid size-10 place-items-center rounded-xl bg-blue-600 text-white">
+          <span className="grid size-10 place-items-center rounded-xl bg-primary hover:bg-primary-hover text-white">
             <Building2 />
           </span>
           SmartHome AI
@@ -83,13 +83,13 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
             aria-label="Đóng menu"
             onClick={() => setMenuOpen(false)}
           />
-          <aside className="relative h-full w-72 overflow-y-auto bg-white p-5 shadow-2xl">
-            <div className="flex items-center justify-between font-extrabold text-blue-700">
+          <aside className="relative h-full w-72 overflow-y-auto bg-card p-5 shadow-2xl">
+            <div className="flex items-center justify-between font-extrabold text-link">
               SmartHome AI
               <button
                 aria-label="Đóng menu"
                 onClick={() => setMenuOpen(false)}
-                className="rounded-lg p-2 hover:bg-slate-100"
+                className="rounded-lg p-2 hover:bg-muted"
               >
                 <X />
               </button>
@@ -99,27 +99,27 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
+        <header className="sticky top-0 z-20 border-b border-border bg-card backdrop-blur print:hidden">
           <div className="flex min-h-16 items-center gap-3 px-4 sm:px-6">
             <button
               aria-label="Mở menu"
               onClick={() => setMenuOpen(true)}
-              className="grid size-10 place-items-center rounded-xl hover:bg-slate-100 lg:hidden"
+              className="grid size-10 place-items-center rounded-xl hover:bg-muted lg:hidden"
             >
               <Menu />
             </button>
             <Link
               href="/tenant/home"
-              className="flex flex-1 items-center gap-2 font-extrabold text-blue-700 lg:hidden"
+              className="flex flex-1 items-center gap-2 font-extrabold text-link lg:hidden"
             >
               <Building2 className="size-5" />
               SmartHome AI
             </Link>
             <div className="hidden flex-1 lg:block">
-              <p className="text-sm font-semibold text-slate-800">
+              <p className="text-sm font-semibold text-foreground">
                 Cổng thông tin khách thuê
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Quản lý thông tin thuê phòng của bạn
               </p>
             </div>
@@ -129,7 +129,7 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
         </header>
         {children}
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden">
         {tenantMobileNavigationItems.map(({ label, href, icon: Icon }) => {
           const active = isTenantNavigationActive(pathname, href);
           return (
@@ -137,7 +137,7 @@ export function TenantShell({ children }: { children: React.ReactNode }) {
               key={href}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] ${active ? "font-semibold text-blue-700" : "text-slate-500"}`}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] ${active ? "font-semibold text-link" : "text-muted-foreground"}`}
             >
               <span className="relative">
                 <Icon className="size-5" />

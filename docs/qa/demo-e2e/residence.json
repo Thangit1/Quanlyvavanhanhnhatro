@@ -1,0 +1,9 @@
+{
+  "schema": "jdbc:mysql://127.0.0.1:3317/prompt11_acceptance_decb7d377bfc4aa1b945ad9e97d973bd",
+  "contractId": 3,
+  "status": "MOVED_OUT",
+  "moveIn": "2026-11-19",
+  "moveOut": "2026-11-19",
+  "profileRetained": true,
+  "verification": "Read-only SQL after actual HTTP checkout"
+}

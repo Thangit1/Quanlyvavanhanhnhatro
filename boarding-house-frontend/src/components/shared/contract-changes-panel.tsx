@@ -28,7 +28,7 @@ const labels: Record<string, string> = {
   COMPLETED: "Hoàn tất",
   CANCELLED: "Đã hủy",
 };
-const input = "w-full rounded-lg border border-slate-300 bg-white p-2 text-sm";
+const input = "w-full rounded-lg border border-input bg-card p-2 text-sm";
 const button =
   "rounded-lg bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50";
 export function ContractChangesPanel({
@@ -104,19 +104,19 @@ export function ContractChangesPanel({
   }
   const data = query.data;
   return (
-    <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="space-y-4 surface-card p-5 sm:p-6 ">
       <h2 className="font-bold">Gia hạn, chuyển phòng và thay đại diện</h2>
       {(error || query.isError) && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {error || apiErrorMessage(query.error)}
         </p>
       )}
       {query.isLoading && (
-        <p className="text-sm text-slate-500">Đang tải hồ sơ…</p>
+        <p className="text-sm text-muted-foreground">Đang tải hồ sơ…</p>
       )}
       {data && (
         <>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-secondary-foreground">
             Thời hạn gốc:{" "}
             {String(data.contract.original_end_date ?? data.contract.end_date)}.
             Các khoảng thuê dùng ngày kết thúc không bao gồm ngày cuối. Bàn giao
@@ -124,7 +124,7 @@ export function ContractChangesPanel({
           </p>
           {data.canRequest && contractId && (
             <details>
-              <summary className="cursor-pointer font-semibold text-blue-700">
+              <summary className="cursor-pointer font-semibold text-link">
                 Tạo yêu cầu thay đổi
               </summary>
               <form
@@ -254,7 +254,7 @@ export function ContractChangesPanel({
                     maxLength={1000}
                   />
                 </label>
-                <p className="text-sm text-slate-600 sm:col-span-2">
+                <p className="text-sm text-secondary-foreground sm:col-span-2">
                   Gia hạn giữ chính sách phân bổ và cọc hiện có; thay giá giữa
                   kỳ cần hợp đồng tính theo ngày. Chuyển phòng dùng hợp đồng
                   mới. Nợ cũ được quyết toán tại hợp đồng cũ. Thay đại diện cần
@@ -268,7 +268,7 @@ export function ContractChangesPanel({
             </details>
           )}
           {!data.requests.length && (
-            <p className="text-sm text-slate-500">Chưa có hồ sơ thay đổi.</p>
+            <p className="text-sm text-muted-foreground">Chưa có hồ sơ thay đổi.</p>
           )}
           {data.requests.map((q) => (
             <article
@@ -286,7 +286,7 @@ export function ContractChangesPanel({
               </p>
               {q.content && (
                 <details>
-                  <summary className="cursor-pointer text-blue-700">
+                  <summary className="cursor-pointer text-link">
                     Đọc nội dung thỏa thuận và chứng cứ
                   </summary>
                   <pre className="mt-2 whitespace-pre-wrap break-words text-sm">
@@ -401,7 +401,7 @@ export function ContractChangesPanel({
               {q.target_contract_id && (
                 <p className="text-sm">
                   <Link
-                    className="text-blue-700 underline"
+                    className="text-link underline"
                     href={`/${portal}/contracts/${q.target_contract_id}`}
                   >
                     Mở hợp đồng đích #{String(q.target_contract_id)}
@@ -455,14 +455,14 @@ export function ContractChangesPanel({
                     <button className={button} disabled={busy}>
                       Điều chuyển cọc còn giữ
                     </button>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-secondary-foreground">
                       Chỉ chuyển sau khi bàn giao và hết nợ nguồn, trước duyệt
                       chi hoàn. Không tạo phiếu thu tiền mới.
                     </p>
                   </form>
                 )}
               <details>
-                <summary className="cursor-pointer text-sm text-blue-700">
+                <summary className="cursor-pointer text-sm text-link">
                   Lịch sử hồ sơ
                 </summary>
                 <ul className="space-y-1 text-sm">
@@ -477,7 +477,7 @@ export function ContractChangesPanel({
             </article>
           ))}
           <details>
-            <summary className="cursor-pointer text-sm text-blue-700">
+            <summary className="cursor-pointer text-sm text-link">
               Lịch sử giá và cư trú
             </summary>
             <ul className="text-sm">
@@ -551,12 +551,12 @@ function ResidentApprovals({ contractId }: { contractId: number }) {
     <div className="space-y-3 border-t pt-3">
       <h3 className="font-semibold">Duyệt thêm/bớt người ở cùng</h3>
       {(error || query.isError) && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {error || apiErrorMessage(query.error)}
         </p>
       )}
       {!query.data?.length && (
-        <p className="text-sm text-slate-500">Chưa có yêu cầu.</p>
+        <p className="text-sm text-muted-foreground">Chưa có yêu cầu.</p>
       )}
       {query.data?.map((q) => (
         <div className="rounded-lg border p-3 text-sm" key={String(q.id)}>
@@ -627,7 +627,7 @@ export function RepresentativeInvitations() {
   return (
     <>
       {query.isError && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {apiErrorMessage(query.error)}
         </p>
       )}

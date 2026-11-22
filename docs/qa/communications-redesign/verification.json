@@ -1,0 +1,225 @@
+{
+  "date": "2026-11-18",
+  "backend": {
+    "status": "PASS_LATEST_SUITE_REPORTS",
+    "uniqueTests": 391,
+    "suites": [
+      {
+        "name": "controller.CheckoutWorkspaceControllerTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:23:46.935Z"
+      },
+      {
+        "name": "controller.CommunicationControllerTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:49:14.249Z"
+      },
+      {
+        "name": "controller.FinanceWorkspaceControllerTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:23:47.451Z"
+      },
+      {
+        "name": "controller.ManagementReportControllerTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:23:47.562Z"
+      },
+      {
+        "name": "controller.OperationsWorkspaceControllerTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:23:47.684Z"
+      },
+      {
+        "name": "service.CheckoutSettlementMysqlTest",
+        "tests": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:25:12.672Z"
+      },
+      {
+        "name": "service.CheckoutWorkspaceMysqlTest",
+        "tests": 30,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:25:57.863Z"
+      },
+      {
+        "name": "service.CommunicationMysqlTest",
+        "tests": 57,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:46:04.152Z"
+      },
+      {
+        "name": "service.DepositLedgerMysqlTest",
+        "tests": 35,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:27:28.171Z"
+      },
+      {
+        "name": "service.InvoiceFinanceWorkspaceMysqlTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:27:50.834Z"
+      },
+      {
+        "name": "service.ManagementFinanceMysqlTest",
+        "tests": 47,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:28:50.971Z"
+      },
+      {
+        "name": "service.ManagementReportMysqlTest",
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:33:20.346Z"
+      },
+      {
+        "name": "service.OperationsWorkspaceMysqlTest",
+        "tests": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:29:53.186Z"
+      },
+      {
+        "name": "service.SecurityMysqlIntegrationTest",
+        "tests": 73,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:34:10.309Z"
+      },
+      {
+        "name": "service.TenantNotificationServiceImplTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "modified": "2026-11-18T06:49:14.390Z"
+      }
+    ],
+    "runs": [
+      {
+        "log": "communications-regression.log",
+        "tests": 388,
+        "exit": 1,
+        "result": "FAILED_HOST_SOCKET",
+        "errors": 1,
+        "assertionFailures": 0,
+        "reason": "Windows BindException: Address already in use: connect in ManagementReportMysqlTest"
+      },
+      {
+        "log": "communications-final-targeted.log",
+        "tests": 158,
+        "exit": 0,
+        "result": "PASS",
+        "buildSuccess": true
+      },
+      {
+        "log": "communications-final-queue.log",
+        "tests": 60,
+        "exit": 0,
+        "result": "PASS",
+        "buildSuccess": true
+      },
+      {
+        "log": "communications-compatibility-unit.log",
+        "tests": 7,
+        "exit": 0,
+        "result": "PASS"
+      }
+    ],
+    "database": "Only isolated schemas on 127.0.0.1:3317, Flyway through V41; live 3306 untouched",
+    "privateMysqlStopped": true
+  },
+  "frontend": {
+    "lint": {
+      "status": "PASS",
+      "exit": 0,
+      "warnings": 1,
+      "warning": "Unused fill helper in pre-existing scripts/checkouts-browser.test.cjs"
+    },
+    "typescript": {
+      "status": "PASS",
+      "command": "npx.cmd tsc --noEmit --incremental false",
+      "exit": 0
+    },
+    "build": {
+      "status": "PASS",
+      "command": "npm.cmd run build",
+      "exit": 0
+    },
+    "node": {
+      "status": "PASS",
+      "tests": 39,
+      "exit": 0,
+      "command": "node --test scripts/monthly-payment-ui.test.cjs scripts/numeric-input.test.cjs scripts/session-security.test.cjs scripts/utility-workspace.test.cjs scripts/room-presentation.test.cjs"
+    },
+    "browser": {
+      "status": "PASS",
+      "passed": 13,
+      "cases": [
+        "inbox-source-and-real-unread-api",
+        "bell-dropdown-uses-backend-recent",
+        "read-action-refreshes-unread-without-marking-delivery-read",
+        "preview-recipients-before-send",
+        "confirmation-queues-with-idempotency-key",
+        "queued-is-not-fake-delivered-or-read",
+        "email-sms-zalo-unconfigured-no-test-send",
+        "template-persists-through-api",
+        "new-rule-is-opt-in-not-default-enabled",
+        "source-events-and-manual-work-are-separated",
+        "mobile-no-page-overflow",
+        "read-error-hides-old-inbox",
+        "role-switch-hides-previous-inbox-and-management-actions"
+      ],
+      "liveApiWrites": 0,
+      "exit": 0,
+      "command": "node scripts/communications-browser.test.cjs"
+    }
+  },
+  "realExternalSends": 0,
+  "realProviders": [
+    "Database IN_APP"
+  ],
+  "unconfiguredProviders": [
+    "EMAIL",
+    "SMS",
+    "ZALO"
+  ],
+  "liveDatabaseMigrated": false,
+  "committed": false,
+  "notRun": [
+    "Real SMTP/SMS/Zalo provider sandbox or production",
+    "Two independently deployed backend processes",
+    "Complete Prompt 01–09 browser UAT",
+    "Check-in reschedule and complete tenant-maintenance assignment UI journey"
+  ]
+}

@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/contracts")
 public class AdminContractController {
+    private com.thangit.boardinghouse.service.ContractSubmissionService submission;
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setSubmission(com.thangit.boardinghouse.service.ContractSubmissionService submission){this.submission=submission;}
     private com.thangit.boardinghouse.service.DirectContractService direct;
     @org.springframework.beans.factory.annotation.Autowired
     public void setDirectContracts(com.thangit.boardinghouse.service.DirectContractService direct) {this.direct=direct;}
@@ -25,26 +28,28 @@ public class AdminContractController {
         return ApiResponse.success("Dữ liệu lập hợp đồng",direct.options(p,propertyId,keyword));
     }
     @PostMapping
-    public ResponseEntity<ApiResponse<com.thangit.boardinghouse.dto.response.lifecycle.RentalLifecycleResponses.Created>> create(
+    public ResponseEntity<?> create(
             @AuthenticationPrincipal AuthenticatedUser p,
             @RequestHeader("Idempotency-Key") @jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max=100) String key,
             @jakarta.validation.Valid @RequestBody com.thangit.boardinghouse.service.DirectContractService.Request r) {
-        return ResponseEntity.status(201).body(ApiResponse.success("Đã tạo hợp đồng trực tiếp",direct.create(p,key,r)));
+        return ResponseEntity.status(201).body(ApiResponse.success("Đã lưu hợp đồng",submission==null?direct.create(p,key,r):submission.create(p,key,r)));
     }
     @PostMapping("/{contractId}/submit")
-    public ApiResponse<com.thangit.boardinghouse.dto.response.lifecycle.RentalLifecycleResponses.Created> submit(
+    public ApiResponse<?> submit(
             @AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId) {
-        return ApiResponse.success("Hợp đồng chờ xác nhận",direct.submit(p,contractId));
+        return ApiResponse.success("Tiến trình gửi hợp đồng",submission==null?direct.submit(p,contractId):submission.submit(p,contractId));
     }
     @GetMapping("/{contractId}/draft")
     public ApiResponse<java.util.Map<String,Object>> draft(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId) {
         return ApiResponse.success("Bản nháp hợp đồng",direct.draft(p,contractId));
     }
+    @GetMapping("/{contractId}/agreement")
+    public Object agreement(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId){return ApiResponse.success("Nội dung đang chờ hai bên xác nhận",direct.agreement(p,contractId));}
     @PutMapping("/{contractId}/draft")
-    public ApiResponse<com.thangit.boardinghouse.dto.response.lifecycle.RentalLifecycleResponses.Created> updateDraft(
+    public ApiResponse<?> updateDraft(
             @AuthenticationPrincipal AuthenticatedUser p,@PathVariable long contractId,@RequestParam long version,
             @jakarta.validation.Valid @RequestBody com.thangit.boardinghouse.service.DirectContractService.Request r) {
-        return ApiResponse.success("Đã lưu bản nháp",direct.updateDraft(p,contractId,version,r));
+        return ApiResponse.success("Đã lưu bản nháp",submission==null?direct.updateDraft(p,contractId,version,r):submission.update(p,contractId,version,r));
     }
     public record ExtensionDecision(@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max=1000) String reason) {}
     private final AdminContractService service;
@@ -65,9 +70,12 @@ public class AdminContractController {
             @RequestParam(defaultValue = "endDate") String sort,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required=false) Long roomId,
+            @RequestParam(required=false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate startDateFrom,
+            @RequestParam(required=false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate endDateTo) {
         return ApiResponse.success("Lấy danh sách hợp đồng thành công.",
-                service.list(principal, propertyId, status, keyword, sort, direction, page, size));
+                service.list(principal, propertyId, status, keyword, sort, direction, page, size,roomId,startDateFrom,endDateTo));
     }
 
     @GetMapping("/{contractId}")
@@ -82,10 +90,13 @@ public class AdminContractController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "endDate") String sort,
-            @RequestParam(defaultValue = "asc") String direction) {
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(required=false) Long roomId,
+            @RequestParam(required=false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate startDateFrom,
+            @RequestParam(required=false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate endDateTo) {
         String filename = URLEncoder.encode("danh-sach-hop-dong.csv", StandardCharsets.UTF_8);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + filename)
-                .body(service.exportCsv(principal, propertyId, status, keyword, sort, direction));
+                .body(service.exportCsv(principal, propertyId, status, keyword, sort, direction,roomId,startDateFrom,endDateTo));
     }
 }

@@ -120,7 +120,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-xl rounded-[2rem] border border-slate-200 bg-white px-5 py-8 shadow-2xl shadow-slate-300/60 sm:px-10 sm:py-10">
+    <div className="w-full max-w-xl rounded-[2rem] border border-border bg-card px-5 py-8 shadow-2xl shadow-slate-300/60 sm:px-10 sm:py-10">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <Brand />
         <RoleSelector
@@ -132,15 +132,15 @@ export function LoginForm() {
         />
       </div>
       {errors.requestedRole && (
-        <p className="mt-2 text-right text-sm text-red-600">
+        <p className="mt-2 text-right text-sm text-danger">
           {errors.requestedRole.message}
         </p>
       )}
       <div className="mt-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Chào mừng trở lại
         </h1>
-        <p className="mt-2 text-base text-slate-500 sm:text-lg">
+        <p className="mt-2 text-base text-muted-foreground sm:text-lg">
           Vui lòng nhập thông tin để truy cập hệ thống.
         </p>
       </div>
@@ -160,7 +160,7 @@ export function LoginForm() {
         {apiError && (
           <div
             role="alert"
-            className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="rounded-xl border border-danger-border bg-danger-muted px-4 py-3 text-sm text-danger"
           >
             {apiError}
           </div>
@@ -168,7 +168,7 @@ export function LoginForm() {
         <div>
           <label
             htmlFor="email"
-            className="mb-2 block font-semibold text-slate-700"
+            className="mb-2 block font-semibold text-secondary-foreground"
           >
             Email hoặc số điện thoại
           </label>
@@ -181,22 +181,22 @@ export function LoginForm() {
             placeholder="Nhập email hoặc số điện thoại"
             {...register("email")}
             aria-invalid={Boolean(errors.email)}
-            className={`h-12 w-full rounded-xl border bg-slate-50 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 disabled:opacity-60 ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-100" : "border-slate-300 focus:border-blue-600 focus:ring-blue-100"}`}
+            className={`h-12 w-full rounded-xl border bg-muted px-4 text-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition placeholder:text-muted-foreground focus:bg-card focus:ring-4 disabled:opacity-60 ${errors.email ? "border-danger focus:border-danger focus:ring-red-100" : "border-input focus:border-blue-600 focus:ring-ring"}`}
           />
           {errors.email && (
-            <p className="mt-1.5 text-sm text-red-600">
+            <p className="mt-1.5 text-sm text-danger">
               {errors.email.message}
             </p>
           )}
         </div>
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <label htmlFor="password" className="font-semibold text-slate-700">
+            <label htmlFor="password" className="font-semibold text-secondary-foreground">
               Mật khẩu
             </label>
             <Link
               href="/forgot-password"
-              className="font-semibold text-blue-700 hover:underline"
+              className="font-semibold text-link hover:underline"
             >
               Quên mật khẩu?
             </Link>
@@ -208,12 +208,12 @@ export function LoginForm() {
             {...register("password")}
           />
           {errors.password && (
-            <p className="mt-1.5 text-sm text-red-600">
+            <p className="mt-1.5 text-sm text-danger">
               {errors.password.message}
             </p>
           )}
         </div>
-        <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600">
+        <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-secondary-foreground">
           <input
             type="checkbox"
             checked={rememberAccount}
@@ -223,14 +223,14 @@ export function LoginForm() {
               setRememberAccount(checked);
               if (!checked) localStorage.removeItem(REMEMBERED_IDENTIFIER_KEY);
             }}
-            className="size-4 rounded border-slate-300 accent-blue-600"
+            className="size-4 rounded border-input accent-blue-600"
           />
           Ghi nhớ tài khoản
         </label>
         <button
           type="submit"
           disabled={isSubmitting || isBootstrapping}
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-lg font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? (
             <>
@@ -245,11 +245,11 @@ export function LoginForm() {
           )}
         </button>
       </form>
-      <p className="mt-8 text-center text-slate-500">
+      <p className="mt-8 text-center text-muted-foreground">
         Chưa có tài khoản?{" "}
         <Link
           href="/register"
-          className="font-semibold text-blue-700 hover:underline"
+          className="font-semibold text-link hover:underline"
         >
           Đăng ký khách thuê
         </Link>

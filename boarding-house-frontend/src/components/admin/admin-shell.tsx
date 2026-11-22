@@ -1,39 +1,36 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
+import { CommunicationBell } from "@/components/shared/communication-bell";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bell,
+  Bot,
   Building2,
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
+  DoorOpen,
   LayoutDashboard,
   Menu,
   Receipt,
   Settings,
   TrendingUp,
   Users,
+  Wallet,
   Workflow,
   Wrench,
   X,
+  Zap,
+  type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
+import { useManagementScope } from "@/providers/management-scope";
 import { PageLoading } from "@/components/shared/dashboard-ui";
-import { AdminUserMenu } from "@/components/admin/admin-user-menu";
-import { roleHome } from "@/types/auth";
-
-const nav = [
-  ["Tổng quan", "dashboard", LayoutDashboard],
-  ["Nhà và phòng", "/admin/properties", Building2],
-  ["Khu vực & Phân công", "/admin/areas", Building2],
-  ["Tài khoản & Nhân sự", "/admin/accounts", Users],
-  ["Hợp đồng", "/admin/contracts", ClipboardList],
-  ["Vòng đời thuê", "/admin/rental-lifecycle", Workflow],
-  ["Hóa đơn", "/admin/invoices", Receipt],
-  ["Bảo trì", "/admin/maintenance", Wrench],
-  ["Báo cáo", "/admin/reports", TrendingUp],
-  ["Cài đặt", "/admin/settings", Settings],
-] as const;
-
+import { PropertySelector } from "@/components/shared/management-ui";
+import { AdminUserMenu } from "./admin-user-menu";
+import { roleHome, roleLabel } from "@/types/auth";
+type Item = [string, string, LucideIcon];
 export function AdminShell({
   title,
   subtitle,
@@ -46,9 +43,12 @@ export function AdminShell({
   readOnly?: boolean;
 }) {
   const { user, isBootstrapping } = useAuth();
+  const scope = useManagementScope();
   const pathname = usePathname();
   const router = useRouter();
   const [menu, setMenu] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const drawer = useRef<HTMLDialogElement>(null);
   const allowed =
     !!user &&
     (["OWNER", "MANAGER"].includes(user.activeRole) ||
@@ -59,93 +59,242 @@ export function AdminShell({
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
     else if (!allowed) router.replace(roleHome[user.activeRole]);
   }, [allowed, isBootstrapping, pathname, router, user]);
+  useEffect(() => {
+    if (menu) drawer.current?.showModal();
+    else drawer.current?.close();
+  }, [menu]);
   if (isBootstrapping || !allowed || !user) return <PageLoading />;
   const home = roleHome[user.activeRole];
-  const navigation = (
-    <nav className="space-y-1">
-      {nav.map(([label, href, Icon]) => {
-        if (href === "/admin/areas" && user.activeRole !== "OWNER") return null;
-        const target = href === "dashboard" ? home : href;
-        const active =
-          href === "dashboard" ? pathname === home : pathname.startsWith(href);
-        return (
-          <Link
-            key={label}
-            href={target}
-            onClick={() => setMenu(false)}
-            className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium ${
-              active
-                ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-                : "text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            <Icon className="size-5" />
-            {label}
-          </Link>
-        );
-      })}
-    </nav>
-  );
+  const owner = user.activeRole === "OWNER";
+  const accountant = user.activeRole === "ACCOUNTANT";
+  const groups: { label: string; items: Item[] }[] = accountant
+    ? [
+        {
+          label: "Kế toán",
+          items: [
+            ["Dashboard", home, LayoutDashboard],
+            ["Nhà trọ", "/admin/properties", Building2],
+            ["Phòng", "/admin/rooms", DoorOpen],
+            ["Hóa đơn", "/accountant/invoices", Receipt],
+            ["Điện nước và dịch vụ", "/admin/reports/utilities", Zap],
+            ["Tài chính", "/accountant/payments", Wallet],
+          ],
+        },
+      ]
+    : [
+        {
+          label: "Tổng quan",
+          items: [
+            ["Dashboard", home, LayoutDashboard],
+            ["Thông báo & Công việc", "/admin/communications", Bell],
+          ],
+        },
+        {
+          label: "Quản lý vận hành",
+          items: [
+            ["Nhà trọ", "/admin/properties", Building2],
+            ["Phòng", "/admin/rooms", DoorOpen],
+            ["Người thuê", "/admin/tenants", Users],
+            ["Đặt phòng và nhận phòng", "/admin/rental-lifecycle", Workflow],
+            ["Hợp đồng", "/admin/contracts", ClipboardList],
+            ...(scope.canReadFinance
+              ? [
+                  [
+                    "Điện nước và dịch vụ",
+                    "/admin/reports/utilities",
+                    Zap,
+                  ] as Item,
+                ]
+              : []),
+            ["Bảo trì và tài sản", "/admin/maintenance", Wrench],
+            ["Trả phòng", "/admin/checkouts", DoorOpen],
+          ],
+        },
+        ...(scope.canReadFinance
+          ? [
+              {
+                label: "Tài chính",
+                items: [
+                  ["Hóa đơn", "/admin/invoices", Receipt],
+                  ["Thanh toán", "/admin/reports/payments", Wallet],
+                  ["Công nợ", "/admin/invoices/debt", Receipt],
+                  ["Tiền cọc và sổ quỹ", "/admin/finance", Wallet],
+                  ["Báo cáo thu chi", "/admin/reports/profit", TrendingUp],
+                ] as Item[],
+              },
+            ]
+          : []),
+        {
+          label: "Quản trị",
+          items: [
+            ["Báo cáo và thống kê", "/admin/reports", TrendingUp],
+            ...(owner
+              ? ([
+                  ["Công ty và khu quản lý", "/admin/organizations", Building2],
+                  ["Khu vực và phân quyền", "/admin/areas", Building2],
+                ] as Item[])
+              : []),
+            ["Tài khoản và nhân viên", "/admin/accounts", Users],
+            ["Cấu hình", "/admin/settings", Settings],
+            ...(owner ? [["AI", "/admin/settings/ai", Bot] as Item] : []),
+          ],
+        },
+      ];
+  function navigation(compact: boolean) {
+    const paths = groups
+      .flatMap((g) => g.items.map(([, href]) => href))
+      .filter((href) => !/[?#]/.test(href));
+    const activePath = paths
+      .filter(
+        (href) =>
+          pathname === href ||
+          (href !== home && pathname.startsWith(href + "/")),
+      )
+      .sort((a, b) => b.length - a.length)[0];
+    return (
+      <nav aria-label="Điều hướng quản trị" className="space-y-5">
+        {groups.map((group) => (
+          <section key={group.label}>
+            <p
+              className={`mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground ${compact ? "sr-only" : ""}`}
+            >
+              {group.label}
+            </p>
+            <div className="space-y-1">
+              {group.items.map(([label, href, Icon]) => (
+                <Link
+                  key={href}
+                  title={compact ? label : undefined}
+                  aria-label={compact ? label : undefined}
+                  aria-current={href === activePath ? "page" : undefined}
+                  href={href}
+                  onClick={() => setMenu(false)}
+                  className={`flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition focus-visible:ring-2 focus-visible:ring-ring ${href === activePath ? "bg-accent text-link" : "text-secondary-foreground hover:bg-muted"}`}
+                >
+                  <Icon aria-hidden className="size-4.5 shrink-0" />
+                  {!compact && <span>{label}</span>}
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
+      </nav>
+    );
+  }
   return (
-    <div className="min-h-screen bg-slate-50">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-slate-200 bg-white p-5 lg:block">
+    <div className="min-h-screen bg-background">
+      <a
+        href="#page-content"
+        className="sr-only z-50 rounded bg-card p-3 focus:not-sr-only focus:fixed"
+      >
+        Đến nội dung chính
+      </a>
+      <aside
+        className={`fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-border bg-card lg:flex ${collapsed ? "w-20" : "w-64"}`}
+      >
         <Link
           href={home}
-          className="flex items-center gap-3 text-xl font-extrabold text-blue-700"
+          aria-label="SmartHome AI — Tổng quan"
+          className="flex h-20 shrink-0 items-center gap-3 px-5"
         >
-          <span className="grid size-10 place-items-center rounded-xl bg-blue-600 text-white">
-            <Building2 />
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary hover:bg-primary-hover text-white">
+            <Building2 className="size-6" />
           </span>
-          SmartHome AI
+          {!collapsed && (
+            <span className="text-lg font-extrabold text-foreground">
+              SmartHome <span className="text-link">AI</span>
+            </span>
+          )}
         </Link>
-        <div className="mt-8">{navigation}</div>
-      </aside>
-      {menu && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            aria-label="Đóng menu"
-            className="absolute inset-0 bg-slate-950/40"
-            onClick={() => setMenu(false)}
-          />
-          <aside className="relative h-full w-72 bg-white p-5 shadow-2xl">
-            <div className="flex items-center justify-between font-extrabold text-blue-700">
-              SmartHome AI
-              <button aria-label="Đóng menu" onClick={() => setMenu(false)}>
-                <X />
-              </button>
-            </div>
-            <div className="mt-6">{navigation}</div>
-          </aside>
+        <div className="flex-1 overflow-y-auto px-3 pb-5">
+          {navigation(collapsed)}
         </div>
-      )}
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
-          <div className="flex min-h-16 items-center gap-3 px-4 sm:px-6">
+        <button
+          aria-label={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
+          aria-expanded={!collapsed}
+          onClick={() => setCollapsed(!collapsed)}
+          className="m-3 flex min-h-10 items-center justify-center gap-2 rounded-lg border text-sm text-muted-foreground"
+        >
+          {collapsed ? (
+            <ChevronRight className="size-4" />
+          ) : (
+            <>
+              <ChevronLeft className="size-4" />
+              Thu gọn
+            </>
+          )}
+        </button>
+      </aside>
+      <dialog
+        ref={drawer}
+        onCancel={() => setMenu(false)}
+        onClose={() => setMenu(false)}
+        onClick={(e) => {
+          if (e.target === drawer.current) setMenu(false);
+        }}
+        aria-label="Menu quản trị"
+        className="fixed inset-y-0 left-0 m-0 h-dvh max-h-dvh w-72 max-w-[85vw] border-0 bg-card p-0 shadow-2xl backdrop:bg-slate-950/40"
+      >
+        <div className="flex items-center justify-between border-b p-5 font-bold">
+          SmartHome AI
+          <button
+            autoFocus
+            aria-label="Đóng menu"
+            onClick={() => setMenu(false)}
+            className="rounded-lg p-2"
+          >
+            <X />
+          </button>
+        </div>
+        <div className="h-[calc(100dvh-85px)] overflow-y-auto p-4">
+          {navigation(false)}
+        </div>
+      </dialog>
+      <div className={collapsed ? "lg:pl-20" : "lg:pl-64"}>
+        <header className="sticky top-0 z-20 border-b border-border bg-card backdrop-blur">
+          <div className="flex min-h-20 items-center gap-3 px-4 sm:px-6">
             <button
               aria-label="Mở menu"
-              className="grid size-10 place-items-center rounded-xl hover:bg-slate-100 lg:hidden"
+              aria-expanded={menu}
               onClick={() => setMenu(true)}
+              className="grid size-10 shrink-0 place-items-center rounded-lg hover:bg-muted lg:hidden"
             >
               <Menu />
             </button>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-bold text-slate-900">{title}</p>
-              {subtitle && (
-                <p className="hidden text-xs text-slate-500 sm:block">
-                  {subtitle}
-                </p>
-              )}
+              <nav
+                aria-label="Breadcrumb"
+                className="mb-1 flex items-center gap-1 text-xs text-muted-foreground"
+              >
+                <Link href={home}>{roleLabel[user.activeRole]}</Link>
+                <ChevronRight className="size-3" />
+                <span aria-current="page" className="truncate">
+                  {title}
+                </span>
+              </nav>
+              <p className="truncate font-semibold text-foreground">{title}</p>
             </div>
-            <button
-              aria-label="Thông báo"
-              className="grid size-10 place-items-center rounded-full hover:bg-slate-100"
-            >
-              <Bell className="size-5" />
-            </button>
+            {!accountant && (
+              <div className="hidden md:block">
+                <PropertySelector />
+              </div>
+            )}
+            <CommunicationBell />
             <AdminUserMenu />
           </div>
+          {!accountant && (
+            <div className="border-t px-4 py-2 md:hidden">
+              <PropertySelector />
+            </div>
+          )}
         </header>
-        <main className="p-4 sm:p-6">{children}</main>
+        <main
+          id="page-content"
+          className="mx-auto max-w-[1800px] space-y-6 p-4 sm:p-6"
+        >
+          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -54,14 +54,14 @@ function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
         aria-describedby="dialog-description"
-        className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-white p-5 shadow-2xl sm:max-w-lg sm:rounded-3xl sm:p-6"
+        className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-card p-5 shadow-2xl sm:max-w-lg sm:rounded-3xl sm:p-6"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 id="dialog-title" className="text-xl font-bold text-slate-900">
+            <h2 id="dialog-title" className="text-xl font-bold text-foreground">
               {title}
             </h2>
-            <p id="dialog-description" className="mt-1 text-sm text-slate-500">
+            <p id="dialog-description" className="mt-1 text-sm text-muted-foreground">
               {description}
             </p>
           </div>
@@ -70,7 +70,7 @@ function Dialog({
             type="button"
             aria-label="Đóng"
             onClick={onClose}
-            className="rounded-lg p-2 hover:bg-slate-100 focus:ring-4 focus:ring-blue-100"
+            className="rounded-lg p-2 hover:bg-muted focus:ring-4 focus:ring-ring"
           >
             <X />
           </button>
@@ -181,16 +181,16 @@ export function ExtensionRequestDialog({
         {apiError && (
           <div
             role="alert"
-            className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+            className="rounded-xl border border-danger-border bg-danger-muted p-3 text-sm text-danger"
           >
             {apiError}
           </div>
         )}
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-secondary-foreground">
           Thời gian muốn gia hạn
           <select
             {...register("duration")}
-            className="mt-2 h-11 w-full rounded-xl border border-slate-300 bg-white px-3"
+            className="mt-2 h-11 w-full rounded-xl border border-input bg-card px-3"
           >
             <option value="3">3 tháng</option>
             <option value="6">6 tháng</option>
@@ -198,33 +198,33 @@ export function ExtensionRequestDialog({
             <option value="OTHER">Thời gian khác</option>
           </select>
         </label>
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-secondary-foreground">
           Ngày kết thúc mong muốn
           <input
             type="date"
             min={nextDay(contract.endDate)}
             {...register("requestedEndDate")}
-            className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3"
+            className="mt-2 h-11 w-full rounded-xl border border-input px-3"
           />
         </label>
         {errors.requestedEndDate && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-danger">
             {errors.requestedEndDate.message}
           </p>
         )}
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-secondary-foreground">
           Ghi chú
           <textarea
             rows={3}
             {...register("note")}
-            className="mt-2 w-full rounded-xl border border-slate-300 p-3"
+            className="mt-2 w-full rounded-xl border border-input p-3"
             placeholder="Nhu cầu gia hạn của bạn..."
           />
         </label>
         {errors.note && (
-          <p className="text-sm text-red-600">{errors.note.message}</p>
+          <p className="text-sm text-danger">{errors.note.message}</p>
         )}
-        <label className="flex items-start gap-3 text-sm text-slate-600">
+        <label className="flex items-start gap-3 text-sm text-secondary-foreground">
           <input
             type="checkbox"
             {...register("confirmed")}
@@ -233,19 +233,19 @@ export function ExtensionRequestDialog({
           Tôi hiểu rằng yêu cầu này cần được chủ nhà hoặc quản lý phê duyệt.
         </label>
         {errors.confirmed && (
-          <p className="text-sm text-red-600">{errors.confirmed.message}</p>
+          <p className="text-sm text-danger">{errors.confirmed.message}</p>
         )}
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-slate-300 px-4 py-2.5 font-semibold"
+            className="rounded-xl border border-input px-4 py-2.5 font-semibold"
           >
             Hủy
           </button>
           <button
             disabled={mutation.isPending}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 font-semibold text-white disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 font-semibold text-white disabled:opacity-60"
           >
             {mutation.isPending && (
               <LoaderCircle className="size-4 animate-spin" />
@@ -336,7 +336,7 @@ export function TerminationRequestDialog({
         onSubmit={handleSubmit(submit)}
         noValidate
       >
-        <div className="flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="flex gap-2 rounded-xl border border-warning-border bg-warning-muted p-3 text-sm text-warning">
           <AlertTriangle className="mt-0.5 size-5 shrink-0" />
           <p>
             Gửi yêu cầu không đồng nghĩa hợp đồng đã chấm dứt. Tiền cọc được
@@ -346,61 +346,61 @@ export function TerminationRequestDialog({
         {apiError && (
           <div
             role="alert"
-            className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+            className="rounded-xl border border-danger-border bg-danger-muted p-3 text-sm text-danger"
           >
             {apiError}
           </div>
         )}
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-secondary-foreground">
           Ngày dự kiến trả phòng
           <input
             type="date"
             min={earliest}
             {...register("expectedMoveOutDate")}
-            className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3"
+            className="mt-2 h-11 w-full rounded-xl border border-input px-3"
           />
         </label>
         {errors.expectedMoveOutDate && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-danger">
             {errors.expectedMoveOutDate.message}
           </p>
         )}
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-secondary-foreground">
           Lý do trả phòng
           <input
             {...register("reason")}
-            className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3"
+            className="mt-2 h-11 w-full rounded-xl border border-input px-3"
             placeholder="Ví dụ: Chuyển nơi công tác"
           />
         </label>
         {errors.reason && (
-          <p className="text-sm text-red-600">{errors.reason.message}</p>
+          <p className="text-sm text-danger">{errors.reason.message}</p>
         )}
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-secondary-foreground">
           Số điện thoại liên hệ
           <input
             type="tel"
             inputMode="tel"
             autoComplete="tel"
             {...register("contactPhone")}
-            className={`mt-2 h-11 w-full rounded-xl border px-3 ${errors.contactPhone ? "border-red-500" : "border-slate-300"}`}
+            className={`mt-2 h-11 w-full rounded-xl border px-3 ${errors.contactPhone ? "border-danger" : "border-input"}`}
           />
         </label>
         {errors.contactPhone && (
-          <p className="text-sm text-red-600">{errors.contactPhone.message}</p>
+          <p className="text-sm text-danger">{errors.contactPhone.message}</p>
         )}
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-secondary-foreground">
           Ghi chú
           <textarea
             rows={3}
             {...register("note")}
-            className="mt-2 w-full rounded-xl border border-slate-300 p-3"
+            className="mt-2 w-full rounded-xl border border-input p-3"
           />
         </label>
         {errors.note && (
-          <p className="text-sm text-red-600">{errors.note.message}</p>
+          <p className="text-sm text-danger">{errors.note.message}</p>
         )}
-        <label className="flex items-start gap-3 text-sm text-slate-600">
+        <label className="flex items-start gap-3 text-sm text-secondary-foreground">
           <input
             type="checkbox"
             {...register("confirmed")}
@@ -410,13 +410,13 @@ export function TerminationRequestDialog({
           nợ và tài sản.
         </label>
         {errors.confirmed && (
-          <p className="text-sm text-red-600">{errors.confirmed.message}</p>
+          <p className="text-sm text-danger">{errors.confirmed.message}</p>
         )}
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-slate-300 px-4 py-2.5 font-semibold"
+            className="rounded-xl border border-input px-4 py-2.5 font-semibold"
           >
             Hủy
           </button>

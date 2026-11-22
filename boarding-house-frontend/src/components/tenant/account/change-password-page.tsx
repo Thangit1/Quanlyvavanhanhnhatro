@@ -46,12 +46,12 @@ export function ChangePasswordPage() {
       {message && (
         <p
           role="status"
-          className="rounded-xl bg-blue-50 p-3 font-semibold text-blue-800"
+          className="rounded-xl bg-accent p-3 font-semibold text-link"
         >
           {message}
         </p>
       )}
-      <section className="max-w-2xl rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="max-w-2xl surface-card p-5 sm:p-6 ">
         <div className="space-y-4">
           <Password
             label="Mật khẩu hiện tại"
@@ -77,12 +77,12 @@ export function ChangePasswordPage() {
           <button
             type="button"
             onClick={() => setShow((v) => !v)}
-            className="inline-flex items-center gap-2 text-sm font-bold text-blue-700"
+            className="inline-flex items-center gap-2 text-sm font-bold text-link"
           >
             {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             {show ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
           </button>
-          <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+          <div className="rounded-xl bg-muted p-4 text-sm text-secondary-foreground">
             <b>Yêu cầu mật khẩu:</b>
             <ul className="mt-2 list-inside list-disc space-y-1">
               <li>Ít nhất 8 ký tự</li>
@@ -100,7 +100,7 @@ export function ChangePasswordPage() {
             />
             <span>
               <b>Thu hồi các phiên đăng nhập cũ</b>
-              <small className="block text-slate-500">
+              <small className="block text-muted-foreground">
                 Nếu chọn, bạn có thể cần đăng nhập lại khi access token hiện tại
                 hết hạn.
               </small>
@@ -109,7 +109,7 @@ export function ChangePasswordPage() {
           <button
             disabled={!current || !valid || actions.changePassword.isPending}
             onClick={submit}
-            className="w-full rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40"
+            className="w-full rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white disabled:opacity-40"
           >
             {actions.changePassword.isPending
               ? "Đang cập nhật..."
@@ -117,7 +117,7 @@ export function ChangePasswordPage() {
           </button>
           <Link
             href="/forgot-password"
-            className="block text-center text-sm font-bold text-blue-700"
+            className="block text-center text-sm font-bold text-link"
           >
             Không nhớ mật khẩu hiện tại?
           </Link>

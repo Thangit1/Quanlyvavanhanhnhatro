@@ -19,7 +19,7 @@ public final class AdminTenantResponses {
                             String residenceRole, String status, String contractCode, LocalDate contractEndDate,
                             LocalDate moveInDate, BigDecimal outstandingDebt, String financialStatus,
                             String temporaryResidenceStatus,
-                            boolean hasAccount, String accountStatus) {}
+                            boolean hasAccount, String accountStatus,Long propertyId,Long roomId,Long contractId,String profileStatus) {}
     public record Page<T>(List<T> items, int page, int size, long totalElements, int totalPages) {}
     public record TenantList(List<PropertyOption> properties, List<RoomOption> rooms,
                              Summary summary, Page<TenantRow> page) {}
@@ -67,6 +67,6 @@ public final class AdminTenantResponses {
                                List<UtilityItem> utilityReadings, List<CoResidentItem> coResidents,
                                List<MaintenanceItem> maintenanceRequests,
                                List<TemporaryResidenceItem> temporaryResidences,
-                               List<DocumentItem> documents, List<ActivityItem> activities) {}
+                               List<DocumentItem> documents, List<ActivityItem> activities,Long managementPropertyId,long version,String profileStatus,boolean identityVerified,boolean canReadFinance) {}
     public record CreatedTenant(Long id, String tenantCode) {}
 }

@@ -74,7 +74,7 @@ export function TechnicianTaskDetail({ id }: { id: number }) {
       actions={
         <Link
           href="/technician/tasks"
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold"
+          className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold"
         >
           <ArrowLeft className="size-4" />
           Danh sách
@@ -82,7 +82,7 @@ export function TechnicianTaskDetail({ id }: { id: number }) {
       }
     >
       {d.safetyRisk && (
-        <div className="flex gap-3 rounded-2xl border border-red-300 bg-red-50 p-4 text-red-800">
+        <div className="flex gap-3 rounded-2xl border border-danger-border bg-danger-muted p-4 text-danger">
           <AlertTriangle className="size-6 shrink-0" />
           <div>
             <p className="font-bold">Cảnh báo rủi ro an toàn</p>
@@ -93,11 +93,11 @@ export function TechnicianTaskDetail({ id }: { id: number }) {
           </div>
         </div>
       )}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="surface-card p-4 ">
         <div className="flex flex-wrap items-center gap-2">
           <PriorityBadge priority={d.task.priority} />
           <StatusBadge status={d.task.status} />
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-muted-foreground">
             Tiến độ {d.task.progressPercent}%
           </span>
         </div>
@@ -107,24 +107,24 @@ export function TechnicianTaskDetail({ id }: { id: number }) {
         {error && (
           <p
             role="alert"
-            className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700"
+            className="mt-3 rounded-xl bg-danger-muted p-3 text-sm text-danger"
           >
             {error}
           </p>
         )}
         {notice && (
-          <p className="mt-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">
+          <p className="mt-3 rounded-xl bg-success-muted p-3 text-sm text-success">
             {notice}
           </p>
         )}
       </section>
       <div className="overflow-x-auto">
-        <div className="flex min-w-max gap-1 rounded-xl bg-slate-100 p-1">
+        <div className="flex min-w-max gap-1 rounded-xl bg-muted p-1">
           {tabs.map((x) => (
             <button
               key={x}
               onClick={() => setTab(x)}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === x ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === x ? "bg-card text-link shadow-card" : "text-muted-foreground"}`}
             >
               {x}
             </button>
@@ -275,7 +275,7 @@ function Button({
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold disabled:opacity-50 ${secondary ? "border border-slate-200 bg-white text-slate-700" : "bg-blue-600 text-white"}`}
+      className={`flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold disabled:opacity-50 ${secondary ? "border border-border bg-card text-secondary-foreground" : "bg-primary hover:bg-primary-hover text-white"}`}
     >
       <Icon className="size-4" />
       {label}
@@ -286,20 +286,20 @@ function Button({
 function Overview({ d }: { d: TaskDetail }) {
   return (
     <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
-      <section className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5">
+      <section className="space-y-5 surface-card p-5 sm:p-6">
         <Block title="Nội dung sự cố">
-          <p className="whitespace-pre-wrap text-sm text-slate-700">
+          <p className="whitespace-pre-wrap text-sm text-secondary-foreground">
             {d.description}
           </p>
         </Block>
         <Block title="Địa điểm">
           <p className="flex gap-2 text-sm">
-            <MapPin className="size-4 text-blue-600" />
+            <MapPin className="size-4 text-link" />
             {d.task.property.name}
             {d.task.room ? ` · ${d.task.room.name}` : ""}
           </p>
           {d.task.asset && (
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-secondary-foreground">
               Thiết bị: {d.task.asset.code} · {d.task.asset.name}
             </p>
           )}
@@ -309,7 +309,7 @@ function Overview({ d }: { d: TaskDetail }) {
             {formatDate(d.schedule?.start ?? d.task.scheduledStart)}
           </p>
           {d.schedule && (
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               Dự kiến {d.schedule.durationMinutes} phút ·{" "}
               {d.schedule.tenantPresenceRequired
                 ? "Cần người thuê có mặt"
@@ -319,7 +319,7 @@ function Overview({ d }: { d: TaskDetail }) {
         </Block>
       </section>
       <aside className="space-y-5">
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="font-bold">Liên hệ cần thiết</h2>
           <p className="mt-3 text-sm font-semibold">
             {d.tenantContact?.fullName ?? "Chưa có"}
@@ -327,25 +327,25 @@ function Overview({ d }: { d: TaskDetail }) {
           {d.tenantContact?.phone && (
             <a
               href={`tel:${d.tenantContact.phone}`}
-              className="mt-2 flex items-center gap-2 text-sm font-semibold text-blue-700"
+              className="mt-2 flex items-center gap-2 text-sm font-semibold text-link"
             >
               <Phone className="size-4" />
               {d.tenantContact.phone}
             </a>
           )}
-          <p className="mt-3 text-xs text-slate-500">
+          <p className="mt-3 text-xs text-muted-foreground">
             {d.tenantContact?.availableTime ?? "Chưa cung cấp khung giờ"}
           </p>
           {d.tenantContact?.accessNote && (
-            <p className="mt-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
+            <p className="mt-2 rounded-lg bg-warning-muted p-2 text-xs text-warning">
               {d.tenantContact.accessNote}
             </p>
           )}
         </section>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="font-bold">SLA</h2>
           <p
-            className={`mt-2 text-sm font-semibold ${d.task.overdue ? "text-red-600" : "text-slate-700"}`}
+            className={`mt-2 text-sm font-semibold ${d.task.overdue ? "text-danger" : "text-secondary-foreground"}`}
           >
             {formatDate(d.task.slaDueAt)}
           </p>
@@ -397,10 +397,10 @@ function DiagnosisLogs({
     <div className="grid gap-5 xl:grid-cols-2">
       <form
         onSubmit={submitDiagnosis}
-        className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+        className="space-y-3 rounded-2xl border border-border bg-card p-5"
       >
         <h2 className="flex items-center gap-2 font-bold">
-          <Stethoscope className="size-5 text-blue-600" />
+          <Stethoscope className="size-5 text-link" />
           Chẩn đoán kỹ thuật
         </h2>
         <Area
@@ -474,7 +474,7 @@ function DiagnosisLogs({
       <div className="space-y-5">
         <form
           onSubmit={submitLog}
-          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
         >
           <h2 className="font-bold">Thêm nhật ký công việc</h2>
           <Area name="description" label="Nội dung đã thực hiện" required />
@@ -505,20 +505,20 @@ function DiagnosisLogs({
           </div>
           <Submit label="Ghi nhật ký" />
         </form>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="font-bold">Nhật ký gần đây</h2>
           <div className="mt-4 space-y-3">
             {d.workLogs.map((x) => (
-              <div key={x.id} className="border-l-2 border-blue-200 pl-3">
+              <div key={x.id} className="border-l-2 border-accent-border pl-3">
                 <p className="text-sm font-semibold">{x.description}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {formatDate(x.createdAt)} · {x.progressPercent}% ·{" "}
                   {x.durationMinutes} phút
                 </p>
               </div>
             ))}
             {!d.workLogs.length && (
-              <p className="text-sm text-slate-500">Chưa có nhật ký.</p>
+              <p className="text-sm text-muted-foreground">Chưa có nhật ký.</p>
             )}
           </div>
         </section>
@@ -576,9 +576,9 @@ function ChecklistFiles({
   };
   return (
     <div className="grid gap-5 xl:grid-cols-2">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+      <section className="surface-card p-5 sm:p-6">
         <h2 className="flex items-center gap-2 font-bold">
-          <ClipboardCheck className="size-5 text-blue-600" />
+          <ClipboardCheck className="size-5 text-link" />
           Checklist bắt buộc
         </h2>
         <div className="mt-4 space-y-3">
@@ -589,7 +589,7 @@ function ChecklistFiles({
             >
               <p className="flex-1 text-sm font-medium">
                 {x.label}
-                {x.required && <span className="text-red-500"> *</span>}
+                {x.required && <span className="text-danger"> *</span>}
               </p>
               <select
                 value={x.result ?? ""}
@@ -608,10 +608,10 @@ function ChecklistFiles({
       <section className="space-y-5">
         <form
           onSubmit={up}
-          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
         >
           <h2 className="flex items-center gap-2 font-bold">
-            <Camera className="size-5 text-blue-600" />
+            <Camera className="size-5 text-link" />
             Ảnh hiện trường và kết quả
           </h2>
           <select
@@ -635,28 +635,28 @@ function ChecklistFiles({
             required
             className="block w-full text-sm"
           />
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             JPEG, PNG hoặc WebP; tối đa 10 MB. Backend kiểm tra chữ ký tệp thực
             tế.
           </p>
           <Submit label="Tải ảnh lên" icon={Upload} />
         </form>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="font-bold">Tệp đã tải</h2>
           <div className="mt-3 space-y-2">
             {d.attachments.map((x) => (
               <div
                 key={x.id}
-                className="flex items-center justify-between rounded-lg bg-slate-50 p-3 text-sm"
+                className="flex items-center justify-between rounded-lg bg-muted p-3 text-sm"
               >
                 <span className="min-w-0 truncate">{x.name}</span>
-                <span className="ml-3 text-xs font-semibold text-blue-700">
+                <span className="ml-3 text-xs font-semibold text-link">
                   {x.type}
                 </span>
               </div>
             ))}
             {!d.attachments.length && (
-              <p className="text-sm text-slate-500">Chưa có tệp.</p>
+              <p className="text-sm text-muted-foreground">Chưa có tệp.</p>
             )}
           </div>
         </section>
@@ -714,10 +714,10 @@ function MaterialsCosts({
       <div className="space-y-5">
         <form
           onSubmit={material}
-          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
         >
           <h2 className="flex items-center gap-2 font-bold">
-            <PackagePlus className="size-5 text-blue-600" />
+            <PackagePlus className="size-5 text-link" />
             Yêu cầu vật tư
           </h2>
           <Input name="name" label="Tên vật tư" required />
@@ -745,7 +745,7 @@ function MaterialsCosts({
           </label>
           <Submit label="Gửi yêu cầu" />
         </form>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="font-bold">Vật tư đã sử dụng</h2>
           {d.materials.map((x) => (
             <p key={x.id} className="mt-3 flex justify-between text-sm">
@@ -756,14 +756,14 @@ function MaterialsCosts({
             </p>
           ))}
           {!d.materials.length && (
-            <p className="mt-3 text-sm text-slate-500">Chưa ghi nhận vật tư.</p>
+            <p className="mt-3 text-sm text-muted-foreground">Chưa ghi nhận vật tư.</p>
           )}
         </section>
       </div>
       <div className="space-y-5">
         <form
           onSubmit={cost}
-          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
         >
           <h2 className="font-bold">Đề xuất chi phí</h2>
           <label className="block text-sm font-medium">
@@ -813,15 +813,15 @@ function MaterialsCosts({
         {d.costs.map((x) => (
           <section
             key={x.id}
-            className="rounded-2xl border border-slate-200 bg-white p-5"
+            className="surface-card p-5 sm:p-6"
           >
             <div className="flex justify-between">
               <h2 className="font-bold">{formatMoney(x.totalCost)}</h2>
-              <span className="text-xs font-semibold text-amber-700">
+              <span className="text-xs font-semibold text-warning">
                 {x.approvalStatus}
               </span>
             </div>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               {x.responsibility} · Kỹ thuật viên không thể tự phê duyệt
             </p>
           </section>
@@ -869,10 +869,10 @@ function MessagesHistory({
       <div className="space-y-5">
         <form
           onSubmit={send}
-          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
         >
           <h2 className="flex items-center gap-2 font-bold">
-            <MessageSquare className="size-5 text-blue-600" />
+            <MessageSquare className="size-5 text-link" />
             Trao đổi công việc
           </h2>
           <Area name="content" label="Nội dung" required />
@@ -882,22 +882,22 @@ function MessagesHistory({
           </label>
           <Submit label="Gửi tin nhắn" icon={Send} />
         </form>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <div className="space-y-3">
             {d.messages.map((x) => (
               <div
                 key={x.id}
-                className={`rounded-xl p-3 text-sm ${x.internal ? "bg-amber-50" : "bg-slate-50"}`}
+                className={`rounded-xl p-3 text-sm ${x.internal ? "bg-warning-muted" : "bg-muted"}`}
               >
                 <p>{x.content}</p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {x.senderName} · {x.internal ? "Nội bộ" : "Công khai"} ·{" "}
                   {formatDate(x.createdAt)}
                 </p>
               </div>
             ))}
             {!d.messages.length && (
-              <p className="text-sm text-slate-500">Chưa có trao đổi.</p>
+              <p className="text-sm text-muted-foreground">Chưa có trao đổi.</p>
             )}
           </div>
         </section>
@@ -906,10 +906,10 @@ function MessagesHistory({
         {d.permissions.canComplete && (
           <form
             onSubmit={complete}
-            className="space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5"
+            className="space-y-3 rounded-2xl border border-success-border bg-success-muted p-5"
           >
             <h2 className="font-bold text-emerald-900">Báo hoàn thành</h2>
-            <p className="text-xs text-emerald-800">
+            <p className="text-xs text-success">
               Cần chẩn đoán, nhật ký, checklist bắt buộc và ảnh sau xử lý. Kết
               quả sẽ chuyển sang chờ nghiệm thu.
             </p>
@@ -935,13 +935,13 @@ function MessagesHistory({
             <Submit label="Báo hoàn thành" icon={CheckCircle2} />
           </form>
         )}
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="font-bold">Lịch sử công khai</h2>
           <div className="mt-4 space-y-3">
             {d.history.map((x) => (
-              <div key={x.id} className="border-l-2 border-slate-200 pl-3">
+              <div key={x.id} className="border-l-2 border-border pl-3">
                 <p className="text-sm font-medium">{x.description}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {formatDate(x.createdAt)} · {x.newStatus}
                 </p>
               </div>
@@ -999,7 +999,7 @@ function Area({
         defaultValue={defaultValue ?? ""}
         required={required}
         rows={3}
-        className="mt-1 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-blue-500"
+        className="mt-1 w-full rounded-xl border border-input p-3 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring"
       />
     </label>
   );
@@ -1028,7 +1028,7 @@ function Input({
         step={type === "number" && name === "quantity" ? "0.001" : undefined}
         defaultValue={defaultValue}
         required={required}
-        className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 px-3 outline-none focus:border-blue-500"
+        className="mt-1 min-h-11 w-full rounded-xl border border-border px-3 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring"
       />
     </label>
   );
@@ -1041,7 +1041,7 @@ function Submit({
   icon?: typeof Save;
 }) {
   return (
-    <button className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white">
+    <button className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 text-sm font-semibold text-white">
       <Icon className="size-4" />
       {label}
     </button>

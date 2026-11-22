@@ -1,4 +1,4 @@
-import { NotificationsPage } from "@/components/technician/technician-resource-pages";
+import { CommunicationWorkspace } from "@/components/shared/communication-workspace";
 export default function Page() {
-  return <NotificationsPage />;
+  return <CommunicationWorkspace />;
 }

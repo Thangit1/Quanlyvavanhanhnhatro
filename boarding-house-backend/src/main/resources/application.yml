@@ -12,7 +12,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 10MB
-      max-request-size: 32MB
+      max-request-size: 55MB
   jpa:
     open-in-view: false
     hibernate:
@@ -49,6 +49,9 @@ springdoc:
     path: /swagger-ui.html
 
 app:
+  frontend-url: ${FRONTEND_PUBLIC_URL:http://localhost:3000}
+  media:
+    property-root: ${PROPERTY_IMAGE_ROOT:${user.home}/.smarthome/property-images}
   onboarding:
     max-keys-cards: ${HANDOVER_MAX_KEYS_CARDS:20}
   security:

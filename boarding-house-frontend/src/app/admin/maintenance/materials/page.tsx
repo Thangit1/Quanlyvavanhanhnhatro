@@ -1,4 +1,4 @@
-import { MaterialsPage } from "@/components/admin/maintenance/maintenance-resource-pages";
+import { OperationsWorkspace } from "@/components/admin/maintenance/operations-workspace";
 export default function Page() {
-  return <MaterialsPage />;
+  return <OperationsWorkspace initialTab="materials" />;
 }

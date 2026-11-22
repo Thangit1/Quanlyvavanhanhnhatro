@@ -1,0 +1,130 @@
+{
+  "generatedAtUtc": "2026-11-17T20:59:51.752Z",
+  "timezone": "Asia/Bangkok",
+  "workingBranch": "feature/improve-business-logic",
+  "backend": {
+    "tests": 291,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suiteCount": 16,
+    "finalRegressionExitCode": 0,
+    "lastTargetedExitCode": 0
+  },
+  "node": {
+    "tests": 33,
+    "passed": 33,
+    "failed": 0
+  },
+  "browser": {
+    "passed": 15,
+    "cases": [
+      "assets-real-api-query-and-table",
+      "asset-history-links-original-handover-contract",
+      "create-asset-persists-and-reloads-server-query",
+      "failed-save-shows-error-without-success-or-fake-row",
+      "stock-receipt-has-idempotency-key-and-real-quantity",
+      "material-review-preserves-source-version-and-decision",
+      "maintenance-cost-separates-proposed-recorded-and-paid",
+      "rapid-property-switch-never-restores-old-house",
+      "empty-state-retains-filters",
+      "read-failure-hides-old-data-and-offers-retry",
+      "desktop-mobile-no-page-overflow",
+      "manager-redacts-money-and-hides-cost-approval",
+      "staff-list-is-separated-from-tenants-and-shows-company",
+      "settings-shows-scope-and-canonical-editors",
+      "ai-configuration-test-does-not-claim-live-model-connection"
+    ],
+    "liveApiWrites": 0
+  },
+  "frontend": {
+    "lint": "PASS",
+    "warnings": 0,
+    "typescript": "PASS",
+    "productionBuild": "PASS"
+  },
+  "gitDiffCheck": "PASS",
+  "migration": {
+    "newVersion": 39,
+    "previousVersion": 38,
+    "applicationDatabaseApplied": false,
+    "privateMysqlPort": 3317,
+    "schemasRetained": [
+      "prompt07_test_86a94dac9e214379b835aee5085f2f59",
+      "direct_accounts_test_f3173678e076414eaf20a4ea244777f5",
+      "prompt10_finance_test_f67b83bdb54c4078a862baff98299fe8",
+      "prompt10_finance_test_92aa23a0ae394939810e707c6960b734",
+      "operations_workspace_test_d0ac9333d16843bbb708968977188c6d",
+      "organization_test_edbafb06d4724830aad92f1ce2c0b580",
+      "accounts_test_3c420212b4f842928de62b528aa13804",
+      "prompt09_security_test_1c8707deacaa46c5b66efcc1fe106d4f",
+      "operations_workspace_test_2a7f5bd393dd4ad18071a7950912b0ba"
+    ]
+  },
+  "committed": false,
+  "pushed": false,
+  "merged": false,
+  "notRun": [
+    "Live application UAT on backend 8080 after V39 deployment",
+    "External AI model/email/SMS/Zalo delivery",
+    "Production load and large-data benchmark",
+    "Every Prompt 01–07 workflow as manual UAT"
+  ],
+  "knownFeatureLimits": [
+    "Owner-scoped common settings; no full multi-level policy inheritance",
+    "Room-bound assets; no shared asset transfer pool or depreciation",
+    "Historical maintenance costs without expense link are not backfilled"
+  ],
+  "sourceSha256": {
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/config/SecurityConfig.java": "97cb33806ba005115d1777dbc23c0f1831e79d72ac1c1e651c02d8d7518592df",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/AdminMaintenanceController.java": "35bfd1360176cc5960c4b04817e5f8f819bd20cfdcc89f7616de32108b5ffb03",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/OperationsWorkspaceController.java": "fd2893e21038b6fc6e5d16f25ed435442e40f6cdfbc52f683e8df8951c2ce7e5",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/OwnerAccountsController.java": "3e22320692a088889d074839b5b431c72846e5519d653bcb8d47ddeaef1b1003",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/AdminMaintenanceRepository.java": "bc9c00cbe6f89401bc5483730ce74e163b081b17b229363d0aeed6d49ea353dd",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/AdminPropertyRepository.java": "34272efa92607bcfda01a841400b855cddc1fbfaa5fa846df93b907dcbfe9eb3",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/TechnicianPortalRepository.java": "3b4e9754efc5c956e4780b2d13ed0f4684e715d1339201bde75607c63a6dc257",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/TenantMaintenanceRepository.java": "efe07b56c23ddf9e2baa855f86a1ca1f2f6ca6186965efc4070ca9478fe4cd50",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/AdminMaintenanceService.java": "9a5e9163aececffb9abd1513f023c4d8975ecb4743eb07ef29dcac0673cff39b",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/MaintenanceInventory.java": "49e8d3a2266642ab0ec428f3f154095ff3c66c6a3f2f3388bc01f27c502eef35",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/ManagementReportService.java": "aea3f0edd966053c7a331acebf8879c18424586520edfaaf3a037155f24e15df",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/OperationsWorkspaceService.java": "2dbf95631edc82bb27a22e962aa3a6998350b4d129d085530b220d075aead01a",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/OwnerAccountsService.java": "49b6e832ecec909c9a4b8ebaf0b764bba9a5476d73e434960e5fabcaafb13bfd",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/AdminMaintenanceServiceImpl.java": "73177992ff5d6e6e85c406b1e59d82dea4dcc87b8401e7d1e7aa20711bc148b6",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/AdminSettingServiceImpl.java": "719496e830d51d9d9db20796bc1db4ecf608a6563199b4d8311808a7991aaa57",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/TechnicianPortalServiceImpl.java": "ae04a2229f2bf2feb257f577cce335a949ec513428d0548b47afffa83feade78",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/TenantMaintenanceServiceImpl.java": "1039fa1083c23ab0fc174a1a37af2e672a9a9de331ca6bd7221790236994346f",
+    "boarding-house-backend/src/main/resources/db/migration/V39__Track_assets_and_maintenance_sources.sql": "1ec28bca88a231993ecd258db5c4e2062f1c48a2c3e6f07b2ef49fda7731c611",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/controller/OperationsWorkspaceControllerTest.java": "f8c492604a5ed096beeefb8468b2fa9ae9eef18eba6a999fbeb5189925c81e4f",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/AdminSettingServiceImplTest.java": "6862fdbe565cfaa5254b9f7358ec7882b777265d7b703eb591fdf297a33f0c11",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/OperationsWorkspaceMysqlTest.java": "d761a200e3d006f586a9852647a86acb8a38450a103895979a0f6aa204cef18f",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/SecurityMysqlIntegrationTest.java": "ca89f83b298ba12bf496cb338641726b64a22e40081e5d5ac040c2ba76248ec0",
+    "boarding-house-frontend/scripts/operations-browser.test.cjs": "d6d2028111e467aba08b9b79ec4bc351eefe8365f5e60a8c7d988f3d277a5eac",
+    "boarding-house-frontend/src/app/admin/finance/vouchers/page.tsx": "82184827d37a4daef52c436e68854f651703084385e50d013e385cf537ed10a8",
+    "boarding-house-frontend/src/app/admin/maintenance/assets/page.tsx": "304265723d94eedd7be39d4da6394c5598f2bc5f590b80ba2e07dcc4a4251656",
+    "boarding-house-frontend/src/app/admin/maintenance/materials/page.tsx": "80ee65ce27dfd072cb23bf139d945c5fac27462a6b1fb949a9a9a41ff28b980f",
+    "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx": "4eadadd9eb630d58325ebd02e563cb84f9dc7dacb4a410a23ac3017e80ad55bf",
+    "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx": "bee62578a76378dcad06e6956b82bc05c655bd6af718f073f45150d3f751b25f",
+    "boarding-house-frontend/src/components/admin/maintenance/maintenance-evidence.tsx": "69aa24d8f3d9b74c68b108b65630d05acba0f69cafd87d2ad90b7f12f573d577",
+    "boarding-house-frontend/src/components/admin/maintenance/maintenance-form-page.tsx": "00603e40a2c9f21f8102ebd572ac9af33a831d02e70b35ee18632f77c77a8a60",
+    "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx": "e441c3e9c0436e0bd062ad07b6357251640e9d295cc5a9c40bd706f95614aa09",
+    "boarding-house-frontend/src/components/admin/maintenance/maintenance-resource-pages.tsx": "d19d22444781a47c0bad90a0442ac91a456462faab96aa45a90f7c0b62ea26bf",
+    "boarding-house-frontend/src/components/admin/maintenance/maintenance-styles.ts": "104c8e4616ea4321d4321d79a2e0a58e72e2d02e4f52fd9670a89b2e1b36197c",
+    "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx": "b62a4e510756f5b52db75a83f18f7a63984bdc77c5573f65ad1ea0001a7a7da3",
+    "boarding-house-frontend/src/components/admin/settings/settings-page.tsx": "adb356d2e3e82881d7c765211bb666122f89bf216121e35294ed4160454addaf",
+    "boarding-house-frontend/src/components/shared/finance-workspace.tsx": "5b5ae2744fff50f0e59b9a1455532ab401e78efca6ea1758cfd5116b2c83fed5",
+    "boarding-house-frontend/src/hooks/use-admin-maintenance.ts": "624d25063ce4511264b10d3ad1cd0413f3edc9807ab88090dbb86240eb6a0b9f",
+    "boarding-house-frontend/src/hooks/use-technician.ts": "47669b510d0c5c41620cd7dd170464c7c124a342ed344c8cf1e0d2db0704fce0",
+    "boarding-house-frontend/src/hooks/use-tenant-maintenance.ts": "4da0b3fa485ca26ab421c3e81b6745ca5996bce38f4d9f3924027ec7c88593c8",
+    "boarding-house-frontend/src/services/admin-maintenance.service.ts": "a8f88dfa9d6051459e54f016c74c97b92b8bcd54a056f733e442bbdec7e5dc2f",
+    "boarding-house-frontend/src/services/owner-accounts.service.ts": "78aea4073e52d1cf30730a818ce4f8986250cec9db5eeadfd33ee2e0128e01c1"
+  },
+  "logs": {
+    "backend": "D:/DATN/operations-regression-final.log",
+    "lastTargeted": "D:/DATN/operations-last-targeted.log",
+    "browser": "D:/DATN/operations-browser.log",
+    "node": "D:/DATN/operations-node.log",
+    "lint": "D:/DATN/operations-lint.log",
+    "typescript": "D:/DATN/operations-tsc.log",
+    "build": "D:/DATN/operations-build.log"
+  }
+}

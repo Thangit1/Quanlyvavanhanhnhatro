@@ -19,13 +19,13 @@ import {
   type OrganizationRelationship,
 } from "@/services/organization.service";
 
-const input = "w-full rounded-xl border border-slate-300 bg-white p-3 text-sm";
+const input = "w-full rounded-xl border border-input bg-card p-3 text-sm";
 const button =
-  "rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50";
-const panel = "space-y-4 rounded-2xl border border-slate-200 bg-white p-5";
+  "rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white disabled:opacity-50";
+const panel = "space-y-4 rounded-2xl border border-border bg-card p-5";
 function Field({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <label className="block space-y-1 text-sm font-medium text-slate-700">
+    <label className="block space-y-1 text-sm font-medium text-secondary-foreground">
       <span>{title}</span>
       {children}
     </label>
@@ -201,35 +201,35 @@ export function OrganizationManagementPage() {
       ) : (
         <div className="space-y-6">
           {error && (
-            <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">
+            <p role="alert" className="rounded-xl bg-danger-muted p-4 text-danger">
               {error}
             </p>
           )}
           {notice && (
             <p
               role="status"
-              className="rounded-xl bg-emerald-50 p-4 text-emerald-700"
+              className="rounded-xl bg-success-muted p-4 text-success"
             >
               {notice}
             </p>
           )}
           <header className={panel}>
-            <h1 className="text-2xl font-extrabold text-slate-950">
+            <h1 className="text-2xl font-extrabold text-foreground">
               Khu vực & Phân công
             </h1>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               Quản lý nhà trọ theo nhóm vận hành và phân công nhân sự. Không bắt
               buộc tạo khu vực.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                className="text-sm font-semibold text-blue-600"
+                className="text-sm font-semibold text-link"
                 href="/admin/accounts"
               >
                 Trung tâm Tài khoản & Nhân sự
               </Link>
               <Link
-                className="text-sm font-semibold text-blue-600"
+                className="text-sm font-semibold text-link"
                 href="/admin/settings/organization"
               >
                 Thông tin chủ sở hữu / Tổ chức
@@ -239,7 +239,7 @@ export function OrganizationManagementPage() {
           {list.isSuccess && !list.data.length && (
             <section className={panel}>
               <h2 className="font-bold">Thiết lập khu vực lần đầu</h2>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Bạn có thể quản lý nhà trọ trực tiếp tại Nhà và phòng. Khi cần
                 phân khu vực, thiết lập không gian cá nhân một lần; không cần
                 khai báo công ty.
@@ -309,7 +309,7 @@ export function OrganizationManagementPage() {
                     className={
                       tab === key
                         ? button
-                        : "rounded-xl border border-slate-300 px-4 py-2 text-sm"
+                        : "rounded-xl border border-input px-4 py-2 text-sm"
                     }
                   >
                     {label}
@@ -342,14 +342,14 @@ export function OrganizationManagementPage() {
                       ],
                     ].map(([label, count]) => (
                       <div key={label} className={panel}>
-                        <p className="text-sm text-slate-500">{label}</p>
+                        <p className="text-sm text-muted-foreground">{label}</p>
                         <p className="text-3xl font-bold">{count}</p>
                       </div>
                     ))}
                   </div>
                   <section className={panel}>
                     <h2 className="font-bold">Gán nhà trọ vào khu vực</h2>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-muted-foreground">
                       Chọn nhà trọ thuộc quyền quản trị của bạn. Có thể để trống
                       khu vực để quản lý trực tiếp. Việc phân nhóm không thay
                       đổi quyền nhân sự hay thông tin chủ sở hữu.
@@ -424,7 +424,7 @@ export function OrganizationManagementPage() {
                   </section>
                   <section className={panel}>
                     <h2 className="font-bold">Nhà trọ chưa phân khu vực</h2>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-secondary-foreground">
                       {[
                         ...detail.data.availableProperties.map((p) => p.name),
                         ...detail.data.relationships
@@ -447,7 +447,7 @@ export function OrganizationManagementPage() {
                     <section className={panel} key={`${r.id}-${r.version}`}>
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <Link
-                          className="font-bold text-blue-700"
+                          className="font-bold text-link"
                           href={`/admin/properties/${r.property_id}`}
                         >
                           {r.property_name}
@@ -456,12 +456,12 @@ export function OrganizationManagementPage() {
                           status={r.ended_at ? "INACTIVE" : "ACTIVE"}
                         />
                       </div>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-secondary-foreground">
                         {r.area_name ?? "Quản lý trực tiếp"} · Thỏa thuận:{" "}
                         {r.agreement_reference} · Từ {r.effective_from}
                         {r.ended_at ? ` · Kết thúc ${r.ended_at}` : ""}
                       </p>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-secondary-foreground">
                         Quản lý:{" "}
                         {staffOptions.data?.managerAssignments
                           .filter((m) => m.property_id === r.property_id)
@@ -472,7 +472,7 @@ export function OrganizationManagementPage() {
                           .join(", ") || "Chưa phân công"}
                         .{" "}
                         <button
-                          className="font-semibold text-blue-600"
+                          className="font-semibold text-link"
                           onClick={() => setTab("assignments")}
                         >
                           Phân công / thu hồi
@@ -506,7 +506,7 @@ export function OrganizationManagementPage() {
                               <button
                                 type="submit"
                                 value="end"
-                                className="rounded-xl border border-red-200 px-4 py-2 text-sm text-red-700"
+                                className="rounded-xl border border-danger-border px-4 py-2 text-sm text-danger"
                               >
                                 Kết thúc phân nhóm
                               </button>
@@ -602,7 +602,7 @@ export function OrganizationManagementPage() {
                         <h3 className="font-bold">
                           {a.name} ({a.code})
                         </h3>
-                        <p className="mt-2 text-sm text-slate-600">
+                        <p className="mt-2 text-sm text-secondary-foreground">
                           {
                             detail.data.relationships.filter(
                               (r) => !r.ended_at && r.area_id === a.id,
@@ -617,14 +617,14 @@ export function OrganizationManagementPage() {
                             ),
                           ].join(", ") || "Chưa phân công"}
                         </p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-muted-foreground">
                           {a.description}
                         </p>
                       </div>
                       <StatusBadge status={a.status} />
                       <button
                         disabled={busy}
-                        className="text-sm font-semibold text-blue-700"
+                        className="text-sm font-semibold text-link"
                         onClick={() => setEditing(a)}
                       >
                         Chỉnh sửa
@@ -652,11 +652,11 @@ export function OrganizationManagementPage() {
                   {history.data?.map((row) => (
                     <article
                       key={row.id}
-                      className="space-y-1 border-b border-slate-100 pb-3 text-sm"
+                      className="space-y-1 border-b border-border pb-3 text-sm"
                     >
                       <p className="font-semibold">{row.action}</p>
-                      <p className="break-words text-slate-600">{row.reason}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="break-words text-secondary-foreground">{row.reason}</p>
+                      <p className="text-xs text-muted-foreground">
                         {row.occurred_at} · Người thực hiện #
                         {row.actor_id ?? "Hệ thống"}
                       </p>

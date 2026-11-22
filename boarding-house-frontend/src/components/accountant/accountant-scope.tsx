@@ -36,3 +36,6 @@ export function useAccountantScope() {
   if (!value) throw new Error("AccountantScopeProvider is required");
   return value;
 }
+export function useOptionalAccountantScope() {
+  return useContext(Context);
+}

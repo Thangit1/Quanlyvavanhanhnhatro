@@ -3,6 +3,7 @@ import { FormInput } from "@/components/ui/number-input";
 import { NumberInput } from "@/components/ui/number-input";
 
 import Link from "next/link";
+import { AccountModal } from "@/components/admin/accounts/account-ui";
 import { AccountingPeriodPanel } from "@/components/shared/accounting-period-panel";
 import {
   FinancialSummary,
@@ -251,7 +252,7 @@ export function AccountantDashboardPage() {
           <MiniRows rows={d.overdueInvoices} />
         </Panel>
       </div>
-      <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+      <div className="mt-6 rounded-2xl border border-warning-border bg-warning-muted p-4 text-sm text-amber-900">
         <b>Trợ lý AI:</b> {d.ai.reason}
       </div>
     </Main>
@@ -315,9 +316,9 @@ export function AccountantResourcePage({
         </>
       }
     >
-      <div className="mb-5 flex flex-wrap gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-5 flex flex-wrap gap-3 surface-card p-4 ">
         <label className="relative min-w-64 flex-1">
-          <Search className="absolute left-3 top-3 size-4 text-slate-400" />
+          <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
           <input
             value={keyword}
             onChange={(e) => {
@@ -325,7 +326,7 @@ export function AccountantResourcePage({
               setPage(0);
             }}
             placeholder="Tìm theo mã, phòng hoặc người thuê"
-            className="min-h-10 w-full rounded-xl border border-slate-200 pl-10 pr-3 text-sm outline-none focus:border-emerald-500"
+            className="min-h-10 w-full rounded-xl border border-input pl-10 pr-3 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-emerald-500"
           />
         </label>
         <select
@@ -334,7 +335,7 @@ export function AccountantResourcePage({
             setStatus(e.target.value);
             setPage(0);
           }}
-          className="min-h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm"
+          className="min-h-10 rounded-xl border border-input bg-card px-3 text-sm"
         >
           <option value="">Tất cả trạng thái</option>
           {[
@@ -357,7 +358,7 @@ export function AccountantResourcePage({
         </select>
         <button
           onClick={() => void query.refetch()}
-          className="rounded-xl border border-slate-200 px-3 hover:bg-slate-50"
+          className="rounded-xl border border-border px-3 hover:bg-muted"
           aria-label="Tải lại"
         >
           <RefreshCw
@@ -377,7 +378,7 @@ export function AccountantResourcePage({
       ) : (
         <DataTable resource={resource} rows={rows} />
       )}
-      <div className="mt-4 flex items-center justify-between text-sm text-slate-500">
+      <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
         <span>{total} bản ghi</span>
         <div className="flex gap-2">
           <button
@@ -496,7 +497,7 @@ export function AccountantDetailPage({ resource }: { resource: string }) {
                   const reason = prompt("Lý do từ chối");
                   if (reason) run("reject", { version: 0, reason });
                 }}
-                className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700"
+                className="rounded-xl border border-danger-border px-4 py-2 text-sm font-semibold text-danger"
               >
                 Từ chối
               </button>
@@ -509,14 +510,11 @@ export function AccountantDetailPage({ resource }: { resource: string }) {
         {Object.entries(data)
           .filter(([, v]) => typeof v !== "object")
           .map(([k, v]) => (
-            <div
-              key={k}
-              className="rounded-2xl border border-slate-200 bg-white p-4"
-            >
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <div key={k} className="surface-card p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {nice(k)}
               </p>
-              <p className="mt-2 break-words font-semibold text-slate-900">
+              <p className="mt-2 break-words font-semibold text-foreground">
                 {fmt(k, v)}
               </p>
             </div>
@@ -583,9 +581,9 @@ export function AccountantAccountPage() {
         <Panel title="Phạm vi được giao">
           <div className="space-y-3">
             {a.properties.map((p) => (
-              <div key={p.id} className="rounded-xl bg-slate-50 p-3">
+              <div key={p.id} className="rounded-xl bg-muted p-3">
                 <p className="font-semibold">{p.name}</p>
-                <p className="text-xs text-slate-500">{p.address}</p>
+                <p className="text-xs text-muted-foreground">{p.address}</p>
               </div>
             ))}
           </div>
@@ -596,9 +594,9 @@ export function AccountantAccountPage() {
 }
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-slate-100 pb-3">
-      <dt className="text-slate-500">{label}</dt>
-      <dd className="font-semibold text-slate-900">{value}</dd>
+    <div className="flex justify-between gap-4 border-b border-border pb-3">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="font-semibold text-foreground">{value}</dd>
     </div>
   );
 }
@@ -610,6 +608,7 @@ function DataTable({
   resource: AccountantResource;
   rows: Record<string, unknown>[];
 }) {
+  const [detail, setDetail] = useState<Record<string, unknown> | null>(null);
   const preferred = [
     "code",
     "invoice_code",
@@ -642,9 +641,9 @@ function DataTable({
           ? "payment-vouchers"
           : resource;
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-x-auto surface-card ">
       <table className="min-w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+        <thead className="bg-muted text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
             {keys.map((k) => (
               <th key={k} className="px-4 py-3">
@@ -654,13 +653,13 @@ function DataTable({
             <th className="px-4 py-3 text-right">Chi tiết</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-divider">
           {rows.map((row, i) => (
-            <tr key={String(row.id ?? i)} className="hover:bg-slate-50">
+            <tr key={String(row.id ?? i)} className="hover:bg-muted">
               {keys.map((k) => (
                 <td
                   key={k}
-                  className="whitespace-nowrap px-4 py-3 text-slate-700"
+                  className="whitespace-nowrap px-4 py-3 text-secondary-foreground"
                 >
                   {k === "status" ? (
                     <Status value={String(row[k])} />
@@ -680,19 +679,45 @@ function DataTable({
                     "reconciliation/bank",
                     "reconciliation/payment-gateways",
                     "periods",
-                  ].includes(resource) && (
+                  ].includes(resource) &&
+                  (resource === "other-income" ? (
+                    <button
+                      className="font-semibold text-success underline"
+                      onClick={() => setDetail(row)}
+                    >
+                      Xem
+                    </button>
+                  ) : (
                     <Link
-                      className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:underline"
-                      href={`/accountant/${base}/${row.id}`}
+                      className="inline-flex items-center gap-1 font-semibold text-success hover:underline"
+                      href={
+                        resource === "debts"
+                          ? `/accountant/debts/tenants/${row.tenant_id}`
+                          : `/accountant/${base}/${row.id}`
+                      }
                     >
                       Xem <ArrowRight className="size-3" />
                     </Link>
-                  )}
+                  ))}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {detail && (
+        <AccountModal title="Chứng từ thu khác" onClose={() => setDetail(null)}>
+          <dl className="space-y-3">
+            {Object.entries(detail)
+              .filter(([, v]) => v != null && typeof v !== "object")
+              .map(([key, v]) => (
+                <div key={key}>
+                  <dt className="text-sm text-muted-foreground">{nice(key)}</dt>
+                  <dd className="font-semibold">{fmt(key, v)}</dd>
+                </div>
+              ))}
+          </dl>
+        </AccountModal>
+      )}
     </div>
   );
 }
@@ -714,6 +739,18 @@ function CreateDialog({
     e.preventDefault();
     setError("");
     const f = new FormData(e.currentTarget);
+    if (
+      type === "payment" &&
+      f.get("method") === "BANK_TRANSFER" &&
+      !String(f.get("reference") ?? "").trim()
+    ) {
+      setError("Vui lòng nhập mã giao dịch ngân hàng đã đối chiếu.");
+      return;
+    }
+    if (type === "payment" && f.get("received") !== "on") {
+      setError("Cần xác nhận đã nhận và đối chiếu số tiền thực tế.");
+      return;
+    }
     const payload =
       type === "payment"
         ? {
@@ -759,14 +796,14 @@ function CreateDialog({
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4">
       <form
         onSubmit={submit}
-        className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"
+        className="w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl"
       >
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold">
               {type === "payment" ? "Ghi nhận thanh toán" : "Lập phiếu chi"}
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Kiểm tra kỹ trước khi lưu chứng từ.
             </p>
           </div>
@@ -792,7 +829,7 @@ function CreateDialog({
                   name="expenseId"
                   type="number"
                   min="1"
-                  className="rounded-xl border border-slate-200 px-3 py-2"
+                  className="rounded-xl border border-border px-3 py-2"
                 />
               </label>
             </>
@@ -809,7 +846,7 @@ function CreateDialog({
               <select
                 name="category"
                 required
-                className="rounded-xl border border-slate-200 px-3 py-2"
+                className="rounded-xl border border-input px-3 py-2"
               >
                 {Object.entries({
                   REPAIR: "Sửa chữa",
@@ -834,7 +871,7 @@ function CreateDialog({
             Phương thức
             <select
               name="method"
-              className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 px-3"
+              className="mt-1 min-h-11 w-full rounded-xl border border-input px-3"
             >
               <option value="BANK_TRANSFER">Chuyển khoản</option>
               <option value="CASH">Tiền mặt</option>
@@ -845,9 +882,21 @@ function CreateDialog({
           {type === "payment" && (
             <Field name="reference" label="Mã tham chiếu" required={false} />
           )}
+          {type === "payment" && (
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="received"
+                required
+                className="mt-1"
+              />
+              Tôi đã nhận và đối chiếu số tiền thực tế. Chuyển khoản cần mã giao
+              dịch ngân hàng.
+            </label>
+          )}
           <Field name="description" label="Nội dung" />
           {error && (
-            <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            <p className="rounded-xl bg-danger-muted p-3 text-sm text-danger">
               {error}
             </p>
           )}
@@ -887,7 +936,7 @@ function Field({
         min={
           type === "number" ? (name.endsWith("Id") ? "1" : "0.01") : undefined
         }
-        className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 px-3 outline-none focus:border-emerald-500"
+        className="mt-1 min-h-11 w-full rounded-xl border border-border px-3 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-emerald-500"
       />
     </label>
   );
@@ -907,13 +956,13 @@ function Main({
     <main className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-emerald-700">
+          <p className="text-sm font-medium text-success">
             Tài chính / Kế toán
           </p>
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-950">
+          <h1 className="mt-1 text-3xl font-black tracking-tight text-foreground">
             {title}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
         </div>
         {actions}
       </div>
@@ -928,7 +977,7 @@ function Primary({
   return (
     <button
       {...props}
-      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50"
+      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 text-sm font-bold text-white shadow-card hover:bg-primary-hover disabled:opacity-50"
     >
       {children}
     </button>
@@ -944,14 +993,14 @@ function Metric({
   icon: React.ElementType;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="surface-card p-5 sm:p-6 ">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{label}</p>
-        <span className="rounded-xl bg-emerald-50 p-2 text-emerald-700">
+        <p className="text-sm font-medium text-muted-foreground">{label}</p>
+        <span className="rounded-xl bg-success-muted p-2 text-success">
           <Icon className="size-5" />
         </span>
       </div>
-      <p className="mt-4 text-2xl font-black text-slate-950">{value}</p>
+      <p className="mt-4 text-2xl font-black text-foreground">{value}</p>
     </div>
   );
 }
@@ -963,8 +1012,8 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="font-bold text-slate-900">{title}</h2>
+    <section className="mt-6 surface-card p-5 sm:p-6 ">
+      <h2 className="font-bold text-foreground">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -972,19 +1021,19 @@ function Panel({
 function MiniRows({ rows }: { rows: Record<string, unknown>[] }) {
   if (!rows?.length)
     return (
-      <p className="py-8 text-center text-sm text-slate-400">
+      <p className="py-8 text-center text-sm text-muted-foreground">
         Chưa có dữ liệu.
       </p>
     );
   return (
-    <div className="divide-y divide-slate-100">
+    <div className="divide-y divide-divider">
       {rows.map((r, i) => (
         <div
           key={String(r.id ?? i)}
           className="flex items-center justify-between gap-3 py-3"
         >
           <div>
-            <p className="font-semibold text-slate-800">
+            <p className="font-semibold text-foreground">
               {String(
                 r.code ??
                   r.invoice_code ??
@@ -993,11 +1042,11 @@ function MiniRows({ rows }: { rows: Record<string, unknown>[] }) {
                   `#${r.id}`,
               )}
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               {String(r.tenant_name ?? r.room_code ?? r.description ?? "")}
             </p>
           </div>
-          <p className="font-bold text-slate-900">
+          <p className="font-bold text-foreground">
             {fmt("amount", r.amount ?? r.remaining_amount ?? "")}
           </p>
         </div>
@@ -1007,35 +1056,35 @@ function MiniRows({ rows }: { rows: Record<string, unknown>[] }) {
 }
 function Status({ value }: { value: string }) {
   return (
-    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+    <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-secondary-foreground">
       {statusText[value] ?? value}
     </span>
   );
 }
 function Loading() {
   return (
-    <div className="grid min-h-64 place-items-center text-sm text-slate-500">
-      <RefreshCw className="mb-2 size-6 animate-spin text-emerald-600" />
+    <div className="grid min-h-64 place-items-center text-sm text-muted-foreground">
+      <RefreshCw className="mb-2 size-6 animate-spin text-success" />
       Đang tải dữ liệu…
     </div>
   );
 }
 function Empty({ text }: { text: string }) {
   return (
-    <div className="grid min-h-64 place-items-center rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
+    <div className="grid min-h-64 place-items-center rounded-2xl border border-dashed border-input bg-card p-6 text-center">
       <div>
         <CheckCircle2 className="mx-auto size-10 text-slate-300" />
-        <p className="mt-3 text-sm text-slate-500">{text}</p>
+        <p className="mt-3 text-sm text-muted-foreground">{text}</p>
       </div>
     </div>
   );
 }
 function ErrorState({ retry, text }: { retry: () => void; text: string }) {
   return (
-    <div className="grid min-h-64 place-items-center rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+    <div className="grid min-h-64 place-items-center rounded-2xl border border-danger-border bg-danger-muted p-6 text-center">
       <div>
-        <AlertCircle className="mx-auto size-10 text-red-500" />
-        <p className="mt-3 font-semibold text-red-800">{text}</p>
+        <AlertCircle className="mx-auto size-10 text-danger" />
+        <p className="mt-3 font-semibold text-danger">{text}</p>
         <button
           onClick={retry}
           className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white"

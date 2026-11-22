@@ -72,6 +72,8 @@ export type DirectContractRequest = {
   submit: boolean;
 };
 export type DirectDraft = {
+  status?: string;
+  contentHash?: string;
   propertyId: number;
   tenant: TenantChoice;
   version: number;
@@ -93,6 +95,12 @@ export type CreationOptions = {
     unit_price: number;
   }[];
 };
+export type SubmissionResult = {
+  id: number;
+  status: string;
+  continuationCode?: string;
+  continuationMessage?: string;
+};
 export const directContractService = {
   async options(propertyId?: number, keyword?: string, signal?: AbortSignal) {
     return (
@@ -110,19 +118,41 @@ export const directContractService = {
       )
     ).data.data;
   },
+  async agreement(id: number, signal?: AbortSignal) {
+    return (
+      await apiClient.get<ApiEnvelope<DirectDraft>>(
+        `/admin/contracts/${id}/agreement`,
+        { signal },
+      )
+    ).data.data;
+  },
   async save(
     request: DirectContractRequest,
     key: string,
     draftId?: number,
     version?: number,
+    contentHash?: string,
+    agreement = false,
   ) {
+    if (agreement && draftId) {
+      await apiClient.put(`/admin/contract-onboarding/${draftId}/terms`, {
+        terms: request.terms,
+        reason: request.note || "Cập nhật nội dung theo thỏa thuận",
+        version,
+        contentHash,
+      });
+      return {
+        id: draftId,
+        status: "PENDING_CONFIRMATION",
+      } as SubmissionResult;
+    }
     const response = draftId
-      ? await apiClient.put<ApiEnvelope<{ id: number; status: string }>>(
+      ? await apiClient.put<ApiEnvelope<SubmissionResult>>(
           `/admin/contracts/${draftId}/draft`,
           request,
           { params: { version } },
         )
-      : await apiClient.post<ApiEnvelope<{ id: number; status: string }>>(
+      : await apiClient.post<ApiEnvelope<SubmissionResult>>(
           "/admin/contracts",
           request,
           { headers: { "Idempotency-Key": key } },
@@ -131,7 +161,7 @@ export const directContractService = {
   },
   async submit(id: number) {
     return (
-      await apiClient.post<ApiEnvelope<{ id: number; status: string }>>(
+      await apiClient.post<ApiEnvelope<SubmissionResult>>(
         `/admin/contracts/${id}/submit`,
       )
     ).data.data;

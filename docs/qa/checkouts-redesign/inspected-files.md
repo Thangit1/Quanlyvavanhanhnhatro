@@ -1,0 +1,39 @@
+# Files inspected
+
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/CheckoutWorkspaceController.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/CheckoutEvidenceController.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CheckoutWorkspaceService.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CheckoutEvidenceService.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CheckoutSettlementService.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/RentalLifecycleServiceImpl.java`
+- `boarding-house-backend/src/main/resources/db/migration/V40__Attach_private_checkout_evidence.sql`
+- `boarding-house-backend/src/test/java/com/thangit/boardinghouse/controller/CheckoutWorkspaceControllerTest.java`
+- `boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/CheckoutWorkspaceMysqlTest.java`
+- `boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/CheckoutSettlementMysqlTest.java`
+- `boarding-house-frontend/src/app/admin/checkouts/page.tsx`
+- `boarding-house-frontend/src/app/accountant/checkouts/page.tsx`
+- `boarding-house-frontend/src/components/admin/admin-shell.tsx`
+- `boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx`
+- `boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx`
+- `boarding-house-frontend/src/components/shared/checkout-evidence-panel.tsx`
+- `boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx`
+- `boarding-house-frontend/src/app/globals.css`
+- `boarding-house-frontend/scripts/checkouts-browser.test.cjs`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/RoomLifecycleGuard.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/DepositLedgerService.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/MonthlyBillingService.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/RentalLifecycleRepository.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/CheckoutSettlementController.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/DepositLedgerController.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/config/SecurityConfig.java`
+- `boarding-house-backend/src/main/java/com/thangit/boardinghouse/security/PropertyAuthorization.java`
+- `boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx`
+- `boarding-house-frontend/src/components/admin/accounts/account-ui.tsx`
+- `boarding-house-frontend/src/hooks/use-scoped-query.ts`
+- `boarding-house-frontend/src/providers/management-scope.tsx`
+- `boarding-house-frontend/scripts/operations-browser.test.cjs`
+- `boarding-house-frontend/AGENTS.md`
+
+- `boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/SecurityMysqlIntegrationTest.java`
+- `boarding-house-frontend/src/components/accountant/accountant-shell.tsx`
+- `boarding-house-frontend/src/components/accountant/accountant-scope.tsx`

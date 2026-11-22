@@ -32,7 +32,13 @@ public final class AdminTenantRequests {
             Long roomId,
             Long contractId,
             LocalDate moveInDate,
-            @Size(max = 30) String residenceRole) {}
+            @Size(max = 30) String residenceRole,
+            Long version) {
+        public SaveTenant(String fullName,LocalDate dateOfBirth,String gender,String phone,String email,String permanentAddress,String hometown,String occupation,String workplace,String emergencyContactName,String emergencyContactPhone,String identityType,String identityNumber,LocalDate identityIssuedDate,String identityIssuedPlace,String note,Long propertyId,Long roomId,Long contractId,LocalDate moveInDate,String residenceRole){this(fullName,dateOfBirth,gender,phone,email,permanentAddress,hometown,occupation,workplace,emergencyContactName,emergencyContactPhone,identityType,identityNumber,identityIssuedDate,identityIssuedPlace,note,propertyId,roomId,contractId,moveInDate,residenceRole,null);}
+    }
+
+    public record AttachResidence(@NotNull Long propertyId,@NotNull Long roomId,Long contractId,@NotNull LocalDate moveInDate,
+            @NotBlank @Pattern(regexp="OCCUPANT|DEPENDENT") String residenceRole) {}
 
     public record TransferRoom(
             @NotNull Long toRoomId,

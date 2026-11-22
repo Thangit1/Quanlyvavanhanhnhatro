@@ -206,9 +206,9 @@ export function ReportDetailPage({ type }: { type: string }) {
       <div className="space-y-5">
         <header className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-sm text-slate-500">Báo cáo / {title}</p>
-            <h1 className="mt-1 text-3xl font-black text-slate-950">{title}</h1>
-            <p className="mt-2 text-sm text-slate-500">{description}</p>
+            <p className="text-sm text-muted-foreground">Báo cáo / {title}</p>
+            <h1 className="mt-1 text-3xl font-black text-foreground">{title}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{description}</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -248,7 +248,7 @@ export function ReportDetailPage({ type }: { type: string }) {
         {query.isError && <ReportError retry={() => void query.refetch()} />}
         {data && (
           <>
-            <p className="text-right text-xs text-slate-500">
+            <p className="text-right text-xs text-muted-foreground">
               Cập nhật lúc {formatDate(data.updatedAt, true)}
             </p>
             <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -299,7 +299,7 @@ export function ReportDetailPage({ type }: { type: string }) {
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <p className="py-20 text-center text-slate-500">
+                  <p className="py-20 text-center text-muted-foreground">
                     Chưa có dữ liệu xu hướng trong kỳ.
                   </p>
                 )}
@@ -338,7 +338,7 @@ export function ReportDetailPage({ type }: { type: string }) {
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <p className="py-20 text-center text-slate-500">
+                  <p className="py-20 text-center text-muted-foreground">
                     Chưa có dữ liệu phân bố trong kỳ.
                   </p>
                 )}
@@ -352,7 +352,7 @@ export function ReportDetailPage({ type }: { type: string }) {
                 <>
                   <div className="hidden overflow-x-auto md:block">
                     <table className="w-full min-w-[900px] text-sm">
-                      <thead className="bg-slate-50 text-left text-slate-500">
+                      <thead className="bg-muted text-left text-muted-foreground">
                         <tr>
                           {columns.map((c) => (
                             <th key={c} className="whitespace-nowrap px-3 py-3">
@@ -363,11 +363,11 @@ export function ReportDetailPage({ type }: { type: string }) {
                       </thead>
                       <tbody>
                         {data.details.map((row, i) => (
-                          <tr key={i} className="border-t border-slate-100">
+                          <tr key={i} className="border-t border-border">
                             {columns.map((c) => (
                               <td
                                 key={c}
-                                className="max-w-64 px-3 py-3 text-slate-700"
+                                className="max-w-64 px-3 py-3 text-secondary-foreground"
                               >
                                 {display(c, row[c])}
                               </td>
@@ -381,17 +381,17 @@ export function ReportDetailPage({ type }: { type: string }) {
                     {data.details.map((row, i) => (
                       <article
                         key={i}
-                        className="rounded-xl border border-slate-200 p-4"
+                        className="rounded-xl border border-border p-4"
                       >
                         {columns.slice(0, 6).map((c) => (
                           <div
                             key={c}
-                            className="flex justify-between gap-3 border-b border-slate-100 py-2 last:border-0"
+                            className="flex justify-between gap-3 border-b border-border py-2 last:border-0"
                           >
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs text-muted-foreground">
                               {human(c)}
                             </span>
-                            <span className="text-right text-sm font-medium text-slate-800">
+                            <span className="text-right text-sm font-medium text-foreground">
                               {display(c, row[c])}
                             </span>
                           </div>
@@ -401,7 +401,7 @@ export function ReportDetailPage({ type }: { type: string }) {
                   </div>
                 </>
               ) : (
-                <p className="py-12 text-center text-slate-500">
+                <p className="py-12 text-center text-muted-foreground">
                   Chưa có dữ liệu báo cáo trong khoảng thời gian này.
                 </p>
               )}

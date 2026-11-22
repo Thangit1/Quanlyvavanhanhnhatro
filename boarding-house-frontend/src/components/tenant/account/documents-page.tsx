@@ -72,17 +72,17 @@ export function DocumentsPage() {
       {message && (
         <p
           role="status"
-          className="rounded-xl bg-blue-50 p-3 font-semibold text-blue-800"
+          className="rounded-xl bg-accent p-3 font-semibold text-link"
         >
           {message}
         </p>
       )}
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="text-lg font-black">Hồ sơ tạm trú</h2>
-        <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-50 p-4">
+        <div className="mt-3 flex items-center justify-between rounded-xl bg-muted p-4">
           <div>
             <p className="font-bold">Trạng thái hiện tại</p>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Trạng thái chỉ được cập nhật sau khi quản lý xác nhận hồ sơ.
             </p>
           </div>
@@ -94,7 +94,7 @@ export function DocumentsPage() {
           </StatusPill>
         </div>
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="text-lg font-black">Bổ sung giấy tờ</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="text-sm font-bold">
@@ -170,7 +170,7 @@ export function DocumentsPage() {
         <button
           disabled={!file || actions.uploadDocument.isPending}
           onClick={upload}
-          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40"
+          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white disabled:opacity-40"
         >
           <Upload className="size-4" />
           {actions.uploadDocument.isPending ? "Đang tải lên..." : "Gửi giấy tờ"}
@@ -185,17 +185,17 @@ export function DocumentsPage() {
           {query.data.map((d) => (
             <article
               key={d.id}
-              className="rounded-2xl border bg-white p-5 shadow-sm"
+              className="surface-card p-5 sm:p-6 "
             >
               <div className="flex items-start gap-3">
-                <span className="grid size-11 place-items-center rounded-xl bg-blue-50 text-blue-700">
+                <span className="grid size-11 place-items-center rounded-xl bg-accent text-link">
                   <FileCheck2 />
                 </span>
                 <div className="min-w-0 flex-1">
                   <h2 className="font-black">
                     {label(documentLabels, d.documentType)}
                   </h2>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     {d.maskedNumber || "Số giấy tờ được bảo vệ"}
                   </p>
                 </div>
@@ -213,18 +213,18 @@ export function DocumentsPage() {
               </div>
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <dt className="text-slate-500">Tải lên</dt>
+                  <dt className="text-muted-foreground">Tải lên</dt>
                   <dd className="font-semibold">
                     {accountDate(d.uploadedAt, true)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500">Hết hạn</dt>
+                  <dt className="text-muted-foreground">Hết hạn</dt>
                   <dd className="font-semibold">{accountDate(d.expiresAt)}</dd>
                 </div>
               </dl>
               {d.publicNote && (
-                <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+                <p className="mt-3 rounded-lg bg-warning-muted p-3 text-sm text-warning">
                   {d.publicNote}
                 </p>
               )}

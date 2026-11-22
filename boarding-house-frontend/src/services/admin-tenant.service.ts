@@ -34,6 +34,18 @@ export const adminTenantService = {
     );
     return data.data;
   },
+  async attachResidence(
+    id: number,
+    payload: {
+      propertyId: number;
+      roomId: number;
+      contractId?: number;
+      moveInDate: string;
+      residenceRole: "OCCUPANT" | "DEPENDENT";
+    },
+  ) {
+    await apiClient.post(`/admin/tenants/${id}/residences`, payload);
+  },
   async transfer(
     id: number,
     payload: { toRoomId: number; transferDate: string; reason?: string },

@@ -30,10 +30,13 @@ public class AdminTenantController {
             @RequestParam(required = false) String accountStatus, @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String debtStatus, @RequestParam(required = false) String contractStatus,
             @RequestParam(defaultValue = "fullName") String sort, @RequestParam(defaultValue = "asc") String direction,
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required=false) Long organizationId,@RequestParam(required=false) Long areaId,
+            @RequestParam(required=false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate moveInFrom,
+            @RequestParam(required=false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate moveInTo) {
         return ApiResponse.success("Lấy danh sách người thuê thành công.",
                 service.list(principal, propertyId, roomId, status, temporaryStatus, accountStatus,
-                        keyword, debtStatus, contractStatus, sort, direction, page, size));
+                        keyword, debtStatus, contractStatus, sort, direction, page, size,organizationId,areaId,moveInFrom,moveInTo));
     }
 
     @GetMapping("/{tenantId}")
@@ -54,6 +57,9 @@ public class AdminTenantController {
             @PathVariable long tenantId, @Valid @RequestBody SaveTenant request) {
         return ApiResponse.success("Cập nhật người thuê thành công.", service.update(principal, tenantId, request));
     }
+
+    @PostMapping("/{tenantId}/residences")
+    public ApiResponse<Void> attachResidence(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long tenantId,@Valid @RequestBody AttachResidence r){service.attachResidence(p,tenantId,r);return ApiResponse.success("Đã ghi nhận người ở cùng",null);}
 
     @PostMapping("/{tenantId}/room-transfers")
     public ApiResponse<Void> transfer(@AuthenticationPrincipal AuthenticatedUser principal,

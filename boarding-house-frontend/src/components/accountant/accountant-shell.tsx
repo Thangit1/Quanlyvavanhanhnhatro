@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { roleHome } from "@/types/auth";
-import { useAccountantNotifications } from "@/hooks/use-accountant";
+import { CommunicationBell } from "@/components/shared/communication-bell";
 import {
   AccountantScopeProvider,
   useAccountantScope,
@@ -50,6 +50,8 @@ const groups = [
     items: [
       ["Công nợ", "/accountant/debts", UsersRound],
       ["Tiền cọc", "/accountant/deposits", WalletCards],
+      ["Trả phòng & quyết toán", "/accountant/checkouts", CalendarClock],
+      ["Thông báo & Công việc", "/accountant/notifications", Bell],
     ],
   },
   {
@@ -76,7 +78,6 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const notifications = useAccountantNotifications();
   useEffect(() => {
     if (isBootstrapping) return;
     if (!user)
@@ -86,16 +87,15 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
   }, [isBootstrapping, pathname, router, user]);
   if (isBootstrapping || !user || user.activeRole !== "ACCOUNTANT")
     return (
-      <div className="grid min-h-screen place-items-center bg-slate-50 text-sm text-slate-500">
+      <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">
         Đang mở cổng kế toán…
       </div>
     );
-  const unread = notifications.data?.filter((n) => !n.read_at).length ?? 0;
   const links = (
     <div className="space-y-5">
       {groups.map((group) => (
         <section key={group.name}>
-          <p className="mb-1 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <p className="mb-1 px-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             {group.name}
           </p>
           <nav className="space-y-1">
@@ -108,7 +108,7 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
                   key={href}
                   href={href}
                   onClick={() => setOpen(false)}
-                  className={`flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition ${active ? "bg-emerald-600 text-white shadow-md shadow-emerald-100" : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"}`}
+                  className={`flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition ${active ? "bg-accent font-semibold text-link" : "text-secondary-foreground hover:bg-muted hover:text-foreground"}`}
                 >
                   <Icon className="size-4.5" />
                   <span className="flex-1">{label}</span>
@@ -122,15 +122,15 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
   );
   return (
     <AccountantScopeProvider>
-      <div className="min-h-screen bg-slate-50 pb-16 lg:pb-0">
-        <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 overflow-y-auto border-r border-slate-200 bg-white p-5 pb-20 lg:block">
+      <div className="min-h-screen bg-background pb-16 lg:pb-0">
+        <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 overflow-y-auto border-r border-border bg-card p-5 pb-20 lg:block">
           <Brand />
           <div className="mt-7">{links}</div>
           <button
             onClick={() =>
               window.confirm("Bạn có chắc muốn đăng xuất?") && void logout()
             }
-            className="fixed bottom-4 left-5 flex min-h-11 w-62 items-center gap-3 rounded-xl bg-white px-3 text-sm text-slate-600 hover:bg-red-50 hover:text-red-700"
+            className="fixed bottom-4 left-5 flex min-h-11 w-62 items-center gap-3 rounded-xl bg-card px-3 text-sm text-secondary-foreground hover:bg-danger-muted hover:text-danger"
           >
             <LogOut className="size-5" />
             Đăng xuất
@@ -143,12 +143,12 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
               aria-label="Đóng menu"
               onClick={() => setOpen(false)}
             />
-            <aside className="relative h-full w-80 overflow-y-auto bg-white p-5">
+            <aside className="relative h-full w-80 overflow-y-auto bg-card p-5">
               <div className="flex items-center justify-between">
                 <Brand />
                 <button
                   aria-label="Đóng menu"
-                  className="rounded-xl p-2 hover:bg-slate-100"
+                  className="rounded-xl p-2 hover:bg-muted"
                   onClick={() => setOpen(false)}
                 >
                   <X />
@@ -159,10 +159,10 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
           </div>
         )}
         <div className="lg:pl-72">
-          <Header open={() => setOpen(true)} unread={unread} />
+          <Header open={() => setOpen(true)} />
           {children}
         </div>
-        <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white lg:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-card lg:hidden">
           {[
             ["Tổng quan", "/accountant/dashboard", LayoutDashboard],
             ["Hóa đơn", "/accountant/invoices", ReceiptText],
@@ -173,7 +173,7 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
             <Link
               key={String(href)}
               href={String(href)}
-              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] ${pathname.startsWith(String(href)) ? "font-semibold text-emerald-700" : "text-slate-500"}`}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] ${pathname.startsWith(String(href)) ? "font-semibold text-link" : "text-muted-foreground"}`}
             >
               <Icon className="size-5" />
               {label as string}
@@ -184,20 +184,20 @@ export function AccountantShell({ children }: { children: React.ReactNode }) {
     </AccountantScopeProvider>
   );
 }
-function Header({ open, unread }: { open: () => void; unread: number }) {
+function Header({ open }: { open: () => void }) {
   const scope = useAccountantScope();
   return (
-    <header className="sticky top-0 z-20 flex min-h-18 flex-wrap items-center gap-3 border-b border-slate-200 bg-white/95 px-4 py-2 backdrop-blur sm:px-6">
+    <header className="sticky top-0 z-20 flex min-h-18 flex-wrap items-center gap-3 border-b border-border bg-card px-4 py-2 backdrop-blur sm:px-6">
       <button
-        className="rounded-xl p-2 hover:bg-slate-100 lg:hidden"
+        className="rounded-xl p-2 hover:bg-muted lg:hidden"
         aria-label="Mở menu"
         onClick={open}
       >
         <Menu />
       </button>
       <div className="min-w-44 flex-1">
-        <p className="font-bold text-slate-900">Cổng làm việc kế toán</p>
-        <p className="hidden text-xs text-slate-500 sm:block">
+        <p className="font-bold text-foreground">Cổng làm việc kế toán</p>
+        <p className="hidden text-xs text-muted-foreground sm:block">
           Thu chi, công nợ, đối soát và khóa sổ theo kỳ
         </p>
       </div>
@@ -209,7 +209,7 @@ function Header({ open, unread }: { open: () => void; unread: number }) {
             e.target.value ? Number(e.target.value) : undefined,
           )
         }
-        className="min-h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm"
+        className="min-h-10 rounded-xl border border-input bg-card px-3 text-sm"
       >
         <option value="">Tất cả khu trọ</option>
         {scope.properties.map((p) => (
@@ -223,21 +223,12 @@ function Header({ open, unread }: { open: () => void; unread: number }) {
         type="month"
         value={scope.period}
         onChange={(e) => scope.setPeriod(e.target.value)}
-        className="min-h-10 rounded-xl border border-slate-200 px-3 text-sm"
+        className="min-h-10 rounded-xl border border-input px-3 text-sm"
       />
-      <Link
-        href="/accountant/notifications"
-        aria-label={`Thông báo, ${unread} chưa đọc`}
-        className="relative rounded-xl p-2 hover:bg-slate-100"
-      >
-        <Bell className="size-5" />
-        {unread > 0 && (
-          <span className="absolute right-1 top-1 size-2 rounded-full bg-red-500" />
-        )}
-      </Link>
+      <CommunicationBell />
       <Link
         href="/accountant/account"
-        className="grid size-10 place-items-center rounded-full bg-emerald-100 font-bold text-emerald-700"
+        className="grid size-10 place-items-center rounded-full bg-success-muted font-bold text-link"
       >
         <UserRound className="size-5" />
       </Link>
@@ -248,9 +239,9 @@ function Brand() {
   return (
     <Link
       href="/accountant/dashboard"
-      className="flex items-center gap-3 font-extrabold text-emerald-700"
+      className="flex items-center gap-3 font-extrabold text-link"
     >
-      <span className="grid size-10 place-items-center rounded-xl bg-emerald-600 text-white">
+      <span className="grid size-10 place-items-center rounded-xl bg-primary text-white">
         <CircleDollarSign />
       </span>
       <span>SmartHome AI</span>

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { FinanceWorkspace } from "@/components/shared/finance-workspace";
 export default function Page() {
-  redirect("/accountant/reconciliation/bank");
+  return <FinanceWorkspace portal="accountant" initialTab="reconciliation" />;
 }

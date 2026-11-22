@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/auth-provider";
+import { ManagementScopeProvider } from "@/providers/management-scope";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export default function RootLayout({
     <html lang="vi" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <QueryProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <ManagementScopeProvider>{children}</ManagementScopeProvider>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

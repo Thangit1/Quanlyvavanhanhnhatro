@@ -62,4 +62,15 @@ class AdminSettingServiceImplTest {
                 1, 5, 28, 3, null, null, false, true, null, null, null, null);
         assertThrows(AuthException.class, () -> service.updateProperty(manager, 99L, request));
     }
+    @Test
+    void localAiConfigurationDoesNotPretendARealModelResponded() {
+        var owner=new AuthenticatedUser(7L,"owner@example.invalid",RoleCode.OWNER);
+        var settings=org.mockito.Mockito.mock(com.thangit.boardinghouse.dto.response.setting.AdminSettingResponses.Ai.class);
+        when(repository.ownerId(7L,RoleCode.OWNER)).thenReturn(7L);
+        when(repository.ai(7L,true)).thenReturn(settings);
+        when(settings.provider()).thenReturn("configured-provider");
+        when(settings.model()).thenReturn("configured-model");
+        service=new AdminSettingServiceImpl(repository,"fixture-key-only");
+        org.junit.jupiter.api.Assertions.assertFalse(service.testAi(owner).connected());
+    }
 }

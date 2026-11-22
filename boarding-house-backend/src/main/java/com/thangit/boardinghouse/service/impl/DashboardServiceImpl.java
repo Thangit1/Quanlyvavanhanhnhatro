@@ -29,7 +29,7 @@ public class DashboardServiceImpl implements DashboardService {
                 HttpStatus.FORBIDDEN, "PROPERTY_ACCESS_DENIED", "Bạn không có quyền truy cập khu trọ đã chọn.");
 
         String normalizedPeriod = period == null ? "MONTH" : period.toUpperCase(Locale.ROOT);
-        LocalDate today = LocalDate.now();
+        LocalDate today = com.thangit.boardinghouse.service.BusinessTime.today();
         LocalDate periodStart;
         LocalDate periodEnd;
         LocalDate previousStart;
@@ -57,8 +57,7 @@ public class DashboardServiceImpl implements DashboardService {
         long occupied = number(values, "occupiedRooms").longValue();
         BigDecimal current = decimal(values, "currentRevenue");
         BigDecimal previous = decimal(values, "previousRevenue");
-        BigDecimal occupancy = totalRooms == 0 ? BigDecimal.ZERO :
-                BigDecimal.valueOf(occupied * 100.0 / totalRooms).setScale(1, RoundingMode.HALF_UP);
+        BigDecimal occupancy = com.thangit.boardinghouse.service.ReportKpis.occupancy(occupied,values.get("availableRooms"));
         BigDecimal change = previous.signum() == 0 ? null :
                 current.subtract(previous).multiply(BigDecimal.valueOf(100)).divide(previous, 2, RoundingMode.HALF_UP);
         Summary summary = new Summary(number(values, "totalProperties").longValue(), totalRooms, occupied,

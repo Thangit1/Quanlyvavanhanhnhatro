@@ -1,4 +1,4 @@
-import { AccountantResourcePage } from "@/components/accountant/accountant-pages";
+import { FinanceWorkspace } from "@/components/shared/finance-workspace";
 export default function Page() {
-  return <AccountantResourcePage resource="cashbook" />;
+  return <FinanceWorkspace portal="accountant" initialTab="cashbook" />;
 }

@@ -18,6 +18,11 @@ export function useRentalLifecycleMutations() {
     Promise.all(
       [
         "rental-lifecycle",
+        "room-workflow-notices",
+        "admin-dashboard",
+        "dashboard-lifecycle",
+        "admin-properties",
+        "admin-property",
         "admin-rooms",
         "admin-room",
         "admin-contracts",

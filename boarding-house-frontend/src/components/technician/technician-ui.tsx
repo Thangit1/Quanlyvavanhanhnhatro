@@ -28,12 +28,12 @@ export function Page({
     <main className="mx-auto max-w-[1500px] space-y-6 p-4 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm text-slate-500">Cổng kỹ thuật / {title}</p>
-          <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+          <p className="text-sm text-muted-foreground">Cổng kỹ thuật / {title}</p>
+          <h1 className="mt-1 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
             {title}
           </h1>
           {description && (
-            <p className="mt-1 text-sm text-slate-500">{description}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
           )}
         </div>
         {actions}
@@ -45,7 +45,7 @@ export function Page({
 export function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_TONE[status] ?? "bg-slate-100 text-slate-700"}`}
+      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_TONE[status] ?? "bg-muted text-secondary-foreground"}`}
     >
       {STATUS_LABEL[status] ?? status}
     </span>
@@ -54,7 +54,7 @@ export function StatusBadge({ status }: { status: string }) {
 export function PriorityBadge({ priority }: { priority: string }) {
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${priority === "URGENT" ? "bg-red-600 text-white" : priority === "HIGH" ? "bg-orange-50 text-orange-700" : "bg-slate-100 text-slate-600"}`}
+      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${priority === "URGENT" ? "bg-red-600 text-white" : priority === "HIGH" ? "bg-orange-50 text-orange-700" : "bg-muted text-secondary-foreground"}`}
     >
       {PRIORITY_LABEL[priority] ?? priority}
     </span>
@@ -64,7 +64,7 @@ export function TaskCard({ task }: { task: TaskRow }) {
   return (
     <Link
       href={`/technician/tasks/${task.id}`}
-      className={`group block rounded-2xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${task.priority === "URGENT" ? "border-red-200" : "border-slate-200"}`}
+      className={`group block rounded-2xl border bg-card p-4 shadow-card transition hover:-translate-y-0.5 hover:shadow-md ${task.priority === "URGENT" ? "border-danger-border" : "border-border"}`}
     >
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
@@ -72,40 +72,40 @@ export function TaskCard({ task }: { task: TaskRow }) {
             <PriorityBadge priority={task.priority} />
             <StatusBadge status={task.status} />
             {task.overdue && (
-              <span className="text-xs font-semibold text-red-600">
+              <span className="text-xs font-semibold text-danger">
                 Quá SLA
               </span>
             )}
           </div>
-          <h3 className="mt-3 font-bold text-slate-950 group-hover:text-blue-700">
+          <h3 className="mt-3 font-bold text-foreground group-hover:text-link">
             {task.title}
           </h3>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted-foreground">
             {task.taskCode} · {task.category}
           </p>
         </div>
         <ChevronRight className="size-5 text-slate-300" />
       </div>
-      <div className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
+      <div className="mt-4 grid gap-2 text-sm text-secondary-foreground sm:grid-cols-2">
         <p className="flex items-center gap-2">
-          <MapPin className="size-4 text-blue-600" />
+          <MapPin className="size-4 text-link" />
           {task.property.name}
           {task.room ? ` · ${task.room.name}` : ""}
         </p>
         <p className="flex items-center gap-2">
-          <CalendarClock className="size-4 text-blue-600" />
+          <CalendarClock className="size-4 text-link" />
           {formatDate(task.scheduledStart ?? task.slaDueAt)}
         </p>
       </div>
       {task.progressPercent > 0 && (
         <div className="mt-4">
-          <div className="mb-1 flex justify-between text-xs text-slate-500">
+          <div className="mb-1 flex justify-between text-xs text-muted-foreground">
             <span>Tiến độ</span>
             <span>{task.progressPercent}%</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-blue-600"
+              className="h-full rounded-full bg-primary hover:bg-primary-hover"
               style={{ width: `${task.progressPercent}%` }}
             />
           </div>
@@ -122,16 +122,16 @@ export function Empty({
   description?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+    <div className="rounded-2xl border border-dashed border-input bg-card px-6 py-14 text-center">
       <AlertTriangle className="mx-auto size-9 text-slate-300" />
-      <p className="mt-3 font-semibold text-slate-700">{title}</p>
-      <p className="mt-1 text-sm text-slate-500">{description}</p>
+      <p className="mt-3 font-semibold text-secondary-foreground">{title}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
     </div>
   );
 }
 export function Loading() {
   return (
-    <div className="flex min-h-64 items-center justify-center gap-2 text-sm text-slate-500">
+    <div className="flex min-h-64 items-center justify-center gap-2 text-sm text-muted-foreground">
       <RefreshCw className="size-5 animate-spin" />
       Đang tải dữ liệu…
     </div>
@@ -139,7 +139,7 @@ export function Loading() {
 }
 export function ErrorState({ retry }: { retry: () => void }) {
   return (
-    <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700">
+    <div className="rounded-2xl border border-danger-border bg-danger-muted p-8 text-center text-danger">
       <AlertTriangle className="mx-auto size-8" />
       <p className="mt-3 font-semibold">Không thể tải dữ liệu.</p>
       <button

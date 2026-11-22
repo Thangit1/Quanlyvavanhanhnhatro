@@ -13,14 +13,14 @@ export const PasswordInput = forwardRef<
         {...props}
         ref={ref}
         type={visible ? "text" : "password"}
-        className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 pr-12 text-slate-900 outline-none transition focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 disabled:opacity-60"
+        className="h-12 w-full rounded-xl border border-input bg-muted px-4 pr-12 text-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition focus:border-blue-600 focus:bg-card focus:ring-4 focus:ring-ring disabled:opacity-60"
       />
       <button
         type="button"
         disabled={props.disabled}
         onClick={() => setVisible((value) => !value)}
         aria-label={visible ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-        className="absolute inset-y-0 right-0 grid w-12 place-items-center text-slate-500 hover:text-blue-700"
+        className="absolute inset-y-0 right-0 grid w-12 place-items-center text-muted-foreground hover:text-link"
       >
         {visible ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
       </button>

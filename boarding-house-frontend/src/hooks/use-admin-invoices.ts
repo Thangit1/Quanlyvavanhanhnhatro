@@ -33,9 +33,7 @@ export function useInvoiceDetail(id: number) {
 export function useInvoiceMutations(id?: number) {
   const qc = useQueryClient();
   const refresh = async () => {
-    await qc.invalidateQueries({ queryKey: ["admin-invoices"] });
-    await qc.invalidateQueries({ queryKey: ["invoice-summary"] });
-    if (id) await qc.invalidateQueries({ queryKey: ["admin-invoice"] });
+    await qc.invalidateQueries();
   };
   return {
     create: useMutation({

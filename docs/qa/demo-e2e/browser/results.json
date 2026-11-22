@@ -1,0 +1,451 @@
+{
+  "results": [
+    {
+      "name": "Owner opens actual signed contract",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual contract form offers fresh tenant and READY room",
+      "status": "PASS"
+    },
+    {
+      "name": "Owner invoice shows backend total",
+      "status": "PASS"
+    },
+    {
+      "name": "Tenant opens own real invoice",
+      "status": "PASS"
+    },
+    {
+      "name": "Tenant inbox and bell render without resource error",
+      "status": "PASS"
+    },
+    {
+      "name": "Accountant sees synthetic receipts",
+      "status": "PASS"
+    },
+    {
+      "name": "Manager accesses scoped house",
+      "status": "PASS"
+    },
+    {
+      "name": "Technician can open assigned scope",
+      "status": "PASS"
+    }
+  ],
+  "exceptions": [],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contracts/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contracts/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contract-changes/contracts/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contracts/1/extensions",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/checkout-settlement/contracts/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/monthly-billing/1?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contract-onboarding/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contracts/1/extensions",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contract-changes/contracts/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/checkout-settlement/contracts/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/monthly-billing/1?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contract-onboarding/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contract-changes/contracts/1/resident-requests",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/rooms/2",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contract-changes/contracts/1/resident-requests",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/rooms/2",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/tenants/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contracts/creation-options?propertyId=1&keyword=",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/contracts/creation-options?propertyId=1&keyword=",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/tenants/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/rooms/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/rooms/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/invoices/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/invoices/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/owner/organizations/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/tenant/invoices/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/tenant/invoices/1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/inbox?keyword=&page=0&size=20",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/inbox?keyword=&page=0&size=20",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/accountant/account",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/accountant/payments?period=2026-11&page=0&size=20",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/accountant/account",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/accountant/payments?period=2026-11&page=0&size=20",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/accountant/payments?period=2026-10&page=0&size=20",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/accountant/payments?period=2026-10&page=0&size=20",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties?page=0&size=100",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties?page=0&size=100",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/technician/dashboard",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:18083/api/technician/dashboard",
+      "status": 200
+    }
+  ]
+}

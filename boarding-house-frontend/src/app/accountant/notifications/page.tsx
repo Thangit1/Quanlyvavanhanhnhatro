@@ -1,4 +1,4 @@
-import { AccountantNotificationsPage } from "@/components/accountant/accountant-pages";
+import { CommunicationWorkspace } from "@/components/shared/communication-workspace";
 export default function Page() {
-  return <AccountantNotificationsPage />;
+  return <CommunicationWorkspace />;
 }

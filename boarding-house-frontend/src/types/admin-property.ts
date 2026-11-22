@@ -99,6 +99,16 @@ export type PropertyPayload = {
 export type Option = { id: number; label: string; parentId?: number };
 export type Amenity = { id: number; code: string; name: string; icon?: string };
 export type PropertyOptions = {
+  contexts?: {
+    propertyId: number;
+    organizationId: number | null;
+    organizationName: string | null;
+    areaId: number | null;
+    areaName: string | null;
+    managers: { id: number; fullName: string }[];
+    canReadFinance: boolean;
+    canExport?: boolean;
+  }[];
   properties: Option[];
   buildings: Option[];
   floors: Option[];
@@ -125,6 +135,7 @@ export type ContractBrief = {
   status: string;
 };
 export type RoomRow = {
+  overdueInvoiceCount?: number;
   id: number;
   roomCode: string;
   name: string;
@@ -205,8 +216,8 @@ export type RoomDetail = {
 };
 export type RoomPayload = {
   propertyId: number;
-  buildingId: number;
-  floorId: number;
+  buildingId?: number;
+  floorId?: number;
   code: string;
   name: string;
   roomType?: string;
@@ -221,6 +232,8 @@ export type RoomPayload = {
   version?: number;
 };
 export type RoomFilters = {
+  minimumRent?: number;
+  maximumRent?: number;
   propertyId?: number;
   buildingId?: number;
   floorId?: number;

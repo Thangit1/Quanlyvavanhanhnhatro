@@ -128,22 +128,22 @@ export function ContractDetailPage({
     <main className="contract-print-area mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
       <nav
         aria-label="Breadcrumb"
-        className="text-sm text-slate-500 print:hidden"
+        className="text-sm text-muted-foreground print:hidden"
       >
-        <Link href="/tenant/home" className="hover:text-blue-700">
+        <Link href="/tenant/home" className="hover:text-link">
           Trang chủ
         </Link>
         <span aria-hidden="true"> / </span>
-        <Link href="/tenant/contracts" className="hover:text-blue-700">
+        <Link href="/tenant/contracts" className="hover:text-link">
           Hợp đồng
         </Link>
         <span aria-hidden="true"> / </span>
         <span>{data.contractCode}</span>
       </nav>
-      <header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <header className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
         <Link
           href="/tenant/contracts"
-          className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-700 print:hidden"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-link print:hidden"
         >
           <ArrowLeft className="size-4" />
           Quay lại danh sách
@@ -151,17 +151,17 @@ export function ContractDetailPage({
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-start">
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
+              <h1 className="text-2xl font-extrabold text-foreground sm:text-3xl">
                 {data.contractCode}
               </h1>
               <ContractStatusBadge status={data.status} />
             </div>
-            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-500">
+            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
               <span>Ngày tạo: {formatDate(data.createdAt)}</span>
               <span>Ngày ký: {formatDate(data.signedAt)}</span>
               <span>
                 Còn lại:{" "}
-                <strong className="text-slate-800">
+                <strong className="text-foreground">
                   {data.daysRemaining} ngày
                 </strong>
               </span>
@@ -172,7 +172,7 @@ export function ContractDetailPage({
               <button
                 onClick={() => void getDocument(false)}
                 disabled={downloading}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold hover:bg-slate-50 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl border border-input px-4 py-2.5 text-sm font-semibold hover:bg-muted disabled:opacity-60"
               >
                 {downloading ? (
                   <LoaderCircle className="size-4 animate-spin" />
@@ -186,7 +186,7 @@ export function ContractDetailPage({
               <button
                 onClick={() => void getDocument(true)}
                 disabled={downloading}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold hover:bg-slate-50 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl border border-input px-4 py-2.5 text-sm font-semibold hover:bg-muted disabled:opacity-60"
               >
                 <Printer className="size-4" />
                 In hợp đồng
@@ -195,7 +195,7 @@ export function ContractDetailPage({
             {data.permissions.canRequestExtension && (
               <button
                 onClick={() => setDialog("extension")}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold ${data.status === "EXPIRING" ? "bg-amber-500 text-white" : "bg-blue-600 text-white"}`}
+                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold ${data.status === "EXPIRING" ? "bg-amber-500 text-white" : "bg-primary hover:bg-primary-hover text-white"}`}
               >
                 <RotateCcw className="size-4" />
                 Yêu cầu gia hạn
@@ -204,7 +204,7 @@ export function ContractDetailPage({
             {data.permissions.canRequestTermination && (
               <button
                 onClick={() => setDialog("termination")}
-                className="rounded-xl border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50"
+                className="rounded-xl border border-danger-border px-4 py-2.5 text-sm font-semibold text-danger hover:bg-danger-muted"
               >
                 Yêu cầu trả phòng
               </button>
@@ -215,7 +215,7 @@ export function ContractDetailPage({
       {notice && (
         <div
           role="status"
-          className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700"
+          className="rounded-xl border border-success-border bg-success-muted p-4 text-sm font-semibold text-success"
         >
           {notice}
         </div>
@@ -223,7 +223,7 @@ export function ContractDetailPage({
       {actionError && (
         <div
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+          className="rounded-xl border border-danger-border bg-danger-muted p-4 text-sm text-danger"
         >
           {actionError}
         </div>
@@ -231,7 +231,7 @@ export function ContractDetailPage({
       {alert && (
         <div
           role="status"
-          className={`flex gap-3 rounded-xl border p-4 ${alert.urgent ? "border-red-200 bg-red-50 text-red-800" : "border-amber-200 bg-amber-50 text-amber-800"}`}
+          className={`flex gap-3 rounded-xl border p-4 ${alert.urgent ? "border-danger-border bg-danger-muted text-danger" : "border-warning-border bg-warning-muted text-warning"}`}
         >
           <AlertTriangle className="mt-0.5 size-5 shrink-0" />
           <p className="text-sm font-semibold">{alert.message}</p>

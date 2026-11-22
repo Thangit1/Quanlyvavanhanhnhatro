@@ -33,7 +33,7 @@ public class RentalLifecycleRepository {
         return jdbc.sql("SELECT COUNT(*) FROM properties p WHERE p.id=:id AND " + scope(role,"p"))
                 .param("id",propertyId).param("userId",userId).query(Long.class).single()>0;
     }
-    public boolean tenantInProperty(long tenantProfileId,long propertyId){return !jdbc.sql("SELECT id FROM tenant_residences WHERE tenant_profile_id=:tenant AND property_id=:property FOR UPDATE").param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).list().isEmpty()||!jdbc.sql("SELECT q.id FROM contract_change_requests q JOIN rooms r ON r.id=q.target_room_id WHERE q.target_profile_id=:tenant AND r.property_id=:property AND q.status IN ('REQUESTED','OFFERED','AGREED') AND q.change_type IN ('TRANSFER','REPRESENTATIVE') FOR UPDATE").param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).list().isEmpty();}
+    public boolean tenantInProperty(long tenantProfileId,long propertyId){return !jdbc.sql("SELECT id FROM tenant_profiles WHERE id=:tenant AND management_property_id=:property FOR UPDATE").param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).list().isEmpty()||!jdbc.sql("SELECT id FROM tenant_residences WHERE tenant_profile_id=:tenant AND property_id=:property FOR UPDATE").param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).list().isEmpty()||!jdbc.sql("SELECT q.id FROM contract_change_requests q JOIN rooms r ON r.id=q.target_room_id WHERE q.target_profile_id=:tenant AND r.property_id=:property AND q.status IN ('REQUESTED','OFFERED','AGREED') AND q.change_type IN ('TRANSFER','REPRESENTATIVE') FOR UPDATE").param("tenant",tenantProfileId).param("property",propertyId).query(Long.class).list().isEmpty();}
     public boolean hasCheckin(long contractId){return jdbc.sql("SELECT COUNT(*) FROM rental_checkins WHERE contract_id=:id").param("id",contractId).query(Long.class).single()>0;}
     public boolean hasCheckout(long contractId){return jdbc.sql("SELECT COUNT(*) FROM rental_checkouts WHERE contract_id=:id AND status<>'CANCELLED'").param("id",contractId).query(Long.class).single()>0;}
 
@@ -101,7 +101,7 @@ public class RentalLifecycleRepository {
     private List<BookingRow> bookings(long userId,RoleCode role,Long property){return jdbc.sql("""
             SELECT b.id,b.code,b.tenant_profile_id,tp.full_name tenant_name,p.id property_id,p.name property_name,
               r.id room_id,r.code room_code,b.reservation_start,b.reservation_end,b.deposit_amount,b.deposit_status,
-              b.status,b.contract_id,b.version,b.updated_at FROM rental_bookings b JOIN tenant_profiles tp ON tp.id=b.tenant_profile_id
+              b.status,b.contract_id,b.version,b.updated_at,tp.phone tenant_phone,b.created_at,(SELECT actor.full_name FROM users actor WHERE actor.id=b.created_by) creator_name FROM rental_bookings b JOIN tenant_profiles tp ON tp.id=b.tenant_profile_id
               JOIN rooms r ON r.id=b.room_id JOIN properties p ON p.id=b.property_id WHERE %s AND (:propertyId IS NULL OR p.id=:propertyId)
               ORDER BY FIELD(b.status,'DEPOSITED','RESERVED','CONTRACT_CREATED','CHECKED_IN','EXPIRED','CANCELLED'),b.updated_at DESC LIMIT 100
             """.formatted(scope(role,"p"))).param("userId",userId).param("propertyId",property).query((r,n)->new BookingRow(
@@ -109,7 +109,7 @@ public class RentalLifecycleRepository {
                     r.getLong("property_id"),r.getString("property_name"),r.getLong("room_id"),r.getString("room_code"),
                     r.getObject("reservation_start",java.time.LocalDate.class),r.getObject("reservation_end",java.time.LocalDate.class),
                     r.getBigDecimal("deposit_amount"),r.getString("deposit_status"),r.getString("status"),nullableLong(r,"contract_id"),
-                    r.getLong("version"),r.getObject("updated_at",LocalDateTime.class))).list();}
+                    r.getLong("version"),r.getObject("updated_at",LocalDateTime.class),r.getString("tenant_phone"),r.getObject("created_at",LocalDateTime.class),r.getString("creator_name"))).list();}
     private List<CheckinRow> checkins(long userId,RoleCode role,Long property){return jdbc.sql("""
             SELECT x.id,x.contract_id,c.code contract_code,COALESCE(tp.full_name,u.full_name) tenant_name,p.name property_name,
               r.id room_id,r.code room_code,x.scheduled_date,x.actual_checkin_at,x.status,x.identity_verified,x.contract_verified,

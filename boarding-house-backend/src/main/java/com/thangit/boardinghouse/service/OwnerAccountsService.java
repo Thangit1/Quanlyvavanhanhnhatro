@@ -66,10 +66,11 @@ public class OwnerAccountsService {
                 .param("owner",actor.id()).query().listOfRows();
     }
     private List<Map<String,Object>> assignments(AuthenticatedUser actor,long user) {
-        return db.sql("SELECT s.property_id,s.role_code,p.name property_name,pm.is_primary,a.id area_id,a.name area_name FROM ("+staffProperties()+") s JOIN properties p ON p.id=s.property_id LEFT JOIN property_managers pm ON pm.property_id=s.property_id AND pm.manager_id=s.user_id AND s.role_code='MANAGER' LEFT JOIN organization_property_relationships op ON op.property_id=p.id AND op.ended_at IS NULL LEFT JOIN management_areas a ON a.id=op.area_id WHERE s.user_id=:user AND p.owner_id=:owner ORDER BY p.name,s.role_code")
+        return db.sql("SELECT s.property_id,s.role_code,p.name property_name,pm.is_primary,a.id area_id,a.name area_name,op.organization_id,o.name organization_name FROM ("+staffProperties()+") s JOIN properties p ON p.id=s.property_id LEFT JOIN property_managers pm ON pm.property_id=s.property_id AND pm.manager_id=s.user_id AND s.role_code='MANAGER' LEFT JOIN organization_property_relationships op ON op.property_id=p.id AND op.ended_at IS NULL LEFT JOIN management_areas a ON a.id=op.area_id LEFT JOIN organizations o ON o.id=op.organization_id WHERE s.user_id=:user AND p.owner_id=:owner ORDER BY p.name,s.role_code")
                 .param("user",user).param("owner",actor.id()).query().listOfRows();
     }
-    public Map<String,Object> list(AuthenticatedUser actor,Long propertyId,Long areaId,String role,String keyword,String status,int page,int size) {
+    public Map<String,Object> list(AuthenticatedUser actor,Long propertyId,Long areaId,String role,String keyword,String status,int page,int size) {return list(actor,propertyId,areaId,role,keyword,status,page,size,null);}
+    public Map<String,Object> list(AuthenticatedUser actor,Long propertyId,Long areaId,String role,String keyword,String status,int page,int size,Long organizationId) {
         owner(actor);
         if(page<0||size<1||size>100)throw new AuthException(HttpStatus.BAD_REQUEST,"INVALID_PAGE","Thông tin phân trang không hợp lệ.");
         if(propertyId!=null)property(actor,propertyId);
@@ -84,12 +85,14 @@ public class OwnerAccountsService {
         var tenantRows=db.sql("SELECT u.id,tp.id profile_id,tp.full_name,COALESCE(u.email,tp.email) email,tp.phone,COALESCE(u.status,'NO_ACCOUNT') status,u.created_at,u.must_change_password,'TENANT' role_code,tp.tenant_code,tp.profile_status,CASE WHEN p.owner_id=:owner THEN tr.status ELSE NULL END residence_status,CASE WHEN p.owner_id=:owner THEN p.id ELSE NULL END property_id,CASE WHEN p.owner_id=:owner THEN p.name ELSE NULL END property_name,CASE WHEN p.owner_id=:owner THEN r.code ELSE NULL END room_code,CASE WHEN p.owner_id=:owner THEN c.code ELSE NULL END contract_code FROM tenant_profiles tp LEFT JOIN tenant_residences tr ON tr.id=(SELECT tr2.id FROM tenant_residences tr2 WHERE tr2.tenant_profile_id=tp.id ORDER BY (tr2.status='ACTIVE') DESC,tr2.id DESC LIMIT 1) LEFT JOIN properties p ON p.id=COALESCE(tr.property_id,tp.management_property_id) LEFT JOIN users u ON u.id=tp.user_id LEFT JOIN rooms r ON r.id=tr.room_id LEFT JOIN contracts c ON c.id=tr.contract_id WHERE p.owner_id=:owner OR (p.id IS NULL AND tp.created_by=:owner) OR EXISTS(SELECT 1 FROM owner_staff_members os WHERE os.owner_id=:owner AND os.user_id=tp.user_id AND os.role_code='TENANT') ORDER BY tp.full_name,tp.id")
                 .param("owner",actor.id()).query().listOfRows();
         for(var t:tenantRows){var row=new LinkedHashMap<>(t);row.put("assignments",t.get("property_id")==null?List.of():List.of(Map.of("property_id",t.get("property_id"),"property_name",t.get("property_name"),"role_code","TENANT")));rows.add(row);}
+        if(organizationId!=null){if(db.sql("SELECT COUNT(*) FROM organizations WHERE id=:id AND administrator_id=:owner").param("id",organizationId).param("owner",actor.id()).query(Long.class).single()!=1)throw denied();var company=new HashSet<>(db.sql("SELECT op.property_id FROM organization_property_relationships op JOIN properties p ON p.id=op.property_id WHERE op.organization_id=:id AND op.ended_at IS NULL AND p.owner_id=:owner").param("id",organizationId).param("owner",actor.id()).query(Long.class).list());if(areaProperties==null)areaProperties=company;else areaProperties.retainAll(company);}
         final Set<Long> areaFilter=areaProperties;
-        var filtered=rows.stream().filter(r->role==null||role.isBlank()||role.equals(r.get("role_code")))
+        var filtered=rows.stream().filter(r->role==null||role.isBlank()||("STAFF".equals(role)?!"TENANT".equals(r.get("role_code")):role.equals(r.get("role_code"))))
             .filter(r->status==null||status.isBlank()||status.equals(r.get("status")))
             .filter(r->keyword==null||keyword.isBlank()||(r.get("full_name")+" "+r.get("email")+" "+r.get("phone")+" "+r.get("tenant_code")).toLowerCase(Locale.ROOT).contains(keyword.trim().toLowerCase(Locale.ROOT)))
             .filter(r->matchesProperties(r,propertyId,areaFilter)).toList();
         var summary=new LinkedHashMap<String,Object>();
+        summary.put("totalStaff",filtered.stream().filter(r->!"TENANT".equals(r.get("role_code"))).map(r->num(r,"id")).distinct().count());
         summary.put("totalAccounts",filtered.stream().filter(r->r.get("id")!=null).map(r->num(r,"id")).distinct().count());
         for(String code:List.of("MANAGER","TENANT","ACCOUNTANT","TECHNICIAN"))summary.put(code,filtered.stream().filter(r->code.equals(r.get("role_code"))&&r.get("id")!=null).count());
         summary.put("locked",filtered.stream().filter(r->"LOCKED".equals(r.get("status"))).map(r->num(r,"id")).distinct().count());
@@ -108,7 +111,7 @@ public class OwnerAccountsService {
         owner(actor);
         return Map.of("properties",db.sql("SELECT id,name FROM properties WHERE owner_id=:owner ORDER BY name,id").param("owner",actor.id()).query().listOfRows(),
             "areas",db.sql("SELECT a.id,a.name,a.organization_id FROM management_areas a JOIN organizations o ON o.id=a.organization_id WHERE o.administrator_id=:owner AND a.status='ACTIVE' ORDER BY a.name,a.id").param("owner",actor.id()).query().listOfRows(),
-            "staff",staff(actor),"emailDeliveryAvailable",false,
+            "staff",staff(actor),"organizations",db.sql("SELECT id,name FROM organizations WHERE administrator_id=:owner ORDER BY name").param("owner",actor.id()).query().listOfRows(),"emailDeliveryAvailable",false,
             "managerAssignments",db.sql("SELECT pm.property_id,pm.manager_id,u.full_name,pm.is_primary,a.id area_id FROM property_managers pm JOIN properties p ON p.id=pm.property_id JOIN users u ON u.id=pm.manager_id LEFT JOIN organization_property_relationships op ON op.property_id=p.id AND op.ended_at IS NULL LEFT JOIN management_areas a ON a.id=op.area_id WHERE p.owner_id=:owner ORDER BY p.name,u.full_name").param("owner",actor.id()).query().listOfRows());
     }
     private void managed(AuthenticatedUser actor,long user,String role) {

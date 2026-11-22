@@ -16,7 +16,7 @@ export function ReportExportHistoryPage() {
       <div className="space-y-5">
         <header className="flex items-end justify-between">
           <div>
-            <p className="text-sm text-slate-500">Báo cáo / Lịch sử xuất</p>
+            <p className="text-sm text-muted-foreground">Báo cáo / Lịch sử xuất</p>
             <h1 className="mt-1 text-3xl font-black">Lịch sử xuất báo cáo</h1>
           </div>
           <button
@@ -33,7 +33,7 @@ export function ReportExportHistoryPage() {
           {query.data?.length ? (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[800px] text-sm">
-                <thead className="bg-slate-50 text-left text-slate-500">
+                <thead className="bg-muted text-left text-muted-foreground">
                   <tr>
                     {[
                       "Mã",
@@ -87,7 +87,7 @@ export function ReportExportHistoryPage() {
               </table>
             </div>
           ) : (
-            <p className="py-12 text-center text-slate-500">
+            <p className="py-12 text-center text-muted-foreground">
               Chưa có tác vụ xuất báo cáo.
             </p>
           )}

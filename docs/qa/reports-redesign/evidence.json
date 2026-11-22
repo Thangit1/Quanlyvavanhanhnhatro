@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-11-17T17:04:49.622Z",
+  "backend": {
+    "tests": 207,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "nodeTests": 26,
+  "browser": {
+    "passed": 13,
+    "cases": [
+      "overview-scoped-kpis-and-real-date-range",
+      "month-picker-leap-year-same-range-for-all-data",
+      "debt-drill-down-links-real-invoice-id",
+      "rapid-house-switch-cancels-or-ignores-old-response",
+      "xlsx-csv-export-keep-exact-current-filters",
+      "export-history-shows-private-jobs-and-format",
+      "service-collected-unallocated-is-missing-not-fake-zero",
+      "empty-state-preserves-date-and-property-filters",
+      "company-filter-is-sent-to-server",
+      "api-error-is-not-a-zero-or-old-house-report",
+      "desktop-and-mobile-no-page-overflow",
+      "manager-without-finance-sees-operational-data-and-redacted-money",
+      "accountant-report-reuses-shell-and-header-scope"
+    ],
+    "liveApiWrites": 0
+  },
+  "frontend": {
+    "lint": "PASS",
+    "typescript": "PASS",
+    "productionBuild": "PASS"
+  },
+  "export800RowsElapsedMs": 770,
+  "newMigrations": 0,
+  "applicationDatabaseModified": false,
+  "notRun": [
+    "live payment gateway sandbox",
+    "production UAT and large-scale benchmark",
+    "Excel desktop and physical printer"
+  ]
+}

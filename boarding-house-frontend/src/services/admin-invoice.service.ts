@@ -11,6 +11,33 @@ import type {
   Page,
 } from "@/types/admin-invoice";
 export const adminInvoiceService = {
+  preview: async (payload: InvoicePayload) =>
+    (
+      await apiClient.post<
+        ApiEnvelope<import("@/types/admin-invoice").InvoicePlan>
+      >("/admin/invoices/preview", payload)
+    ).data.data,
+  print: async (id: number) => {
+    const { data } = await apiClient.get<Blob>(`/admin/invoices/${id}/print`, {
+      responseType: "blob",
+    });
+    const url = URL.createObjectURL(data);
+    const frame = document.createElement("iframe");
+    frame.style.position = "fixed";
+    frame.style.width = "0";
+    frame.style.height = "0";
+    frame.style.border = "0";
+    frame.onload = () => {
+      frame.contentWindow?.focus();
+      frame.contentWindow?.print();
+    };
+    frame.src = url;
+    document.body.append(frame);
+    setTimeout(() => {
+      frame.remove();
+      URL.revokeObjectURL(url);
+    }, 120000);
+  },
   summary: async (
     params: Pick<InvoiceFilters, "propertyId" | "billingPeriod">,
     signal?: AbortSignal,
@@ -134,9 +161,7 @@ export const adminInvoiceService = {
     a.click();
     URL.revokeObjectURL(url);
   },
-  export: async (
-    params: Pick<InvoiceFilters, "propertyId" | "billingPeriod" | "status">,
-  ) => {
+  export: async (params: InvoiceFilters & { format?: "csv" | "xlsx" }) => {
     const { data } = await apiClient.get<Blob>("/admin/invoices/export", {
       params,
       responseType: "blob",
@@ -144,7 +169,7 @@ export const adminInvoiceService = {
     const url = URL.createObjectURL(data);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "hoa-don.csv";
+    a.download = params.format === "xlsx" ? "hoa-don.xlsx" : "hoa-don.csv";
     a.click();
     URL.revokeObjectURL(url);
   },

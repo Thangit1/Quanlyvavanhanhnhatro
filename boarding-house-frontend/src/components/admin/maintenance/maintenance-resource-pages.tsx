@@ -1,4 +1,5 @@
 "use client";
+import { maintenanceStyles } from "./maintenance-styles";
 import { FormInput } from "@/components/ui/number-input";
 import { parseNumericFields } from "@/lib/numeric-input";
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -44,14 +45,14 @@ export function MaintenanceCalendarPage() {
           <Link
             key={`${x.id}-${x.start}`}
             href={`/admin/maintenance/${x.id}`}
-            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="rounded-2xl border border-border bg-card p-4 shadow-card"
           >
             <div className="flex justify-between">
-              <b className="text-blue-600">{x.requestCode}</b>
+              <b className="text-link">{x.requestCode}</b>
               <PriorityBadge priority={x.priority} />
             </div>
             <h3 className="mt-3 font-bold">{x.title}</h3>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               {formatDate(x.start)} · {x.roomCode || "Khu vực chung"}
             </p>
             <div className="mt-3">
@@ -99,7 +100,10 @@ export function PreventivePage() {
       subtitle="Lập kế hoạch kiểm tra thiết bị theo chu kỳ."
       icon={Repeat2}
       action={
-        <button className="btn-primary" onClick={() => setShow(!show)}>
+        <button
+          className={maintenanceStyles.primary}
+          onClick={() => setShow(!show)}
+        >
           <Plus className="size-4" />
           Tạo kế hoạch
         </button>
@@ -144,16 +148,16 @@ export function PreventivePage() {
         {query.data?.map((x) => (
           <div
             key={x.id}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="surface-card p-5 sm:p-6 "
           >
             <div className="flex justify-between">
-              <Repeat2 className="size-5 text-blue-600" />
-              <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-700">
+              <Repeat2 className="size-5 text-link" />
+              <span className="rounded-full bg-success-muted px-2 py-1 text-xs font-bold text-success">
                 {x.status}
               </span>
             </div>
             <h3 className="mt-4 font-black">{x.name}</h3>
-            <p className="mt-1 text-sm text-slate-500">{x.propertyName}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{x.propertyName}</p>
             <p className="mt-4 text-sm">
               Lần tiếp theo: <b>{formatDate(x.nextRunDate)}</b>
             </p>
@@ -230,9 +234,9 @@ export function MaterialsPage() {
           onChange={(v) => setForm({ ...form, unitPrice: v })}
         />
       </ResourceForm>
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+      <div className="overflow-x-auto surface-card">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-left">
+          <thead className="bg-muted text-left">
             <tr>
               <th className="p-4">Mã</th>
               <th className="p-4">Vật tư</th>
@@ -244,11 +248,11 @@ export function MaterialsPage() {
           <tbody>
             {query.data?.map((x) => (
               <tr key={x.id} className="border-t">
-                <td className="p-4 font-bold text-blue-600">{x.code}</td>
+                <td className="p-4 font-bold text-link">{x.code}</td>
                 <td className="p-4">{x.name}</td>
                 <td className="p-4">{x.propertyName}</td>
                 <td
-                  className={`p-4 text-right font-bold ${x.stockQuantity <= x.minimumQuantity ? "text-red-600" : ""}`}
+                  className={`p-4 text-right font-bold ${x.stockQuantity <= x.minimumQuantity ? "text-danger" : ""}`}
                 >
                   {x.stockQuantity} {x.unit}
                 </td>
@@ -275,11 +279,11 @@ export function AssetsPage() {
         {options.data?.assets.map((x) => (
           <div
             key={x.id}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="surface-card p-5 sm:p-6 "
           >
-            <Wrench className="size-6 text-blue-600" />
+            <Wrench className="size-6 text-link" />
             <h3 className="mt-3 font-black">{x.name}</h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Tình trạng: {x.detail || "Chưa cập nhật"}
             </p>
           </div>
@@ -313,9 +317,9 @@ export function ReportsPage() {
           ].map((x) => (
             <div
               key={String(x[0])}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="surface-card p-5 sm:p-6 "
             >
-              <p className="text-sm text-slate-500">{x[0]}</p>
+              <p className="text-sm text-muted-foreground">{x[0]}</p>
               <p className="mt-2 text-2xl font-black">{x[1]}</p>
             </div>
           ))}
@@ -343,14 +347,14 @@ function Page({
           <div className="flex items-center gap-3">
             <Link
               href="/admin/maintenance"
-              className="rounded-xl border bg-white p-2"
+              className="rounded-xl border bg-card p-2"
             >
               <ArrowLeft className="size-5" />
             </Link>
             <div>
-              <p className="text-sm text-slate-500">Bảo trì</p>
+              <p className="text-sm text-muted-foreground">Bảo trì</p>
               <h1 className="flex items-center gap-2 text-2xl font-black">
-                <Icon className="size-6 text-blue-600" />
+                <Icon className="size-6 text-link" />
                 {title}
               </h1>
             </div>
@@ -375,10 +379,10 @@ function ResourceForm({
         e.preventDefault();
         onSubmit();
       }}
-      className="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+      className="rounded-2xl border border-accent-border bg-accent p-5"
     >
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">{children}</div>
-      <button type="submit" className="btn-primary mt-4">
+      <button type="submit" className={`${maintenanceStyles.primary} mt-4`}>
         <Plus className="size-4" />
         Lưu dữ liệu
       </button>
@@ -400,7 +404,7 @@ function Input({
     <label>
       <span className="mb-1 block text-xs font-bold">{label}</span>
       <FormInput
-        className="input"
+        className={maintenanceStyles.input}
         type={type}
         numericKind={
           /giá|phí|tiền/iu.test(label)
@@ -432,7 +436,7 @@ function Select({
     <label>
       <span className="mb-1 block text-xs font-bold">{label}</span>
       <select
-        className="input"
+        className={maintenanceStyles.input}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
@@ -447,7 +451,7 @@ function Select({
 }
 function Empty({ text }: { text: string }) {
   return (
-    <div className="rounded-2xl border border-dashed p-10 text-center text-slate-500">
+    <div className="rounded-2xl border border-dashed p-10 text-center text-muted-foreground">
       {text}
     </div>
   );

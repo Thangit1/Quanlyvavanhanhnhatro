@@ -99,13 +99,13 @@ export function NotificationListPage() {
     <main className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-blue-600">
+          <p className="text-sm font-semibold text-link">
             Trang chủ / Thông báo
           </p>
-          <h1 className="mt-1 text-3xl font-black text-slate-950">
+          <h1 className="mt-1 text-3xl font-black text-foreground">
             Trung tâm thông báo
           </h1>
-          <p className="mt-1 text-slate-500">
+          <p className="mt-1 text-muted-foreground">
             Theo dõi hóa đơn, hợp đồng và những việc cần bạn xử lý.
           </p>
         </div>
@@ -115,14 +115,14 @@ export function NotificationListPage() {
               void summary.refetch();
               void list.refetch();
             }}
-            className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold"
+            className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2 font-semibold"
           >
             <RefreshCw className="size-4" />
             Làm mới
           </button>
           <Link
             href="/tenant/notifications/settings"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-bold text-white"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-bold text-white"
           >
             <Settings2 className="size-4" />
             Cài đặt
@@ -152,13 +152,13 @@ export function NotificationListPage() {
           />
         </div>
       )}
-      <section className="rounded-2xl border bg-white p-4 shadow-sm">
+      <section className="surface-card p-4 ">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {tabs.map((x) => (
             <button
               key={x.id}
               onClick={() => chooseTab(x.id)}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold ${tab === x.id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold ${tab === x.id ? "bg-primary hover:bg-primary-hover text-white" : "bg-muted text-secondary-foreground"}`}
             >
               {x.label}
             </button>
@@ -166,7 +166,7 @@ export function NotificationListPage() {
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-[2fr_1fr_1fr_1fr]">
           <label className="relative">
-            <Search className="absolute left-3 top-3 size-5 text-slate-400" />
+            <Search className="absolute left-3 top-3 size-5 text-muted-foreground" />
             <input
               value={keyword}
               onChange={(e) => {
@@ -188,7 +188,7 @@ export function NotificationListPage() {
               setCategory(e.target.value);
               setPage(0);
             }}
-            className="rounded-xl border px-3 disabled:bg-slate-100"
+            className="rounded-xl border px-3 disabled:bg-muted"
           >
             <option value="">Tất cả danh mục</option>
             {Object.entries(notificationCategories).map(([v, t]) => (
@@ -251,7 +251,7 @@ export function NotificationListPage() {
                   setReadStatus("");
                   setPage(0);
                 }}
-                className="text-sm font-bold text-blue-600"
+                className="text-sm font-bold text-link"
               >
                 Xóa bộ lọc
               </button>
@@ -264,7 +264,7 @@ export function NotificationListPage() {
                 onSuccess: () => setFeedback("Đã đánh dấu tất cả là đã đọc."),
               })
             }
-            className="inline-flex items-center gap-2 text-sm font-bold text-blue-700 disabled:opacity-40"
+            className="inline-flex items-center gap-2 text-sm font-bold text-link disabled:opacity-40"
           >
             <CheckCheck className="size-4" />
             Đọc tất cả
@@ -276,19 +276,19 @@ export function NotificationListPage() {
           <b className="mr-auto">Đã chọn {selected.length}</b>
           <button
             onClick={() => bulk("MARK_READ")}
-            className="rounded-lg bg-white/10 px-3 py-2 text-sm"
+            className="rounded-lg bg-card/10 px-3 py-2 text-sm"
           >
             Đánh dấu đã đọc
           </button>
           <button
             onClick={() => bulk("MARK_UNREAD")}
-            className="rounded-lg bg-white/10 px-3 py-2 text-sm"
+            className="rounded-lg bg-card/10 px-3 py-2 text-sm"
           >
             Chưa đọc
           </button>
           <button
             onClick={() => bulk(tab === "ARCHIVED" ? "RESTORE" : "ARCHIVE")}
-            className="rounded-lg bg-white/10 px-3 py-2 text-sm"
+            className="rounded-lg bg-card/10 px-3 py-2 text-sm"
           >
             {tab === "ARCHIVED" ? "Khôi phục" : "Lưu trữ"}
           </button>
@@ -297,7 +297,7 @@ export function NotificationListPage() {
       {feedback && (
         <p
           role="status"
-          className="rounded-xl bg-blue-50 p-3 text-sm font-semibold text-blue-800"
+          className="rounded-xl bg-accent p-3 text-sm font-semibold text-link"
         >
           {feedback}
         </p>
@@ -305,14 +305,14 @@ export function NotificationListPage() {
       {list.isError ? (
         <ErrorState onRetry={() => void list.refetch()} />
       ) : list.isLoading ? (
-        <div className="rounded-2xl border bg-white p-8 text-center text-slate-500">
+        <div className="surface-card p-8 text-center text-muted-foreground">
           Đang tải thông báo...
         </div>
       ) : !list.data?.content.length ? (
         <EmptyState text="Không có thông báo phù hợp với bộ lọc." />
       ) : (
-        <section className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-          <div className="flex items-center border-b bg-slate-50 px-4 py-3">
+        <section className="overflow-hidden surface-card ">
+          <div className="flex items-center border-b bg-muted px-4 py-3">
             <label className="flex items-center gap-2 text-sm font-semibold">
               <input
                 type="checkbox"
@@ -325,7 +325,7 @@ export function NotificationListPage() {
               />
               Chọn trang này
             </label>
-            <span className="ml-auto text-sm text-slate-500">
+            <span className="ml-auto text-sm text-muted-foreground">
               {list.data.totalElements} thông báo
             </span>
           </div>
@@ -350,7 +350,7 @@ export function NotificationListPage() {
           <button
             disabled={page === 0}
             onClick={() => setPage((v) => v - 1)}
-            className="rounded-lg border bg-white p-2 disabled:opacity-40"
+            className="rounded-lg border bg-card p-2 disabled:opacity-40"
             aria-label="Trang trước"
           >
             <ChevronLeft />
@@ -361,7 +361,7 @@ export function NotificationListPage() {
           <button
             disabled={page + 1 === (list.data?.totalPages ?? 0)}
             onClick={() => setPage((v) => v + 1)}
-            className="rounded-lg border bg-white p-2 disabled:opacity-40"
+            className="rounded-lg border bg-card p-2 disabled:opacity-40"
             aria-label="Trang sau"
           >
             <ChevronRight />
@@ -373,9 +373,9 @@ export function NotificationListPage() {
 }
 function SummaryCard({ title, value = 0 }: { title: string; value?: number }) {
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
-      <p className="text-sm text-slate-500">{title}</p>
-      <p className="mt-1 text-2xl font-black text-slate-950">{value}</p>
+    <div className="surface-card p-4 ">
+      <p className="text-sm text-muted-foreground">{title}</p>
+      <p className="mt-1 text-2xl font-black text-foreground">{value}</p>
     </div>
   );
 }
@@ -390,7 +390,7 @@ function NotificationRow({
 }) {
   return (
     <article
-      className={`flex gap-3 border-b p-4 last:border-0 hover:bg-slate-50 ${item.read ? "" : "bg-blue-50/50"}`}
+      className={`flex gap-3 border-b p-4 last:border-0 hover:bg-muted ${item.read ? "" : "bg-accent/50"}`}
     >
       <input
         type="checkbox"
@@ -413,15 +413,15 @@ function NotificationRow({
           <SeverityBadge severity={item.severity} />
           {!item.read && (
             <span
-              className="mt-2 size-2 rounded-full bg-blue-600"
+              className="mt-2 size-2 rounded-full bg-primary hover:bg-primary-hover"
               aria-label="Chưa đọc"
             />
           )}
         </div>
-        <p className="mt-1 line-clamp-2 text-sm text-slate-600">
+        <p className="mt-1 line-clamp-2 text-sm text-secondary-foreground">
           {item.summary}
         </p>
-        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
+        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
           <span>{categoryLabel(item.category)}</span>
           {item.place?.roomCode && <span>Phòng {item.place.roomCode}</span>}
           <time
@@ -431,14 +431,14 @@ function NotificationRow({
             {relativeNotificationTime(item.createdAt)}
           </time>
           {item.requiresAction && (
-            <span className="font-bold text-amber-700">Cần xử lý</span>
+            <span className="font-bold text-warning">Cần xử lý</span>
           )}
           <span className="font-mono">{item.notificationCode}</span>
         </div>
       </Link>
       {item.archived && (
         <Archive
-          className="mt-3 size-4 text-slate-400"
+          className="mt-3 size-4 text-muted-foreground"
           aria-label="Đã lưu trữ"
         />
       )}

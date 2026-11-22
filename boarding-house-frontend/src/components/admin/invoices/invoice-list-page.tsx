@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { InvoicePolicyPanel } from "./invoice-policy-panel";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Banknote,
@@ -11,17 +13,20 @@ import {
   TriangleAlert,
   WalletCards,
 } from "lucide-react";
+import { useManagementProperty } from "@/providers/management-scope";
 import { AdminShell } from "@/components/admin/admin-shell";
 import {
   EmptyState,
   ErrorState,
   PageLoading,
 } from "@/components/shared/dashboard-ui";
+import { SummaryCard } from "@/components/shared/management-ui";
+import { apiErrorMessage } from "@/lib/api-error";
 import { useInvoiceData } from "@/hooks/use-admin-invoices";
 import { adminInvoiceService } from "@/services/admin-invoice.service";
 import { formatCurrency, formatDate } from "@/lib/format";
 const input =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500";
+  "w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring";
 const labels: Record<string, string> = {
   DRAFT: "Bản nháp",
   PENDING_REVIEW: "Chờ kiểm tra",
@@ -36,14 +41,14 @@ const labels: Record<string, string> = {
 export function InvoiceBadge({ status }: { status: string }) {
   const c =
     status === "PAID"
-      ? "bg-emerald-100 text-emerald-700"
+      ? "bg-success-muted text-success"
       : status === "OVERDUE"
-        ? "bg-red-100 text-red-700"
+        ? "bg-danger-muted text-danger"
         : status === "DRAFT"
-          ? "bg-slate-100 text-slate-700"
+          ? "bg-muted text-secondary-foreground"
           : status === "PARTIALLY_PAID"
-            ? "bg-amber-100 text-amber-700"
-            : "bg-blue-100 text-blue-700";
+            ? "bg-warning-muted text-warning"
+            : "bg-accent text-link";
   return (
     <span
       className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${c}`}
@@ -52,13 +57,27 @@ export function InvoiceBadge({ status }: { status: string }) {
     </span>
   );
 }
-export function InvoiceListPage() {
+export function InvoiceListPage({ debtOnly = false }: { debtOnly?: boolean }) {
+  const params = useSearchParams();
+  const roomFilter = Number(params.get("roomId")) || undefined;
   const [typed, setTyped] = useState("");
   const [keyword, setKeyword] = useState("");
-  const [propertyId, setPropertyId] = useState<number>();
-  const [period, setPeriod] = useState("");
-  const [status, setStatus] = useState("");
+  const [propertyId, setPropertyId] = useManagementProperty(
+    Number(params.get("propertyId")) || undefined,
+  );
+  const [period, setPeriod] = useState(params.get("billingPeriod") ?? "");
+  const [sort, setSort] = useState(debtOnly ? "debt" : "newest");
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState("");
+  const [status, setStatus] = useState(
+    debtOnly ? "OUTSTANDING" : (params.get("status") ?? ""),
+  );
   const [page, setPage] = useState(0);
+  const [previousProperty, setPreviousProperty] = useState(propertyId);
+  if (previousProperty !== propertyId) {
+    setPreviousProperty(propertyId);
+    setPage(0);
+  }
   useEffect(() => {
     const t = setTimeout(() => {
       setKeyword(typed.trim());
@@ -69,60 +88,97 @@ export function InvoiceListPage() {
   const filters = useMemo(
     () => ({
       propertyId,
+      roomId: roomFilter,
       keyword: keyword || undefined,
       billingPeriod: period || undefined,
       status: status || undefined,
       page,
       size: 20,
+      sort,
     }),
-    [propertyId, keyword, period, status, page],
+    [propertyId, roomFilter, keyword, period, status, page, sort],
   );
   const { summary, list, options } = useInvoiceData(filters);
-  if (summary.isLoading || list.isLoading || options.isLoading)
-    return <PageLoading />;
+  const exportData = async (format: "csv" | "xlsx") => {
+    setExporting(true);
+    setExportError("");
+    try {
+      await adminInvoiceService.export({ ...filters, format });
+    } catch (error) {
+      setExportError(apiErrorMessage(error));
+    } finally {
+      setExporting(false);
+    }
+  };
   const s = summary.data,
     p = list.data;
   return (
     <AdminShell
-      title="Quản lý hóa đơn"
+      title={debtOnly ? "Quản lý công nợ" : "Quản lý hóa đơn"}
       subtitle="Lập hóa đơn, theo dõi thanh toán và quản lý công nợ"
       readOnly
     >
       <div className="mx-auto max-w-[1650px] space-y-5">
         <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
           <div>
-            <p className="text-sm text-slate-500">Tổng quan / Hóa đơn</p>
-            <h1 className="mt-1 text-2xl font-extrabold">Quản lý hóa đơn</h1>
+            <p className="text-sm text-muted-foreground">Tổng quan / Hóa đơn</p>
+            <h1 className="mt-1 text-2xl font-extrabold">
+              {debtOnly ? "Quản lý công nợ" : "Quản lý hóa đơn"}
+            </h1>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() =>
-                void adminInvoiceService.export({
-                  propertyId,
-                  billingPeriod: period || undefined,
-                  status: status || undefined,
-                })
-              }
-              className="inline-flex items-center gap-2 rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+              disabled={exporting}
+              onClick={() => void exportData("xlsx")}
+              className="inline-flex items-center gap-2 rounded-xl border bg-card px-3 py-2 text-sm font-semibold"
             >
               <Download className="size-4" />
-              Xuất dữ liệu
+              Xuất Excel
             </button>
             <Link
               href="/admin/invoices/generate"
-              className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+              className="rounded-xl border bg-card px-3 py-2 text-sm font-semibold"
             >
               Lập hàng loạt
             </Link>
             <Link
               href="/admin/invoices/new"
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white"
             >
               <FilePlus2 className="size-4" />
               Tạo hóa đơn
             </Link>
           </div>
         </div>
+        {exportError && (
+          <p role="alert" className="text-sm text-danger">
+            {exportError}
+          </p>
+        )}
+        <nav className="flex flex-wrap gap-3 text-sm">
+          <Link className="text-link" href="/admin/invoices">
+            Hóa đơn
+          </Link>
+          <Link className="text-link" href="/admin/invoices/generate">
+            Lập nháp hàng tháng
+          </Link>
+          <Link className="text-link" href="/admin/invoices/debt">
+            Công nợ
+          </Link>
+          <Link className="text-link" href="/admin/reports/payments">
+            Lịch sử thanh toán
+          </Link>
+          <button
+            disabled={exporting}
+            onClick={() => void exportData("csv")}
+            className="text-link"
+          >
+            Tải CSV cùng bộ lọc
+          </button>
+        </nav>
+        {(summary.isLoading || list.isLoading || options.isLoading) && (
+          <PageLoading />
+        )}
         {(summary.isError || list.isError) && (
           <ErrorState
             onRetry={() => {
@@ -130,6 +186,44 @@ export function InvoiceListPage() {
               void list.refetch();
             }}
           />
+        )}
+        {propertyId && (
+          <InvoicePolicyPanel propertyId={propertyId} period={period} />
+        )}
+        {s && (
+          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <SummaryCard
+              label="Tổng hóa đơn trong phạm vi"
+              value={s.totalInvoiceCount ?? 0}
+            />
+            <SummaryCard
+              label="Đã phát hành (gồm đã thanh toán)"
+              value={s.issuedInvoiceCount ?? 0}
+            />
+            <SummaryCard label="Đã thanh toán" value={s.paidInvoiceCount} />
+            <SummaryCard
+              label="Người thuê còn nợ"
+              value={s.debtTenantCount ?? 0}
+            />
+          </section>
+        )}
+        {debtOnly && s && (
+          <section className="grid gap-3 sm:grid-cols-3">
+            <SummaryCard
+              label="Tổng công nợ"
+              value={formatCurrency(s.totalOutstandingAmount)}
+            />
+            <SummaryCard
+              label="Trong hạn"
+              value={formatCurrency(
+                s.totalOutstandingAmount - (s.overdueOutstandingAmount ?? 0),
+              )}
+            />
+            <SummaryCard
+              label="Quá hạn"
+              value={formatCurrency(s.overdueOutstandingAmount ?? 0)}
+            />
+          </section>
         )}
         {s && (
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
@@ -139,7 +233,7 @@ export function InvoiceListPage() {
               icon={<WalletCards />}
             />
             <Stat
-              label="Đã thu"
+              label="Đã thanh toán"
               value={formatCurrency(s.totalPaidAmount)}
               icon={<Banknote />}
             />
@@ -175,10 +269,10 @@ export function InvoiceListPage() {
             />
           </section>
         )}
-        <section className="rounded-2xl border bg-white p-4 shadow-sm">
+        <section className="surface-card p-4 ">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <label className="relative xl:col-span-2">
-              <Search className="absolute left-3 top-3 size-4 text-slate-400" />
+              <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
               <input
                 className={`${input} pl-9`}
                 value={typed}
@@ -228,9 +322,33 @@ export function InvoiceListPage() {
               ))}
             </select>
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Thống kê theo nhà trọ/kỳ, không cộng tiền cọc chưa cấn trừ. Xuất
+            dùng đúng các bộ lọc của danh sách.
+          </p>
+          <label className="mt-3 block max-w-xs text-xs text-muted-foreground">
+            Sắp xếp
+            <select
+              aria-label="Sắp xếp hóa đơn"
+              className={input}
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value);
+                setPage(0);
+              }}
+            >
+              <option value="newest">Mới nhất</option>
+              <option value="oldest">Cũ nhất</option>
+              <option value="due">Hạn gần nhất</option>
+              <option value="amount">Số tiền cao nhất</option>
+              <option value="debt">Công nợ cao nhất</option>
+            </select>
+          </label>
           <div className="mt-3 flex flex-wrap gap-2">
             {[
               ["", "Tất cả"],
+              ["OUTSTANDING", "Còn nợ"],
+              ["ISSUED", "Đã phát hành"],
               ["DRAFT", "Bản nháp"],
               ["UNPAID", "Chờ thanh toán"],
               ["PARTIALLY_PAID", "Thanh toán một phần"],
@@ -244,7 +362,7 @@ export function InvoiceListPage() {
                   setStatus(v);
                   setPage(0);
                 }}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${status === v ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${status === v ? "bg-primary hover:bg-primary-hover text-white" : "bg-muted text-secondary-foreground"}`}
               >
                 {l}
               </button>
@@ -258,7 +376,7 @@ export function InvoiceListPage() {
                 setStatus("");
                 setPage(0);
               }}
-              className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-blue-600"
+              className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-link"
             >
               <RefreshCw className="size-3" />
               Xóa bộ lọc
@@ -270,10 +388,10 @@ export function InvoiceListPage() {
         ) : (
           p && (
             <>
-              <section className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+              <section className="overflow-hidden surface-card ">
                 <div className="hidden overflow-x-auto lg:block">
                   <table className="w-full min-w-[1200px] text-left text-sm">
-                    <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                    <thead className="bg-muted text-xs uppercase text-muted-foreground">
                       <tr>
                         {[
                           "Mã hóa đơn",
@@ -294,11 +412,11 @@ export function InvoiceListPage() {
                     </thead>
                     <tbody>
                       {p.content.map((i) => (
-                        <tr key={i.id} className="border-t hover:bg-blue-50/30">
+                        <tr key={i.id} className="border-t hover:bg-accent/30">
                           <td className="px-4 py-3">
                             <Link
                               href={`/admin/invoices/${i.id}`}
-                              className="font-bold text-blue-700"
+                              className="font-bold text-link"
                             >
                               {i.invoiceCode}
                             </Link>
@@ -309,7 +427,7 @@ export function InvoiceListPage() {
                                 </small>
                               )}
                               {i.hasAdjustment && (
-                                <small className="rounded bg-amber-50 px-1 text-amber-700">
+                                <small className="rounded bg-warning-muted px-1 text-warning">
                                   Điều chỉnh
                                 </small>
                               )}
@@ -317,13 +435,13 @@ export function InvoiceListPage() {
                           </td>
                           <td className="px-4 py-3">
                             {i.property.name}
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                               {i.room.name} · {i.room.secondary}
                             </p>
                           </td>
                           <td className="px-4 py-3">
                             {i.tenant.name}
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                               {i.tenant.secondary}
                             </p>
                           </td>
@@ -332,8 +450,8 @@ export function InvoiceListPage() {
                             <p
                               className={
                                 i.overdueDays > 0
-                                  ? "text-xs font-semibold text-red-600"
-                                  : "text-xs text-slate-500"
+                                  ? "text-xs font-semibold text-danger"
+                                  : "text-xs text-muted-foreground"
                               }
                             >
                               Hạn {formatDate(i.dueDate)}
@@ -342,7 +460,34 @@ export function InvoiceListPage() {
                                 : ""}
                             </p>
                           </td>
-                          <Money value={i.totalAmount} />
+                          <td className="px-4 py-3 text-right">
+                            <strong>{formatCurrency(i.totalAmount)}</strong>
+                            {i.breakdown && (
+                              <details className="mt-2 text-xs">
+                                <summary className="cursor-pointer text-link">
+                                  Các khoản tính tiền
+                                </summary>
+                                {Object.entries(i.breakdown).map(
+                                  ([type, value]) => (
+                                    <p
+                                      key={type}
+                                      className="mt-1 whitespace-nowrap"
+                                    >
+                                      {{
+                                        rent: "Tiền phòng",
+                                        electricity: "Điện",
+                                        water: "Nước",
+                                        services: "Dịch vụ",
+                                        other: "Khoản khác",
+                                        discount: "Giảm giá",
+                                      }[type] ?? type}
+                                      : {formatCurrency(value)}
+                                    </p>
+                                  ),
+                                )}
+                              </details>
+                            )}
+                          </td>
                           <Money value={i.paidAmount} />
                           <Money
                             value={i.remainingAmount}
@@ -354,7 +499,7 @@ export function InvoiceListPage() {
                           <td className="px-4 py-3">
                             <Link
                               href={`/admin/invoices/${i.id}`}
-                              className="font-semibold text-blue-600"
+                              className="font-semibold text-link"
                             >
                               Chi tiết →
                             </Link>
@@ -372,7 +517,7 @@ export function InvoiceListPage() {
                       className="rounded-xl border p-4"
                     >
                       <div className="flex justify-between gap-2">
-                        <strong className="text-blue-700">
+                        <strong className="text-link">
                           {i.invoiceCode}
                         </strong>
                         <InvoiceBadge status={i.status} />
@@ -380,7 +525,7 @@ export function InvoiceListPage() {
                       <p className="mt-2 text-sm">
                         {i.room.name} · {i.tenant.name}
                       </p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         Kỳ {i.billingPeriod} · Hạn {formatDate(i.dueDate)}
                       </p>
                       <div className="mt-3 flex justify-between">
@@ -388,8 +533,8 @@ export function InvoiceListPage() {
                         <span
                           className={
                             i.remainingAmount > 0
-                              ? "font-semibold text-red-600"
-                              : "text-emerald-600"
+                              ? "font-semibold text-danger"
+                              : "text-success"
                           }
                         >
                           Còn {formatCurrency(i.remainingAmount)}
@@ -403,7 +548,7 @@ export function InvoiceListPage() {
                 <button
                   disabled={page === 0}
                   onClick={() => setPage(page - 1)}
-                  className="rounded-lg border bg-white px-3 py-2 disabled:opacity-40"
+                  className="rounded-lg border bg-card px-3 py-2 disabled:opacity-40"
                 >
                   Trước
                 </button>
@@ -413,7 +558,7 @@ export function InvoiceListPage() {
                 <button
                   disabled={page + 1 >= p.totalPages}
                   onClick={() => setPage(page + 1)}
-                  className="rounded-lg border bg-white px-3 py-2 disabled:opacity-40"
+                  className="rounded-lg border bg-card px-3 py-2 disabled:opacity-40"
                 >
                   Sau
                 </button>
@@ -435,9 +580,9 @@ function Stat({
   icon: React.ReactNode;
 }) {
   return (
-    <article className="rounded-2xl border bg-white p-4 shadow-sm">
-      <span className="block size-5 text-blue-600">{icon}</span>
-      <p className="mt-3 text-xs text-slate-500">{label}</p>
+    <article className="surface-card p-4 ">
+      <span className="block size-5 text-link">{icon}</span>
+      <p className="mt-3 text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 truncate text-lg font-extrabold">{value}</p>
     </article>
   );
@@ -445,7 +590,7 @@ function Stat({
 function Money({ value, danger }: { value: number; danger?: boolean }) {
   return (
     <td
-      className={`px-4 py-3 text-right font-semibold ${danger ? "text-red-600" : ""}`}
+      className={`px-4 py-3 text-right font-semibold ${danger ? "text-danger" : ""}`}
     >
       {formatCurrency(value)}
     </td>

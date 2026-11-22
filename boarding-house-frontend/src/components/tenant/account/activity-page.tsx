@@ -21,13 +21,13 @@ export function ActivityPage() {
       ) : !query.data?.content.length ? (
         <EmptyState text="Chưa có lịch sử hoạt động." />
       ) : (
-        <section className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+        <section className="overflow-hidden surface-card ">
           {query.data.content.map((x) => (
             <article
               key={x.id}
               className="flex gap-4 border-b p-5 last:border-0"
             >
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-blue-50 text-blue-700">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent text-link">
                 <Activity className="size-5" />
               </span>
               <div className="min-w-0 flex-1">
@@ -37,10 +37,10 @@ export function ActivityPage() {
                   </h2>
                   <StatusPill tone="green">Thành công</StatusPill>
                 </div>
-                <p className="mt-1 text-sm text-slate-600">{x.description}</p>
+                <p className="mt-1 text-sm text-secondary-foreground">{x.description}</p>
                 <time
                   dateTime={x.createdAt}
-                  className="mt-1 block text-xs text-slate-400"
+                  className="mt-1 block text-xs text-muted-foreground"
                 >
                   {accountDate(x.createdAt, true)}
                 </time>

@@ -1,16 +1,18 @@
 "use client";
+import { IntegrationCenter } from "./integration-center";
 import { parseNumericFields } from "@/lib/numeric-input";
+import Link from "next/link";
+import { useScopedQuery } from "@/hooks/use-scoped-query";
+import { useSearchParams } from "next/navigation";
 
 import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import {
   Bot,
-  CheckCircle2,
   Clock3,
   FileClock,
   KeyRound,
-  Link2,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -47,14 +49,17 @@ const genericSections = new Set([
 ]);
 
 export function SettingsPage({ section }: { section: SettingSection }) {
+  const params = useSearchParams();
   const { user } = useAuth();
   const isOwner = user?.activeRole === "OWNER";
-  const overviewQuery = useQuery({
+  const overviewQuery = useScopedQuery({
     queryKey: ["admin-settings-overview"],
     queryFn: ({ signal }) => adminSettingService.overview(signal),
     staleTime: 20_000,
   });
-  const [propertyId, setPropertyId] = useState<number>();
+  const [propertyId, setPropertyId] = useState<number | undefined>(
+    Number(params.get("propertyId")) || undefined,
+  );
 
   if (overviewQuery.isLoading) return <PageLoading />;
   const effectivePropertyId =
@@ -67,23 +72,23 @@ export function SettingsPage({ section }: { section: SettingSection }) {
       subtitle="Vận hành, bảo mật và tích hợp SmartHome AI"
     >
       <div className="mx-auto max-w-[1500px] space-y-6">
-        <header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
+        <header className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-link">
             Tổng quan / Cài đặt
           </p>
           <div className="mt-2 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
+              <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
                 {navItem?.label ?? "Cài đặt hệ thống"}
               </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                 {navItem?.description ??
                   "Quản lý cấu hình vận hành, bảo mật và tích hợp của SmartHome AI."}
               </p>
             </div>
             {section === "properties" && overviewQuery.data && (
               <label className="min-w-64">
-                <span className="mb-1.5 block text-xs font-semibold text-slate-500">
+                <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">
                   Khu trọ đang cấu hình
                 </span>
                 <select
@@ -91,7 +96,7 @@ export function SettingsPage({ section }: { section: SettingSection }) {
                   onChange={(event) =>
                     setPropertyId(Number(event.target.value))
                   }
-                  className="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500"
+                  className="min-h-11 w-full rounded-xl border border-input bg-card px-3 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring"
                 >
                   {overviewQuery.data.properties.map((property) => (
                     <option key={property.id} value={property.id}>
@@ -106,16 +111,19 @@ export function SettingsPage({ section }: { section: SettingSection }) {
         {overviewQuery.isError ? (
           <ErrorState onRetry={() => void overviewQuery.refetch()} />
         ) : inaccessible ? (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center font-semibold text-amber-800">
+          <div className="rounded-2xl border border-warning-border bg-warning-muted p-8 text-center font-semibold text-warning">
             Bạn không có quyền truy cập nhóm cài đặt này.
           </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
             <SettingsNavigation section={section} isOwner={isOwner} />
             <main className="min-w-0">
+              <ConfigurationSources section={section} />
               {section === "organization" && <OrganizationSettingsPanel />}
               {section === "overview" && overviewQuery.data ? (
                 <OverviewPanel data={overviewQuery.data} />
+              ) : section === "integrations" ? (
+                <IntegrationCenter />
               ) : section === "audit-logs" ? (
                 <AuditPanel />
               ) : (
@@ -139,7 +147,7 @@ function EditableSettings({
   section: SettingSection;
   propertyId?: number;
 }) {
-  const query = useQuery<SettingData>({
+  const query = useScopedQuery<SettingData>({
     queryKey: ["admin-settings", section, propertyId],
     enabled: section !== "properties" || Boolean(propertyId),
     queryFn: async ({ signal }): Promise<SettingData> => {
@@ -228,7 +236,7 @@ function SettingsEditor({
   const editable =
     "editable" in data ? Boolean((data as GroupSettings).editable) : true;
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="surface-card p-5 sm:p-6">
       {section === "ai" && (
         <AiStatus
           data={data as AiSettings}
@@ -244,13 +252,13 @@ function SettingsEditor({
         />
       )}
       {section === "properties" && (
-        <div className="mb-6 grid gap-3 rounded-xl bg-slate-50 p-4 text-sm sm:grid-cols-2">
+        <div className="mb-6 grid gap-3 rounded-xl bg-muted p-4 text-sm sm:grid-cols-2">
           <p>
-            <span className="text-slate-500">Mã khu trọ:</span>{" "}
+            <span className="text-muted-foreground">Mã khu trọ:</span>{" "}
             <strong>{(data as PropertySettings).propertyCode}</strong>
           </p>
           <p>
-            <span className="text-slate-500">Địa chỉ:</span>{" "}
+            <span className="text-muted-foreground">Địa chỉ:</span>{" "}
             <strong>{(data as PropertySettings).address}</strong>
           </p>
         </div>
@@ -280,7 +288,7 @@ function SettingsEditor({
 
 function OverviewPanel({ data }: { data: SettingOverview }) {
   const metrics = [
-    ["Hệ thống", data.systemName, Sparkles, "bg-blue-50 text-blue-700"],
+    ["Hệ thống", data.systemName, Sparkles, "bg-accent text-link"],
     ["Múi giờ", data.timezone, Clock3, "bg-cyan-50 text-cyan-700"],
     [
       "Bảo mật",
@@ -288,7 +296,7 @@ function OverviewPanel({ data }: { data: SettingOverview }) {
         ? "Đã cấu hình"
         : "Chưa hoàn thiện",
       ShieldCheck,
-      "bg-emerald-50 text-emerald-700",
+      "bg-success-muted text-success",
     ],
     [
       "Khu trọ",
@@ -301,52 +309,22 @@ function OverviewPanel({ data }: { data: SettingOverview }) {
     <div className="space-y-6">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map(([label, value, Icon, tone]) => (
-          <article
-            key={label}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-          >
+          <article key={label} className="surface-card p-5 sm:p-6 ">
             <span
               className={`grid size-10 place-items-center rounded-xl ${tone}`}
             >
               <Icon className="size-5" />
             </span>
-            <p className="mt-4 text-xs font-medium text-slate-500">{label}</p>
-            <p className="mt-1 truncate text-lg font-extrabold text-slate-950">
+            <p className="mt-4 text-xs font-medium text-muted-foreground">
+              {label}
+            </p>
+            <p className="mt-1 truncate text-lg font-extrabold text-foreground">
               {value}
             </p>
           </article>
         ))}
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h2 className="text-lg font-bold text-slate-950">
-          Trạng thái tích hợp
-        </h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {Object.entries(data.configuredIntegrations).map(([key, enabled]) => (
-            <div
-              key={key}
-              className="flex items-center justify-between rounded-xl border border-slate-100 p-4"
-            >
-              <span className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <Link2 className="size-4 text-slate-400" />
-                {integrationLabel(key)}
-              </span>
-              <span
-                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${enabled ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}
-              >
-                {enabled && <CheckCircle2 className="size-3.5" />}
-                {enabled ? "Đã cấu hình" : "Chưa cấu hình"}
-              </span>
-            </div>
-          ))}
-        </div>
-        <p className="mt-5 border-t border-slate-100 pt-4 text-xs text-slate-500">
-          Cập nhật gần nhất:{" "}
-          {data.lastUpdatedAt
-            ? `${formatDate(data.lastUpdatedAt, true)} bởi ${data.lastUpdatedBy ?? "quản trị viên"}`
-            : "Chưa có thay đổi được ghi nhận"}
-        </p>
-      </section>
+      <IntegrationCenter compact />
     </div>
   );
 }
@@ -354,7 +332,7 @@ function OverviewPanel({ data }: { data: SettingOverview }) {
 function AuditPanel() {
   const [group, setGroup] = useState("");
   const [page, setPage] = useState(0);
-  const query = useQuery({
+  const query = useScopedQuery({
     queryKey: ["setting-audit", group, page],
     queryFn: ({ signal }) =>
       adminSettingService.auditLogs(
@@ -366,11 +344,11 @@ function AuditPanel() {
   if (query.isError) return <ErrorState onRetry={() => void query.refetch()} />;
   const data = query.data as AuditPage;
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex flex-col justify-between gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center">
+    <section className="overflow-hidden surface-card ">
+      <div className="flex flex-col justify-between gap-3 border-b border-border p-5 sm:flex-row sm:items-center">
         <div>
-          <h2 className="font-bold text-slate-950">Nhật ký thay đổi</h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <h2 className="font-bold text-foreground">Nhật ký thay đổi</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
             Không lưu mật khẩu, token hoặc API key.
           </p>
         </div>
@@ -380,7 +358,7 @@ function AuditPanel() {
             setGroup(event.target.value);
             setPage(0);
           }}
-          className="min-h-10 rounded-xl border border-slate-200 px-3 text-sm"
+          className="min-h-10 rounded-xl border border-input px-3 text-sm"
         >
           <option value="">Tất cả nhóm</option>
           {settingNavigation
@@ -396,26 +374,26 @@ function AuditPanel() {
         </select>
       </div>
       {data.content.length === 0 ? (
-        <div className="p-10 text-center text-sm text-slate-500">
+        <div className="p-10 text-center text-sm text-muted-foreground">
           Chưa có thay đổi cấu hình nào được ghi nhận.
         </div>
       ) : (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-divider">
           {data.content.map((log) => (
             <article key={log.id} className="flex gap-3 p-5">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent text-link">
                 <FileClock className="size-5" />
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-foreground">
                     {log.userName} đã cập nhật {log.settingGroup}
                   </p>
-                  <time className="text-xs text-slate-500">
+                  <time className="text-xs text-muted-foreground">
                     {formatDate(log.createdAt, true)}
                   </time>
                 </div>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Phạm vi: {log.scopeType}
                   {log.scopeId ? ` #${log.scopeId}` : ""} ·{" "}
                   {log.result === "SUCCESS" ? "Thành công" : "Thất bại"}
@@ -425,7 +403,7 @@ function AuditPanel() {
           ))}
         </div>
       )}
-      <div className="flex items-center justify-between border-t border-slate-100 p-4 text-sm">
+      <div className="flex items-center justify-between border-t border-border p-4 text-sm">
         <span>
           Trang {data.page + 1}/{Math.max(data.totalPages, 1)}
         </span>
@@ -452,9 +430,9 @@ function AuditPanel() {
 
 function AiStatus({ data, onTest }: { data: AiSettings; onTest: () => void }) {
   return (
-    <div className="mb-6 flex flex-col justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 sm:flex-row sm:items-center">
+    <div className="mb-6 flex flex-col justify-between gap-3 rounded-xl border border-accent-border bg-accent p-4 sm:flex-row sm:items-center">
       <div className="flex items-center gap-3">
-        <span className="grid size-10 place-items-center rounded-xl bg-blue-600 text-white">
+        <span className="grid size-10 place-items-center rounded-xl bg-primary hover:bg-primary-hover text-white">
           <Bot className="size-5" />
         </span>
         <div>
@@ -462,7 +440,7 @@ function AiStatus({ data, onTest }: { data: AiSettings; onTest: () => void }) {
             API key:{" "}
             {data.configured ? "Đã cấu hình trên máy chủ" : "Chưa cấu hình"}
           </p>
-          <p className="text-xs text-blue-700">
+          <p className="text-xs text-link">
             Secret không được tải xuống trình duyệt.
           </p>
         </div>
@@ -470,7 +448,7 @@ function AiStatus({ data, onTest }: { data: AiSettings; onTest: () => void }) {
       <button
         type="button"
         onClick={onTest}
-        className="min-h-10 rounded-xl border border-blue-200 bg-white px-4 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+        className="min-h-10 rounded-xl border border-accent-border bg-card px-4 text-sm font-semibold text-link hover:bg-accent"
       >
         Kiểm tra cấu hình
       </button>
@@ -479,11 +457,11 @@ function AiStatus({ data, onTest }: { data: AiSettings; onTest: () => void }) {
 }
 function SectionSkeleton() {
   return (
-    <div className="animate-pulse space-y-4 rounded-2xl border border-slate-200 bg-white p-6">
+    <div className="animate-pulse space-y-4 surface-card p-6">
       <div className="h-6 w-48 rounded bg-slate-200" />
       <div className="grid gap-5 md:grid-cols-2">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="h-20 rounded-xl bg-slate-100" />
+          <div key={index} className="h-20 rounded-xl bg-muted" />
         ))}
       </div>
     </div>
@@ -555,21 +533,48 @@ function parseDays(value: unknown) {
     .map((item) => Number(item.trim()))
     .filter((item) => Number.isInteger(item) && item >= 0);
 }
-function integrationLabel(key: string) {
-  return (
-    (
-      {
-        email: "Email",
-        payment: "Thanh toán",
-        ai: "Trí tuệ nhân tạo",
-        webPush: "Web Push",
-      } as Record<string, string>
-    )[key] ?? key
-  );
-}
+
 function apiError(reason: unknown) {
   const error = reason as AxiosError<{ message?: string }>;
   return (
     error.response?.data?.message || "Không thể lưu cài đặt. Vui lòng thử lại."
+  );
+}
+
+function ConfigurationSources({ section }: { section: SettingSection }) {
+  const links: [string, string][] = [
+    ["/admin/organizations", "Công ty & khu quản lý"],
+    ["/admin/properties", "Thông tin nhà trọ"],
+    ["/admin/invoices", "Hóa đơn & chính sách thanh toán"],
+    ["/admin/reports/utilities", "Điện nước & cảnh báo"],
+    ["/admin/properties", "Danh mục dịch vụ tại nhà trọ"],
+    ["/admin/accounts", "Nhân viên & quyền truy cập"],
+  ];
+  return (
+    <aside className="mb-5 rounded-2xl border border-accent-border bg-accent p-4 text-sm">
+      <p className="font-semibold text-blue-950">Phạm vi và nguồn cấu hình</p>
+      <p className="mt-2 leading-6 text-link">
+        {section === "properties"
+          ? "Quy tắc áp dụng riêng nhà trọ đang chọn. Biên bản và hóa đơn đã chốt giữ dữ liệu snapshot."
+          : "Cấu hình chung hiện thuộc tài khoản chủ nhà; hồ sơ công ty được quản lý riêng tại Công ty & khu quản lý. Cấu hình này không tự ghi đè hợp đồng hoặc hóa đơn đã phát hành."}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+        {links.map(([href, label]) => (
+          <Link
+            key={`${href}-${label}`}
+            href={href}
+            className="text-link underline"
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+      {["notifications", "integrations"].includes(section) && (
+        <p className="mt-3 text-link">
+          Bật kênh chỉ lưu tùy chọn. Email/SMS/Zalo cần bộ gửi được cấu hình và
+          xác nhận; lưu cấu hình không đồng nghĩa đã gửi thông báo.
+        </p>
+      )}
+    </aside>
   );
 }

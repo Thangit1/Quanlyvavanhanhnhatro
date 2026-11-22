@@ -24,17 +24,17 @@ export function CoOccupantHistoryPage() {
     <main className="mx-auto max-w-5xl space-y-5 p-4 pb-28 sm:p-6">
       <Link
         href="/tenant/co-occupants"
-        className="inline-flex items-center gap-2 font-semibold text-slate-600"
+        className="inline-flex items-center gap-2 font-semibold text-secondary-foreground"
       >
         <ArrowLeft className="size-4" />
         Người ở cùng
       </Link>
       <div>
         <h1 className="flex items-center gap-3 text-3xl font-black">
-          <History className="text-blue-600" />
+          <History className="text-link" />
           Lịch sử cư trú
         </h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-muted-foreground">
           Các lần cư trú đã kết thúc được lưu lại và không thể xóa.
         </p>
       </div>
@@ -43,17 +43,17 @@ export function CoOccupantHistoryPage() {
           {q.data.content.map((x) => (
             <article
               key={x.id}
-              className="rounded-2xl border bg-white p-5 shadow-sm"
+              className="surface-card p-5 sm:p-6 "
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="font-bold">
                     {x.propertyName} · Phòng {x.roomCode}
                   </h2>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {formatDate(x.moveInDate)} – {formatDate(x.moveOutDate)}
                   </p>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Quan hệ: {x.relationship || "Không ghi nhận"}
                   </p>
                 </div>

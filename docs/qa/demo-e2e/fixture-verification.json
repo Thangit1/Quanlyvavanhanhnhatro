@@ -1,0 +1,256 @@
+{
+  "cases": [
+    {
+      "status": "PASS",
+      "id": "TC01",
+      "evidence": "Dedicated schema organization"
+    },
+    {
+      "status": "PASS",
+      "id": "TC02",
+      "evidence": "Property created via authenticated API"
+    },
+    {
+      "status": "PASS",
+      "id": "TC03",
+      "evidence": "Manual fixture remains READY and has no contract"
+    },
+    {
+      "status": "PASS",
+      "id": "TC04",
+      "evidence": "Synthetic tenant date of birth"
+    },
+    {
+      "status": "PASS",
+      "id": "TC05",
+      "evidence": "Real tenant login and invoice authorization"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC06",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "PASS",
+      "id": "TC07",
+      "evidence": "Landlord confirmation persisted"
+    },
+    {
+      "status": "PASS",
+      "id": "TC08",
+      "evidence": "Tenant confirmation persisted"
+    },
+    {
+      "status": "PASS",
+      "id": "TC09",
+      "evidence": "Completed handover and ACTIVE contract"
+    },
+    {
+      "status": "PASS",
+      "id": "TC10",
+      "evidence": "No ACTIVE contract in a non-OCCUPIED room"
+    },
+    {
+      "status": "PASS",
+      "id": "TC11",
+      "evidence": "Electricity opening 1200; billed quantity 100"
+    },
+    {
+      "status": "PASS",
+      "id": "TC12",
+      "evidence": "Water opening 80; billed quantity 8"
+    },
+    {
+      "status": "PASS",
+      "id": "TC13",
+      "evidence": "Persisted electricity line"
+    },
+    {
+      "status": "PASS",
+      "id": "TC14",
+      "evidence": "Persisted water line"
+    },
+    {
+      "status": "PASS",
+      "id": "TC15",
+      "evidence": "Two fixed monthly services"
+    },
+    {
+      "status": "PASS",
+      "id": "TC16",
+      "evidence": "Preview persisted before draft creation"
+    },
+    {
+      "status": "PASS",
+      "id": "TC17",
+      "evidence": "Issued invoice"
+    },
+    {
+      "status": "PASS",
+      "id": "TC18",
+      "evidence": "Backend snapshot total, six separate invoices"
+    },
+    {
+      "status": "PASS",
+      "id": "TC19",
+      "evidence": "Duplicate invoice API rejects the same contract/month"
+    },
+    {
+      "status": "PASS",
+      "id": "TC20",
+      "evidence": "A unpaid without cash receipt"
+    },
+    {
+      "status": "PASS",
+      "id": "TC21",
+      "evidence": "B full cash payment once"
+    },
+    {
+      "status": "PASS",
+      "id": "TC22",
+      "evidence": "C proof PENDING does not change cash/debt"
+    },
+    {
+      "status": "PASS",
+      "id": "TC23",
+      "evidence": "D approved synthetic proof, one full transfer receipt"
+    },
+    {
+      "status": "BLOCKED",
+      "id": "TC24",
+      "evidence": "No gateway provider/failure callback exists. Scenario E rejects unsupported CARD without creating a session; this is not a FAILED gateway session."
+    },
+    {
+      "status": "PASS",
+      "id": "TC25",
+      "evidence": "E rejected payment creates no cash"
+    },
+    {
+      "status": "PASS",
+      "id": "TC26",
+      "evidence": "Approved transfer cannot be approved twice"
+    },
+    {
+      "status": "PASS",
+      "id": "TC27",
+      "evidence": "Invoice balance equals confirmed allocations"
+    },
+    {
+      "status": "PASS",
+      "id": "TC28",
+      "evidence": "Nov 3 before due date, still payable"
+    },
+    {
+      "status": "PASS",
+      "id": "TC29",
+      "evidence": "Nov 5 inclusive deadline"
+    },
+    {
+      "status": "PASS",
+      "id": "TC30",
+      "evidence": "Java and MySQL share Nov 6"
+    },
+    {
+      "status": "PASS",
+      "id": "TC31",
+      "evidence": "Both tenant and owner APIs report OVERDUE"
+    },
+    {
+      "status": "PASS",
+      "id": "TC32",
+      "evidence": "Near-due and overdue milestone rules generated deliveries"
+    },
+    {
+      "status": "PASS",
+      "id": "TC33",
+      "evidence": "SMTP receipt evidence plus SENT/SMTP_ACCEPTED, not DELIVERED"
+    },
+    {
+      "status": "PASS",
+      "id": "TC34",
+      "evidence": "Accepted overdue email contains room, amount, due date and invoice"
+    },
+    {
+      "status": "PASS",
+      "id": "TC35",
+      "evidence": "Repeated same-date scan sends no duplicate email"
+    },
+    {
+      "status": "PASS",
+      "id": "TC36",
+      "evidence": "Tenant inbox, read, and source link over authenticated HTTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC37",
+      "evidence": "Bell unread API (visual browser check reported separately)"
+    },
+    {
+      "status": "PASS",
+      "id": "TC38",
+      "evidence": "F full payment after due date, actual Nov 10 receipt"
+    },
+    {
+      "status": "PASS",
+      "id": "TC39",
+      "evidence": "Paid F receives no further debt reminders; history retained"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC40",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC41",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC42",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC43",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC44",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC45",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC46",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC47",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC48",
+      "evidence": "Requires explicit test evidence"
+    },
+    {
+      "status": "PASS",
+      "id": "TC49",
+      "evidence": "Owner/accountant report summaries agree; receipts and debt reconcile"
+    },
+    {
+      "status": "NOT_RUN",
+      "id": "TC50",
+      "evidence": "Requires explicit test evidence"
+    }
+  ],
+  "note": "TC06 and TC40–50 require separate service/browser/isolation evidence; never inferred from fixture creation.",
+  "clock": "2026-11-10T12:00:00"
+}

@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-18",
+  "backend": {"tests": 20, "failed": 0, "errors": 0, "package": "PASS"},
+  "frontend": {"unitTests": 3, "failed": 0, "typescript": "PASS", "buildWebpack": "PASS", "lintErrors": 0, "existingLintWarnings": 1},
+  "browser": {"tests": 17, "failed": 0, "status": "PASS", "apiInterception": false},
+  "migrationAdded": false,
+  "liveSchemaBefore": 41,
+  "liveSchemaAfter": 41,
+  "liveMigrationsApplied": 0,
+  "liveBackendUpdated": true,
+  "realTestRecordWrites": false,
+  "notRun": ["Production container persistence deployment", "Manual interaction with OS file picker", "Physical process crash and disk-full simulation", "Full unrelated contracts/tenant/report regression suite"]
+}

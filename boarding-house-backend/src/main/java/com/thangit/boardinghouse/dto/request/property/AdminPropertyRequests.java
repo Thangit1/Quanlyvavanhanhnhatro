@@ -43,8 +43,8 @@ public final class AdminPropertyRequests {
 
     public record SaveRoom(
             @NotNull Long propertyId,
-            @NotNull Long buildingId,
-            @NotNull Long floorId,
+            @jakarta.validation.constraints.Positive Long buildingId,
+            @jakarta.validation.constraints.Positive Long floorId,
             @NotBlank @Size(max = 50) String code,
             @NotBlank @Size(max = 100) String name,
             @Size(max = 100) String roomType,
@@ -68,11 +68,11 @@ public final class AdminPropertyRequests {
 
     public record BulkCreateRooms(
             @NotNull Long propertyId,
-            @NotNull Long buildingId,
-            @NotNull Long floorId,
+            @jakarta.validation.constraints.Positive Long buildingId,
+            @jakarta.validation.constraints.Positive Long floorId,
             @NotBlank @Size(max = 20) String prefix,
-            @NotNull @Min(1) @Max(200) Integer fromNumber,
-            @NotNull @Min(1) @Max(200) Integer toNumber,
+            @NotNull @Min(1) @Max(999999) Integer fromNumber,
+            @NotNull @Min(1) @Max(999999) Integer toNumber,
             @Min(1) @Max(4) Integer padding,
             @Size(max = 100) String roomType,
             @DecimalMin("0.0") BigDecimal area,

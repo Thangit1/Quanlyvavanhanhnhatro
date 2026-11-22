@@ -43,7 +43,7 @@ public class DashboardRepository {
                   COUNT(DISTINCT CASE WHEN r.status IN ('OCCUPIED','NOTICE') THEN r.id END) occupied_rooms,
                   COUNT(DISTINCT CASE WHEN r.status IN ('VACANT','READY') THEN r.id END) vacant_rooms,
                   COUNT(DISTINCT CASE WHEN r.status='RESERVED' THEN r.id END) reserved_rooms,
-                  COUNT(DISTINCT CASE WHEN r.status='MAINTENANCE' THEN r.id END) maintenance_rooms,
+                  COUNT(DISTINCT CASE WHEN r.status='MAINTENANCE' THEN r.id END) maintenance_rooms, COUNT(DISTINCT CASE WHEN r.status NOT IN ('INACTIVE','MAINTENANCE') THEN r.id END) available_rooms,
                   COALESCE((SELECT SUM(CASE WHEN py.transaction_type='REFUND' THEN -py.amount ELSE py.amount END)
                     FROM payments py JOIN invoices i2 ON i2.id=py.invoice_id JOIN contracts c2 ON c2.id=i2.contract_id
                     JOIN rooms r2 ON r2.id=c2.room_id JOIN properties p2 ON p2.id=r2.property_id
@@ -71,7 +71,7 @@ public class DashboardRepository {
                 """.formatted(financeScope(role).replace("p.", "px."), financeScope(role).replace("p.", "px."),
                 financeScope(role).replace("p.", "px."), scope(role).replace("p.", "px."),
                 scope(role).replace("p.", "px."), scope(role), propertyFilter());
-        return scoped(sql, userId, propertyId)
+        var dashboardValues=scoped(sql, userId, propertyId)
                 .param("periodStart", periodStart).param("periodEnd", periodEnd).param("previousStart", previousStart)
                 .query((rs, n) -> {
             Map<String, Object> result = new java.util.HashMap<>();
@@ -80,7 +80,7 @@ public class DashboardRepository {
             result.put("occupiedRooms", rs.getLong("occupied_rooms"));
             result.put("vacantRooms", rs.getLong("vacant_rooms"));
             result.put("reservedRooms", rs.getLong("reserved_rooms"));
-            result.put("maintenanceRooms", rs.getLong("maintenance_rooms"));
+            result.put("maintenanceRooms", rs.getLong("maintenance_rooms"));result.put("availableRooms",rs.getLong("available_rooms"));
             result.put("currentRevenue", rs.getBigDecimal("current_revenue"));
             result.put("previousRevenue", rs.getBigDecimal("previous_revenue"));
             result.put("debt", rs.getBigDecimal("debt"));
@@ -88,6 +88,14 @@ public class DashboardRepository {
             result.put("openMaintenance", rs.getLong("open_maintenance"));
             return result;
         }).single();
+        var financialIds=scoped("SELECT p.id FROM properties p WHERE "+financeScope(role)+" AND "+propertyFilter(),userId,propertyId).query(Long.class).list();
+        var finance=new ManagementFinanceRepository(jdbc);
+        var current=finance.summary(financialIds,periodStart,periodEnd.minusDays(1));
+        var previous=finance.summary(financialIds,previousStart,periodStart.minusDays(1));
+        dashboardValues.put("currentRevenue",current.get("netServiceCollections"));
+        dashboardValues.put("previousRevenue",previous.get("netServiceCollections"));
+        dashboardValues.put("debt",current.get("outstandingDebt"));
+        return dashboardValues;
     }
 
     public List<RoomStatus> roomStatuses(Long userId, RoleCode role, Long propertyId) {

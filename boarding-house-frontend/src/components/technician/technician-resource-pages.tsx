@@ -64,7 +64,7 @@ export function CalendarPage() {
           type="month"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
-          className="min-h-11 rounded-xl border border-slate-200 bg-white px-3"
+          className="min-h-11 rounded-xl border border-input bg-card px-3"
         />
       }
     >
@@ -78,14 +78,14 @@ export function CalendarPage() {
             <Link
               key={x.id}
               href={`/technician/tasks/${x.id}`}
-              className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-[160px_1fr_auto]"
+              className="grid gap-3 rounded-2xl border border-border bg-card p-4 shadow-card sm:grid-cols-[160px_1fr_auto]"
             >
-              <p className="text-sm font-semibold text-blue-700">
+              <p className="text-sm font-semibold text-link">
                 {formatDate(x.start)}
               </p>
               <div>
                 <p className="font-bold">{x.title}</p>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   {x.propertyName}
                   {x.roomCode ? ` · ${x.roomCode}` : ""}
                 </p>
@@ -108,7 +108,7 @@ export function EmergencyPage() {
       title="Điều phối khẩn cấp"
       description="Ưu tiên an toàn, đánh giá rủi ro và liên hệ quản lý theo quy trình."
     >
-      <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+      <div className="rounded-2xl border border-danger-border bg-danger-muted p-4 text-sm text-danger">
         <p className="flex items-center gap-2 font-bold">
           <ShieldAlert className="size-5" />
           Quy trình an toàn
@@ -152,27 +152,27 @@ export function PreventivePage() {
           {q.data.map((x) => (
             <article
               key={x.id}
-              className="rounded-2xl border border-slate-200 bg-white p-5"
+              className="surface-card p-5 sm:p-6"
             >
               <div className="flex justify-between">
-                <span className="rounded-lg bg-blue-50 p-2 text-blue-700">
+                <span className="rounded-lg bg-accent p-2 text-link">
                   <CalendarDays />
                 </span>
                 <StatusBadge status={x.status} />
               </div>
               <h2 className="mt-4 font-bold">{x.name}</h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {x.propertyName} · {x.assetCategory}
               </p>
               <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <p>
-                  <span className="block text-xs text-slate-400">
+                  <span className="block text-xs text-muted-foreground">
                     Lần tiếp theo
                   </span>
                   {new Date(x.nextRunDate).toLocaleDateString("vi-VN")}
                 </p>
                 <p>
-                  <span className="block text-xs text-slate-400">Chu kỳ</span>
+                  <span className="block text-xs text-muted-foreground">Chu kỳ</span>
                   {x.frequencyInterval} {x.frequencyType}
                 </p>
               </div>
@@ -203,18 +203,18 @@ export function AssetsPage() {
             <Link
               href={`/technician/assets/${x.id}`}
               key={x.id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-300"
+              className="rounded-2xl border border-border bg-card p-5 shadow-card hover:border-blue-300"
             >
-              <Wrench className="size-6 text-blue-600" />
+              <Wrench className="size-6 text-link" />
               <h2 className="mt-4 font-bold">{x.name}</h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {x.assetCode ?? `TB-${x.id}`} · {x.brand ?? "Chưa rõ hãng"}{" "}
                 {x.model ?? ""}
               </p>
               <p className="mt-3 text-sm">
                 {x.propertyName} · {x.roomCode}
               </p>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {x.maintenanceCount} lần bảo trì · {x.condition}
               </p>
             </Link>
@@ -243,13 +243,13 @@ export function AssetDetailPage({ id }: { id: number }) {
       actions={
         <Link
           href="/technician/assets"
-          className="rounded-xl border bg-white px-4 py-2 text-sm font-semibold"
+          className="rounded-xl border bg-card px-4 py-2 text-sm font-semibold"
         >
           Danh sách thiết bị
         </Link>
       }
     >
-      <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="grid gap-4 surface-card p-6 sm:grid-cols-2 lg:grid-cols-3">
         {[
           ["Hãng", x.brand],
           ["Model", x.model],
@@ -271,7 +271,7 @@ export function AssetDetailPage({ id }: { id: number }) {
           ["Số lần bảo trì", String(x.maintenanceCount)],
         ].map(([k, v]) => (
           <div key={k}>
-            <p className="text-xs text-slate-400">{k}</p>
+            <p className="text-xs text-muted-foreground">{k}</p>
             <p className="mt-1 font-semibold">{v || "Chưa cập nhật"}</p>
           </div>
         ))}
@@ -296,9 +296,9 @@ export function MaterialsPage() {
       ) : q.isError || !q.data ? (
         <ErrorState retry={() => void q.refetch()} />
       ) : q.data.length ? (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto surface-card">
           <table className="w-full min-w-[850px] text-left text-sm">
-            <thead className="bg-slate-50 text-slate-500">
+            <thead className="bg-muted text-muted-foreground">
               <tr>
                 {[
                   "Mã",
@@ -324,7 +324,7 @@ export function MaterialsPage() {
                   <td className="px-4 py-3">{x.propertyName}</td>
                   <td className="px-4 py-3">{x.unit}</td>
                   <td
-                    className={`px-4 py-3 font-semibold ${x.stockQuantity <= x.minimumQuantity ? "text-red-600" : ""}`}
+                    className={`px-4 py-3 font-semibold ${x.stockQuantity <= x.minimumQuantity ? "text-danger" : ""}`}
                   >
                     {x.stockQuantity}
                   </td>
@@ -369,19 +369,19 @@ export function MaterialRequestsPage() {
           {q.data.map((x) => (
             <article
               key={x.id}
-              className="rounded-2xl border border-slate-200 bg-white p-5"
+              className="surface-card p-5 sm:p-6"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold text-blue-700">
+                  <p className="text-xs font-semibold text-link">
                     {x.taskCode} · {x.urgency}
                   </p>
                   <h2 className="mt-1 font-bold">{x.taskTitle}</h2>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {formatDate(x.createdAt)}
                   </p>
                 </div>
-                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                <span className="rounded-full bg-warning-muted px-3 py-1 text-xs font-semibold text-warning">
                   {x.status}
                 </span>
               </div>
@@ -389,7 +389,7 @@ export function MaterialRequestsPage() {
                 {x.items.map((i) => (
                   <p
                     key={i.id}
-                    className="flex justify-between rounded-lg bg-slate-50 p-3 text-sm"
+                    className="flex justify-between rounded-lg bg-muted p-3 text-sm"
                   >
                     <span>
                       {i.name} · {i.quantity} {i.unit}
@@ -402,7 +402,7 @@ export function MaterialRequestsPage() {
                 <button
                   disabled={busy === x.id}
                   onClick={() => void receive(x.id, x.version)}
-                  className="mt-4 flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                  className="mt-4 flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                 >
                   <PackageCheck className="size-4" />
                   Xác nhận đã nhận
@@ -436,22 +436,22 @@ export function NotificationsPage() {
             <button
               key={x.id}
               onClick={() => !x.read && void read(x.id)}
-              className={`flex w-full gap-3 rounded-2xl border p-4 text-left ${x.read ? "border-slate-200 bg-white" : "border-blue-200 bg-blue-50"}`}
+              className={`flex w-full gap-3 rounded-2xl border p-4 text-left ${x.read ? "border-border bg-card" : "border-accent-border bg-accent"}`}
             >
               <Bell
-                className={`mt-1 size-5 shrink-0 ${x.read ? "text-slate-400" : "text-blue-600"}`}
+                className={`mt-1 size-5 shrink-0 ${x.read ? "text-muted-foreground" : "text-link"}`}
               />
               <span className="flex-1">
                 <span className="block font-semibold">{x.title}</span>
-                <span className="mt-1 block text-sm text-slate-600">
+                <span className="mt-1 block text-sm text-secondary-foreground">
                   {x.content}
                 </span>
-                <span className="mt-2 block text-xs text-slate-400">
+                <span className="mt-2 block text-xs text-muted-foreground">
                   {formatDate(x.createdAt)}
                 </span>
               </span>
               {!x.read && (
-                <span className="mt-2 size-2 rounded-full bg-blue-600" />
+                <span className="mt-2 size-2 rounded-full bg-primary hover:bg-primary-hover" />
               )}
             </button>
           ))}
@@ -492,9 +492,9 @@ export function PerformancePage() {
         {metrics.map(([k, v]) => (
           <article
             key={k}
-            className="rounded-2xl border border-slate-200 bg-white p-4"
+            className="surface-card p-4"
           >
-            <p className="text-sm text-slate-500">{k}</p>
+            <p className="text-sm text-muted-foreground">{k}</p>
             <p className="mt-2 text-2xl font-black">{v}</p>
           </article>
         ))}
@@ -503,7 +503,7 @@ export function PerformancePage() {
         <Chart title="Công việc theo tháng" data={d.trend} />
         <Chart title="Phân bố loại sự cố" data={d.categories} />
       </div>
-      <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+      <p className="rounded-2xl border border-border bg-card p-4 text-sm text-secondary-foreground">
         Số liệu không dùng riêng số lượng công việc để kết luận hiệu suất; thời
         gian chờ vật tư hiện ghi nhận: {Number(d.waitingPartsHours).toFixed(1)}{" "}
         giờ, số việc khẩn cấp: {d.urgentTasks}.
@@ -519,7 +519,7 @@ function Chart({
   data: { label: string; value: number }[];
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5">
+    <section className="surface-card p-5 sm:p-6">
       <h2 className="font-bold">{title}</h2>
       <div className="mt-4 h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -599,22 +599,22 @@ export function AccountPage() {
       description="Vai trò, nhóm, khu vực và hạn mức do quản lý cấu hình."
     >
       {error && (
-        <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>
+        <p className="rounded-xl bg-danger-muted p-3 text-sm text-danger">{error}</p>
       )}
       {notice && (
-        <p className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">
+        <p className="rounded-xl bg-success-muted p-3 text-sm text-success">
           {notice}
         </p>
       )}
       <div className="grid gap-5 xl:grid-cols-2">
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <div className="flex gap-4">
-            <span className="grid size-14 place-items-center rounded-2xl bg-blue-100 text-xl font-black text-blue-700">
+            <span className="grid size-14 place-items-center rounded-2xl bg-accent text-xl font-black text-link">
               {t.fullName[0]}
             </span>
             <div>
               <h2 className="font-bold">{t.fullName}</h2>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 {t.employeeCode} · {t.workingStatus}
               </p>
             </div>
@@ -628,10 +628,10 @@ export function AccountPage() {
         </section>
         <form
           onSubmit={profile}
-          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
         >
           <h2 className="flex items-center gap-2 font-bold">
-            <UserRound className="size-5 text-blue-600" />
+            <UserRound className="size-5 text-link" />
             Thông tin liên hệ
           </h2>
           <label className="block text-sm font-medium">
@@ -654,19 +654,19 @@ export function AccountPage() {
               defaultValue={t.phone ?? ""}
               aria-invalid={Boolean(phoneError)}
               onChange={() => phoneError && setPhoneError("")}
-              className={`mt-1 min-h-11 w-full rounded-xl border px-3 ${phoneError ? "border-red-500" : ""}`}
+              className={`mt-1 min-h-11 w-full rounded-xl border px-3 ${phoneError ? "border-danger" : ""}`}
             />
             {phoneError && (
-              <span className="mt-1 block text-xs text-red-600">
+              <span className="mt-1 block text-xs text-danger">
                 {phoneError}
               </span>
             )}
           </label>
-          <button className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">
+          <button className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white">
             Lưu liên hệ
           </button>
         </form>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="font-bold">Cấu hình thông báo</h2>
           {[
             ["notifyAssignment", "Phân công mới", a.notifyAssignment],
@@ -702,10 +702,10 @@ export function AccountPage() {
         </section>
         <form
           onSubmit={password}
-          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
         >
           <h2 className="flex items-center gap-2 font-bold">
-            <KeyRound className="size-5 text-blue-600" />
+            <KeyRound className="size-5 text-link" />
             Đổi mật khẩu
           </h2>
           <input
@@ -723,12 +723,12 @@ export function AccountPage() {
             placeholder="Mật khẩu mới (tối thiểu 10 ký tự)"
             className="min-h-11 w-full rounded-xl border px-3"
           />
-          <button className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">
+          <button className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white">
             Đổi mật khẩu
           </button>
         </form>
       </div>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+      <section className="surface-card p-5 sm:p-6">
         <h2 className="font-bold">Phiên đăng nhập</h2>
         <div className="mt-3 divide-y">
           {a.sessions.map((x) => (
@@ -737,12 +737,12 @@ export function AccountPage() {
                 <p className="truncate text-sm font-medium">
                   {x.userAgent ?? "Thiết bị không xác định"}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {x.ipAddress ?? "Không có IP"} · {formatDate(x.lastActiveAt)}
                 </p>
               </div>
               <span
-                className={`text-xs font-semibold ${x.active ? "text-emerald-600" : "text-slate-400"}`}
+                className={`text-xs font-semibold ${x.active ? "text-success" : "text-muted-foreground"}`}
               >
                 {x.active ? "Đang hoạt động" : "Đã hết"}
               </span>
@@ -754,7 +754,7 @@ export function AccountPage() {
                       "Đã thu hồi phiên.",
                     )
                   }
-                  className="text-xs font-semibold text-red-600"
+                  className="text-xs font-semibold text-danger"
                 >
                   Thu hồi
                 </button>
@@ -769,7 +769,7 @@ export function AccountPage() {
 function Info({ k, v }: { k: string; v?: string | null }) {
   return (
     <p>
-      <span className="block text-xs text-slate-400">{k}</span>
+      <span className="block text-xs text-muted-foreground">{k}</span>
       <span className="font-medium">{v || "Chưa cập nhật"}</span>
     </p>
   );

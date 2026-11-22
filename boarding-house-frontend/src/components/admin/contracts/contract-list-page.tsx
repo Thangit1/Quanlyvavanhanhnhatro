@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   CalendarClock,
@@ -17,6 +18,7 @@ import {
   UserRoundX,
   Plus,
 } from "lucide-react";
+import { useManagementProperty } from "@/providers/management-scope";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminContractStatusBadge } from "@/components/admin/contracts/contract-status-badge";
 import {
@@ -24,6 +26,8 @@ import {
   ErrorState,
   PageLoading,
 } from "@/components/shared/dashboard-ui";
+import { useAdminTenants } from "@/hooks/use-admin-tenants";
+import { apiErrorMessage } from "@/lib/api-error";
 import { useAdminContracts } from "@/hooks/use-admin-contracts";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { adminContractService } from "@/services/admin-contract.service";
@@ -46,13 +50,29 @@ const statusOptions: { value: AdminContractStatus; label: string }[] = [
 ];
 
 export function AdminContractListPage() {
+  const params = useSearchParams();
   const [keywordInput, setKeywordInput] = useState("");
   const [keyword, setKeyword] = useState("");
-  const [propertyId, setPropertyId] = useState<number>();
+  const [propertyId, setPropertyId] = useManagementProperty(
+    Number(params.get("propertyId")) || undefined,
+  );
   const [status, setStatus] = useState<AdminContractStatus>();
+  const [roomId, setRoomId] = useState<number>(
+    Number(params.get("roomId")) || 0,
+  );
+  const [startDateFrom, setFrom] = useState("");
+  const [endDateTo, setTo] = useState("");
+  const [exportError, setExportError] = useState("");
+  const roomOptions = useAdminTenants({ propertyId, size: 10 });
   const [sort, setSort] = useState("endDate");
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
+  const [previousProperty, setPreviousProperty] = useState(propertyId);
+  if (previousProperty !== propertyId) {
+    setPreviousProperty(propertyId);
+    setRoomId(0);
+    setPage(0);
+  }
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
@@ -68,30 +88,51 @@ export function AdminContractListPage() {
       keyword: keyword || undefined,
       propertyId,
       status,
+      roomId: roomId || undefined,
+      startDateFrom: startDateFrom || undefined,
+      endDateTo: endDateTo || undefined,
       sort,
       direction,
       page,
       size: 20,
     }),
-    [direction, keyword, page, propertyId, sort, status],
+    [
+      direction,
+      keyword,
+      page,
+      propertyId,
+      sort,
+      status,
+      roomId,
+      startDateFrom,
+      endDateTo,
+    ],
   );
   const query = useAdminContracts(filters);
 
-  if (query.isLoading) return <PageLoading />;
-
   const data = query.data;
-  const hasFilters = Boolean(keyword || propertyId || status);
+  const hasFilters = Boolean(
+    keyword || propertyId || status || roomId || startDateFrom || endDateTo,
+  );
   const resetFilters = () => {
     setKeywordInput("");
     setKeyword("");
     setPropertyId(undefined);
     setStatus(undefined);
+    setRoomId(0);
+    setFrom("");
+    setTo("");
     setPage(0);
   };
   const handleExport = async () => {
     try {
       setExporting(true);
+      setExportError("");
       await adminContractService.exportCsv(filters);
+    } catch (error) {
+      setExportError(
+        apiErrorMessage(error, "Không thể xuất danh sách hợp đồng."),
+      );
     } finally {
       setExporting(false);
     }
@@ -105,13 +146,13 @@ export function AdminContractListPage() {
       <div className="mx-auto max-w-[1600px] space-y-6">
         <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-link">
               Vận hành cho thuê
             </p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
               Danh sách hợp đồng
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               Quản lý thời hạn, hồ sơ ký kết và các yêu cầu phát sinh của từng
               phòng.
             </p>
@@ -119,7 +160,7 @@ export function AdminContractListPage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/admin/contracts/new"
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-4 text-sm font-semibold text-white shadow-card transition hover:bg-blue-800"
             >
               <Plus className="size-4" />
               Thêm hợp đồng
@@ -128,7 +169,7 @@ export function AdminContractListPage() {
               type="button"
               disabled={exporting || !data}
               onClick={() => void handleExport()}
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-300 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-input bg-card px-4 text-sm font-semibold text-secondary-foreground shadow-card transition hover:border-blue-300 hover:text-link disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Download className="size-4" />
               {exporting ? "Đang xuất..." : "Xuất danh sách"}
@@ -136,6 +177,64 @@ export function AdminContractListPage() {
           </div>
         </section>
 
+        {exportError && (
+          <p role="alert" className="text-sm text-danger">
+            {exportError}
+          </p>
+        )}
+        <div className="flex flex-wrap items-end gap-3 surface-card p-4">
+          <label className="text-xs text-muted-foreground">
+            Phòng
+            <select
+              aria-label="Lọc phòng hợp đồng"
+              value={roomId || ""}
+              onChange={(e) => {
+                setRoomId(Number(e.target.value));
+                setPage(0);
+              }}
+              className="mt-1 block rounded-xl border border-input p-2 text-sm"
+            >
+              <option value="">Tất cả phòng được phân quyền</option>
+              {roomOptions.data?.rooms.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.code}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Bắt đầu từ
+            <input
+              aria-label="Ngày bắt đầu hợp đồng từ"
+              className="mt-1 block rounded-xl border border-input p-2 text-sm"
+              type="date"
+              value={startDateFrom}
+              onChange={(e) => {
+                setFrom(e.target.value);
+                setPage(0);
+              }}
+            />
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Kết thúc đến
+            <input
+              aria-label="Ngày kết thúc hợp đồng đến"
+              className="mt-1 block rounded-xl border border-input p-2 text-sm"
+              type="date"
+              min={startDateFrom}
+              value={endDateTo}
+              onChange={(e) => {
+                setTo(e.target.value);
+                setPage(0);
+              }}
+            />
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Lọc hợp đồng bắt đầu và kết thúc trong khoảng đã chọn. Thống kê theo
+            nhà trọ.
+          </p>
+        </div>
+        {query.isLoading && <PageLoading />}
         {query.isError && <ErrorState onRetry={() => void query.refetch()} />}
 
         {data && (
@@ -182,16 +281,16 @@ export function AdminContractListPage() {
               />
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <section className="surface-card p-4 ">
               <div className="grid gap-3 lg:grid-cols-[minmax(260px,1.5fr)_1fr_1fr_1fr_auto]">
                 <label className="relative">
                   <span className="sr-only">Tìm kiếm hợp đồng</span>
-                  <Search className="pointer-events-none absolute left-3 top-3.5 size-4 text-slate-400" />
+                  <Search className="pointer-events-none absolute left-3 top-3.5 size-4 text-muted-foreground" />
                   <input
                     value={keywordInput}
                     onChange={(event) => setKeywordInput(event.target.value)}
                     placeholder="Mã hợp đồng, khách thuê, SĐT, phòng..."
-                    className="min-h-11 w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="min-h-11 w-full rounded-xl border border-input py-2.5 pl-9 pr-3 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition focus:border-ring focus:ring-2 focus:ring-ring"
                   />
                 </label>
                 <Select
@@ -240,17 +339,17 @@ export function AdminContractListPage() {
                   <button
                     type="button"
                     onClick={resetFilters}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold text-secondary-foreground hover:bg-muted"
                   >
                     <FilterX className="size-4" />
                     Xóa lọc
                   </button>
                 )}
               </div>
-              <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-sm text-slate-500">
+              <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-sm text-muted-foreground">
                 <p>
                   Tìm thấy{" "}
-                  <strong className="text-slate-900">
+                  <strong className="text-foreground">
                     {data.page.totalElements}
                   </strong>{" "}
                   hợp đồng
@@ -271,10 +370,10 @@ export function AdminContractListPage() {
               />
             ) : (
               <>
-                <section className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:block">
+                <section className="hidden overflow-hidden surface-card lg:block">
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[1050px] border-collapse text-left text-sm">
-                      <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                      <thead className="bg-muted text-xs uppercase tracking-wide text-muted-foreground">
                         <tr>
                           <th className="px-5 py-4 font-semibold">Hợp đồng</th>
                           <th className="px-5 py-4 font-semibold">
@@ -293,7 +392,7 @@ export function AdminContractListPage() {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-divider">
                         {data.page.content.map((contract) => (
                           <ContractTableRow
                             key={contract.id}
@@ -335,77 +434,92 @@ function Metric({
   tone: "blue" | "emerald" | "amber" | "sky" | "orange" | "slate";
 }) {
   const tones = {
-    blue: "bg-blue-50 text-blue-700",
-    emerald: "bg-emerald-50 text-emerald-700",
-    amber: "bg-amber-50 text-amber-700",
+    blue: "bg-accent text-link",
+    emerald: "bg-success-muted text-success",
+    amber: "bg-warning-muted text-warning",
     sky: "bg-sky-50 text-sky-700",
     orange: "bg-orange-50 text-orange-700",
-    slate: "bg-slate-100 text-slate-700",
+    slate: "bg-muted text-secondary-foreground",
   };
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="surface-card p-4 ">
       <span
         className={`grid size-10 place-items-center rounded-xl ${tones[tone]}`}
       >
         <Icon className="size-5" />
       </span>
-      <p className="mt-4 text-xs font-medium text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-extrabold text-slate-950">{value}</p>
+      <p className="mt-4 text-xs font-medium text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-extrabold text-foreground">{value}</p>
     </article>
   );
 }
 
 function ContractTableRow({ contract }: { contract: AdminContractRow }) {
   return (
-    <tr className="transition hover:bg-slate-50/70">
+    <tr className="transition hover:bg-muted/70">
       <td className="px-5 py-4">
         <Link
           href={`/admin/contracts/${contract.id}`}
-          className="font-bold text-blue-700 hover:underline"
+          className="font-bold text-link hover:underline"
         >
           {contract.contractCode}
         </Link>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           {contract.hasDocument ? "Có hồ sơ đính kèm" : "Chưa có tệp hợp đồng"}
         </p>
       </td>
       <td className="px-5 py-4">
         <Link
           href={`/admin/tenants/${contract.tenantId}`}
-          className="font-semibold text-slate-900 hover:text-blue-700"
+          className="font-semibold text-foreground hover:text-link"
         >
           {contract.tenantName}
         </Link>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           {contract.tenantCode} · {contract.tenantPhone || "Chưa có SĐT"}
         </p>
       </td>
       <td className="px-5 py-4">
-        <p className="font-semibold text-slate-900">{contract.propertyName}</p>
-        <p className="mt-1 text-xs text-slate-500">Phòng {contract.roomCode}</p>
+        <p className="font-semibold text-foreground">{contract.propertyName}</p>
+        <p className="mt-1 text-xs text-muted-foreground">Phòng {contract.roomCode}</p>
       </td>
       <td className="px-5 py-4">
-        <p className="font-medium text-slate-800">
+        <p className="font-medium text-foreground">
           {formatDate(contract.startDate)} – {formatDate(contract.endDate)}
         </p>
         <RemainingDays value={contract.daysRemaining} />
       </td>
       <td className="px-5 py-4">
-        <p className="font-bold text-slate-900">
+        <p className="font-bold text-foreground">
           {formatCurrency(contract.monthlyRent)}
         </p>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           Cọc {formatCurrency(contract.depositAmount)}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Chu kỳ:{" "}
+          {contract.paymentCycle === "MONTHLY"
+            ? "Hàng tháng"
+            : contract.paymentCycle === "QUARTERLY"
+              ? "Hàng quý"
+              : contract.paymentCycle || "Chưa xác định"}
         </p>
       </td>
       <td className="px-5 py-4">
-        <AdminContractStatusBadge status={contract.status} />
+        <div className="space-y-2">
+          <AdminContractStatusBadge status={contract.status} />
+          <p className="text-xs text-muted-foreground">
+            Xác nhận v{contract.confirmationVersion ?? "—"}: Chủ nhà{" "}
+            {contract.landlordConfirmed ? "✓" : "chờ"} · Khách thuê{" "}
+            {contract.tenantConfirmed ? "✓" : "chờ"}
+          </p>
+        </div>
       </td>
       <td className="px-5 py-4 text-right">
         <Link
           href={`/admin/contracts/${contract.id}`}
           aria-label={`Xem hợp đồng ${contract.contractCode}`}
-          className="inline-grid size-9 place-items-center rounded-xl border border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+          className="inline-grid size-9 place-items-center rounded-xl border border-border text-secondary-foreground hover:border-blue-300 hover:bg-accent hover:text-link"
         >
           <Eye className="size-4" />
         </Link>
@@ -416,31 +530,38 @@ function ContractTableRow({ contract }: { contract: AdminContractRow }) {
 
 function ContractMobileCard({ contract }: { contract: AdminContractRow }) {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="surface-card p-4 ">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+          <p className="text-xs font-semibold uppercase tracking-wide text-link">
             {contract.contractCode}
           </p>
-          <h2 className="mt-1 font-bold text-slate-950">
+          <h2 className="mt-1 font-bold text-foreground">
             {contract.tenantName}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {contract.propertyName} · Phòng {contract.roomCode}
           </p>
         </div>
-        <AdminContractStatusBadge status={contract.status} />
+        <div className="space-y-2">
+          <AdminContractStatusBadge status={contract.status} />
+          <p className="text-xs text-muted-foreground">
+            Xác nhận v{contract.confirmationVersion ?? "—"}: Chủ nhà{" "}
+            {contract.landlordConfirmed ? "✓" : "chờ"} · Khách thuê{" "}
+            {contract.tenantConfirmed ? "✓" : "chờ"}
+          </p>
+        </div>
       </div>
-      <dl className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3 text-sm">
+      <dl className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-muted p-3 text-sm">
         <div>
-          <dt className="text-xs text-slate-500">Thời hạn</dt>
-          <dd className="mt-1 font-semibold text-slate-800">
+          <dt className="text-xs text-muted-foreground">Thời hạn</dt>
+          <dd className="mt-1 font-semibold text-foreground">
             {formatDate(contract.startDate)} – {formatDate(contract.endDate)}
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-slate-500">Tiền thuê / tháng</dt>
-          <dd className="mt-1 font-bold text-slate-900">
+          <dt className="text-xs text-muted-foreground">Tiền thuê / tháng</dt>
+          <dd className="mt-1 font-bold text-foreground">
             {formatCurrency(contract.monthlyRent)}
           </dd>
         </div>
@@ -449,7 +570,7 @@ function ContractMobileCard({ contract }: { contract: AdminContractRow }) {
         <RemainingDays value={contract.daysRemaining} />
         <Link
           href={`/admin/contracts/${contract.id}`}
-          className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-blue-50 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+          className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-accent px-3 text-sm font-semibold text-link hover:bg-accent"
         >
           Xem chi tiết <ChevronRight className="size-4" />
         </Link>
@@ -461,11 +582,11 @@ function ContractMobileCard({ contract }: { contract: AdminContractRow }) {
 function RemainingDays({ value }: { value: number }) {
   if (value < 0)
     return (
-      <p className="mt-1 text-xs font-medium text-slate-500">Đã hết hạn</p>
+      <p className="mt-1 text-xs font-medium text-muted-foreground">Đã hết hạn</p>
     );
   return (
     <p
-      className={`mt-1 text-xs font-medium ${value <= 30 ? "text-amber-700" : "text-slate-500"}`}
+      className={`mt-1 text-xs font-medium ${value <= 30 ? "text-warning" : "text-muted-foreground"}`}
     >
       Còn {value} ngày
     </p>
@@ -490,7 +611,7 @@ function Select({
       aria-label={ariaLabel}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      className="min-h-11 w-full rounded-xl border border-input bg-card px-3 text-sm text-secondary-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition focus:border-ring focus:ring-2 focus:ring-ring"
     >
       <option value="">{placeholder}</option>
       {options.map((option) => (
@@ -515,10 +636,10 @@ function Pagination({
   return (
     <nav
       aria-label="Phân trang hợp đồng"
-      className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+      className="flex items-center justify-between surface-card px-4 py-3 "
     >
-      <p className="text-sm text-slate-500">
-        Trang <strong className="text-slate-900">{page + 1}</strong> /{" "}
+      <p className="text-sm text-muted-foreground">
+        Trang <strong className="text-foreground">{page + 1}</strong> /{" "}
         {totalPages}
       </p>
       <div className="flex gap-2">
@@ -527,7 +648,7 @@ function Pagination({
           aria-label="Trang trước"
           disabled={page <= 0}
           onClick={() => onChange(page - 1)}
-          className="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="grid size-10 place-items-center rounded-xl border border-border text-secondary-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronLeft className="size-4" />
         </button>
@@ -536,7 +657,7 @@ function Pagination({
           aria-label="Trang sau"
           disabled={page >= totalPages - 1}
           onClick={() => onChange(page + 1)}
-          className="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="grid size-10 place-items-center rounded-xl border border-border text-secondary-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronRight className="size-4" />
         </button>

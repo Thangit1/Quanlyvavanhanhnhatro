@@ -36,36 +36,36 @@ export function ProtectedPage({
   }, []);
   if (isBootstrapping || !user || user.activeRole !== allowedRole)
     return (
-      <main className="grid min-h-screen place-items-center bg-slate-50">
-        <div className="flex items-center gap-3 text-slate-600">
-          <LoaderCircle className="size-6 animate-spin text-blue-600" />
+      <main className="grid min-h-screen place-items-center bg-muted">
+        <div className="flex items-center gap-3 text-secondary-foreground">
+          <LoaderCircle className="size-6 animate-spin text-link" />
           Đang kiểm tra phiên đăng nhập...
         </div>
       </main>
     );
   return (
-    <main className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
+    <main className="min-h-screen bg-muted">
+      <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <button
             onClick={() => router.push(roleHome[user.activeRole])}
-            className="flex items-center gap-2 font-bold text-blue-700"
+            className="flex items-center gap-2 font-bold text-link"
           >
-            <span className="grid size-9 place-items-center rounded-lg bg-blue-600 text-white">
+            <span className="grid size-9 place-items-center rounded-lg bg-primary hover:bg-primary-hover text-white">
               <Building2 className="size-5" />
             </span>
             SmartHome AI
           </button>
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-semibold text-slate-800">
+              <p className="text-sm font-semibold text-foreground">
                 {user.fullName}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 {roleLabel[user.activeRole]} · {user.email}
               </p>
             </div>
-            <span className="grid size-10 place-items-center rounded-full bg-blue-100 text-blue-700">
+            <span className="grid size-10 place-items-center rounded-full bg-accent text-link">
               <UserRound className="size-5" />
             </span>
             <button
@@ -74,7 +74,7 @@ export function ProtectedPage({
                 if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?"))
                   void logout();
               }}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+              className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-secondary-foreground hover:border-danger-border hover:bg-danger-muted hover:text-danger"
             >
               <LogOut className="size-4" />
               <span className="hidden sm:inline">Đăng xuất</span>
@@ -91,13 +91,13 @@ export function ProtectedPage({
             {notice}
           </div>
         )}
-        <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+        <p className="text-sm font-semibold uppercase tracking-widest text-link">
           {roleLabel[user.activeRole]}
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">{title}</h1>
-        <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h1 className="mt-2 text-3xl font-bold text-foreground">{title}</h1>
+        <div className="mt-8 surface-card p-6 ">
           {children ?? (
-            <p className="text-slate-600">
+            <p className="text-secondary-foreground">
               Phiên đăng nhập của bạn đã được xác thực và phân quyền an toàn.
             </p>
           )}

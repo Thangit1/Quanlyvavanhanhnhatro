@@ -37,14 +37,14 @@ export function SettingsForm({
       className="space-y-5"
     >
       {!editable && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-medium text-amber-800">
+        <div className="rounded-xl border border-warning-border bg-warning-muted p-4 text-sm font-medium text-warning">
           Bạn chỉ có quyền xem nhóm cấu hình này.
         </div>
       )}
       {error && (
         <div
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700"
+          className="rounded-xl border border-danger-border bg-danger-muted p-4 text-sm font-medium text-danger"
         >
           {error}
         </div>
@@ -52,7 +52,7 @@ export function SettingsForm({
       {message && (
         <div
           role="status"
-          className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700"
+          className="flex items-center gap-2 rounded-xl border border-success-border bg-success-muted p-4 text-sm font-medium text-success"
         >
           <Check className="size-4" />
           {message}
@@ -69,9 +69,9 @@ export function SettingsForm({
           />
         ))}
       </div>
-      <div className="sticky bottom-3 z-10 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+      <div className="sticky bottom-3 z-10 flex flex-col gap-3 surface-card/95 p-3 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between">
         <p
-          className={`text-sm font-medium ${dirty ? "text-amber-700" : "text-slate-500"}`}
+          className={`text-sm font-medium ${dirty ? "text-warning" : "text-muted-foreground"}`}
         >
           {saving
             ? "Đang lưu thay đổi..."
@@ -84,7 +84,7 @@ export function SettingsForm({
             type="button"
             disabled={!dirty || saving}
             onClick={onReset}
-            className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 sm:flex-none"
+            className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-border px-4 text-sm font-semibold text-secondary-foreground hover:bg-muted disabled:opacity-40 sm:flex-none"
           >
             <RotateCcw className="size-4" />
             Hủy thay đổi
@@ -92,7 +92,7 @@ export function SettingsForm({
           <button
             type="submit"
             disabled={!dirty || saving || !editable}
-            className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
+            className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-5 text-sm font-semibold text-white shadow-card hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
           >
             {saving ? (
               <LoaderCircle className="size-4 animate-spin" />
@@ -122,14 +122,14 @@ function Field({
   if (field.type === "switch")
     return (
       <label
-        className={`flex min-h-20 cursor-pointer items-center justify-between gap-4 rounded-xl border border-slate-200 p-4 ${wrapper}`}
+        className={`flex min-h-20 cursor-pointer items-center justify-between gap-4 rounded-xl border border-border p-4 ${wrapper}`}
       >
         <span>
-          <span className="block text-sm font-semibold text-slate-900">
+          <span className="block text-sm font-semibold text-foreground">
             {field.label}
           </span>
           {field.description && (
-            <span className="mt-1 block text-xs text-slate-500">
+            <span className="mt-1 block text-xs text-muted-foreground">
               {field.description}
             </span>
           )}
@@ -144,15 +144,15 @@ function Field({
       </label>
     );
   const common =
-    "mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-slate-50 disabled:text-slate-500";
+    "mt-2 min-h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition focus:border-ring focus:ring-2 focus:ring-ring disabled:bg-muted disabled:text-muted-foreground";
   return (
     <label className={wrapper}>
-      <span className="text-sm font-semibold text-slate-800">
+      <span className="text-sm font-semibold text-foreground">
         {field.label}
-        {field.required && <span className="text-red-500"> *</span>}
+        {field.required && <span className="text-danger"> *</span>}
       </span>
       {field.description && (
-        <span className="mt-1 block text-xs text-slate-500">
+        <span className="mt-1 block text-xs text-muted-foreground">
           {field.description}
         </span>
       )}
@@ -207,7 +207,7 @@ function Field({
           min={field.min}
           max={field.max}
           onChange={(event) => onChange(event.target.value)}
-          className={`${common} invalid:border-red-500 invalid:focus:ring-red-100`}
+          className={`${common} invalid:border-danger invalid:focus:ring-red-100`}
         />
       )}
     </label>

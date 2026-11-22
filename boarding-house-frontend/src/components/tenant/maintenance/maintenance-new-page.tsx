@@ -150,14 +150,14 @@ export function MaintenanceNewPage() {
     <main className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <button
         onClick={() => router.back()}
-        className="inline-flex items-center gap-2 font-semibold text-slate-600"
+        className="inline-flex items-center gap-2 font-semibold text-secondary-foreground"
       >
         <ArrowLeft className="size-4" />
         Quay lại
       </button>
       <div>
         <h1 className="text-3xl font-black">Gửi yêu cầu sửa chữa</h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-muted-foreground">
           Cung cấp thông tin theo từng bước để quản lý xử lý nhanh hơn.
         </p>
       </div>
@@ -165,24 +165,24 @@ export function MaintenanceNewPage() {
         {[1, 2, 3, 4, 5, 6].map((x) => (
           <div
             key={x}
-            className={`h-2 flex-1 rounded-full ${x <= step ? "bg-blue-600" : "bg-slate-200"}`}
+            className={`h-2 flex-1 rounded-full ${x <= step ? "bg-primary hover:bg-primary-hover" : "bg-slate-200"}`}
           />
         ))}
       </div>
       {error && (
         <div
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-3 text-red-700"
+          className="rounded-xl border border-danger-border bg-danger-muted p-3 text-danger"
         >
           {error}
         </div>
       )}
-      <section className="rounded-2xl border bg-white p-5 shadow-sm sm:p-7">
+      <section className="surface-card p-5 sm:p-7">
         {step === 1 && (
           <>
             <Title n={1} text="Chọn phòng và khu vực" />
             {!locations.data?.length ? (
-              <div className="rounded-xl bg-amber-50 p-4 text-amber-800">
+              <div className="rounded-xl bg-warning-muted p-4 text-warning">
                 Bạn chưa có hợp đồng đang hiệu lực nên chưa thể gửi yêu cầu.
               </div>
             ) : (
@@ -191,12 +191,12 @@ export function MaintenanceNewPage() {
                   <button
                     key={x.location.roomId}
                     onClick={() => patch("roomId", x.location.roomId)}
-                    className={`rounded-xl border p-4 text-left ${data.roomId === x.location.roomId ? "border-blue-600 bg-blue-50" : ""}`}
+                    className={`rounded-xl border p-4 text-left ${data.roomId === x.location.roomId ? "border-blue-600 bg-accent" : ""}`}
                   >
                     <b>
                       {x.location.propertyName} · Phòng {x.location.roomCode}
                     </b>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-muted-foreground">
                       {x.location.propertyAddress}
                     </p>
                   </button>
@@ -251,11 +251,11 @@ export function MaintenanceNewPage() {
                 <button
                   key={code}
                   onClick={() => patch("category", code)}
-                  className={`rounded-xl border p-4 text-left ${data.category === code ? "border-blue-600 bg-blue-50" : ""}`}
+                  className={`rounded-xl border p-4 text-left ${data.category === code ? "border-blue-600 bg-accent" : ""}`}
                 >
-                  <Icon className="size-6 text-blue-600" />
+                  <Icon className="size-6 text-link" />
                   <b className="mt-2 block">{name}</b>
-                  <span className="text-sm text-slate-500">{desc}</span>
+                  <span className="text-sm text-muted-foreground">{desc}</span>
                 </button>
               ))}
             </div>
@@ -285,7 +285,7 @@ export function MaintenanceNewPage() {
                 </select>
               </label>
               {data.reportedPriority === "URGENT" && (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800">
+                <div className="rounded-xl border border-danger-border bg-danger-muted p-4 text-danger">
                   <AlertTriangle className="mr-2 inline size-5" />
                   <b>Ưu tiên an toàn:</b> ngừng sử dụng khu vực hoặc thiết bị
                   nếu có thể làm vậy an toàn và liên hệ quản lý. Hệ thống không
@@ -308,9 +308,9 @@ export function MaintenanceNewPage() {
                 />
               </label>
               {issueQuestions[data.category]?.length && (
-                <div className="rounded-xl bg-slate-50 p-4">
+                <div className="rounded-xl bg-muted p-4">
                   <b className="text-sm">Thông tin nên bổ sung:</b>
-                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-secondary-foreground">
                     {issueQuestions[data.category].map((x) => (
                       <li key={x}>{x}</li>
                     ))}
@@ -346,7 +346,7 @@ export function MaintenanceNewPage() {
         {step === 4 && (
           <>
             <Title n={4} text="Hình ảnh và video" />
-            <label className="flex cursor-pointer flex-col items-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50 p-8 text-blue-700">
+            <label className="flex cursor-pointer flex-col items-center rounded-2xl border-2 border-dashed border-accent-border bg-accent p-8 text-link">
               <Camera className="size-8" />
               <b className="mt-2">Chụp ảnh hoặc chọn tệp</b>
               <span className="text-sm">
@@ -365,7 +365,7 @@ export function MaintenanceNewPage() {
               {files.map((x, i) => (
                 <div
                   key={x.url}
-                  className="relative overflow-hidden rounded-xl border bg-slate-50"
+                  className="relative overflow-hidden rounded-xl border bg-muted"
                 >
                   {x.file.type.startsWith("image/") ? (
                     <Image
@@ -389,7 +389,7 @@ export function MaintenanceNewPage() {
                       URL.revokeObjectURL(x.url);
                       setFiles((v) => v.filter((y) => y !== x));
                     }}
-                    className="absolute right-1 top-1 rounded-full bg-white p-2 text-red-600 shadow"
+                    className="absolute right-1 top-1 rounded-full bg-card p-2 text-danger shadow"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -468,7 +468,7 @@ export function MaintenanceNewPage() {
         {step === 6 && (
           <>
             <Title n={6} text="Kiểm tra và gửi" />
-            <div className="space-y-3 rounded-xl bg-slate-50 p-5 text-sm">
+            <div className="space-y-3 rounded-xl bg-muted p-5 text-sm">
               <Review
                 k="Vị trí"
                 v={
@@ -526,7 +526,7 @@ export function MaintenanceNewPage() {
             <button
               disabled={!valid()}
               onClick={() => setStep((x) => x + 1)}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2 font-bold text-white disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-5 py-2 font-bold text-white disabled:opacity-40"
             >
               Tiếp tục
               <ArrowRight className="size-4" />
@@ -535,7 +535,7 @@ export function MaintenanceNewPage() {
             <button
               disabled={!confirmed || create.isPending}
               onClick={submit}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2 font-bold text-white disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-5 py-2 font-bold text-white disabled:opacity-40"
             >
               <CheckCircle2 className="size-4" />
               {create.isPending ? "Đang gửi..." : "Gửi yêu cầu"}
@@ -583,10 +583,10 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-invalid={Boolean(error)}
-        className={`mt-1 block w-full rounded-xl border p-3 font-normal ${error ? "border-red-500" : ""}`}
+        className={`mt-1 block w-full rounded-xl border p-3 font-normal ${error ? "border-danger" : ""}`}
       />
       {error && (
-        <span className="mt-1 block text-xs text-red-600">{error}</span>
+        <span className="mt-1 block text-xs text-danger">{error}</span>
       )}
     </label>
   );
@@ -616,7 +616,7 @@ function Review({ k, v }: { k: string; v: string }) {
   return (
     <div>
       <b>{k}:</b>{" "}
-      <span className="whitespace-pre-wrap text-slate-600">{v || "—"}</span>
+      <span className="whitespace-pre-wrap text-secondary-foreground">{v || "—"}</span>
     </div>
   );
 }

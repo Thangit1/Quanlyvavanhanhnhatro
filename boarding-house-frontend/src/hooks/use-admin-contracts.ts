@@ -4,11 +4,15 @@ import { useScopedQuery } from "./use-scoped-query";
 import { adminContractService } from "@/services/admin-contract.service";
 import type { AdminContractFilters } from "@/types/admin-contract";
 
-export function useAdminContracts(filters: AdminContractFilters) {
+export function useAdminContracts(
+  filters: AdminContractFilters,
+  enabled = true,
+) {
   return useScopedQuery({
     queryKey: ["admin-contracts", filters],
     queryFn: ({ signal }) => adminContractService.list(filters, signal),
     staleTime: 20_000,
+    enabled,
   });
 }
 

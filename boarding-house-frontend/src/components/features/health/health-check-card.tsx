@@ -10,14 +10,14 @@ export function HealthCheckCard() {
   const isHealthy = healthQuery.data?.data.status === "UP";
 
   return (
-    <section className="max-w-xl rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/20 backdrop-blur">
+    <section className="max-w-xl rounded-2xl border border-white/10 bg-card/5 p-6 shadow-2xl shadow-black/20 backdrop-blur">
       <div className="mb-5 flex items-center gap-3">
         <span className="rounded-xl bg-emerald-400/10 p-3 text-emerald-300">
           <Activity aria-hidden="true" className="size-6" />
         </span>
         <div>
           <h2 className="text-xl font-semibold">Kiểm tra kết nối backend</h2>
-          <p className="text-sm text-slate-400">GET /api/v1/health</p>
+          <p className="text-sm text-muted-foreground">GET /api/v1/health</p>
         </div>
       </div>
 
@@ -41,7 +41,7 @@ export function HealthCheckCard() {
                 ? "Backend đang hoạt động"
                 : "Chưa kết nối được backend"}
           </p>
-          <p className="truncate text-sm text-slate-400">
+          <p className="truncate text-sm text-muted-foreground">
             {healthQuery.data?.data.application ??
               (healthQuery.error instanceof Error
                 ? healthQuery.error.message

@@ -68,18 +68,18 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
     <main className="mx-auto max-w-5xl space-y-6 p-4 pb-28 sm:p-6">
       <Link
         href="/tenant/co-occupants"
-        className="inline-flex items-center gap-2 font-semibold text-slate-600"
+        className="inline-flex items-center gap-2 font-semibold text-secondary-foreground"
       >
         <ArrowLeft className="size-4" />
         Người ở cùng
       </Link>
-      <section className="flex flex-col gap-5 rounded-3xl border bg-white p-6 shadow-sm sm:flex-row sm:items-center">
-        <span className="grid size-20 shrink-0 place-items-center rounded-3xl bg-blue-100 text-2xl font-black text-blue-700">
+      <section className="flex flex-col gap-5 rounded-3xl border bg-card p-6 shadow-card sm:flex-row sm:items-center">
+        <span className="grid size-20 shrink-0 place-items-center rounded-3xl bg-accent text-2xl font-black text-link">
           {initials(d.fullName)}
         </span>
         <div className="flex-1">
           <h1 className="text-3xl font-black">{d.fullName}</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {d.tenantCode} · Chuyển vào {formatDate(d.moveInDate)}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -91,7 +91,7 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
         {d.permissions.canRequestMoveOut && (
           <button
             onClick={() => setModal(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-3 font-bold text-red-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-danger-border px-4 py-3 font-bold text-danger"
           >
             <UserMinus className="size-4" />
             Yêu cầu chuyển đi
@@ -99,7 +99,7 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
         )}
       </section>
       <div className="grid gap-6 md:grid-cols-2">
-        <section className="rounded-2xl border bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="text-lg font-black">Thông tin cơ bản</h2>
           <dl className="mt-4 space-y-4 text-sm">
             <Info icon={<Phone />} name="Điện thoại" value={d.maskedPhone} />
@@ -122,7 +122,7 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
             />
           </dl>
         </section>
-        <section className="rounded-2xl border bg-white p-5">
+        <section className="surface-card p-5 sm:p-6">
           <h2 className="text-lg font-black">Hồ sơ tạm trú</h2>
           <div className="mt-4">
             <Badge kind="temporary" value={d.temporaryResidence.status} />
@@ -141,21 +141,21 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
               value={d.temporaryResidence.publicNote}
             />
           </dl>
-          <p className="mt-4 rounded-xl bg-blue-50 p-3 text-xs text-blue-800">
+          <p className="mt-4 rounded-xl bg-accent p-3 text-xs text-link">
             Trạng thái này do quản lý xác nhận, không được suy ra từ việc đã tải
             giấy tờ.
           </p>
         </section>
       </div>
-      <section className="rounded-2xl border bg-white p-5">
+      <section className="surface-card p-5 sm:p-6">
         <h2 className="text-lg font-black">Lịch sử cư trú</h2>
         <div className="mt-4 space-y-3">
           {d.history.map((x) => (
-            <div key={x.id} className="rounded-xl bg-slate-50 p-4 text-sm">
+            <div key={x.id} className="rounded-xl bg-muted p-4 text-sm">
               <b>
                 {x.propertyName} · Phòng {x.roomCode}
               </b>
-              <p className="mt-1 text-slate-500">
+              <p className="mt-1 text-muted-foreground">
                 {formatDate(x.moveInDate)} –{" "}
                 {x.moveOutDate ? formatDate(x.moveOutDate) : "Hiện tại"}
               </p>
@@ -171,16 +171,16 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
           onKeyDown={(e) => e.key === "Escape" && setModal(false)}
           className="fixed inset-0 z-50 flex items-end bg-slate-950/50 sm:items-center sm:justify-center"
         >
-          <div className="w-full rounded-t-3xl bg-white p-6 sm:max-w-lg sm:rounded-3xl">
+          <div className="w-full rounded-t-3xl bg-card p-6 sm:max-w-lg sm:rounded-3xl">
             <h2 id="move-out-title" className="text-xl font-black">
               Yêu cầu chuyển đi
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Người ở cùng vẫn được tính là đang cư trú cho tới khi quản lý xác
               nhận.
             </p>
             {error && (
-              <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              <p className="mt-3 rounded-xl bg-danger-muted p-3 text-sm text-danger">
                 {error}
               </p>
             )}
@@ -213,10 +213,10 @@ export function CoOccupantDetailPage({ occupantId }: { occupantId: number }) {
                   autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className={`mt-1 block w-full rounded-xl border p-3 ${phone && !phoneValidation.valid ? "border-red-500" : ""}`}
+                  className={`mt-1 block w-full rounded-xl border p-3 ${phone && !phoneValidation.valid ? "border-danger" : ""}`}
                 />
                 {phone && !phoneValidation.valid && (
-                  <span className="mt-1 block text-xs text-red-600">
+                  <span className="mt-1 block text-xs text-danger">
                     {phoneValidation.message}
                   </span>
                 )}
@@ -264,12 +264,12 @@ function Info({
   return (
     <div className="flex gap-3">
       {icon && (
-        <span className="mt-0.5 [&>svg]:size-4 [&>svg]:text-blue-600">
+        <span className="mt-0.5 [&>svg]:size-4 [&>svg]:text-link">
           {icon}
         </span>
       )}
       <div>
-        <dt className="text-slate-500">{name}</dt>
+        <dt className="text-muted-foreground">{name}</dt>
         <dd className="font-semibold">{value || "Chưa cập nhật"}</dd>
       </div>
     </div>

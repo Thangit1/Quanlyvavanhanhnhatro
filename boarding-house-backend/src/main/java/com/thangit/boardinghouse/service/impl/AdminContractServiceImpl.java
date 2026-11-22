@@ -34,13 +34,18 @@ public class AdminContractServiceImpl implements AdminContractService {
     @Transactional(readOnly = true)
     public ContractList list(AuthenticatedUser principal, Long propertyId, String status, String keyword,
                              String sort, String direction, int page, int size) {
+        return list(principal,propertyId,status,keyword,sort,direction,page,size,null,null,null);
+    }
+    @Override @Transactional(readOnly=true)
+    public ContractList list(AuthenticatedUser principal,Long propertyId,String status,String keyword,String sort,String direction,int page,int size,Long roomId,java.time.LocalDate startDateFrom,java.time.LocalDate endDateTo){
         requireRole(principal);
+        if(startDateFrom!=null&&endDateTo!=null&&endDateTo.isBefore(startDateFrom))throw new AuthException(HttpStatus.BAD_REQUEST,"CONTRACT_DATE_RANGE_INVALID","Khoảng thời gian hợp đồng không hợp lệ.");
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 10), 100);
-        return new ContractList(repository.summary(principal.id(), principal.activeRole()),
+        return new ContractList(repository.summary(principal.id(), principal.activeRole(),propertyId),
                 repository.properties(principal.id(), principal.activeRole()),
                 repository.list(principal.id(), principal.activeRole(), propertyId, status, keyword,
-                        sort, direction, safePage, safeSize));
+                        sort, direction, safePage, safeSize,roomId,startDateFrom,endDateTo));
     }
 
     @Override
@@ -56,12 +61,17 @@ public class AdminContractServiceImpl implements AdminContractService {
     @Transactional(readOnly = true)
     public byte[] exportCsv(AuthenticatedUser principal, Long propertyId, String status, String keyword,
                             String sort, String direction) {
+        return exportCsv(principal,propertyId,status,keyword,sort,direction,null,null,null);
+    }
+    @Override @Transactional(readOnly=true)
+    public byte[] exportCsv(AuthenticatedUser principal,Long propertyId,String status,String keyword,String sort,String direction,Long roomId,java.time.LocalDate startDateFrom,java.time.LocalDate endDateTo){
         requireRole(principal);
+        if(startDateFrom!=null&&endDateTo!=null&&endDateTo.isBefore(startDateFrom))throw new AuthException(HttpStatus.BAD_REQUEST,"CONTRACT_DATE_RANGE_INVALID","Khoảng thời gian hợp đồng không hợp lệ.");
         repository.requireExport(principal,propertyId);
         StringBuilder csv = new StringBuilder("\uFEFFMã hợp đồng,Khách thuê,Điện thoại,Nhà trọ,Phòng,"
                 + "Ngày bắt đầu,Ngày kết thúc,Tiền thuê,Tiền cọc,Trạng thái\n");
         for (ContractRow row : repository.list(principal.id(), principal.activeRole(), propertyId, status,
-                keyword, sort, direction, 0, 10_000).content()) {
+                keyword, sort, direction, 0, 10_000,roomId,startDateFrom,endDateTo).content()) {
             csv.append(csv(row.contractCode())).append(',').append(csv(row.tenantName())).append(',')
                     .append(csv(row.tenantPhone())).append(',').append(csv(row.propertyName())).append(',')
                     .append(csv(row.roomCode())).append(',').append(row.startDate()).append(',')

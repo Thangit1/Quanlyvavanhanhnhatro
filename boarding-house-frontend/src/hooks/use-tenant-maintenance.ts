@@ -1,5 +1,6 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useScopedQuery as useQuery } from "@/hooks/use-scoped-query";
 import {
   tenantMaintenanceService,
   type MaintenanceQuery,
@@ -56,7 +57,7 @@ export function useCreateMaintenance() {
 export function useMaintenanceActions(id: number) {
   const qc = useQueryClient();
   const refresh = () => {
-    void qc.invalidateQueries({ queryKey: ["tenant-maintenance-detail", id] });
+    void qc.invalidateQueries({ queryKey: ["tenant-maintenance-detail"] });
     void qc.invalidateQueries({ queryKey: ["tenant-maintenance"] });
     void qc.invalidateQueries({ queryKey: ["tenant-maintenance-summary"] });
   };

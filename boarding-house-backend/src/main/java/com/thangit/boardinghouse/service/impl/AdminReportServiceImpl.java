@@ -38,20 +38,20 @@ public class AdminReportServiceImpl implements AdminReportService {
         Map<String,Object> old=repository.periodSummary(p.id(),p.activeRole(),scope,previous.start(),previous.end());
         Map<String,BigDecimal> summary=new LinkedHashMap<>();rooms.forEach((k,v)->summary.put(k,decimal(v)));current.forEach((k,v)->summary.put(k,decimal(v)));
         BigDecimal available=summary.getOrDefault("availableRooms",BigDecimal.ZERO);
-        summary.put("occupancyRate",percentage(summary.get("occupiedRooms"),available));
+        summary.put("occupancyRate",com.thangit.boardinghouse.service.ReportKpis.occupancy(summary.get("occupiedRooms"),available));
         BigDecimal revenue=summary.getOrDefault("confirmedRevenue",BigDecimal.ZERO),expense=summary.getOrDefault("confirmedExpense",BigDecimal.ZERO);
         summary.put("profit",decimal(current.get("netCashFlow")));summary.put("netCashFlow",decimal(current.get("netCashFlow")));
         Map<String,BigDecimal> comparison=new LinkedHashMap<>();
         comparison.put("revenueChangePercent",change(revenue,decimal(old.get("confirmedRevenue"))));
         comparison.put("expenseChangePercent",change(expense,decimal(old.get("confirmedExpense"))));
         comparison.put("profitChangePercent",change(decimal(current.get("netCashFlow")),decimal(old.get("netCashFlow"))));
-        comparison.put("debtChangePercent",change(summary.get("outstandingDebt"),decimal(old.get("outstandingDebt"))));
+        comparison.put("debtChangePercent",null);
         List<Alert>alerts=new ArrayList<>();
         if(summary.get("outstandingDebt").signum()>0)alerts.add(new Alert("OUTSTANDING_DEBT","ATTENTION","Công nợ cần theo dõi","Còn "+summary.get("outstandingDebt").toPlainString()+" đồng chưa thu.","/admin/reports/debt"));
         if(summary.get("expiringContracts").signum()>0)alerts.add(new Alert("EXPIRING_CONTRACTS","IMPORTANT","Hợp đồng sắp hết hạn","Có "+summary.get("expiringContracts").toPlainString()+" hợp đồng hết hạn trong 30 ngày.","/admin/reports/contracts"));
         if(summary.get("openMaintenance").signum()>0)alerts.add(new Alert("OPEN_MAINTENANCE","INFO","Yêu cầu bảo trì đang mở","Có "+summary.get("openMaintenance").toPlainString()+" yêu cầu cần xử lý.","/admin/reports/maintenance"));
         return new Overview(new Scope(scope,range.start(),range.end()),repository.properties(p.id(),p.activeRole()),summary,comparison,
-                repository.roomStatuses(p.id(),p.activeRole(),scope),repository.financeTrend(p.id(),p.activeRole(),scope,range.start(),range.end()),alerts,LocalDateTime.now());
+                repository.roomStatuses(p.id(),p.activeRole(),scope),repository.financeTrend(p.id(),p.activeRole(),scope,range.start(),range.end()),alerts,com.thangit.boardinghouse.service.BusinessTime.now());
     }
 
     @Override @Transactional(readOnly=true)
@@ -77,7 +77,7 @@ public class AdminReportServiceImpl implements AdminReportService {
         ReportData expenses=repository.expenses(p.id(),p.activeRole(),scope,range.start(),range.end());
         var totals=repository.periodSummary(p.id(),p.activeRole(),scope,range.start(),range.end());
         Map<String,BigDecimal> summary=new LinkedHashMap<>();totals.forEach((k,v)->{if(v instanceof Number)summary.put(k,decimal(v));});summary.put("profit",decimal(totals.get("netCashFlow")));
-        return new ReportData("PROFIT",new Scope(scope,range.start(),range.end()),summary,revenue.trend(),expenses.breakdown(),repository.cashDetails(scope,range.start(),range.end()),LocalDateTime.now());
+        return new ReportData("PROFIT",new Scope(scope,range.start(),range.end()),summary,revenue.trend(),expenses.breakdown(),repository.cashDetails(scope,range.start(),range.end()),com.thangit.boardinghouse.service.BusinessTime.now());
     }
 
     @Override @Transactional
@@ -90,11 +90,11 @@ public class AdminReportServiceImpl implements AdminReportService {
         return repository.export(p.id(),id).orElseThrow();
     }
     @Override @Transactional(readOnly=true) public List<ExportJob> exports(AuthenticatedUser p){requireGeneral(p);return repository.exports(p.id());}
-    @Override @Transactional(readOnly=true) public ExportJob export(AuthenticatedUser p,long id){requireGeneral(p);var job=repository.export(p.id(),id).orElseThrow(()->bad("REPORT_EXPORT_NOT_FOUND","Export not found"));var properties=repository.exportProperties(p.id(),id,p.activeRole());var allowed=repository.properties(p.id(),p.activeRole()).stream().map(PropertyOption::id).toList();if(!allowed.containsAll(properties))throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_PROPERTY_DENIED","Export scope no longer allowed");capabilityScope(p,properties,properties,"EXPORT");if(Set.of("REVENUE","PAYMENTS","EXPENSES","PROFIT","DEBT","INVOICES","UTILITIES").contains(job.reportType()))capabilityScope(p,properties,properties,"FINANCE_READ");return job;}
-    @Override @Transactional(readOnly=true) public byte[] download(AuthenticatedUser p,long id){ExportJob job=export(p,id);if(job.expiresAt()!=null&&job.expiresAt().isBefore(LocalDateTime.now()))throw bad("REPORT_EXPORT_EXPIRED","Tệp báo cáo đã hết hạn.");return repository.exportContent(p.id(),id).orElseThrow(()->bad("REPORT_EXPORT_NOT_READY","Tệp báo cáo chưa sẵn sàng."));}
+    @Override @Transactional(readOnly=true) public ExportJob export(AuthenticatedUser p,long id){requireGeneral(p);var job=repository.export(p.id(),id).orElseThrow(()->bad("REPORT_EXPORT_NOT_FOUND","Export not found"));var properties=repository.exportProperties(p.id(),id,p.activeRole());var allowed=repository.properties(p.id(),p.activeRole()).stream().map(PropertyOption::id).toList();if(!allowed.containsAll(properties))throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_PROPERTY_DENIED","Export scope no longer allowed");capabilityScope(p,properties,properties,"EXPORT");var financial=repository.exportFinancialProperties(p.id(),id);if(!allowed.containsAll(financial))throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_PROPERTY_DENIED","Export financial scope no longer allowed");capabilityScope(p,financial,financial,"FINANCE_READ");if(Set.of("REVENUE","PAYMENTS","EXPENSES","PROFIT","DEBT","INVOICES","UTILITIES").contains(job.reportType()))capabilityScope(p,properties,properties,"FINANCE_READ");return job;}
+    @Override @Transactional(readOnly=true) public byte[] download(AuthenticatedUser p,long id){ExportJob job=export(p,id);if(job.expiresAt()!=null&&job.expiresAt().isBefore(com.thangit.boardinghouse.service.BusinessTime.now()))throw bad("REPORT_EXPORT_EXPIRED","Tệp báo cáo đã hết hạn.");return repository.exportContent(p.id(),id).orElseThrow(()->bad("REPORT_EXPORT_NOT_READY","Tệp báo cáo chưa sẵn sàng."));}
 
     private List<Long> scope(AuthenticatedUser p,List<Long>requested){List<PropertyOption> options=repository.properties(p.id(),p.activeRole());Set<Long>allowed=options.stream().map(PropertyOption::id).collect(java.util.stream.Collectors.toSet());if(requested==null||requested.isEmpty())return options.stream().map(PropertyOption::id).toList();List<Long>unique=requested.stream().distinct().toList();if(unique.size()>20||!allowed.containsAll(unique))throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_PROPERTY_DENIED","Bạn không có quyền xem một hoặc nhiều khu trọ đã chọn.");return unique;}
-    private Range range(LocalDate start,LocalDate end){LocalDate today=LocalDate.now();LocalDate s=start==null?today.withDayOfMonth(1):start;LocalDate e=end==null?today:end;if(e.isBefore(s)||ChronoUnit.DAYS.between(s,e)>730)throw bad("REPORT_DATE_RANGE_INVALID","Khoảng thời gian báo cáo không hợp lệ hoặc vượt quá 2 năm.");return new Range(s,e);}
+    private Range range(LocalDate start,LocalDate end){LocalDate today=com.thangit.boardinghouse.service.BusinessTime.today();LocalDate s=start==null?today.withDayOfMonth(1):start;LocalDate e=end==null?today:end;if(e.isBefore(s)||ChronoUnit.DAYS.between(s,e)>730)throw bad("REPORT_DATE_RANGE_INVALID","Khoảng thời gian báo cáo không hợp lệ hoặc vượt quá 2 năm.");return new Range(s,e);}
     private String normalize(String raw){String type=raw==null?"":raw.trim().toUpperCase(Locale.ROOT);if(!TYPES.contains(type))throw bad("REPORT_TYPE_INVALID","Loại báo cáo không hợp lệ.");return type;}
     private void requireGeneral(AuthenticatedUser p){if(p==null||!List.of(RoleCode.OWNER,RoleCode.MANAGER,RoleCode.ACCOUNTANT).contains(p.activeRole()))throw new AuthException(HttpStatus.FORBIDDEN,"REPORT_ACCESS_DENIED","Bạn không có quyền truy cập báo cáo quản trị.");}
     private void requireReport(AuthenticatedUser p,String type){if(p!=null&&p.activeRole()==RoleCode.TECHNICIAN&&Set.of("MAINTENANCE","ASSETS").contains(type))return;requireGeneral(p);}

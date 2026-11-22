@@ -1,13 +1,12 @@
 "use client";
 import { useScopedQuery } from "./use-scoped-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { adminPropertyService } from "@/services/admin-property.service";
-import type {
-  PropertyFilters,
-  PropertyPayload,
-  RoomFilters,
-  RoomPayload,
-} from "@/types/admin-property";
+import {
+  adminPropertyService,
+  type PropertySave,
+  type RoomSave,
+} from "@/services/admin-property.service";
+import type { PropertyFilters, RoomFilters } from "@/types/admin-property";
 export function useAdminProperties(filters: PropertyFilters) {
   return useScopedQuery({
     queryKey: ["admin-properties", filters],
@@ -32,6 +31,8 @@ export function usePropertyOptions() {
 export function usePropertyMutations(id?: number) {
   const client = useQueryClient();
   const refresh = async () => {
+    await client.invalidateQueries({ queryKey: ["admin-dashboard"] });
+    await client.invalidateQueries({ queryKey: ["management-scope"] });
     await client.invalidateQueries({ queryKey: ["admin-properties"] });
     await client.invalidateQueries({ queryKey: ["rental-lifecycle"] });
     await client.invalidateQueries({ queryKey: ["property-options"] });
@@ -39,11 +40,11 @@ export function usePropertyMutations(id?: number) {
   };
   return {
     create: useMutation({
-      mutationFn: (p: PropertyPayload) => adminPropertyService.create(p),
+      mutationFn: (p: PropertySave) => adminPropertyService.create(p),
       onSuccess: refresh,
     }),
     update: useMutation({
-      mutationFn: (p: PropertyPayload) => adminPropertyService.update(id!, p),
+      mutationFn: (p: PropertySave) => adminPropertyService.update(id!, p),
       onSuccess: refresh,
     }),
     status: useMutation({
@@ -68,11 +69,12 @@ export function usePropertyMutations(id?: number) {
     }),
   };
 }
-export function useAdminRooms(filters: RoomFilters) {
+export function useAdminRooms(filters: RoomFilters, enabled = true) {
   return useScopedQuery({
     queryKey: ["admin-rooms", filters],
     queryFn: ({ signal }) => adminPropertyService.rooms(filters, signal),
     staleTime: 20_000,
+    enabled,
   });
 }
 export function useAdminRoom(id: number) {
@@ -85,18 +87,27 @@ export function useAdminRoom(id: number) {
 export function useRoomMutations(id?: number) {
   const client = useQueryClient();
   const refresh = async () => {
+    await client.invalidateQueries({ queryKey: ["admin-dashboard"] });
+    await client.invalidateQueries({ queryKey: ["admin-property"] });
+    await client.invalidateQueries({ queryKey: ["dashboard-occupancy"] });
+    await client.invalidateQueries({ queryKey: ["dashboard-lifecycle"] });
+    await client.invalidateQueries({ queryKey: ["room-workflow-notices"] });
     await client.invalidateQueries({ queryKey: ["admin-rooms"] });
     await client.invalidateQueries({ queryKey: ["rental-lifecycle"] });
     await client.invalidateQueries({ queryKey: ["admin-properties"] });
     if (id) await client.invalidateQueries({ queryKey: ["admin-room"] });
   };
   return {
+    bulk: useMutation({
+      mutationFn: adminPropertyService.bulkRooms,
+      onSuccess: refresh,
+    }),
     create: useMutation({
-      mutationFn: (p: RoomPayload) => adminPropertyService.createRoom(p),
+      mutationFn: (p: RoomSave) => adminPropertyService.createRoom(p),
       onSuccess: refresh,
     }),
     update: useMutation({
-      mutationFn: (p: RoomPayload) => adminPropertyService.updateRoom(id!, p),
+      mutationFn: (p: RoomSave) => adminPropertyService.updateRoom(id!, p),
       onSuccess: refresh,
     }),
     price: useMutation({

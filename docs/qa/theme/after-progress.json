@@ -1,0 +1,724 @@
+{
+  "cases": [
+    {
+      "name": "TENANT authenticate fixture",
+      "status": "PASS"
+    },
+    {
+      "name": "TENANT light desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(241, 245, 249)",
+        "body": "rgb(241, 245, 249)",
+        "card": "rgb(255, 255, 255)",
+        "cardBorder": "rgb(217, 226, 236)",
+        "cardShadow": "rgba(15, 23, 42, 0.05) 0px 2px 8px 0px",
+        "selected": "rgb(232, 240, 255)",
+        "selectedText": "rgb(37, 99, 235)",
+        "label": "rgb(100, 116, 139)",
+        "heading": "16px",
+        "overflow": false
+      }
+    },
+    {
+      "name": "TENANT dark desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(11, 18, 32)",
+        "body": "rgb(11, 18, 32)",
+        "card": "rgb(20, 32, 51)",
+        "cardBorder": "rgb(58, 75, 99)",
+        "cardShadow": "rgba(0, 0, 0, 0.14) 0px 2px 8px 0px",
+        "selected": "rgb(32, 57, 87)",
+        "selectedText": "rgb(147, 197, 253)",
+        "label": "rgb(169, 184, 206)",
+        "heading": "16px",
+        "overflow": false
+      }
+    },
+    {
+      "name": "Tenant profile focus and validation",
+      "status": "PASS",
+      "focus": {
+        "tag": "INPUT",
+        "outline": "rgb(37, 99, 235) solid 2px",
+        "shadow": "none"
+      }
+    },
+    {
+      "name": "Tenant menu selected and hover",
+      "status": "PASS",
+      "selected": "rgb(232, 240, 255)",
+      "hover": "rgb(241, 245, 249)"
+    },
+    {
+      "name": "Tenant avatar picker remains functional",
+      "status": "PASS",
+      "pickerOpened": true,
+      "uploadMutationPerformed": false
+    },
+    {
+      "name": "Tenant modal light and dark",
+      "status": "PASS"
+    },
+    {
+      "name": "Tenant profile responsive 768",
+      "status": "PASS"
+    },
+    {
+      "name": "Tenant profile responsive 390",
+      "status": "PASS"
+    },
+    {
+      "name": "Tenant drawer dark mobile",
+      "status": "PASS"
+    },
+    {
+      "name": "OWNER authenticate fixture",
+      "status": "PASS"
+    },
+    {
+      "name": "OWNER light desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(241, 245, 249)",
+        "body": "rgb(241, 245, 249)",
+        "card": "rgb(255, 255, 255)",
+        "cardBorder": "rgb(217, 226, 236)",
+        "cardShadow": "rgba(15, 23, 42, 0.05) 0px 2px 8px 0px",
+        "selected": "rgb(232, 240, 255)",
+        "selectedText": "rgb(37, 99, 235)",
+        "label": "rgb(100, 116, 139)",
+        "heading": null,
+        "overflow": false
+      }
+    },
+    {
+      "name": "OWNER dark desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(11, 18, 32)",
+        "body": "rgb(11, 18, 32)",
+        "card": "rgb(20, 32, 51)",
+        "cardBorder": "rgb(58, 75, 99)",
+        "cardShadow": "rgba(0, 0, 0, 0.14) 0px 2px 8px 0px",
+        "selected": "rgb(32, 57, 87)",
+        "selectedText": "rgb(147, 197, 253)",
+        "label": "rgb(169, 184, 206)",
+        "heading": null,
+        "overflow": false
+      }
+    },
+    {
+      "name": "Owner property table light and dark",
+      "status": "PASS",
+      "rows": 12
+    },
+    {
+      "name": "MANAGER authenticate fixture",
+      "status": "PASS"
+    },
+    {
+      "name": "MANAGER light desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(241, 245, 249)",
+        "body": "rgb(241, 245, 249)",
+        "card": "rgb(255, 255, 255)",
+        "cardBorder": "rgb(217, 226, 236)",
+        "cardShadow": "rgba(15, 23, 42, 0.05) 0px 2px 8px 0px",
+        "selected": "rgb(232, 240, 255)",
+        "selectedText": "rgb(37, 99, 235)",
+        "label": "rgb(100, 116, 139)",
+        "heading": null,
+        "overflow": false
+      }
+    },
+    {
+      "name": "MANAGER dark desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(11, 18, 32)",
+        "body": "rgb(11, 18, 32)",
+        "card": "rgb(20, 32, 51)",
+        "cardBorder": "rgb(58, 75, 99)",
+        "cardShadow": "rgba(0, 0, 0, 0.14) 0px 2px 8px 0px",
+        "selected": "rgb(32, 57, 87)",
+        "selectedText": "rgb(147, 197, 253)",
+        "label": "rgb(169, 184, 206)",
+        "heading": null,
+        "overflow": false
+      }
+    },
+    {
+      "name": "ACCOUNTANT authenticate fixture",
+      "status": "PASS"
+    },
+    {
+      "name": "ACCOUNTANT light desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(241, 245, 249)",
+        "body": "rgb(241, 245, 249)",
+        "card": "rgb(255, 255, 255)",
+        "cardBorder": "rgb(217, 226, 236)",
+        "cardShadow": "rgba(15, 23, 42, 0.05) 0px 2px 8px 0px",
+        "selected": "rgb(37, 99, 235)",
+        "selectedText": "rgb(255, 255, 255)",
+        "label": "rgb(15, 23, 42)",
+        "heading": null,
+        "overflow": false
+      }
+    },
+    {
+      "name": "ACCOUNTANT dark desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(11, 18, 32)",
+        "body": "rgb(11, 18, 32)",
+        "card": "rgb(20, 32, 51)",
+        "cardBorder": "rgb(58, 75, 99)",
+        "cardShadow": "rgba(0, 0, 0, 0.14) 0px 2px 8px 0px",
+        "selected": "rgb(37, 99, 235)",
+        "selectedText": "rgb(255, 255, 255)",
+        "label": "rgb(241, 245, 249)",
+        "heading": null,
+        "overflow": false
+      }
+    },
+    {
+      "name": "TECHNICIAN authenticate fixture",
+      "status": "PASS"
+    },
+    {
+      "name": "TECHNICIAN light desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(241, 245, 249)",
+        "body": "rgb(241, 245, 249)",
+        "card": "rgb(255, 255, 255)",
+        "cardBorder": "rgb(217, 226, 236)",
+        "cardShadow": "rgba(15, 23, 42, 0.05) 0px 2px 8px 0px",
+        "selected": "rgb(232, 240, 255)",
+        "selectedText": "rgb(37, 99, 235)",
+        "label": null,
+        "heading": null,
+        "overflow": false
+      }
+    },
+    {
+      "name": "TECHNICIAN dark desktop",
+      "status": "PASS",
+      "metrics": {
+        "page": "rgb(11, 18, 32)",
+        "body": "rgb(11, 18, 32)",
+        "card": "rgb(20, 32, 51)",
+        "cardBorder": "rgb(58, 75, 99)",
+        "cardShadow": "rgba(0, 0, 0, 0.14) 0px 2px 8px 0px",
+        "selected": "rgb(32, 57, 87)",
+        "selectedText": "rgb(147, 197, 253)",
+        "label": null,
+        "heading": null,
+        "overflow": false
+      }
+    }
+  ],
+  "exceptions": [],
+  "responses": [
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile-update-requests",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile-update-requests",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "OWNER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/admin/properties?page=0&size=100",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Owner property table light and dark",
+      "url": "http://127.0.0.1:18083/api/admin/properties?page=0&size=100",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "MANAGER authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/accountant/finance/workspace?startDate=2026-11-01&endDate=2026-11-19&tab=overview&page=0&size=20",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/accountant/account",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/accountant/account",
+      "status": 200
+    },
+    {
+      "case": "ACCOUNTANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/accountant/finance/workspace?startDate=2026-11-01&endDate=2026-11-19&tab=overview&page=0&size=20",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/technician/dashboard",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TECHNICIAN authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/technician/dashboard",
+      "status": 200
+    }
+  ]
+}

@@ -41,7 +41,7 @@ public class TenantHomeServiceImpl implements TenantHomeService {
                         rental.roomId(), rental.roomCode(), rental.area(), rental.occupantCount(),
                         rental.monthlyRent(), rental.imageUrl()),
                 new Contract(rental.contractId(), rental.contractCode(), rental.startDate(), rental.endDate(),
-                        rental.depositAmount(), Math.max(0, ChronoUnit.DAYS.between(java.time.LocalDate.now(), rental.endDate())),
+                        rental.depositAmount(), Math.max(0, ChronoUnit.DAYS.between(com.thangit.boardinghouse.service.BusinessTime.today(), rental.endDate())),
                         rental.contractStatus()),
                 invoice, utilities,
                 repository.findRecentMaintenance(principal.id()).stream().map(this::maintenance).toList(),

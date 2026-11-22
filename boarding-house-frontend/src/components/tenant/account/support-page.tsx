@@ -49,7 +49,7 @@ export function SupportPage() {
       {message && (
         <p
           role="status"
-          className="rounded-xl bg-blue-50 p-3 font-semibold text-blue-800"
+          className="rounded-xl bg-accent p-3 font-semibold text-link"
         >
           {message}
         </p>
@@ -71,28 +71,28 @@ export function SupportPage() {
           value={query.data?.workingHours || "Theo thông tin khu trọ"}
         />
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="text-lg font-black">Gửi yêu cầu hỗ trợ</h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Sửa chữa, hóa đơn và người ở cùng cần gửi tại đúng phân hệ để được xử
           lý nhanh hơn.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
             href="/tenant/maintenance/new"
-            className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-bold"
+            className="rounded-full bg-muted px-3 py-1.5 text-sm font-bold"
           >
             Yêu cầu sửa chữa
           </Link>
           <Link
             href="/tenant/invoices"
-            className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-bold"
+            className="rounded-full bg-muted px-3 py-1.5 text-sm font-bold"
           >
             Hóa đơn
           </Link>
           <Link
             href="/tenant/co-occupants/new"
-            className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-bold"
+            className="rounded-full bg-muted px-3 py-1.5 text-sm font-bold"
           >
             Người ở cùng
           </Link>
@@ -156,7 +156,7 @@ export function SupportPage() {
             !subject.trim() || !content.trim() || actions.support.isPending
           }
           onClick={send}
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white disabled:opacity-40"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-6 py-3 font-bold text-white disabled:opacity-40"
         >
           <Send className="size-4" />
           {actions.support.isPending ? "Đang gửi..." : "Gửi yêu cầu"}
@@ -175,10 +175,10 @@ function Info({
   value: string;
 }) {
   return (
-    <article className="rounded-2xl border bg-white p-5 shadow-sm">
-      <Icon className="size-5 text-blue-600" />
+    <article className="surface-card p-5 sm:p-6 ">
+      <Icon className="size-5 text-link" />
       <h2 className="mt-2 font-black">{title}</h2>
-      <p className="mt-1 text-sm text-slate-500">{value}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{value}</p>
     </article>
   );
 }

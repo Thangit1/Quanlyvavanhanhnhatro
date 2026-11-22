@@ -54,7 +54,7 @@ const apiMessages: Record<string, string> = {
   PASSWORD_CONFIRMATION_MISMATCH: "Mật khẩu xác nhận không khớp.",
 };
 const inputClass =
-  "h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 disabled:opacity-60";
+  "h-12 w-full rounded-xl border border-input bg-muted px-4 text-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition placeholder:text-muted-foreground focus:border-blue-600 focus:bg-card focus:ring-4 focus:ring-ring disabled:opacity-60";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -102,18 +102,18 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="w-full max-w-2xl rounded-[2rem] border border-slate-200 bg-white px-5 py-8 shadow-2xl shadow-slate-300/60 sm:px-10 sm:py-10">
+    <div className="w-full max-w-2xl rounded-[2rem] border border-border bg-card px-5 py-8 shadow-2xl shadow-slate-300/60 sm:px-10 sm:py-10">
       <Brand />
       <div className="mt-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Tạo tài khoản khách thuê
         </h1>
-        <p className="mt-2 text-slate-500">
+        <p className="mt-2 text-muted-foreground">
           Đăng ký để xem phòng, hợp đồng, hóa đơn và gửi yêu cầu sửa chữa.
         </p>
       </div>
 
-      <div className="mt-5 flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+      <div className="mt-5 flex items-start gap-3 rounded-xl border border-accent-border bg-accent p-4 text-sm text-link">
         <ShieldCheck className="mt-0.5 size-5 shrink-0" />
         <p>
           Tài khoản tự đăng ký chỉ được cấp vai trò <strong>Khách thuê</strong>.
@@ -129,7 +129,7 @@ export function RegisterForm() {
         {apiError && (
           <div
             role="alert"
-            className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="rounded-xl border border-danger-border bg-danger-muted px-4 py-3 text-sm text-danger"
           >
             {apiError}
           </div>
@@ -138,7 +138,7 @@ export function RegisterForm() {
           <div>
             <label
               htmlFor="fullName"
-              className="mb-2 block font-semibold text-slate-700"
+              className="mb-2 block font-semibold text-secondary-foreground"
             >
               Họ và tên
             </label>
@@ -151,7 +151,7 @@ export function RegisterForm() {
               className={inputClass}
             />
             {errors.fullName && (
-              <p className="mt-1.5 text-sm text-red-600">
+              <p className="mt-1.5 text-sm text-danger">
                 {errors.fullName.message}
               </p>
             )}
@@ -159,9 +159,9 @@ export function RegisterForm() {
           <div>
             <label
               htmlFor="phone"
-              className="mb-2 block font-semibold text-slate-700"
+              className="mb-2 block font-semibold text-secondary-foreground"
             >
-              Số điện thoại <span className="text-red-600">*</span>
+              Số điện thoại <span className="text-danger">*</span>
             </label>
             <input
               id="phone"
@@ -171,10 +171,10 @@ export function RegisterForm() {
               placeholder="0912345678"
               disabled={isSubmitting}
               {...register("phone")}
-              className={`${inputClass} ${errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""}`}
+              className={`${inputClass} ${errors.phone ? "border-danger focus:border-danger focus:ring-red-100" : ""}`}
             />
             {errors.phone && (
-              <p className="mt-1.5 text-sm text-red-600">
+              <p className="mt-1.5 text-sm text-danger">
                 {errors.phone.message}
               </p>
             )}
@@ -183,7 +183,7 @@ export function RegisterForm() {
         <div>
           <label
             htmlFor="email"
-            className="mb-2 block font-semibold text-slate-700"
+            className="mb-2 block font-semibold text-secondary-foreground"
           >
             Email đăng nhập
           </label>
@@ -197,7 +197,7 @@ export function RegisterForm() {
             className={inputClass}
           />
           {errors.email && (
-            <p className="mt-1.5 text-sm text-red-600">
+            <p className="mt-1.5 text-sm text-danger">
               {errors.email.message}
             </p>
           )}
@@ -206,7 +206,7 @@ export function RegisterForm() {
           <div>
             <label
               htmlFor="password"
-              className="mb-2 block font-semibold text-slate-700"
+              className="mb-2 block font-semibold text-secondary-foreground"
             >
               Mật khẩu
             </label>
@@ -217,7 +217,7 @@ export function RegisterForm() {
               {...register("password")}
             />
             {errors.password && (
-              <p className="mt-1.5 text-sm text-red-600">
+              <p className="mt-1.5 text-sm text-danger">
                 {errors.password.message}
               </p>
             )}
@@ -225,7 +225,7 @@ export function RegisterForm() {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="mb-2 block font-semibold text-slate-700"
+              className="mb-2 block font-semibold text-secondary-foreground"
             >
               Nhập lại mật khẩu
             </label>
@@ -236,31 +236,31 @@ export function RegisterForm() {
               {...register("confirmPassword")}
             />
             {errors.confirmPassword && (
-              <p className="mt-1.5 text-sm text-red-600">
+              <p className="mt-1.5 text-sm text-danger">
                 {errors.confirmPassword.message}
               </p>
             )}
           </div>
         </div>
-        <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="font-semibold text-slate-700">Mật khẩu an toàn cần:</p>
+        <div className="rounded-xl bg-muted p-4 text-sm text-secondary-foreground">
+          <p className="font-semibold text-secondary-foreground">Mật khẩu an toàn cần:</p>
           <div className="mt-2 grid gap-1 sm:grid-cols-2">
             <span className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-emerald-600" />
+              <CheckCircle2 className="size-4 text-success" />
               Ít nhất 8 ký tự
             </span>
             <span className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-emerald-600" />
+              <CheckCircle2 className="size-4 text-success" />
               Có chữ cái và chữ số
             </span>
           </div>
         </div>
-        <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-600">
+        <label className="flex cursor-pointer items-start gap-3 text-sm text-secondary-foreground">
           <input
             type="checkbox"
             disabled={isSubmitting}
             {...register("acceptedTerms")}
-            className="mt-0.5 size-4 rounded border-slate-300 accent-blue-600"
+            className="mt-0.5 size-4 rounded border-input accent-blue-600"
           />
           <span>
             Tôi đồng ý với điều khoản sử dụng và chính sách bảo mật của
@@ -268,14 +268,14 @@ export function RegisterForm() {
           </span>
         </label>
         {errors.acceptedTerms && (
-          <p className="-mt-3 text-sm text-red-600">
+          <p className="-mt-3 text-sm text-danger">
             {errors.acceptedTerms.message}
           </p>
         )}
         <button
           type="submit"
           disabled={isSubmitting || !isValid}
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-lg font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? (
             <>
@@ -290,11 +290,11 @@ export function RegisterForm() {
           )}
         </button>
       </form>
-      <p className="mt-7 text-center text-slate-500">
+      <p className="mt-7 text-center text-muted-foreground">
         Đã có tài khoản?{" "}
         <Link
           href="/login"
-          className="font-semibold text-blue-700 hover:underline"
+          className="font-semibold text-link hover:underline"
         >
           Đăng nhập
         </Link>

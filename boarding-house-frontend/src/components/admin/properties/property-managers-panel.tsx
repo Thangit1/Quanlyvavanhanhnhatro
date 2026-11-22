@@ -8,7 +8,7 @@ import {
   type ManagerCapability,
 } from "@/services/owner-access.service";
 import { apiErrorMessage } from "@/lib/api-error";
-const input = "w-full rounded-xl border border-slate-300 bg-white p-3 text-sm";
+const input = "w-full rounded-xl border border-input bg-card p-3 text-sm";
 export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
   const { user } = useAuth();
   const client = useQueryClient();
@@ -94,18 +94,18 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
   return (
     <section
       id="property-managers"
-      className="space-y-4 rounded-2xl border border-blue-100 bg-white p-5 shadow-sm"
+      className="space-y-4 rounded-2xl border border-accent-border bg-card p-5 shadow-card"
     >
       <div>
         <h2 className="text-lg font-bold">Phân công quản lý</h2>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-sm text-secondary-foreground">
           Quản lý chỉ thấy nhà trọ được chủ nhà phân công. Phân công không tạo
           bản sao dữ liệu và không đổi chủ sở hữu.
         </p>
       </div>
       {query.isPending && <p>Đang tải phân công…</p>}
       {query.isError && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {apiErrorMessage(query.error)}{" "}
           <button
             type="button"
@@ -117,12 +117,12 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
         </p>
       )}
       {error && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {error}
         </p>
       )}
       {notice && (
-        <p role="status" className="text-sm text-emerald-700">
+        <p role="status" className="text-sm text-success">
           {notice}
         </p>
       )}
@@ -133,7 +133,7 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
               Đã phân công ({query.data.assignments.length})
             </h3>
             {!query.data.assignments.length && (
-              <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
+              <p className="rounded-xl bg-warning-muted p-3 text-sm text-amber-900">
                 Chưa phân công quản lý cho nhà trọ này. Tài khoản Manager sẽ
                 chưa nhìn thấy nhà trọ/phòng tại đây.
               </p>
@@ -147,12 +147,12 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
                   <strong>
                     {a.full_name} · #{a.manager_id}
                   </strong>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {a.status === "ACTIVE" && a.has_manager_role
                       ? "Đang hoạt động"
                       : "Tài khoản đã ngừng/thiếu vai trò Manager; không thể truy cập"}
                   </p>
-                  <ul className="mt-1 text-xs text-slate-600">
+                  <ul className="mt-1 text-xs text-secondary-foreground">
                     {query
                       .data!.capabilities.filter(
                         (c) => c.manager_id === a.manager_id,
@@ -177,7 +177,7 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
                     disabled={
                       busy || a.status !== "ACTIVE" || !a.has_manager_role
                     }
-                    className="text-sm text-blue-700 underline disabled:opacity-40"
+                    className="text-sm text-link underline disabled:opacity-40"
                     onClick={() => {
                       setManager(a.manager_id);
                       setProperties([propertyId]);
@@ -196,7 +196,7 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
                   <button
                     type="button"
                     disabled={busy}
-                    className="text-sm text-red-700 underline"
+                    className="text-sm text-danger underline"
                     onClick={() => void revoke(a.manager_id)}
                   >
                     Thu hồi tại nhà trọ này
@@ -235,7 +235,7 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
               </select>
             </label>
             {!query.data.availableManagers.length && (
-              <p className="rounded-xl bg-slate-50 p-3 text-sm">
+              <p className="rounded-xl bg-muted p-3 text-sm">
                 Chưa có tài khoản MANAGER đang hoạt động. Liên hệ quản trị hệ
                 thống để tạo/kích hoạt và cấp vai trò Manager theo quy trình
                 quản lý tài khoản, sau đó tải lại danh sách. Đăng ký công khai
@@ -285,7 +285,7 @@ export function PropertyManagersPanel({ propertyId }: { propertyId: number }) {
                 </label>
               ))}
             </fieldset>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Không chọn quyền nhạy cảm vẫn cho phép vận hành phòng/người thuê
               trong nhà trọ được phân công. Quyền tài chính, phê duyệt và xuất
               dữ liệu chỉ được cấp khi bạn chọn rõ ràng. Cấp ghi tài chính nên

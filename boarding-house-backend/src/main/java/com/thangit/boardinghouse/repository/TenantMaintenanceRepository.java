@@ -77,8 +77,7 @@ public class TenantMaintenanceRepository {
           LEFT JOIN contracts c ON c.id=(SELECT c2.id FROM contracts c2 WHERE c2.room_id=m.room_id AND c2.tenant_id=:tenant ORDER BY c2.end_date DESC LIMIT 1)
           LEFT JOIN room_assets ra ON ra.id=m.asset_id LEFT JOIN users tech ON tech.id=m.assigned_to
         WHERE m.id=:id AND COALESCE(m.reporter_id,m.tenant_id)=:tenant
-        """+(lock?" FOR UPDATE":"")).param("tenant",tenant).param("id",id).query(Map.class).optional()
-        .map(row -> (Map<String,Object>) row);}
+        """+(lock?" FOR UPDATE":"")).param("tenant",tenant).param("id",id).query().listOfRows().stream().findFirst();}
     public Optional<Created> byIdempotency(long tenant,String key){return jdbc.sql("SELECT id,code,status FROM maintenance_requests WHERE reporter_id=:tenant AND tenant_idempotency_key=:key")
         .param("tenant",tenant).param("key",key).query((r,n)->new Created(r.getLong("id"),r.getString("code"),r.getString("status"))).optional();}
     public boolean duplicateOpen(long tenant,long room,Long asset,String category){return jdbc.sql("""

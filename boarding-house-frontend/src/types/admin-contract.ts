@@ -24,6 +24,10 @@ export interface AdminContractPropertyOption {
 }
 
 export interface AdminContractRow {
+  paymentCycle: string;
+  confirmationVersion: number;
+  landlordConfirmed: boolean;
+  tenantConfirmed: boolean;
   id: number;
   contractCode: string;
   tenantId: number;
@@ -59,6 +63,7 @@ export interface AdminContractListData {
 }
 
 export interface AdminContractFilters {
+  roomId?: number;
   keyword?: string;
   propertyId?: number;
   status?: AdminContractStatus;

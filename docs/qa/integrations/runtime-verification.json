@@ -1,0 +1,8 @@
+{
+  "health": "PASS",
+  "integrationApiRegistered": true,
+  "unauthenticatedConfigDenied": true,
+  "migration": 42,
+  "financialTotalsAndCountsUnchanged": true,
+  "checkedAfterFinalRestart": true
+}

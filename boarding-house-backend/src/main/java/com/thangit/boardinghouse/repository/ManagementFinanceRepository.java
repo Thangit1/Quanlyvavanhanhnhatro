@@ -32,7 +32,7 @@ public class ManagementFinanceRepository {
         result.put("confirmedCosts",scalar("SELECT COALESCE(SUM(amount),0) FROM management_expense_events WHERE property_id IN (:ids) AND occurred_on>=:start AND occurred_on<:until",p));
         result.put("periodInvoiceObligations",scalar("SELECT COALESCE(SUM(total_amount),0) FROM invoices WHERE property_id IN (:ids) AND status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED') AND billing_period>=:start AND billing_period<:until",p));
         result.put("outstandingDebt",scalar("SELECT COALESCE(SUM(GREATEST(remaining_amount,0)),0) FROM invoices WHERE property_id IN (:ids) AND status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED')",p));
-        result.put("overdueDebt",scalar("SELECT COALESCE(SUM(GREATEST(remaining_amount,0)),0) FROM invoices WHERE property_id IN (:ids) AND status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED') AND due_date<CURRENT_DATE",p));
+        result.put("overdueDebt",scalar("SELECT COALESCE(SUM(GREATEST(remaining_amount,0)),0) FROM invoices WHERE property_id IN (:ids) AND status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED') AND due_date<DATE(UTC_TIMESTAMP() + INTERVAL 7 HOUR)",p));
         result.put("notDueDebt",result.get("outstandingDebt").subtract(result.get("overdueDebt")));
         result.put("heldDeposits",scalar("SELECT COALESCE(SUM(balance_amount),0) FROM tenant_deposits WHERE property_id IN (:ids)",p));
         result.put("refundsPayable",scalar("SELECT COALESCE(SUM(r.amount-r.paid_amount),0) FROM deposit_refund_requests r JOIN tenant_deposits d ON d.id=r.deposit_id WHERE d.property_id IN (:ids) AND r.status IN ('REQUESTED','APPROVED','PARTIAL')",p));

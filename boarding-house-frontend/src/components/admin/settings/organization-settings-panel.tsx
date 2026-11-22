@@ -47,12 +47,12 @@ export function OrganizationSettingsPanel() {
     }
   }
   const input =
-    "min-h-11 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm";
+    "min-h-11 w-full rounded-xl border border-border bg-card p-3 text-sm";
   if (user?.activeRole !== "OWNER") return null;
   return (
-    <section className="mb-6 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="mb-6 space-y-5 surface-card p-6 ">
       <h2 className="text-xl font-bold">Thông tin chủ sở hữu / Tổ chức</h2>
-      <p className="text-sm leading-6 text-slate-500">
+      <p className="text-sm leading-6 text-muted-foreground">
         Bạn có thể vận hành với tư cách cá nhân hoặc doanh nghiệp. Không cần tạo
         công ty để quản lý nhà trọ. Tổ chức đã thiết lập được giữ lại và dùng
         cho phân nhóm vận hành.
@@ -110,16 +110,16 @@ export function OrganizationSettingsPanel() {
                 />
               </AccountField>
               {error && (
-                <p role="alert" className="text-sm text-red-600">
+                <p role="alert" className="text-sm text-danger">
                   {error}
                 </p>
               )}
               {notice && (
-                <p role="status" className="text-sm text-emerald-700">
+                <p role="status" className="text-sm text-success">
                   {notice}
                 </p>
               )}
-              <button className="rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">
+              <button className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-3 text-sm font-bold text-white disabled:opacity-50">
                 {busy
                   ? "Đang lưu..."
                   : current
@@ -131,7 +131,7 @@ export function OrganizationSettingsPanel() {
         </>
       )}
       <Link
-        className="inline-block text-sm font-bold text-blue-600"
+        className="inline-block text-sm font-bold text-link"
         href="/admin/areas"
       >
         Đến Khu vực & Phân công

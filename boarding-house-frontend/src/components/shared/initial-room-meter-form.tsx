@@ -62,7 +62,7 @@ export function InitialRoomMeterForm({
       {open && (
         <form
           onSubmit={(event) => void submit(event)}
-          className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm"
+          className="grid gap-3 rounded-xl border border-border bg-muted p-4 text-sm"
         >
           <p>
             Chỉ dùng khi chưa có đồng hồ và phòng chưa có người sử dụng. Thay
@@ -93,7 +93,7 @@ export function InitialRoomMeterForm({
                 min={field.type === "number" ? 0 : undefined}
                 step={field.type === "number" ? "0.01" : undefined}
                 maxLength={field.name === "code" ? 50 : 500}
-                className="rounded-lg border border-slate-200 bg-white p-2"
+                className="rounded-lg border border-border bg-card p-2"
               />
             </label>
           ))}
@@ -103,12 +103,12 @@ export function InitialRoomMeterForm({
         </form>
       )}
       {error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-danger">
           {error}
         </p>
       )}
       {success && (
-        <p role="status" className="text-sm text-emerald-700">
+        <p role="status" className="text-sm text-success">
           {success}
         </p>
       )}

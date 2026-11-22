@@ -45,7 +45,7 @@ class DepositLedgerMysqlTest {
         String server="jdbc:mysql://127.0.0.1:"+port+"/";
         var admin=new DriverManagerDataSource(server+"?serverTimezone=UTC",user,password);
         JdbcClient.create(admin).sql("CREATE DATABASE "+schema+" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci").update();
-        var ds=new DriverManagerDataSource(server+schema+"?serverTimezone=UTC",user,password);
+        var ds=new IsolatedMysqlDataSource(server+schema+"?serverTimezone=UTC",user,password);
         dataSource=ds;
         db=JdbcClient.create(ds);tx=new TransactionTemplate(new JdbcTransactionManager(ds));
         Flyway.configure().dataSource(ds).target("21").load().migrate();

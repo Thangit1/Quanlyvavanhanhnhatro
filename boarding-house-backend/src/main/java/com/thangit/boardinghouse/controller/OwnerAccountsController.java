@@ -18,7 +18,7 @@ public class OwnerAccountsController {
             @RequestParam(required=false) Long propertyId,@RequestParam(required=false) Long areaId,
             @RequestParam(required=false) String role,@RequestParam(required=false) String keyword,
             @RequestParam(required=false) String status,@RequestParam(defaultValue="0") int page,
-            @RequestParam(defaultValue="20") int size){return ApiResponse.success("Tài khoản & Nhân sự",service.list(p,propertyId,areaId,role,keyword,status,page,size));}
+            @RequestParam(defaultValue="20") int size,@RequestParam(required=false) Long organizationId){return ApiResponse.success("Tài khoản & Nhân sự",service.list(p,propertyId,areaId,role,keyword,status,page,size,organizationId));}
     @GetMapping("/options") public ApiResponse<Map<String,Object>> options(@AuthenticationPrincipal AuthenticatedUser p){return ApiResponse.success("Phạm vi quản lý",service.options(p));}
     @GetMapping("/{user}") public ApiResponse<Map<String,Object>> detail(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long user,@RequestParam String role){return ApiResponse.success("Chi tiết nhân sự",service.detail(p,user,role));}
     @PutMapping("/{user}/assignments") public ApiResponse<Void> assign(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long user,@Valid @RequestBody Assignment r){service.assign(p,user,r);return ApiResponse.success("Đã cập nhật phân công",null);}

@@ -6,7 +6,7 @@ export type AssetDraft = Omit<Asset, "quantity" | "id"> & {
   quantity: number | string;
 };
 const input =
-  "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm";
+  "mt-1 w-full rounded-lg border border-input px-3 py-2 text-sm";
 export function RoomAssetsEditor({
   assets,
   onChange,
@@ -18,9 +18,9 @@ export function RoomAssetsEditor({
     onChange(assets.map((a, i) => (i === index ? { ...a, ...patch } : a)));
   }
   return (
-    <div className="rounded-2xl border bg-white p-6 shadow-sm">
+    <div className="surface-card p-6 ">
       <h2 className="font-bold">Tài sản bàn giao</h2>
-      <p className="mt-2 text-sm text-slate-600">
+      <p className="mt-2 text-sm text-secondary-foreground">
         Khai báo từng tài sản cần kiểm đếm, tình trạng và ghi chú. Tiện nghi bên
         cạnh mô tả đặc điểm phòng; không thay thế danh mục bàn giao.
       </p>
@@ -28,7 +28,7 @@ export function RoomAssetsEditor({
         {assets.map((a, index) => (
           <fieldset
             key={a.id ?? `new-${index}`}
-            className="grid gap-3 rounded-xl bg-slate-50 p-3 sm:grid-cols-2"
+            className="grid gap-3 rounded-xl bg-muted p-3 sm:grid-cols-2"
           >
             <legend className="text-sm font-semibold">
               Tài sản {index + 1}
@@ -90,7 +90,7 @@ export function RoomAssetsEditor({
             </label>
             <button
               type="button"
-              className="justify-self-start text-sm text-red-700 underline"
+              className="justify-self-start text-sm text-danger underline"
               aria-label={`Xóa tài sản ${index + 1}: ${a.name}`}
               onClick={() => onChange(assets.filter((_, i) => i !== index))}
             >
@@ -111,11 +111,11 @@ export function RoomAssetsEditor({
       >
         Thêm tài sản
       </button>
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs text-muted-foreground">
         Tài sản đã gắn biên bản được chốt cần giữ liên kết lịch sử; có thể sửa
         tình trạng và ghi chú, không xóa trực tiếp.
       </p>
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs text-muted-foreground">
         Minh chứng có thể ghi mã tham chiếu trong ghi chú. Hệ thống hiện chưa có
         dịch vụ tải ảnh riêng cho tài sản phòng.
       </p>

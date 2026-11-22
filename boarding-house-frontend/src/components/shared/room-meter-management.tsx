@@ -7,7 +7,7 @@ export function RoomMeterManagement({ detail: d }: { detail: RoomDetail }) {
   return (
     <section
       id="room-meters"
-      className="scroll-mt-6 space-y-4 rounded-2xl border bg-white p-6 shadow-sm"
+      className="scroll-mt-6 space-y-4 surface-card p-6 "
     >
       <h2 className="text-lg font-bold">Quản lý công tơ điện &amp; nước</h2>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -63,12 +63,12 @@ export function RoomMeterManagement({ detail: d }: { detail: RoomDetail }) {
           installableTypes={d.meterManagement.installableTypes}
         />
       ) : (
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-secondary-foreground">
           {d.meterManagement?.reason ??
             "Chưa có thông tin điều kiện lắp đặt. Hãy tải lại hoặc kiểm tra quyền quản lý."}
         </p>
       )}
-      <p className="text-xs text-slate-600">
+      <p className="text-xs text-secondary-foreground">
         Phòng đang sử dụng phải thay công tơ qua quy trình điện nước theo kỳ,
         ghi chỉ số tháo/lắp và chứng từ; không dùng lắp ban đầu để sửa số đo.
       </p>
@@ -85,7 +85,7 @@ export function RoomMeterManagement({ detail: d }: { detail: RoomDetail }) {
             {d.meterManagement.events.map((e) => (
               <li
                 key={String(e.id)}
-                className="rounded-xl bg-slate-50 p-3 text-sm"
+                className="rounded-xl bg-muted p-3 text-sm"
               >
                 <p className="font-semibold">
                   {e.meter_type === "ELECTRICITY" ? "Điện" : "Nước"} ·{" "}

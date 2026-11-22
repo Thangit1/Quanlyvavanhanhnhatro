@@ -74,8 +74,8 @@ export function TenantUtilitiesPage() {
 
   return (
     <main className="mx-auto max-w-7xl space-y-6 overflow-x-hidden p-4 sm:p-6">
-      <nav aria-label="Breadcrumb" className="text-sm text-slate-500">
-        <Link href="/tenant/home" className="hover:text-blue-700">
+      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+        <Link href="/tenant/home" className="hover:text-link">
           Trang chủ
         </Link>
         <span aria-hidden="true"> / </span>
@@ -84,20 +84,20 @@ export function TenantUtilitiesPage() {
 
       <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-950 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-foreground sm:text-3xl">
             Điện &amp; Nước
           </h1>
-          <p className="mt-2 text-slate-500">
+          <p className="mt-2 text-muted-foreground">
             Theo dõi chỉ số, mức tiêu thụ và chi phí điện nước của phòng.
           </p>
         </div>
         {data && data.history.length > 0 && (
-          <label className="text-sm font-medium text-slate-700">
+          <label className="text-sm font-medium text-secondary-foreground">
             Kỳ ghi chỉ số
             <select
               value={selectedPeriod}
               onChange={(event) => setPeriod(event.target.value)}
-              className="mt-1 block min-w-48 rounded-xl border border-slate-200 bg-white px-3 py-2.5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="mt-1 block min-w-48 rounded-xl border border-input bg-card px-3 py-2.5 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring focus:ring-4 focus:ring-ring"
             >
               {data.history.map((item) => (
                 <option key={item.period} value={item.period}>
@@ -115,26 +115,26 @@ export function TenantUtilitiesPage() {
         <UtilityEmpty text="Chưa có hợp đồng thuê phòng đang hiệu lực để xem chỉ số điện nước." />
       ) : (
         <>
-          <section className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center">
+          <section className="flex flex-col justify-between gap-4 surface-card p-5 sm:p-6 sm:flex-row sm:items-center">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+              <p className="text-xs font-semibold uppercase tracking-wide text-link">
                 Phòng đang sử dụng
               </p>
-              <h2 className="mt-1 text-xl font-extrabold text-slate-950">
+              <h2 className="mt-1 text-xl font-extrabold text-foreground">
                 Phòng {data.room?.roomCode}
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Nhà trọ: {data.room?.propertyName}
               </p>
               {data.periodStart && data.periodEnd && (
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="mt-2 text-sm text-secondary-foreground">
                   Kỳ ghi chỉ số: {date(data.periodStart)} –{" "}
                   {date(data.periodEnd)}
                 </p>
               )}
             </div>
             {data.rooms.length > 1 && (
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-secondary-foreground">
                 Phòng của tôi
                 <select
                   value={selectedContract}
@@ -142,7 +142,7 @@ export function TenantUtilitiesPage() {
                     setContractId(Number(event.target.value));
                     setPeriod(undefined);
                   }}
-                  className="mt-1 block min-w-56 rounded-xl border border-slate-200 px-3 py-2.5 outline-none focus:border-blue-500"
+                  className="mt-1 block min-w-56 rounded-xl border border-input px-3 py-2.5 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring"
                 >
                   {data.rooms.map((room) => (
                     <option key={room.contractId} value={room.contractId}>
@@ -163,7 +163,7 @@ export function TenantUtilitiesPage() {
                 <button
                   type="button"
                   onClick={() => setFormulaOpen(true)}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-accent-border bg-accent px-4 py-2 text-sm font-semibold text-link hover:bg-accent"
                 >
                   <Calculator className="size-4" />
                   Xem cách tính
@@ -174,7 +174,7 @@ export function TenantUtilitiesPage() {
                 <UtilityCard
                   title="Điện"
                   icon={Zap}
-                  iconClass="bg-amber-100 text-amber-700"
+                  iconClass="bg-warning-muted text-warning"
                   metric={data.reading.electricity}
                   unit="kWh"
                   previous={previousUsage(
@@ -206,21 +206,21 @@ export function TenantUtilitiesPage() {
               />
 
               {chartData.some((item) => item.usage !== null) && (
-                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                <section className="surface-card p-4 sm:p-6">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <h2 className="text-lg font-extrabold text-slate-950">
+                      <h2 className="text-lg font-extrabold text-foreground">
                         Mức tiêu thụ
                       </h2>
-                      <p className="text-sm text-slate-500">6 tháng gần nhất</p>
+                      <p className="text-sm text-muted-foreground">6 tháng gần nhất</p>
                     </div>
-                    <div className="flex rounded-xl bg-slate-100 p-1">
+                    <div className="flex rounded-xl bg-muted p-1">
                       {(["electricity", "water"] as const).map((type) => (
                         <button
                           type="button"
                           key={type}
                           onClick={() => setChartType(type)}
-                          className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold ${chartType === type ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}
+                          className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold ${chartType === type ? "bg-card text-link shadow-card" : "text-muted-foreground"}`}
                         >
                           {type === "electricity" ? "Điện" : "Nước"}
                         </button>
@@ -315,7 +315,7 @@ function UtilityCard({
 }) {
   const change = percentageChange(metric.usage, previous);
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <article className="surface-card p-5 sm:p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span
@@ -323,23 +323,23 @@ function UtilityCard({
           >
             <Icon className="size-6" />
           </span>
-          <h2 className="text-lg font-extrabold uppercase text-slate-950">
+          <h2 className="text-lg font-extrabold uppercase text-foreground">
             {title}
           </h2>
         </div>
         {metric.valid && metric.complete && (
           <CheckCircle2
-            className="size-5 text-emerald-600"
+            className="size-5 text-success"
             aria-label="Chỉ số hợp lệ"
           />
         )}
       </div>
       {!metric.valid ? (
-        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-800">
+        <div className="mt-5 rounded-xl border border-warning-border bg-warning-muted p-4 text-sm font-semibold text-warning">
           Chỉ số đang cần được kiểm tra.
         </div>
       ) : !metric.complete ? (
-        <p className="mt-5 text-sm text-slate-500">
+        <p className="mt-5 text-sm text-muted-foreground">
           Chưa ghi đủ chỉ số đầu kỳ và cuối kỳ.
         </p>
       ) : (
@@ -353,7 +353,7 @@ function UtilityCard({
               label="Chỉ số mới"
               value={`${format(metric.currentIndex)} ${unit}`}
             />
-            <div className="border-t border-slate-100 pt-3">
+            <div className="border-t border-border pt-3">
               <MetricRow
                 label="Tiêu thụ"
                 value={`${format(metric.usage)} ${unit}`}
@@ -364,7 +364,7 @@ function UtilityCard({
               label="Đơn giá"
               value={`${money(metric.unitPrice)}/${unit}`}
             />
-            <div className="border-t border-slate-100 pt-3">
+            <div className="border-t border-border pt-3">
               <MetricRow
                 label="Thành tiền"
                 value={money(metric.amount)}
@@ -374,16 +374,16 @@ function UtilityCard({
           </dl>
           <div className="mt-4 flex items-center gap-2 text-sm">
             {change === null ? (
-              <span className="text-slate-500">
+              <span className="text-muted-foreground">
                 Chưa có dữ liệu tháng trước để so sánh.
               </span>
             ) : change === 0 ? (
-              <span className="font-medium text-slate-600">
+              <span className="font-medium text-secondary-foreground">
                 Không đổi so với tháng trước
               </span>
             ) : (
               <span
-                className={`inline-flex items-center gap-1 font-semibold ${change > 0 ? "text-amber-700" : "text-emerald-700"}`}
+                className={`inline-flex items-center gap-1 font-semibold ${change > 0 ? "text-warning" : "text-success"}`}
               >
                 {change > 0 ? (
                   <ArrowUpRight className="size-4" />
@@ -415,34 +415,34 @@ function CostSummary({
 }) {
   const safe = electricity.valid && water.valid;
   return (
-    <section className="rounded-2xl border border-blue-100 bg-blue-50/60 p-5 shadow-sm sm:p-6">
-      <h2 className="text-lg font-extrabold text-slate-950">
+    <section className="rounded-2xl border border-accent-border bg-accent/60 p-5 shadow-card sm:p-6">
+      <h2 className="text-lg font-extrabold text-foreground">
         Chi phí điện nước kỳ này
       </h2>
       {!safe ? (
-        <p className="mt-4 text-sm font-semibold text-amber-800">
+        <p className="mt-4 text-sm font-semibold text-warning">
           Chi phí chưa được tổng hợp vì có chỉ số cần kiểm tra.
         </p>
       ) : (
         <dl className="mt-4 max-w-xl space-y-3">
           <MetricRow label="Điện" value={money(electricity.amount)} />
           <MetricRow label="Nước" value={money(water.amount)} />
-          <div className="border-t border-blue-200 pt-3">
+          <div className="border-t border-accent-border pt-3">
             <MetricRow label="Tổng cộng" value={money(total)} strong />
           </div>
         </dl>
       )}
       {invoice && (
-        <div className="mt-5 flex flex-col justify-between gap-3 rounded-xl border border-emerald-200 bg-white p-4 sm:flex-row sm:items-center">
+        <div className="mt-5 flex flex-col justify-between gap-3 rounded-xl border border-success-border bg-card p-4 sm:flex-row sm:items-center">
           <div>
-            <p className="font-semibold text-emerald-800">
+            <p className="font-semibold text-success">
               Đã được tính vào hóa đơn tháng {periodLabel(period)}
             </p>
-            <p className="text-sm text-slate-500">Mã hóa đơn: {invoice.code}</p>
+            <p className="text-sm text-muted-foreground">Mã hóa đơn: {invoice.code}</p>
           </div>
           <Link
             href={`/tenant/invoices/${invoice.id}`}
-            className="inline-flex items-center gap-2 font-semibold text-blue-700 hover:text-blue-800"
+            className="inline-flex items-center gap-2 font-semibold text-link hover:text-link"
           >
             Xem hóa đơn <ArrowRight className="size-4" />
           </Link>
@@ -462,11 +462,11 @@ function UtilityHistory({
   onSelect: (period: string) => void;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-      <h2 className="text-lg font-extrabold text-slate-950">Lịch sử sử dụng</h2>
+    <section className="surface-card p-4 sm:p-6">
+      <h2 className="text-lg font-extrabold text-foreground">Lịch sử sử dụng</h2>
       <div className="mt-4 hidden overflow-x-auto md:block">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-slate-200 text-slate-500">
+          <thead className="border-b border-border text-muted-foreground">
             <tr>
               <th className="px-3 py-3 font-semibold">Tháng</th>
               <th className="px-3 py-3 font-semibold">Điện</th>
@@ -476,12 +476,12 @@ function UtilityHistory({
               <th className="px-3 py-3 font-semibold">Hóa đơn</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-divider">
             {history.map((item) => (
               <tr
                 key={item.period}
                 onClick={() => onSelect(item.period)}
-                className={`cursor-pointer hover:bg-blue-50 ${selectedPeriod === item.period ? "bg-blue-50" : ""}`}
+                className={`cursor-pointer hover:bg-accent ${selectedPeriod === item.period ? "bg-accent" : ""}`}
               >
                 <td className="px-3 py-4 font-semibold">
                   {periodLabel(item.period)}
@@ -514,17 +514,17 @@ function UtilityHistory({
             type="button"
             key={item.period}
             onClick={() => onSelect(item.period)}
-            className={`cursor-pointer rounded-xl border p-4 text-left ${selectedPeriod === item.period ? "border-blue-400 bg-blue-50" : "border-slate-200"}`}
+            className={`cursor-pointer rounded-xl border p-4 text-left ${selectedPeriod === item.period ? "border-blue-400 bg-accent" : "border-border"}`}
           >
             <div className="flex justify-between gap-2">
               <strong>Tháng {periodLabel(item.period)}</strong>
-              <span className="text-xs font-semibold text-slate-500">
+              <span className="text-xs font-semibold text-muted-foreground">
                 {item.invoiceId ? "Đã lập hóa đơn" : "Chưa lập hóa đơn"}
               </span>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-slate-500">Điện</p>
+                <p className="text-muted-foreground">Điện</p>
                 <p className="font-semibold">
                   {usage(item.electricityUsage, "kWh", item.electricityValid)}
                 </p>
@@ -535,7 +535,7 @@ function UtilityHistory({
                 </p>
               </div>
               <div>
-                <p className="text-slate-500">Nước</p>
+                <p className="text-muted-foreground">Nước</p>
                 <p className="font-semibold">
                   {usage(item.waterUsage, "m³", item.waterValid)}
                 </p>
@@ -577,23 +577,23 @@ function FormulaDialog({
         onClick={onClose}
         aria-label="Đóng"
       />
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-card p-5 shadow-2xl sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2
               id="formula-title"
-              className="text-xl font-extrabold text-slate-950"
+              className="text-xl font-extrabold text-foreground"
             >
               Cách tính điện &amp; nước
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Số tiền ưu tiên theo dữ liệu đã được hệ thống ghi nhận.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-2 hover:bg-slate-100"
+            className="cursor-pointer rounded-lg p-2 hover:bg-muted"
             aria-label="Đóng"
           >
             <X className="size-5" />
@@ -623,25 +623,25 @@ function Formula({
 }) {
   if (!metric.valid)
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+      <div className="rounded-xl border border-warning-border bg-warning-muted p-4">
         <h3 className="font-bold">{title}</h3>
-        <p className="mt-3 text-sm text-amber-800">
+        <p className="mt-3 text-sm text-warning">
           Chỉ số đang cần được kiểm tra nên hệ thống chưa tính chi phí.
         </p>
       </div>
     );
   if (!metric.complete)
     return (
-      <div className="rounded-xl border border-slate-200 p-4">
+      <div className="rounded-xl border border-border p-4">
         <h3 className="font-bold">{title}</h3>
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm text-muted-foreground">
           Chưa có đủ chỉ số để hiển thị cách tính.
         </p>
       </div>
     );
   return (
-    <div className="rounded-xl border border-slate-200 p-4">
-      <h3 className="font-bold text-slate-900">{title}</h3>
+    <div className="rounded-xl border border-border p-4">
+      <h3 className="font-bold text-foreground">{title}</h3>
       <dl className="mt-4 space-y-3 text-sm">
         <MetricRow
           label="Chỉ số đầu kỳ"
@@ -680,9 +680,9 @@ function MetricRow({
 }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <dt className="text-slate-500">{label}</dt>
+      <dt className="text-muted-foreground">{label}</dt>
       <dd
-        className={`text-right ${strong ? "font-extrabold text-slate-950" : "font-semibold text-slate-800"}`}
+        className={`text-right ${strong ? "font-extrabold text-foreground" : "font-semibold text-foreground"}`}
       >
         {value}
       </dd>
@@ -697,7 +697,7 @@ function StatusBadge({ status }: { status: string }) {
     INVOICED: "Đã đưa vào hóa đơn",
   };
   return (
-    <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-700">
+    <span className="inline-flex rounded-full bg-success-muted px-3 py-1.5 text-xs font-bold text-success">
       {labels[status] ?? status}
     </span>
   );
@@ -705,15 +705,15 @@ function StatusBadge({ status }: { status: string }) {
 
 function UtilityEmpty({ text }: { text: string }) {
   return (
-    <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
-      <div className="mx-auto flex w-fit gap-2 text-blue-600">
+    <section className="rounded-2xl border border-dashed border-input bg-card p-10 text-center">
+      <div className="mx-auto flex w-fit gap-2 text-link">
         <Zap />
         <Droplets />
       </div>
-      <h2 className="mt-4 text-lg font-extrabold text-slate-900">
+      <h2 className="mt-4 text-lg font-extrabold text-foreground">
         Chưa có dữ liệu điện nước.
       </h2>
-      <p className="mx-auto mt-2 max-w-xl text-sm text-slate-500">{text}</p>
+      <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">{text}</p>
     </section>
   );
 }
@@ -722,10 +722,10 @@ function UtilityError({ onRetry }: { onRetry: () => void }) {
   return (
     <section
       role="alert"
-      className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center"
+      className="rounded-2xl border border-danger-border bg-danger-muted p-8 text-center"
     >
-      <AlertTriangle className="mx-auto size-8 text-red-600" />
-      <p className="mt-3 font-semibold text-red-800">
+      <AlertTriangle className="mx-auto size-8 text-danger" />
+      <p className="mt-3 font-semibold text-danger">
         Không thể tải dữ liệu điện nước.
       </p>
       <button
@@ -757,12 +757,12 @@ function ChartTooltip({
   const point = payload?.[0]?.payload;
   if (!active || !point) return null;
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
+    <div className="rounded-xl border border-border bg-card p-3 text-sm shadow-lg">
       <p className="font-bold">Tháng {point.period}</p>
-      <p className="mt-1 text-blue-700">
+      <p className="mt-1 text-link">
         {format(point.usage)} {unit}
       </p>
-      <p className="text-slate-600">{money(point.amount)}</p>
+      <p className="text-secondary-foreground">{money(point.amount)}</p>
     </div>
   );
 }

@@ -7,6 +7,19 @@ const vm = require("node:vm");
 const ts = require("typescript");
 const axios = require("axios");
 const { QueryClient } = require("@tanstack/react-query");
+test("public health remains available after logout without session refresh", async () => {
+  const h = harness();
+  h.api.resetApiSession();
+  let refreshes = 0;
+  h.refresh.defaults.adapter = async (config) => {
+    refreshes++;
+    return response(config, {});
+  };
+  h.client.defaults.adapter = async (config) => response(config, { status: "UP" });
+  assert.equal((await h.client.get("/v1/health")).data.status, "UP");
+  await assert.rejects(h.client.get("/admin/properties"), (error) => axios.isCancel(error));
+  assert.equal(refreshes, 0);
+});
 test("network loss is surfaced without refreshing or clearing a valid session", async () => {
   const h = harness();
   h.api.setAccessToken("valid-user");

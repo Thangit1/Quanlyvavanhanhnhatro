@@ -56,7 +56,7 @@ export function AdminUserMenu() {
           aria-expanded={open}
           aria-controls="admin-user-menu"
           onClick={() => setOpen((value) => !value)}
-          className="grid size-10 cursor-pointer place-items-center rounded-full bg-blue-100 font-bold text-blue-700 outline-none transition hover:bg-blue-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          className="grid size-10 cursor-pointer place-items-center rounded-full bg-accent font-bold text-link focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition hover:bg-blue-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           {initial}
         </button>
@@ -66,24 +66,28 @@ export function AdminUserMenu() {
             id="admin-user-menu"
             role="menu"
             aria-label="Tài khoản người dùng"
-            className="absolute right-0 top-full z-50 mt-2 w-[min(15rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg shadow-slate-900/10"
+            className="absolute right-0 top-full z-50 mt-2 w-[min(15rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-lg shadow-slate-900/10"
           >
             <div className="flex items-center gap-3 px-3 py-2.5">
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-blue-100 font-bold text-blue-700">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent font-bold text-link">
                 {initial}
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-slate-900">
+                <span className="block truncate text-sm font-bold text-foreground">
                   {user.fullName}
                 </span>
-                <span className="block text-xs text-slate-500">
+                <span className="block text-xs text-muted-foreground">
                   {roleLabel[user.activeRole]}
                 </span>
               </span>
             </div>
-            <div className="my-1 border-t border-slate-200" />
+            <div className="my-1 border-t border-border" />
             <Link
-              href="/admin/settings/profile"
+              href={
+                user.activeRole === "ACCOUNTANT"
+                  ? "/accountant/account"
+                  : "/admin/settings/profile"
+              }
               role="menuitem"
               onClick={() => setOpen(false)}
               className={menuItemClass}
@@ -100,7 +104,7 @@ export function AdminUserMenu() {
               <KeyRound className="size-4.5" />
               Đổi mật khẩu
             </Link>
-            <div className="my-1 border-t border-slate-200" />
+            <div className="my-1 border-t border-border" />
             <button
               type="button"
               role="menuitem"
@@ -108,7 +112,7 @@ export function AdminUserMenu() {
                 setOpen(false);
                 setConfirmingLogout(true);
               }}
-              className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 focus-visible:bg-red-50 focus-visible:outline-none"
+              className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-danger transition hover:bg-danger-muted focus-visible:bg-danger-muted focus-visible:outline-none"
             >
               <LogOut className="size-4.5" />
               Đăng xuất
@@ -134,4 +138,4 @@ export function AdminUserMenu() {
 }
 
 const menuItemClass =
-  "flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none";
+  "flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-secondary-foreground transition hover:bg-muted focus-visible:bg-muted focus-visible:outline-none";

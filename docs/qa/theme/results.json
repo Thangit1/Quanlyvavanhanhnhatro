@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-19",
+  "frontendBuild": "PASS",
+  "typescript": "PASS",
+  "lint": {
+    "errors": 0,
+    "existingWarnings": 1
+  },
+  "unit": {
+    "passed": 16,
+    "failed": 0
+  },
+  "browser": {
+    "passed": 23,
+    "failed": 0,
+    "status": "PASS",
+    "apiInterception": false
+  },
+  "styleOnlySourceFiles": 140,
+  "nonStyleDifferences": 0,
+  "backendSourceChanged": false,
+  "migrationAdded": false,
+  "productionBusinessTestWrites": false,
+  "strongerContrastRevision": {
+    "background": "#e2eaf3",
+    "card": "#ffffff",
+    "border": "#c0cddd",
+    "secondaryText": "#52637b",
+    "selected": "#dbe8ff",
+    "contrastTests": 4,
+    "contrastStatus": "PASS",
+    "targetedLint": "PASS",
+    "build": "PASS",
+    "liveCssVerified": true,
+    "fullBrowserSuiteRerun": false
+  }
+}

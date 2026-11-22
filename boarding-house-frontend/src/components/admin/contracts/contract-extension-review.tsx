@@ -60,10 +60,10 @@ export function ContractExtensionReview({
   }
   if (query.isLoading || (!query.isError && !query.data?.length)) return null;
   return (
-    <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="space-y-3 surface-card p-5 sm:p-6 ">
       <h2 className="font-bold">Yêu cầu gia hạn hợp đồng</h2>
       {(error || query.isError) && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {error || apiErrorMessage(query.error)}
         </p>
       )}
@@ -74,24 +74,24 @@ export function ContractExtensionReview({
           onChange={(e) => setReason(e.target.value)}
           maxLength={1000}
           placeholder="Lý do / căn cứ hai bên thống nhất gia hạn"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+          className="w-full rounded-xl border border-input px-3 py-2 text-sm"
         />
       )}
       {query.data?.map((x) => (
         <div
           key={x.id}
-          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-50 p-3 text-sm"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-muted p-3 text-sm"
         >
           <div>
             Đề nghị đến {formatDate(x.requested_end_date)} ·{" "}
             {statusLabel(x.status)}
-            <p className="text-slate-500">{x.note || x.review_reason}</p>
+            <p className="text-muted-foreground">{x.note || x.review_reason}</p>
           </div>
           {x.status === "PENDING" && (
             <button
               disabled={busy !== undefined || !reason.trim()}
               onClick={() => void approve(x.id)}
-              className="rounded-xl bg-blue-600 px-3 py-2 font-semibold text-white disabled:opacity-50"
+              className="rounded-xl bg-primary hover:bg-primary-hover px-3 py-2 font-semibold text-white disabled:opacity-50"
             >
               {busy === x.id
                 ? "Đang kiểm tra..."

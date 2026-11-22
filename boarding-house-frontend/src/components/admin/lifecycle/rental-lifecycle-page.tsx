@@ -4,6 +4,9 @@ import { CurrencyInput, NumberInput } from "@/components/ui/number-input";
 import { ContractOnboardingPanel } from "@/components/shared/contract-onboarding-panel";
 import { CheckoutSettlementPanel } from "@/components/shared/checkout-settlement-panel";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckoutWorkspace } from "./checkout-workspace";
+import { useManagementProperty } from "@/providers/management-scope";
 import { DepositLedgerPanel } from "@/components/shared/deposit-ledger-panel";
 import {
   ArrowRight,
@@ -50,9 +53,34 @@ const today = new Date().toISOString().slice(0, 10);
 const nextYear = `${Number(today.slice(0, 4)) + 1}${today.slice(4)}`;
 
 export function RentalLifecyclePage() {
-  const [propertyId, setPropertyId] = useState<number>();
-  const [tab, setTab] = useState<Tab>("booking");
-  const [dialog, setDialog] = useState<Dialog>(null);
+  const params = useSearchParams();
+  return params.get("tab") === "checkout" ? <CheckoutWorkspace /> : <RentalLifecycleBoardPage />;
+}
+function RentalLifecycleBoardPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [propertyId, setPropertyId] = useManagementProperty(
+    Number(searchParams.get("propertyId")) || undefined,
+  );
+  const selectedRoom = Number(searchParams.get("roomId")) || undefined;
+  const requestedTab = searchParams.get("tab");
+  const [previousTab, setPreviousTab] = useState(requestedTab);
+  const [tab, setTab] = useState<Tab>(
+    requestedTab === "checkin" || requestedTab === "checkout"
+      ? requestedTab
+      : "booking",
+  );
+  if (previousTab !== requestedTab) {
+    setPreviousTab(requestedTab);
+    setTab(
+      requestedTab === "checkin" || requestedTab === "checkout"
+        ? requestedTab
+        : "booking",
+    );
+  }
+  const [dialog, setDialog] = useState<Dialog>(
+    searchParams.get("action") === "booking" ? { kind: "booking" } : null,
+  );
   const query = useRentalLifecycle(propertyId);
   const mutations = useRentalLifecycleMutations();
   if (query.isLoading) return <PageLoading />;
@@ -66,16 +94,33 @@ export function RentalLifecyclePage() {
           <ErrorState onRetry={() => void query.refetch()} />
         ) : (
           <Board
-            data={query.data}
+            data={
+              selectedRoom
+                ? {
+                    ...query.data,
+                    bookings: query.data.bookings.filter(
+                      (r) => r.roomId === selectedRoom,
+                    ),
+                    checkins: query.data.checkins.filter(
+                      (r) => r.roomId === selectedRoom,
+                    ),
+                    checkouts: query.data.checkouts.filter(
+                      (r) => r.roomId === selectedRoom,
+                    ),
+                  }
+                : query.data
+            }
             propertyId={propertyId}
             setPropertyId={setPropertyId}
             tab={tab}
-            setTab={setTab}
+            setTab={(next) => next === "checkout" ? router.push("/admin/checkouts") : setTab(next)}
             setDialog={setDialog}
             mutations={mutations}
           />
         )}
-        <DepositLedgerPanel portal="admin" propertyId={propertyId} />
+        <div id="deposits" className="scroll-mt-44">
+          <DepositLedgerPanel portal="admin" propertyId={propertyId} />
+        </div>
       </div>
       {dialog && query.data && (
         <WorkflowDialog
@@ -111,19 +156,19 @@ function Board({
       "Đang giữ chỗ",
       data.summary.reserved,
       KeyRound,
-      "bg-blue-50 text-blue-700",
+      "bg-accent text-link",
     ],
     [
       "Chờ nhận phòng",
       data.summary.awaitingCheckin,
       CalendarCheck,
-      "bg-amber-50 text-amber-700",
+      "bg-warning-muted text-warning",
     ],
     [
       "Đang cư trú",
       data.summary.staying,
       House,
-      "bg-emerald-50 text-emerald-700",
+      "bg-success-muted text-success",
     ],
     [
       "Yêu cầu trả phòng",
@@ -141,17 +186,17 @@ function Board({
       "Đang quay vòng phòng",
       data.summary.cleaningOrMaintenance,
       RefreshCw,
-      "bg-red-50 text-red-700",
+      "bg-danger-muted text-danger",
     ],
   ] as const;
   return (
     <>
       <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900">
+          <h1 className="text-2xl font-extrabold text-foreground">
             Quy trình vận hành thuê phòng
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Một nguồn dữ liệu xuyên suốt từ giữ phòng đến hoàn cọc.
           </p>
         </div>
@@ -174,26 +219,26 @@ function Board({
         {cards.map(([label, value, Icon, color]) => (
           <article
             key={label}
-            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="surface-card p-4 "
           >
             <span
               className={`grid size-9 place-items-center rounded-xl ${color}`}
             >
               <Icon className="size-4" />
             </span>
-            <p className="mt-3 text-xs text-slate-500">{label}</p>
+            <p className="mt-3 text-xs text-muted-foreground">{label}</p>
             <p className="text-2xl font-extrabold">{value}</p>
           </article>
         ))}
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-4">
+      <section className="surface-card ">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
           <nav className="flex gap-1">
             {(["booking", "checkin", "checkout"] as Tab[]).map((x) => (
               <button
                 key={x}
                 onClick={() => setTab(x)}
-                className={`rounded-xl px-4 py-2 text-sm font-semibold ${tab === x ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-50"}`}
+                className={`rounded-xl px-4 py-2 text-sm font-semibold ${tab === x ? "bg-primary hover:bg-primary-hover text-white" : "text-secondary-foreground hover:bg-muted"}`}
               >
                 {x === "booking"
                   ? "Giữ phòng"
@@ -214,7 +259,7 @@ function Board({
                       : "request-checkout",
               })
             }
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white"
           >
             <Plus className="size-4" />
             {tab === "booking"
@@ -251,11 +296,55 @@ function BookingTable({
   setDialog: (d: Dialog) => void;
   mutation: ReturnType<typeof useRentalLifecycleMutations>["bookingStatus"];
 }) {
-  if (!rows.length) return <EmptyState text="Chưa có booking giữ phòng." />;
+  const [keyword, setKeyword] = useState("");
+  const [status, setStatus] = useState("");
+  const filtered = rows.filter(
+    (r) =>
+      (!status || r.status === status) &&
+      `${r.code} ${r.tenantName} ${r.tenantPhone ?? ""} ${r.propertyName} ${r.roomCode}`
+        .toLocaleLowerCase("vi")
+        .includes(keyword.trim().toLocaleLowerCase("vi")),
+  );
   return (
     <div className="overflow-x-auto">
+      <div className="mb-4 flex flex-wrap gap-3">
+        <input
+          aria-label="Tìm phiếu giữ phòng"
+          placeholder="Mã phiếu, khách, nhà hoặc phòng"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          className={input}
+        />
+        <select
+          aria-label="Trạng thái giữ phòng"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className={input}
+        >
+          <option value="">Tất cả trạng thái</option>
+          {[
+            "RESERVED",
+            "DEPOSITED",
+            "CONTRACT_CREATED",
+            "CHECKED_IN",
+            "CANCELLED",
+            "EXPIRED",
+          ].map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+      </div>
+      <p className="mb-4 text-xs text-muted-foreground">
+        Tiền giữ chỗ dưới đây là mức thỏa thuận. Xem giao dịch thực thu, hoàn và
+        chuyển cọc trong sổ cọc bên dưới.
+      </p>
+      {!filtered.length && (
+        <EmptyState text="Chưa có phiếu giữ phòng phù hợp." />
+      )}
       {mutation.isError && (
-        <p role="alert" className="mb-3 text-sm text-red-700">
+        <p role="alert" className="mb-3 text-sm text-danger">
           {apiErrorMessage(mutation.error)}
         </p>
       )}
@@ -266,18 +355,23 @@ function BookingTable({
             <th>Người thuê</th>
             <th>Nhà / phòng</th>
             <th>Thời gian giữ</th>
-            <th>Tiền giữ chỗ</th>
+            <th>Tiền giữ chỗ thỏa thuận</th>
             <th>Trạng thái</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
+          {filtered.map((r) => (
             <tr key={r.id}>
               <td>
                 <strong>{r.code}</strong>
+                <small>Tạo {formatDate(r.createdAt)}</small>
+                {r.createdByName && <small>Người lập: {r.createdByName}</small>}
               </td>
-              <td>{r.tenantName}</td>
+              <td>
+                {r.tenantName}
+                <small>{r.tenantPhone || "Chưa có số điện thoại"}</small>
+              </td>
               <td>
                 {r.propertyName}
                 <small>Phòng {r.roomCode}</small>
@@ -287,7 +381,7 @@ function BookingTable({
                 <small>đến {formatDate(r.reservationEnd)}</small>
                 {["RESERVED", "DEPOSITED"].includes(r.status) &&
                   r.reservationEnd <= today && (
-                    <small className="text-amber-700">
+                    <small className="text-warning">
                       Đã quá hạn; chờ tác vụ hết hạn. Không thể lập hợp đồng.
                     </small>
                   )}
@@ -302,7 +396,7 @@ function BookingTable({
               <td>
                 <div className="flex justify-end gap-2">
                   {r.status === "RESERVED" && (
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted-foreground">
                       Thu tiền qua sổ giữ chỗ bên dưới
                     </span>
                   )}
@@ -330,15 +424,20 @@ function BookingTable({
                     )}
                   {["RESERVED", "DEPOSITED"].includes(r.status) && (
                     <button
-                      className="text-xs font-semibold text-red-600"
-                      onClick={() =>
+                      className="text-xs font-semibold text-danger"
+                      disabled={mutation.isPending}
+                      onClick={() => {
+                        const reason = window.prompt(
+                          "Lý do hủy phiếu giữ phòng (tiền đã thu được xử lý riêng trong sổ cọc):",
+                        );
+                        if (!reason?.trim()) return;
                         mutation.mutate({
                           id: r.id,
                           status: "CANCELLED",
-                          reason: "Hủy bởi quản lý",
+                          reason: reason.trim(),
                           version: r.version,
-                        })
-                      }
+                        });
+                      }}
                     >
                       Hủy
                     </button>
@@ -503,7 +602,13 @@ function WorkflowDialog({
 }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [property, setProperty] = useState(data.properties[0]?.id ?? 0);
+  const routeParams = useSearchParams();
+  const requestedProperty = Number(routeParams.get("propertyId"));
+  const [property, setProperty] = useState(
+    data.properties.some((p) => p.id === requestedProperty)
+      ? requestedProperty
+      : (data.properties[0]?.id ?? 0),
+  );
   const title = {
     booking: "Giữ phòng mới",
     "extend-booking": "Gia hạn giữ chỗ",
@@ -618,8 +723,8 @@ function WorkflowDialog({
   if (dialog.kind === "complete-checkin")
     return (
       <div className="fixed inset-0 z-[80] overflow-y-auto bg-slate-950/50 p-6">
-        <div className="mx-auto max-w-3xl rounded-2xl bg-white p-5">
-          <button className="mb-4 text-blue-700" onClick={close}>
+        <div className="mx-auto max-w-3xl rounded-2xl bg-card p-5">
+          <button className="mb-4 text-link" onClick={close}>
             Đóng
           </button>
           <ContractOnboardingPanel
@@ -632,8 +737,8 @@ function WorkflowDialog({
   if (dialog.kind === "complete-checkout")
     return (
       <div className="fixed inset-0 z-[80] overflow-y-auto bg-slate-950/50 p-6">
-        <div className="mx-auto max-w-4xl rounded-2xl bg-white p-5">
-          <button className="mb-4 text-blue-700" onClick={close}>
+        <div className="mx-auto max-w-4xl rounded-2xl bg-card p-5">
+          <button className="mb-4 text-link" onClick={close}>
             Đóng
           </button>
           <CheckoutSettlementPanel
@@ -656,7 +761,7 @@ function WorkflowDialog({
   );
   return (
     <div className="fixed inset-0 z-[80] grid place-items-center bg-slate-950/50 p-4">
-      <div className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl">
+      <div className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-card p-5 shadow-2xl">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold">{title}</h2>
           <button onClick={close} aria-label="Đóng">
@@ -665,7 +770,7 @@ function WorkflowDialog({
         </div>
         <form className="mt-5 space-y-4" onSubmit={submit}>
           {error && (
-            <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            <p className="rounded-xl bg-danger-muted p-3 text-sm text-danger">
               {error}
             </p>
           )}
@@ -683,7 +788,7 @@ function WorkflowDialog({
           )}
           {dialog.kind === "booking" && (
             <>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Phòng được giữ ngay khi tạo booking. Hệ thống chưa nhận nhiều
                 lịch giữ chỗ tương lai trên cùng phòng.
               </p>
@@ -712,7 +817,19 @@ function WorkflowDialog({
                 </select>
               </Field>
               <Field label="Phòng sẵn sàng">
-                <select required name="room" className={input}>
+                <select
+                  key={property}
+                  required
+                  name="room"
+                  defaultValue={
+                    availableRooms.some(
+                      (r) => r.id === Number(routeParams.get("roomId")),
+                    )
+                      ? routeParams.get("roomId")!
+                      : ""
+                  }
+                  className={input}
+                >
                   <option value="">Chọn phòng</option>
                   {availableRooms.map((x) => (
                     <option key={x.id} value={x.id}>
@@ -743,7 +860,7 @@ function WorkflowDialog({
           )}
           {dialog.kind === "contract" && (
             <>
-              <p className="rounded-xl bg-blue-50 p-3 text-sm">
+              <p className="rounded-xl bg-accent p-3 text-sm">
                 {dialog.row.code} · {dialog.row.tenantName} · Phòng{" "}
                 {dialog.row.roomCode}
               </p>
@@ -808,7 +925,7 @@ function WorkflowDialog({
                   className={input}
                 />
               </Field>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Chỉ chuyển tiền đã thực nhận. Phần giữ chỗ còn dư được theo dõi
                 riêng và phải xử lý theo thỏa thuận.
               </p>
@@ -910,7 +1027,7 @@ function WorkflowDialog({
             </button>
             <button
               disabled={busy}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
             >
               {busy ? "Đang xử lý..." : "Xác nhận"}
               <ArrowRight className="size-4" />
@@ -953,14 +1070,14 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block text-sm font-semibold text-slate-700">
+    <label className="block text-sm font-semibold text-secondary-foreground">
       {label}
       {children}
     </label>
   );
 }
 const input =
-  "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500";
-const linkButton = "text-xs font-semibold text-blue-700";
+  "mt-1.5 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring";
+const linkButton = "text-xs font-semibold text-link";
 const table =
-  "w-full min-w-[1000px] text-left text-sm [&_th]:bg-slate-50 [&_th]:px-3 [&_th]:py-3 [&_th]:text-xs [&_th]:uppercase [&_th]:text-slate-500 [&_td]:border-t [&_td]:border-slate-100 [&_td]:px-3 [&_td]:py-3 [&_small]:mt-1 [&_small]:block [&_small]:text-xs [&_small]:text-slate-500";
+  "w-full min-w-[1000px] text-left text-sm [&_th]:bg-muted [&_th]:px-3 [&_th]:py-3 [&_th]:text-xs [&_th]:uppercase [&_th]:text-muted-foreground [&_td]:border-t [&_td]:border-border [&_td]:px-3 [&_td]:py-3 [&_small]:mt-1 [&_small]:block [&_small]:text-xs [&_small]:text-muted-foreground";

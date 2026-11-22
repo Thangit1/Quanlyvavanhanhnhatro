@@ -1,0 +1,977 @@
+[
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "sameCreationKeyWithChangedAmountCannotCreateAnotherDraft",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "voucherCreationRetryIsIdempotentAndDraftIsNotCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "invoiceReceiptIsProjectionAndDoesNotCollectAgain",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "depositExportUsesCurrentDepositSourcesInsteadOfCashEvents",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "accountantWithoutAssignmentCannotCreate",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "organizationFilterCannotGrantPropertyAccess",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "concurrentVoucherCreationUsesOneDraft",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "wrongRoleAndOtherOwnerCannotReadOrExport",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "incomeRetryDoesNotDuplicateAndPrepaymentIsNotRent",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "reversalRetainsSourceAndAuditAndCannotBeAppliedTwice",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "invalidExpenseSourceRollsBackDraft",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "voucherActionsReflectAccountantPermissions",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "operatingCostAndActualPaymentAreSeparate",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "ledgerOpeningAndClosingUseSameSourceBeforeFiltering",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "filtersPaginationAndExcelHaveSameCohort",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "closedPeriodRejectsIncomeWithoutChangingCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "periodsAndReconciliationReadExistingState",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceMysqlTest",
+    "name": "bankbookOnlyContainsManualBankSources",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceControllerTest",
+    "name": "recordFilterBindsDatesAndCompanyWithoutDroppingFilters",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceControllerTest",
+    "name": "excessiveMoneyPrecisionCannotBeSilentlyRoundedByDatabase",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceControllerTest",
+    "name": "voucherRequiresRequestKey",
+    "status": "PASS"
+  },
+  {
+    "suite": "FinanceWorkspaceControllerTest",
+    "name": "negativeIncomeIsRejectedBeforeService",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc19_assetPurchaseIsNotOperatingCost",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc26_tenantCannotReadFinance",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc10_rejectedPaymentIsNotCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc12_idempotentPayment",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc39_concurrentVoucherPaymentHasSingleCashEvent",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc09_pendingPaymentIsNotCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc36_exportCannotIncludeAnotherOwnersProperty",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc32_reconciliationDetectsOverAllocation",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc17_voucherCannotBePaidTwice",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc08_transferDoesNotCreateCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc13_referenceCannotBeRepostedByAnotherRole",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc14_draftVoucherIsNotCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc05_depositIsCashButNotServiceIncome",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc22_paymentDoesNotMoveInvoicePeriod",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc31_depositTotalReconcilesToLedger",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc27_technicianCannotReadFinance",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc28_closedPeriodBlocksOwnerAlternatePaymentApi",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc30_closedPeriodBlocksReversal",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc16_paidVoucherUsesPaymentDate",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc11_reversalRemovesCashExactlyOnce",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc07_offsetIsNotCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "preparingExistingPeriodNeverReopensIt",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc04_oldDebtIsNotAddedToNextObligation",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc29_reopenRequiresPermission",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc18_repairCostIsSeparateFromPayable",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc23_advanceIsUnallocatedNotRevenue",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "duplicateOtherIncomeKeyIsIdempotent",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc06_refundChangesCashOnlyWhenPaid",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc02_partialPayment",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc15_submittedVoucherIsNotCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc03_fullPayment",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc35_exportIncludesMoreThanTwoHundredSourcePayments",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "payingApprovedCostFromClosedPriorMonthDoesNotEditTheCost",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc38_zeroPriorPeriodHasNoFabricatedGrowth",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc34_reversedVoucherCannotReverseTwice",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "voucherDocumentsRequireObjectScopeAndKeepBytes",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "linkedExpenseIsNotCountedTwice",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc24_ownerAndAccountantShareDefinitions",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "sameBankReferenceCannotBecomeBothInvoiceCashAndDepositOrOtherIncome",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "paidVoucherCannotBeApprovedByCreator",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc21_doesNotClaimAccountingProfit",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc01_issuedObligationIsNotCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc33_overpaymentCannotMakeNegativeDebt",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc25_managerOutsideScopeIsDenied",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc20_netCashIsCashInMinusCashOut",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "paidVoucherReversalKeepsHistory",
+    "status": "PASS"
+  },
+  {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc37_emptyScopeProducesZeros",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc11_fullCancellationRefund",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc21_transactionFailureRollsBack",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc01_bookingStartsUnpaid",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc10_unpaidCancellationHasNoRefund",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "refundFailureRollsBackLedgerAndRequest",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc25_migrationDoesNotInventHistoricalCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc24_ledgerMatchesAccountantBalance",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc09_checkinRequiresActualFunds",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc03_confirmedCollectionHasEvidence",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc06_transferReducesRemainingDue",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc20_partialThenFullRefundClosesCheckout",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc14_twoAccountantsCannotDoubleRefund",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc22_scopeAndRoleAreEnforced",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc23_closedPeriodRejectsCollection",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc16_transferCreatesNoNewCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tenantCanReadOwnUnsignedBigintAccount",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc18_offsetReducesDebtWithoutCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc13_cannotRefundMoreThanBalance",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "contractTransferIsInternalAndIdempotent",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "cashbookIncludesOnlyRealDepositCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc12_partialRetention",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "unexplainedBalanceIsBlocked",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc19_unpaidRefundPreventsClosure",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc04_duplicateCollectionIsIdempotent",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "loweringRequirementCreatesRefundWithoutInventingPayout",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc17_settlementUsesActualBalance",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "bankReferenceCannotBeReusedAcrossDepositAndRent",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "reservationExcessRemainsAvailableUntilRefunded",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc08_topUpPreservesRequirement",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc05_zeroReservationCanCreateContract",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc07_cannotTransferTwice",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "bankReceiptRequiresReconciliation",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc02_cannotFakeDeposited",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc15_depositDoesNotCreateRentPayment",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "legacyUnprovenLedgerRemainsUnderReview",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerControllerTest",
+    "name": "collectionRejectsNegativeAmountBeforeService",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerControllerTest",
+    "name": "collectionReturnsExistingApiEnvelope",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerControllerTest",
+    "name": "collectionRequiresIdempotencyHeader",
+    "status": "PASS"
+  },
+  {
+    "suite": "DepositLedgerControllerTest",
+    "name": "amountScaleIsValidated",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "idempotencyKeyCannotChangeReceiptOption",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "reversingPaymentRestoresInvoiceAndVoidsAllocationAndReceipt",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "rejectingProofDoesNotChangeInvoiceDebt",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "idempotencyKeyCannotBeReusedWithDifferentAmountOnSameInvoice",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "closedPeriodBlocksNewPayment",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "cancelledInvoiceCannotReceivePayment",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "idempotencyKeyCannotBeReusedForAnotherInvoice",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "cashPaymentCreatesAllocationReceiptAuditAndNotification",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "partialPaymentFollowsOwnerPolicy",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "paymentCannotExceedCurrentInvoiceDebt",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "ownerCannotUseDedicatedAccountantPortal",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "reversedPaymentCannotBeReversedAgain",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "propertyOutsideAssignmentIsRejected",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "repeatedIdempotencyKeyReturnsOriginalPaymentWithoutApplyingAgain",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "duplicateBankReferenceIsRejectedBeforeInsert",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "alreadyApprovedProofCannotBeConfirmedAgain",
+    "status": "PASS"
+  },
+  {
+    "suite": "AccountantPortalServiceImplTest",
+    "name": "tenantCannotApproveOwnProof",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementControllerTest",
+    "name": "approvalRequiresVersionAndHash",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementControllerTest",
+    "name": "tenantConfirmationUsesExistingEnvelope",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementControllerTest",
+    "name": "negativeReturnedAssetQuantityRejected",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementControllerTest",
+    "name": "compensationRequiresEvidence",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "absentHandoverNeedsDocumentedBasisAndNoForgedTenantSignature",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc05_shortNoticeDoesNotForfeitDeposit",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc14_alreadyBilledServiceIsNotRepeated",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc07_rescheduleRejectsPastAndKeepsAudit",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc25_failedCheckoutRollsBackAllTables",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc22_offsetReducesDebtWithoutNewCashReceipt",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc02_unsignedContractCannotCheckout",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc06_onTimeRequestDoesNotInventPenalty",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc08_inventoryUsesCheckinSnapshotNotCatalogue",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc04_requestDoesNotReleaseOccupancy",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc20_refundRequestIsNotActualCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc03_twoRequestsCannotCoexist",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc23_tenantCanStillSeeUnpaidInvoiceAfterHandover",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "lateFinancialSettlementCannotChangeNewBookingRoomState",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc13_dailyRentIncludesHandoverOnlyWhenAgreed",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc26_allLinkedResidentsMoveOut",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "finalizedHandoverInspectionCannotBeSilentlyChanged",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "staffRequestDoesNotImpersonateTenantConsent",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "openDisputeBlocksRefundAndFinancialClose",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc17_debtAboveDepositRemainsCollectible",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc11_finalMetersArePersisted",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc10_sameDamageCannotBeAddedTwice",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc29_otherTenantCannotReadOrChangeCheckout",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "replacedMeterFinalReadingBelowCheckinStillUsesAllSegments",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "concurrentInspectionEditsKeepOneAcceptedVersion",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "newMonthlyInvoiceCannotRepeatFinalSettlement",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc18_offsetCannotExceedRealDeposit",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "handoverCannotPrecedeActualCheckin",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc34_reportsUseNetRemainingAfterDeposit",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "originalContractEndIsPreservedAfterClosure",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc21_failedRefundRollsBackCash",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc01_staffRequestHasSourceAndHistory",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc19_refundReplayHasOneActualPayout",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "physicalHandoverDoesNotPretendFinancialCompletion",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc12_onlyUnbilledConsumptionIsCharged",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "cancelledRequestCanBeReplacedWithoutDeletingHistory",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc09_unconfirmedDamageDoesNotCreateDebt",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "paymentAfterApprovalRequiresNewReview",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc28_roomNeedsExplicitAcceptanceBeforeReady",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc32_settlementInvoiceHasSourceAndAudit",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc30_accountantCannotRefundOutsideScope",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc24_parallelCheckoutHasOneSettlement",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "physicalHandoverCanProceedWhileMoneyDisputeRemainsOpen",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc31_technicianCannotApproveOrTerminate",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tenantRequestToRealRefundClosureAndAcceptedReadyRoom",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc27_physicalDamageRequiresMaintenanceWithoutAutomaticFee",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc15_oldDebtIsNotDuplicatedIntoSettlementInvoice",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc16_threeMillionDepositOneMillionObligationRefundsTwoMillion",
+    "status": "PASS"
+  },
+  {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc33_offsetDoesNotDuplicateCashbook",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "legacyNullOpeningPreservesHistoricalPaymentEligibility",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "policyClampsMonthEndAndDoesNotRewriteExistingInvoice",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "listDebtBreakdownAndExportShareScopeAndFilters",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "overdueInvoiceStillAcceptsFullActualReceipt",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "printableInvoiceUsesRealItemsAndUtf8",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "accountantUiPermissionsMatchAssignedCapabilities",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "invalidWindowLeavesNoDraftOrItems",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "twoStaffCannotBothCollectTheFullBalance",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "batchRejectsChangedSourceThenCreatesDraftExactlyOnce",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "inAppReminderIsPersistedButEmailCannotClaimDelivery",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "futureOpeningBlocksOwnerAndTenantWithoutChangingDebt",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "previewDoesNotCreateFinancialRows",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "draftsAndCancelledInvoicesAreNeverOverdue",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "openingDateIsIndependentOfDeadlineAndAllowsLateReceipts",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "deadlineIsInclusiveAndLatePaymentKeepsOriginalDeadline",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "legacyNullAndJdbcDatesAreSupported",
+    "status": "PASS"
+  },
+  {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "exceptionalShortReceiptRemainsOverdue",
+    "status": "PASS"
+  }
+]

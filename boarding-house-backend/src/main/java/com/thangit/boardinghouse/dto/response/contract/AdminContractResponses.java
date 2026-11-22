@@ -15,7 +15,7 @@ public final class AdminContractResponses {
                               String tenantName, String tenantPhone, Long propertyId, String propertyName,
                               Long roomId, String roomCode, LocalDate startDate, LocalDate endDate,
                               BigDecimal monthlyRent, BigDecimal depositAmount, long daysRemaining,
-                              String status, boolean hasDocument, LocalDateTime updatedAt) {}
+                              String status, boolean hasDocument, LocalDateTime updatedAt, String paymentCycle, long confirmationVersion, boolean landlordConfirmed, boolean tenantConfirmed) {}
     public record Page<T>(List<T> content, int page, int size, long totalElements, int totalPages) {}
     public record ContractList(Summary summary, List<PropertyOption> properties, Page<ContractRow> page) {}
     public record ContractDetail(Long id, String contractCode, Long tenantId, String tenantCode,

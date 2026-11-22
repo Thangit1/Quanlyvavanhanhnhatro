@@ -29,21 +29,21 @@ export function TechnicianDashboard() {
     );
   const d = q.data;
   const cards = [
-    ["Hôm nay", d.summary.todayTaskCount, ClipboardList, "text-blue-600"],
+    ["Hôm nay", d.summary.todayTaskCount, ClipboardList, "text-link"],
     ["Đang xử lý", d.summary.inProgressTaskCount, Clock3, "text-indigo-600"],
-    ["Khẩn cấp", d.summary.urgentTaskCount, ShieldAlert, "text-red-600"],
+    ["Khẩn cấp", d.summary.urgentTaskCount, ShieldAlert, "text-danger"],
     ["Quá SLA", d.summary.overdueTaskCount, TimerReset, "text-orange-600"],
     [
       "Chờ vật tư",
       d.summary.waitingPartsTaskCount,
       PackageClock,
-      "text-amber-600",
+      "text-warning",
     ],
     [
       "Hoàn thành tháng",
       d.summary.completedThisMonthCount,
       CheckCircle2,
-      "text-emerald-600",
+      "text-success",
     ],
   ] as const;
   return (
@@ -53,7 +53,7 @@ export function TechnicianDashboard() {
       actions={
         <Link
           href="/technician/tasks"
-          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white"
+          className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white"
         >
           Xem công việc
         </Link>
@@ -63,11 +63,11 @@ export function TechnicianDashboard() {
         {cards.map(([label, value, Icon, tone]) => (
           <article
             key={label}
-            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="surface-card p-4 "
           >
             <Icon className={`size-5 ${tone}`} />
-            <p className="mt-4 text-sm text-slate-500">{label}</p>
-            <p className="mt-1 text-2xl font-black text-slate-950">{value}</p>
+            <p className="mt-4 text-sm text-muted-foreground">{label}</p>
+            <p className="mt-1 text-2xl font-black text-foreground">{value}</p>
           </article>
         ))}
       </section>
@@ -83,8 +83,8 @@ export function TechnicianDashboard() {
           </p>
         </section>
       ) : (
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-          <p className="font-semibold text-slate-800">
+        <section className="surface-card p-4 text-sm text-secondary-foreground">
+          <p className="font-semibold text-foreground">
             SmartHome AI hỗ trợ kỹ thuật
           </p>
           <p className="mt-1">
@@ -95,7 +95,7 @@ export function TechnicianDashboard() {
       )}
       {d.currentTask && (
         <section>
-          <h2 className="mb-3 text-lg font-bold text-slate-950">
+          <h2 className="mb-3 text-lg font-bold text-foreground">
             Công việc đang xử lý
           </h2>
           <TaskCard task={d.currentTask} />
@@ -107,7 +107,7 @@ export function TechnicianDashboard() {
             <h2 className="text-lg font-bold">Lịch công việc tiếp theo</h2>
             <Link
               href="/technician/calendar"
-              className="text-sm font-semibold text-blue-700"
+              className="text-sm font-semibold text-link"
             >
               Mở lịch
             </Link>
@@ -121,8 +121,8 @@ export function TechnicianDashboard() {
           </div>
         </section>
         <aside className="space-y-4">
-          <section className="rounded-2xl border border-red-200 bg-white p-5">
-            <h2 className="flex items-center gap-2 font-bold text-red-700">
+          <section className="rounded-2xl border border-danger-border bg-card p-5">
+            <h2 className="flex items-center gap-2 font-bold text-danger">
               <ShieldAlert className="size-5" />
               Ưu tiên khẩn cấp
             </h2>
@@ -130,7 +130,7 @@ export function TechnicianDashboard() {
               {d.urgentTasks.length ? (
                 d.urgentTasks.map((x) => (
                   <Link
-                    className="block rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-800"
+                    className="block rounded-xl bg-danger-muted p-3 text-sm font-semibold text-danger"
                     key={x.id}
                     href={`/technician/tasks/${x.id}`}
                   >
@@ -142,24 +142,24 @@ export function TechnicianDashboard() {
                   </Link>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Không có công việc khẩn cấp.
                 </p>
               )}
             </div>
           </section>
-          <section className="rounded-2xl border border-slate-200 bg-white p-5">
+          <section className="surface-card p-5 sm:p-6">
             <h2 className="font-bold">Việc cần chú ý</h2>
             <div className="mt-3 space-y-2">
               {d.pendingActions.length ? (
                 d.pendingActions.map((x) => (
-                  <p key={x} className="flex gap-2 text-sm text-slate-600">
+                  <p key={x} className="flex gap-2 text-sm text-secondary-foreground">
                     <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-500" />
                     {x}
                   </p>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Không có tác vụ tồn đọng.
                 </p>
               )}

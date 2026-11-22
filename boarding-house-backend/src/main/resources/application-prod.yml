@@ -5,6 +5,12 @@ spring:
     password: ${DB_PASSWORD}
 
 app:
+  payments:
+    # The Java profile guard also blocks simulation if an environment override sets true.
+    simulation-enabled: false
+    vietqr-template: ${VIETQR_TEMPLATE:}
+  mail:
+    business-delivery-enabled: ${MAIL_BUSINESS_DELIVERY_ENABLED:false}
   security:
     jwt:
       secret: ${JWT_SECRET}

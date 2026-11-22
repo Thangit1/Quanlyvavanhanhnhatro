@@ -62,7 +62,7 @@ public class TenantContractServiceImpl implements TenantContractService {
         boolean downloadable = documents.stream().anyMatch(DocumentInfo::downloadable);
         return new ContractDetail(
                 base.id(), base.code(), base.contractType(), status, base.createdAt(), base.signedAt(),
-                base.startDate(), base.endDate(), Math.max(0, ChronoUnit.DAYS.between(LocalDate.now(), base.endDate())),
+                base.startDate(), base.endDate(), Math.max(0, ChronoUnit.DAYS.between(com.thangit.boardinghouse.service.BusinessTime.today(), base.endDate())),
                 base.paymentCycle(), base.paymentDueDay(), base.noticePeriodDays(),
                 new PropertyInfo(base.propertyId(), base.propertyName(), base.propertyAddress(),
                         base.buildingName(), base.floorName()),
@@ -103,7 +103,7 @@ public class TenantContractServiceImpl implements TenantContractService {
         requireTenant(principal);
         rooms.lockContract(contractId);ContractBase contract = owned(principal.id(), contractId);
         requireActionable(contract);
-        if (request.expectedMoveOutDate().isBefore(LocalDate.now())) throw badRequest("CHECKOUT_DATE_INVALID","Ngày dự kiến không được ở quá khứ.");
+        if (request.expectedMoveOutDate().isBefore(com.thangit.boardinghouse.service.BusinessTime.today())) throw badRequest("CHECKOUT_DATE_INVALID","Ngày dự kiến không được ở quá khứ.");
         if (repository.pendingTermination(contractId).isPresent()) throw new AuthException(
                 HttpStatus.CONFLICT, "TERMINATION_REQUEST_PENDING", "Hợp đồng đã có yêu cầu trả phòng đang chờ xử lý.");
         repository.createTermination(contractId, principal.id(), request.expectedMoveOutDate(),

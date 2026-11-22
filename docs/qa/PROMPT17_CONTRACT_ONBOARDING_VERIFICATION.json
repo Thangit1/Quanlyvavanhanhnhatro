@@ -1,0 +1,344 @@
+{
+  "task": "PROMPT17",
+  "verifiedDate": "2026-11-21",
+  "status": "VERIFIED_IN_ISOLATED_TEST_ENVIRONMENT",
+  "rootCause": {
+    "baseline": "Existing frontend blocked save(true); original backend HTTP 409 TENANT_ACCOUNT_REQUIRED",
+    "evidence": "prompt17/baseline.json",
+    "fix": "Retain active TENANT requirement, provision/link before submit; preserve committed draft on recoverable failure; serialize idempotent concurrent requests with locking and READ_COMMITTED"
+  },
+  "changedFiles": [
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/AccountProvisioningService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/InitialPasswordService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/ContractSubmissionService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/DirectContractService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/ContractDeliveryService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/ContractOnboardingService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/DepositLedgerService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/DepositTransferService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/ExternalCommunicationWorker.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CommunicationJobs.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/InitialPasswordController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/AdminContractController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/ContractDeliveryController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/ContractOnboardingController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/DepositTransferController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/config/SecurityConfig.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/security/LoginRateLimitFilter.java",
+    "boarding-house-frontend/src/app/activate-account/page.tsx",
+    "boarding-house-frontend/src/components/admin/contracts/contract-create-page.tsx",
+    "boarding-house-frontend/src/components/admin/contracts/contract-detail-page.tsx",
+    "boarding-house-frontend/src/components/admin/contracts/direct-contract-draft-panel.tsx",
+    "boarding-house-frontend/src/components/admin/contracts/contract-delivery-status.tsx",
+    "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "boarding-house-frontend/src/components/shared/contract-review-panel.tsx",
+    "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "boarding-house-frontend/src/components/shared/deposit-transfer-panel.tsx",
+    "boarding-house-frontend/src/services/direct-contract.service.ts",
+    "boarding-house-backend/src/main/resources/application.yml",
+    "boarding-house-backend/src/main/resources/db/migration/V45__Tenant_initial_password_setup.sql",
+    "boarding-house-backend/src/main/resources/db/migration/V46__Deposit_bank_transfer_review_requests.sql",
+    "boarding-house-backend/src/main/resources/db/migration/V47__Versioned_contract_review_requests.sql",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/Prompt17BaselineHttpTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/Prompt17WorkflowHttpTest.java",
+    "boarding-house-frontend/scripts/prompt17-browser.cjs",
+    "boarding-house-frontend/scripts/prompt17-contracts.test.cjs",
+    ".env.example",
+    "README.md",
+    "docs/PROMPT17_CONTRACT_ONBOARDING.md"
+  ],
+  "verification": {
+    "baseline": {
+      "tests": 1,
+      "status": "PASS"
+    },
+    "workflow": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "status": "PASS",
+      "log": "boarding-house-backend/prompt17-browser-runtime.log"
+    },
+    "browser": {
+      "groups": 9,
+      "status": "PASS",
+      "evidence": "prompt17/browser.json",
+      "apiInterception": false
+    },
+    "frontendUnit": {
+      "tests": 23,
+      "failures": 0,
+      "status": "PASS"
+    },
+    "frontendLint": {
+      "errors": 0,
+      "preexistingWarnings": 2,
+      "status": "PASS"
+    },
+    "frontendTypeScript": {
+      "status": "PASS"
+    },
+    "frontendProductionBuild": {
+      "staticPages": 124,
+      "status": "PASS",
+      "log": "boarding-house-frontend/prompt17-build.log"
+    },
+    "regression": {
+      "status": "PASS",
+      "tests": 327,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log": "boarding-house-backend/prompt17-regression.log",
+      "suites": [
+        "CheckoutSettlementMysqlTest",
+        "CommunicationMysqlTest",
+        "ContractChangeMysqlTest",
+        "ContractOnboardingMysqlTest",
+        "DepositLedgerMysqlTest",
+        "DirectContractMysqlTest",
+        "MonthlyBillingMysqlTest"
+      ]
+    },
+    "backendPackage": {
+      "status": "PASS",
+      "tests": 75,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log": "boarding-house-backend/prompt17-package.log",
+      "unitAndControllerTests": 57,
+      "paymentMysqlTests": 18
+    },
+    "credentialScan": {
+      "files": 4,
+      "rawCredentialsOrActivationLinks": 0
+    },
+    "backendTotalTests": 422
+  },
+  "testCases": [
+    {
+      "id": "TC01",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(16)"
+    },
+    {
+      "id": "TC02",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(11)"
+    },
+    {
+      "id": "TC03",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(1)"
+    },
+    {
+      "id": "TC04",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(1)"
+    },
+    {
+      "id": "TC05",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(7)"
+    },
+    {
+      "id": "TC06",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(10)"
+    },
+    {
+      "id": "TC07",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(2)"
+    },
+    {
+      "id": "TC08",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(3)"
+    },
+    {
+      "id": "TC09",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(8)"
+    },
+    {
+      "id": "TC10",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(3)"
+    },
+    {
+      "id": "TC11",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(3)"
+    },
+    {
+      "id": "TC12",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(3)"
+    },
+    {
+      "id": "TC13",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(3)"
+    },
+    {
+      "id": "TC14",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(1)"
+    },
+    {
+      "id": "TC15",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(4)"
+    },
+    {
+      "id": "TC16",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(4)"
+    },
+    {
+      "id": "TC17",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(4)"
+    },
+    {
+      "id": "TC18",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(4)"
+    },
+    {
+      "id": "TC19",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(12)"
+    },
+    {
+      "id": "TC20",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(12)"
+    },
+    {
+      "id": "TC21",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(1)"
+    },
+    {
+      "id": "TC22",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(5)"
+    },
+    {
+      "id": "TC23",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(14)"
+    },
+    {
+      "id": "TC24",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(14)"
+    },
+    {
+      "id": "TC25",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(5)"
+    },
+    {
+      "id": "TC26",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(5)"
+    },
+    {
+      "id": "TC27",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(6)"
+    },
+    {
+      "id": "TC28",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(6)"
+    },
+    {
+      "id": "TC29",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(6)"
+    },
+    {
+      "id": "TC30",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(6)"
+    },
+    {
+      "id": "TC31",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(10)"
+    },
+    {
+      "id": "TC32",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(10)"
+    },
+    {
+      "id": "TC33",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(9)"
+    },
+    {
+      "id": "TC34",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(13)"
+    },
+    {
+      "id": "TC35",
+      "status": "PASS",
+      "evidence": "Prompt17WorkflowHttpTest @Order(3)"
+    },
+    {
+      "id": "TC36",
+      "status": "PASS",
+      "evidence": "HTTP response/outbox checks plus 4 log/report files scanned without raw credentials"
+    },
+    {
+      "id": "TC37",
+      "status": "PASS",
+      "evidence": "Chrome E2E08 mobile width 390"
+    },
+    {
+      "id": "TC38",
+      "status": "PASS",
+      "evidence": "Chrome E2E08 refresh"
+    },
+    {
+      "id": "TC39",
+      "status": "PASS",
+      "evidence": "MonthlyBillingMysqlTest: 51 passed"
+    },
+    {
+      "id": "TC40",
+      "status": "PASS",
+      "evidence": "DepositLedgerMysqlTest:35; CheckoutSettlementMysqlTest:49; PaymentModuleMysqlTest:18; ContractChangeMysqlTest:54 passed"
+    }
+  ],
+  "isolation": {
+    "mysqlPort": 13319,
+    "smtp": "Mailpit only; no Gmail sending",
+    "productionDataTouched": false,
+    "businessEmailEnabledInLocal": false,
+    "realMoneyTransactionCreated": false
+  },
+  "limitations": [
+    "Existing email/phone collision without verified profile linkage is intentionally rejected; manual identity verification/linking is required.",
+    "Deposit supports confirmed cash and manually reconciled bank transfer; VNPay/MoMo deposit checkout is not integrated. Existing invoice gateways unchanged.",
+    "Internal authenticated version/hash confirmations; no external digital-signature provider.",
+    "Gmail deliverability was not retested in this task. Mailpit accepted test activation and contract emails.",
+    "Automatic delivery remains disabled locally; restart updated application and configure FRONTEND_PUBLIC_URL before enabling separately."
+  ],
+  "deployment": {
+    "committed": false,
+    "pushed": false,
+    "merged": false,
+    "realBackendRestarted": false,
+    "branch": "feature/improve-business-logic (existing dirty worktree preserved)",
+    "localRestartRequired": true,
+    "flywayProductionApplied": false
+  }
+}

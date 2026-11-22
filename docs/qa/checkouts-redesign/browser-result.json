@@ -1,0 +1,17 @@
+{
+  "passed": 11,
+  "cases": [
+    "workspace-source-row",
+    "stage-filter",
+    "financial-filter",
+    "nine-step-dialog",
+    "all-nine-steps-navigate",
+    "print-document-has-source-contract-without-identity-fields",
+    "browser-print-media-and-pdf-output",
+    "mobile-no-page-overflow",
+    "reload-retains-source-record",
+    "read-error-hides-old-data",
+    "accountant-route-one-shell-and-navigation"
+  ],
+  "liveApiWrites": 0
+}

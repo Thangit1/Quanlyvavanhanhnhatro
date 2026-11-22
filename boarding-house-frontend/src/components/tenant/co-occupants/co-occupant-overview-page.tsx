@@ -88,11 +88,11 @@ export function CoOccupantOverviewPage() {
         <RepresentativeInvitations />
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm text-slate-500">Trang chủ / Người ở cùng</p>
-            <h1 className="mt-1 text-3xl font-black text-slate-950">
+            <p className="text-sm text-muted-foreground">Trang chủ / Người ở cùng</p>
+            <h1 className="mt-1 text-3xl font-black text-foreground">
               Người ở cùng
             </h1>
-            <p className="mt-1 text-slate-500">
+            <p className="mt-1 text-muted-foreground">
               Quản lý thông tin những người đang cư trú cùng phòng với bạn.
             </p>
           </div>
@@ -103,7 +103,7 @@ export function CoOccupantOverviewPage() {
                 void occupants.refetch();
                 void requests.refetch();
               }}
-              className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-3 font-semibold"
+              className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-3 font-semibold"
             >
               <RefreshCw className="size-4" />
               Làm mới
@@ -111,7 +111,7 @@ export function CoOccupantOverviewPage() {
             {d.permissions.canCreateOccupantRequest && (
               <Link
                 href="/tenant/co-occupants/new"
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-bold text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-3 font-bold text-white"
               >
                 <Plus className="size-4" />
                 Đăng ký người ở cùng
@@ -121,7 +121,7 @@ export function CoOccupantOverviewPage() {
         </header>
         {!d.permissions.canCreateOccupantRequest &&
           d.permissions.createDisabledReason && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-medium text-amber-800">
+            <div className="rounded-2xl border border-warning-border bg-warning-muted p-4 text-sm font-medium text-warning">
               {d.permissions.createDisabledReason}
             </div>
           )}
@@ -150,7 +150,7 @@ export function CoOccupantOverviewPage() {
                   .join(" · ")}
               </p>
             </div>
-            <div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+            <div className="rounded-2xl bg-card/15 p-5 backdrop-blur">
               <p className="text-3xl font-black">
                 {d.room.currentOccupantCount}/{d.room.maximumOccupants}
               </p>
@@ -181,11 +181,11 @@ export function CoOccupantOverviewPage() {
           {cards.map(([name, value, Icon]) => (
             <article
               key={name}
-              className="rounded-2xl border bg-white p-4 shadow-sm"
+              className="surface-card p-4 "
             >
-              <Icon className="size-5 text-blue-600" />
+              <Icon className="size-5 text-link" />
               <p className="mt-3 text-2xl font-black">{value}</p>
-              <p className="text-sm text-slate-500">{name}</p>
+              <p className="text-sm text-muted-foreground">{name}</p>
             </article>
           ))}
         </section>
@@ -193,14 +193,14 @@ export function CoOccupantOverviewPage() {
           <div className="flex gap-2 overflow-x-auto border-b pb-3">
             <button
               onClick={() => setTab("ACTIVE")}
-              className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold ${tab === "ACTIVE" ? "bg-blue-600 text-white" : "bg-white text-slate-600"}`}
+              className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold ${tab === "ACTIVE" ? "bg-primary hover:bg-primary-hover text-white" : "bg-card text-secondary-foreground"}`}
             >
               Đang cư trú ({d.summary.activeOccupantCount})
             </button>
             {d.permissions.canViewHistory && (
               <button
                 onClick={() => setTab("REQUESTS")}
-                className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold ${tab === "REQUESTS" ? "bg-blue-600 text-white" : "bg-white text-slate-600"}`}
+                className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold ${tab === "REQUESTS" ? "bg-primary hover:bg-primary-hover text-white" : "bg-card text-secondary-foreground"}`}
               >
                 Yêu cầu đang xử lý ({d.summary.pendingRequestCount})
               </button>
@@ -208,7 +208,7 @@ export function CoOccupantOverviewPage() {
             {d.permissions.canViewHistory && (
               <Link
                 href="/tenant/co-occupants/history"
-                className="ml-auto inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold text-blue-700"
+                className="ml-auto inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold text-link"
               >
                 <History className="size-4" />
                 Lịch sử
@@ -221,17 +221,17 @@ export function CoOccupantOverviewPage() {
                 occupants.data.content.map((o) => (
                   <article
                     key={o.id}
-                    className="rounded-2xl border bg-white p-5 shadow-sm"
+                    className="surface-card p-5 sm:p-6 "
                   >
                     <div className="flex gap-3">
-                      <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-blue-100 font-black text-blue-700">
+                      <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-accent font-black text-link">
                         {initials(o.fullName)}
                       </span>
                       <div className="min-w-0">
-                        <h2 className="truncate font-bold text-slate-950">
+                        <h2 className="truncate font-bold text-foreground">
                           {o.fullName}
                         </h2>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           {o.tenantCode} ·{" "}
                           {o.maskedPhone || "Chưa có số điện thoại"}
                         </p>
@@ -242,13 +242,13 @@ export function CoOccupantOverviewPage() {
                     </div>
                     <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <dt className="text-slate-500">Chuyển vào</dt>
+                        <dt className="text-muted-foreground">Chuyển vào</dt>
                         <dd className="font-semibold">
                           {formatDate(o.moveInDate)}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-slate-500">Quan hệ</dt>
+                        <dt className="text-muted-foreground">Quan hệ</dt>
                         <dd className="font-semibold">
                           {o.relationship || "—"}
                         </dd>
@@ -264,7 +264,7 @@ export function CoOccupantOverviewPage() {
                     {o.permissions.canViewDetail && (
                       <Link
                         href={`/tenant/co-occupants/${o.id}`}
-                        className="mt-4 block rounded-xl border border-blue-200 py-2.5 text-center text-sm font-bold text-blue-700"
+                        className="mt-4 block rounded-xl border border-accent-border py-2.5 text-center text-sm font-bold text-link"
                       >
                         Xem chi tiết
                       </Link>
@@ -284,17 +284,17 @@ export function CoOccupantOverviewPage() {
                   <Link
                     key={r.id}
                     href={`/tenant/co-occupants/requests/${r.id}`}
-                    className="flex flex-col gap-3 rounded-2xl border bg-white p-5 shadow-sm sm:flex-row sm:items-center"
+                    className="flex flex-col gap-3 rounded-2xl border bg-card p-5 shadow-card sm:flex-row sm:items-center"
                   >
                     <div className="flex-1">
                       <p className="font-bold">{r.personName}</p>
-                      <p className="text-sm text-slate-500">
+                      <p className="text-sm text-muted-foreground">
                         {r.requestCode} ·{" "}
                         {label(requestTypeLabels, r.requestType)} · Gửi{" "}
                         {formatDate(r.submittedAt, true)}
                       </p>
                       {r.informationRequest && (
-                        <p className="mt-2 text-sm text-amber-700">
+                        <p className="mt-2 text-sm text-warning">
                           {r.informationRequest}
                         </p>
                       )}

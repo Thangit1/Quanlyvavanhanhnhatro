@@ -22,8 +22,7 @@ export function useAdminTenant(id: number, enabled = true) {
 export function useTenantMutations(id?: number) {
   const client = useQueryClient();
   const refresh = async () => {
-    await client.invalidateQueries({ queryKey: ["admin-tenants"] });
-    if (id) await client.invalidateQueries({ queryKey: ["admin-tenant"] });
+    await client.invalidateQueries();
   };
   return {
     create: useMutation({
@@ -34,6 +33,12 @@ export function useTenantMutations(id?: number) {
     update: useMutation({
       mutationFn: (payload: SaveTenantPayload) =>
         adminTenantService.update(id!, payload),
+      onSuccess: refresh,
+    }),
+    attach: useMutation({
+      mutationFn: (
+        payload: Parameters<typeof adminTenantService.attachResidence>[1],
+      ) => adminTenantService.attachResidence(id!, payload),
       onSuccess: refresh,
     }),
     transfer: useMutation({

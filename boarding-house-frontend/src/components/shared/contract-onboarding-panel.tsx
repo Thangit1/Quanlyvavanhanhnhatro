@@ -1,13 +1,14 @@
 "use client";
 import { CurrencyInput, NumberInput } from "@/components/ui/number-input";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { OnboardingIdentityProfile } from "./onboarding-identity-profile";
 import { OnboardingProcedures } from "./onboarding-procedures";
 import { OnboardingHandoverEditor } from "./onboarding-handover-editor";
 import Link from "next/link";
 import { ContractMeterReadiness } from "./contract-meter-readiness";
 import { ContractConfirmationProgress } from "./contract-confirmation-progress";
+import { ContractReviewPanel } from "./contract-review-panel";
 import { DepositLedgerPanel } from "./deposit-ledger-panel";
 import type {
   OnboardingDetail as Detail,
@@ -20,7 +21,7 @@ import { apiErrorMessage } from "@/lib/api-error";
 import { formatCurrency } from "@/lib/format";
 import { HandoverDocumentPanel } from "./handover-document";
 
-const input = "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm";
+const input = "w-full rounded-xl border border-border px-3 py-2 text-sm";
 const button =
   "rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40";
 
@@ -35,6 +36,7 @@ export function ContractOnboardingPanel({
   const client = useQueryClient();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const actionInFlight = useRef(false);
   const base = `/${portal}/contract-onboarding/${contractId}`;
   const query = useQuery({
     queryKey: [
@@ -51,6 +53,8 @@ export function ContractOnboardingPanel({
   });
   const staff = portal === "admin" && !!query.data?.progress?.canManageHandover;
   async function act(path: string, payload: unknown, put = false) {
+    if (actionInFlight.current) return false;
+    actionInFlight.current = true;
     setBusy(true);
     setError("");
     try {
@@ -62,6 +66,7 @@ export function ContractOnboardingPanel({
       setError(apiErrorMessage(e));
       return false;
     } finally {
+      actionInFlight.current = false;
       setBusy(false);
     }
   }
@@ -71,7 +76,7 @@ export function ContractOnboardingPanel({
     return (
       <p
         role="alert"
-        className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900"
+        className="rounded-xl bg-warning-muted p-4 text-sm text-amber-900"
       >
         Backend chưa có dữ liệu tiến độ xác nhận mới. Cần khởi động lại backend
         sau khi biên dịch bản cập nhật.
@@ -83,7 +88,7 @@ export function ContractOnboardingPanel({
     void act(path, { version: Number(v.version), contentHash: v.content_hash });
   }
   return (
-    <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
+    <section className="space-y-4 surface-card p-5 sm:p-6">
       {portal === "admin" && (
         <ContractMeterReadiness
           roomId={Number(d.context.room_id)}
@@ -99,16 +104,29 @@ export function ContractOnboardingPanel({
         busy={busy}
         onConfirm={(v) => confirm("confirmations", v)}
       />
+      <ContractReviewPanel
+        key={`${contractId}:${d.contractVersion?.content_hash}`}
+        portal={portal}
+        contractId={contractId}
+        version={Number(d.contractVersion?.version || 0)}
+        hash={String(d.contractVersion?.content_hash || "")}
+        canRequest={
+          portal === "tenant" &&
+          d.draft.status === "PENDING_CONFIRMATION" &&
+          !d.progress.ownConfirmed
+        }
+        canRespond={portal === "admin" && d.progress.canManageHandover}
+      />
       {error && (
         <p
           role="alert"
-          className="rounded-xl bg-red-50 p-3 text-sm text-red-700"
+          className="rounded-xl bg-danger-muted p-3 text-sm text-danger"
         >
           {error}
         </p>
       )}
       {d.serviceEstimate && (
-        <p className="rounded-xl bg-blue-50 p-3 text-sm">
+        <p className="rounded-xl bg-accent p-3 text-sm">
           Dự kiến kỳ đầu theo thỏa thuận đã lưu: dịch vụ định kỳ{" "}
           {formatCurrency(Number(d.serviceEstimate.recurringEstimate))}, phí một
           lần {formatCurrency(Number(d.serviceEstimate.onceEstimate))}, tổng gồm
@@ -121,7 +139,7 @@ export function ContractOnboardingPanel({
       {d.progress.canWriteFinance && (
         <p>
           <a
-            className="text-sm font-semibold text-blue-700 underline"
+            className="text-sm font-semibold text-link underline"
             href={`#deposit-ledger-${contractId}`}
           >
             Ghi nhận tiền cọc trong sổ cọc
@@ -180,7 +198,7 @@ export function ContractOnboardingPanel({
           {d.initialInvoice && (
             <p className="text-sm">
               <Link
-                className="text-blue-700 underline"
+                className="text-link underline"
                 href={`/${portal}/invoices/${d.initialInvoice.id}`}
               >
                 {String(d.initialInvoice.code)}
@@ -231,7 +249,7 @@ export function ContractOnboardingPanel({
             (d.progress.canWriteFinance ||
               d.progress.canCreateInitialInvoice) && (
               <Link
-                className="inline-block text-sm font-semibold text-blue-700 underline"
+                className="inline-block text-sm font-semibold text-link underline"
                 href={`/${portal}/invoices/${d.initialDraftInvoice.id}`}
               >
                 Kiểm tra và phát hành hóa đơn nháp{" "}
@@ -251,7 +269,7 @@ export function ContractOnboardingPanel({
               </button>
             )}
           {!d.initialPaymentSatisfied && (
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-secondary-foreground">
               Hóa đơn phải được phát hành, liên kết đúng hợp đồng và thanh toán
               bằng chứng từ. Tạo hóa đơn nháp không ghi nhận đã thu.
             </p>
@@ -297,7 +315,7 @@ export function ContractOnboardingPanel({
               className={input}
             />
           </label>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-secondary-foreground">
             Tự điền danh mục tài sản của phòng. Cần kiểm kê, chỉ số thực tế và
             xác nhận hai bên trước khi hoàn tất.
           </p>
@@ -385,7 +403,7 @@ export function ContractOnboardingPanel({
                 );
               }}
             >
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-secondary-foreground">
                 Thay đổi tạo phiên bản mới, yêu cầu hai bên xác nhận lại. Cọc
                 được điều chỉnh riêng qua sổ cọc. Hóa đơn đã tạo phải được xử lý
                 trước.
@@ -636,7 +654,7 @@ export function ContractOnboardingPanel({
         </button>
       )}
       {ci?.status === "COMPLETED" && (
-        <p className="text-sm text-emerald-700">
+        <p className="text-sm text-success">
           Đã hoàn tất nhận phòng · {String(ci.actual_checkin_at)}
         </p>
       )}

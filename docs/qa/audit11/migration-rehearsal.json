@@ -1,0 +1,10 @@
+﻿{
+    "restoredBackup":  true,
+    "fromSchema":  "35",
+    "toSchema":  "41",
+    "financialAndCoreRowSnapshotsUnchanged":  true,
+    "runtimePaths":  531,
+    "communicationPaths":  21,
+    "checkoutWorkspacePaths":  6,
+    "liveDatabaseChanged":  false
+}

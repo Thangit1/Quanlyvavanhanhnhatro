@@ -48,6 +48,21 @@ class DirectContractMysqlTest {
         for(String table:List.of("rental_bookings","tenant_deposits","invoices","rental_checkins"))assertThat(count(table,c)).as(table).isZero();
         assertThat(new AdminTenantRepository(f.db,new RoomLifecycleGuard(f.db)).summary(1,RoleCode.OWNER,a.property).active()).isZero();
     }
+    @Test void managedProfileWithoutResidenceCanBeSelectedAndDrafted(){
+        var a=fixture();
+        f.db.sql("DELETE FROM tenant_residences WHERE tenant_profile_id=:id").param("id",a.profile).update();
+        f.db.sql("UPDATE tenant_profiles SET management_property_id=:property WHERE id=:id").param("property",a.property).param("id",a.profile).update();
+        assertThat(service.options(manager,a.property,"").get("tenants")).asList().anySatisfy(row->assertThat(((Number)((Map<?,?>)row).get("id")).longValue()).isEqualTo(a.profile));
+        long contract=f.inTx(()->service.create(manager,f.key(),request(a,false))).id();
+        assertThat(f.db.sql("SELECT status FROM contracts WHERE id=:id").param("id",contract).query(String.class).single()).isEqualTo("DRAFT");
+        assertThat(f.db.sql("SELECT COUNT(*) FROM tenant_residences WHERE tenant_profile_id=:id").param("id",a.profile).query(Long.class).single()).isZero();
+    }
+    @Test void managementScopeDoesNotAllowUsingProfileFromAnotherHouse(){
+        var a=fixture();var b=fixture();
+        f.db.sql("DELETE FROM tenant_residences WHERE tenant_profile_id=:id").param("id",a.profile).update();
+        f.db.sql("UPDATE tenant_profiles SET management_property_id=:property WHERE id=:id").param("property",b.property).param("id",a.profile).update();
+        assertThatThrownBy(()->create(a,false)).isInstanceOf(AuthException.class).hasMessageContaining("Hồ sơ");
+    }
     @Test void managerCreatesAndOwnerReadsSameRecord(){var a=fixture();long c=f.inTx(()->service.create(manager,f.key(),request(a,true))).id();assertThat(new AdminContractRepository(f.db).detail(1,RoleCode.OWNER,c)).isPresent();assertThat(count("tenant_deposits",c)).isOne();}
     @Test void managerNeedsAssignmentAndContractCapability(){var a=fixture();f.db.sql("DELETE FROM manager_property_capabilities WHERE property_id=:p").param("p",a.property).update();assertThatThrownBy(()->f.run(()->service.create(manager,f.key(),request(a,false)))).isInstanceOf(AuthException.class);f.db.sql("DELETE FROM property_managers WHERE property_id=:p").param("p",a.property).update();assertThatThrownBy(()->service.options(manager,a.property,null)).isInstanceOf(AuthException.class);}
     @Test void otherOwnerAndTenantCannotCreateOrReadDraft(){var a=fixture();var other=new AuthenticatedUser(4L,"other",RoleCode.OWNER);assertThatThrownBy(()->f.run(()->service.create(other,f.key(),request(a,false)))).isInstanceOf(AuthException.class);long id=create(a,false);assertThatThrownBy(()->service.draft(f.tenant,id)).isInstanceOf(AuthException.class);assertThatThrownBy(()->f.onboarding.detail(f.tenant,id)).isInstanceOf(AuthException.class);}

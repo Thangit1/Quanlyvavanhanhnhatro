@@ -1,0 +1,310 @@
+{
+  "generatedAt": "2026-11-18T21:01:44.487Z",
+  "clock": "2026-11-10T12:00:00",
+  "totals": {
+    "PASS": 49,
+    "BLOCKED": 1
+  },
+  "cases": [
+    {
+      "status": "PASS",
+      "id": "TC01",
+      "evidence": "Dedicated schema organization",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC02",
+      "evidence": "Property created via authenticated API",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC03",
+      "evidence": "Manual fixture remains READY and has no contract",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC04",
+      "evidence": "Synthetic tenant date of birth",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC05",
+      "evidence": "Real tenant login and invoice authorization",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "id": "TC06",
+      "status": "PASS",
+      "evidence": "DirectContractMysqlTest.ownerDraftIsSharedWithoutOccupancyOrMoney",
+      "scope": "Service, separate isolated fixture"
+    },
+    {
+      "status": "PASS",
+      "id": "TC07",
+      "evidence": "Landlord confirmation persisted",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC08",
+      "evidence": "Tenant confirmation persisted",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC09",
+      "evidence": "Completed handover and ACTIVE contract",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC10",
+      "evidence": "No ACTIVE contract in a non-OCCUPIED room",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC11",
+      "evidence": "Electricity opening 1200; billed quantity 100",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC12",
+      "evidence": "Water opening 80; billed quantity 8",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC13",
+      "evidence": "Persisted electricity line",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC14",
+      "evidence": "Persisted water line",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC15",
+      "evidence": "Two fixed monthly services",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC16",
+      "evidence": "Preview persisted before draft creation",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC17",
+      "evidence": "Issued invoice",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC18",
+      "evidence": "Backend snapshot total, six separate invoices",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC19",
+      "evidence": "Duplicate invoice API rejects the same contract/month",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC20",
+      "evidence": "A unpaid without cash receipt",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC21",
+      "evidence": "B full cash payment once",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC22",
+      "evidence": "C proof PENDING does not change cash/debt",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC23",
+      "evidence": "D approved synthetic proof, one full transfer receipt",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "BLOCKED",
+      "id": "TC24",
+      "evidence": "No gateway provider/failure callback exists. Scenario E rejects unsupported CARD without creating a session; this is not a FAILED gateway session.",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC25",
+      "evidence": "E rejected payment creates no cash",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC26",
+      "evidence": "Approved transfer cannot be approved twice",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC27",
+      "evidence": "Invoice balance equals confirmed allocations",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC28",
+      "evidence": "Nov 3 before due date, still payable",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC29",
+      "evidence": "Nov 5 inclusive deadline",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC30",
+      "evidence": "Java and MySQL share Nov 6",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC31",
+      "evidence": "Both tenant and owner APIs report OVERDUE",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC32",
+      "evidence": "Near-due and overdue milestone rules generated deliveries",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC33",
+      "evidence": "SMTP receipt evidence plus SENT/SMTP_ACCEPTED, not DELIVERED",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC34",
+      "evidence": "Accepted overdue email contains room, amount, due date and invoice",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC35",
+      "evidence": "Repeated same-date scan sends no duplicate email",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC36",
+      "evidence": "Tenant inbox, read, and source link over authenticated HTTP",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "id": "TC37",
+      "status": "PASS",
+      "evidence": "Authenticated unread API plus actual Chrome screenshot: badge and overdue invoice",
+      "scope": "Demo browser + API"
+    },
+    {
+      "status": "PASS",
+      "id": "TC38",
+      "evidence": "F full payment after due date, actual Nov 10 receipt",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "status": "PASS",
+      "id": "TC39",
+      "evidence": "Paid F receives no further debt reminders; history retained",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "id": "TC40",
+      "status": "PASS",
+      "evidence": "ContractChangeMysqlTest.flowA_expiredOccupancyRenewsThenBillsAgreedNewPrice; confirmations/history",
+      "scope": "Service, separate isolated fixture"
+    },
+    {
+      "id": "TC41",
+      "status": "PASS",
+      "evidence": "SystemAcceptanceMysqlTest.completeStaffAssistedLifecycleOverRealHttp: Tenant repair, technician assignment/work/photo/completion, manager inspection",
+      "scope": "HTTP + service, separate isolated fixture"
+    },
+    {
+      "id": "TC42",
+      "status": "PASS",
+      "evidence": "PropertyServiceCatalogMysqlTest: usage/effective dates/next period/snapshot/confirmation invalidation",
+      "scope": "Service, separate isolated fixture"
+    },
+    {
+      "id": "TC43",
+      "status": "PASS",
+      "evidence": "SystemAcceptanceMysqlTest.completeStaffAssistedLifecycleOverRealHttp: Tenant checkout request and approved schedule",
+      "scope": "HTTP + service, separate isolated fixture"
+    },
+    {
+      "id": "TC44",
+      "status": "PASS",
+      "evidence": "SystemAcceptanceMysqlTest.completeStaffAssistedLifecycleOverRealHttp: Final meters/assets and signed settlement",
+      "scope": "HTTP + service, separate isolated fixture"
+    },
+    {
+      "id": "TC45",
+      "status": "PASS",
+      "evidence": "SystemAcceptanceMysqlTest.completeStaffAssistedLifecycleOverRealHttp: Approved noncash deposit deduction",
+      "scope": "HTTP + service, separate isolated fixture"
+    },
+    {
+      "id": "TC46",
+      "status": "PASS",
+      "evidence": "SystemAcceptanceMysqlTest.completeStaffAssistedLifecycleOverRealHttp: Approved refund paid through ledger",
+      "scope": "HTTP + service, separate isolated fixture"
+    },
+    {
+      "id": "TC47",
+      "status": "PASS",
+      "evidence": "SystemAcceptanceMysqlTest.completeStaffAssistedLifecycleOverRealHttp: CLEANING followed by inspected READY",
+      "scope": "HTTP + service, separate isolated fixture"
+    },
+    {
+      "id": "TC48",
+      "status": "PASS",
+      "evidence": "Read-only SQL after actual checkout; MOVED_OUT dates and tenant profile retained",
+      "scope": "Acceptance fixture database"
+    },
+    {
+      "status": "PASS",
+      "id": "TC49",
+      "evidence": "Owner/accountant report summaries agree; receipts and debt reconcile",
+      "scope": "Demo fixture/API/SMTP"
+    },
+    {
+      "id": "TC50",
+      "status": "PASS",
+      "evidence": "Read-only application database fixture matches=0; production JAR contains no demo test classes",
+      "scope": "Application isolation + artifact inspection"
+    }
+  ]
+}

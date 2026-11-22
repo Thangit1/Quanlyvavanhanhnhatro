@@ -14,6 +14,7 @@ public interface AdminMaintenanceService {
                           Boolean overdue, String sort, int page, int size);
     Detail detail(AuthenticatedUser principal, long id);
     Created create(AuthenticatedUser principal, CreateRequest request);
+    Created create(AuthenticatedUser principal, CreateRequest request, String key);
     Detail triage(AuthenticatedUser principal, long id, TriageRequest request);
     Detail assign(AuthenticatedUser principal, long id, AssignRequest request);
     Detail schedule(AuthenticatedUser principal, long id, ScheduleRequest request);

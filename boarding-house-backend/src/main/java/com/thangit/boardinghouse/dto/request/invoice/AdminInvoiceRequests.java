@@ -22,12 +22,16 @@ public final class AdminInvoiceRequests {
             @NotNull LocalDate periodStartDate,@NotNull LocalDate periodEndDate,
             LocalDate issueDate,@NotNull LocalDate dueDate,@Valid List<AdditionalItem> additionalItems,
             @DecimalMin("0.0") BigDecimal discountAmount,boolean includePreviousDebt,
-            @Size(max=1000) String note,@NotBlank @Pattern(regexp="SAVE_DRAFT|ISSUE") String action,Long version) {}
+            @Size(max=1000) String note,@NotBlank @Pattern(regexp="SAVE_DRAFT|ISSUE") String action,Long version,LocalDate paymentAvailableFrom) {
+        public SaveInvoice(Long roomId,Long contractId,String billingPeriod,LocalDate periodStartDate,LocalDate periodEndDate,LocalDate issueDate,LocalDate dueDate,List<AdditionalItem> additionalItems,BigDecimal discountAmount,boolean includePreviousDebt,String note,String action,Long version){this(roomId,contractId,billingPeriod,periodStartDate,periodEndDate,issueDate,dueDate,additionalItems,discountAmount,includePreviousDebt,note,action,version,null);}
+    }
     public record BulkInvoice(@NotNull Long propertyId,
             @NotBlank @Pattern(regexp="^\\d{4}-(0[1-9]|1[0-2])$") String billingPeriod,
             @NotNull LocalDate issueDate,@NotNull LocalDate dueDate,List<Long> roomIds,
-            @Pattern(regexp="SAVE_DRAFT|ISSUE") String action) {}
-    public record RecordPayment(@NotNull @DecimalMin("0.01") BigDecimal amount,
+            @Pattern(regexp="SAVE_DRAFT|ISSUE") String action,LocalDate paymentAvailableFrom,java.util.Map<Long,String> expectedHashes) {
+        public BulkInvoice(Long propertyId,String billingPeriod,LocalDate issueDate,LocalDate dueDate,List<Long> roomIds,String action){this(propertyId,billingPeriod,issueDate,dueDate,roomIds,action,null,null);}
+    }
+    public record RecordPayment(@NotNull @DecimalMin("0.01") @jakarta.validation.constraints.Digits(integer=13,fraction=2) BigDecimal amount,
             @NotBlank @Pattern(regexp="CASH|BANK_TRANSFER|CARD|OTHER") String paymentMethod,
             @NotNull LocalDateTime paidAt,@Size(max=100) String referenceCode,@Size(max=500) String note,Long version) {}
     public record CancelInvoice(@NotBlank @Size(max=500) String reason,Long version) {}

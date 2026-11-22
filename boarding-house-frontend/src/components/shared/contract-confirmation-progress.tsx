@@ -26,25 +26,25 @@ export function ContractConfirmationProgress({
     <div id="contract-content" className="scroll-mt-6 space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">
+          <p className="text-xs font-semibold uppercase tracking-wider text-link">
             Tiến độ xác nhận hợp đồng
           </p>
           <h2 className="mt-1 text-xl font-bold">
             {String(d.context.code ?? "Hợp đồng")}
           </h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-secondary-foreground">
             {String(d.context.tenant_name ?? "Chưa liên kết người thuê")} ·{" "}
             {String(d.context.property_name)} / {String(d.context.room_code)}
           </p>
         </div>
-        <span className="rounded-full bg-blue-50 px-3 py-2 text-sm font-medium text-blue-900">
+        <span className="rounded-full bg-accent px-3 py-2 text-sm font-medium text-link">
           {onboardingStageLabel[p.stage] ?? p.stage}
         </span>
       </div>
       {p.bothConfirmed && (
         <p
           role="status"
-          className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-semibold text-emerald-900"
+          className="rounded-xl border border-success-border bg-success-muted p-3 text-sm font-semibold text-emerald-900"
         >
           Hai bên đã xác nhận nội dung hợp đồng.
           {!p.checkinCompleted &&
@@ -60,7 +60,7 @@ export function ContractConfirmationProgress({
           return (
             <div
               key={String(label)}
-              className={`rounded-xl border p-4 ${party.confirmed ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-slate-50"}`}
+              className={`rounded-xl border p-4 ${party.confirmed ? "border-success-border bg-success-muted" : "border-border bg-muted"}`}
             >
               <p className="font-semibold">{String(label)}</p>
               <p className="mt-1 text-sm">
@@ -68,7 +68,7 @@ export function ContractConfirmationProgress({
                 {String(d.contractVersion?.version ?? "chưa chốt")}
               </p>
               {party.confirmedAt && (
-                <p className="mt-1 text-xs text-slate-600">
+                <p className="mt-1 text-xs text-secondary-foreground">
                   {party.actorName ? `${party.actorName} · ` : ""}
                   {formatDate(party.confirmedAt, true)}
                 </p>
@@ -86,17 +86,17 @@ export function ContractConfirmationProgress({
             {p.checklist.map((item) => (
               <li
                 key={item.key}
-                className="flex items-center gap-2 rounded-lg bg-slate-50 p-2 text-sm"
+                className="flex items-center gap-2 rounded-lg bg-muted p-2 text-sm"
               >
                 {item.completed ? (
                   <CheckCircle2
                     aria-hidden="true"
-                    className="size-4 shrink-0 text-emerald-600"
+                    className="size-4 shrink-0 text-success"
                   />
                 ) : (
                   <Circle
                     aria-hidden="true"
-                    className="size-4 shrink-0 text-slate-400"
+                    className="size-4 shrink-0 text-muted-foreground"
                   />
                 )}
                 <span>{item.label}</span>
@@ -111,7 +111,7 @@ export function ContractConfirmationProgress({
       {d.contractVersion && typeof d.contractVersion.content === "string" && (
         <>
           <details
-            className="rounded-xl border bg-slate-50 p-4"
+            className="rounded-xl border bg-muted p-4"
             onToggle={(e) => {
               if (e.currentTarget.open) setOpened(true);
             }}
@@ -169,7 +169,7 @@ export function ContractConfirmationProgress({
                     </span>
                   )}
                   {service.note && (
-                    <span className="block whitespace-pre-wrap text-slate-500">
+                    <span className="block whitespace-pre-wrap text-muted-foreground">
                       {String(service.note)}
                     </span>
                   )}
@@ -182,12 +182,12 @@ export function ContractConfirmationProgress({
                 </div>
               ))}
             </div>
-            <pre className="mt-4 max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-white p-3 text-xs">
+            <pre className="mt-4 max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-card p-3 text-xs">
               {String(d.contractVersion.content)}
             </pre>
           </details>
           {!p.contentCurrent && (
-            <p role="alert" className="text-sm text-amber-800">
+            <p role="alert" className="text-sm text-warning">
               Nội dung đã thay đổi so với bản này. Bên cho thuê cần chốt phiên
               bản mới trước khi hai bên xác nhận.
             </p>
@@ -195,7 +195,7 @@ export function ContractConfirmationProgress({
           {p.ownConfirmed ? (
             <p
               role="status"
-              className="flex items-center gap-2 font-semibold text-emerald-700"
+              className="flex items-center gap-2 font-semibold text-success"
             >
               <FileCheck2 className="size-5" />
               {p.confirmedByCurrentActor
@@ -216,7 +216,7 @@ export function ContractConfirmationProgress({
                   đồng này.
                 </label>
                 {!opened && (
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Mở phần nội dung hợp đồng ở trên trước khi xác nhận.
                   </p>
                 )}
@@ -244,7 +244,7 @@ export function ContractConfirmationProgress({
           )}
         </>
       )}
-      <p className="text-xs text-slate-500">{d.confirmationNotice}</p>
+      <p className="text-xs text-muted-foreground">{d.confirmationNotice}</p>
     </div>
   );
 }

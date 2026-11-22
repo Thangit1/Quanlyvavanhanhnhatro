@@ -1,0 +1,37 @@
+// Aggregate only executed evidence. Does not run tests or mutate business data.
+const fs = require('node:fs'), path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const local = process.env.DEMO_DIRECTORY || path.join(__dirname, '.demo-local/boarding_house_e2e_test_v3');
+const out = path.join(root, 'docs/qa/demo-e2e');
+const read = file => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
+const verification = read(path.join(local, 'verification.json'));
+const suiteNames = ['BusinessTimeTest', 'CommunicationMysqlTest', 'ContractChangeMysqlTest', 'MonthlyPaymentSessionMysqlTest', 'PropertyServiceCatalogMysqlTest', 'SystemAcceptanceMysqlTest', 'DirectContractMysqlTest'];
+const suites = suiteNames.map(name => {
+  const file = path.join(root, 'boarding-house-backend/target/surefire-reports/TEST-com.thangit.boardinghouse.service.' + name + '.xml');
+  const xml = fs.readFileSync(file, 'utf8'), tag = xml.match(/<testsuite\b[^>]+>/)[0];
+  const value = key => Number(tag.match(new RegExp('\\b' + key + '="([^"]+)"'))[1]);
+  return {suite:name, testedAt:fs.statSync(file).mtime.toISOString(), tests:value('tests'), failures:value('failures'), errors:value('errors'), skipped:value('skipped'), cases:[...xml.matchAll(/<testcase\b[^>]*\bname="([^"]+)"/g)].map(match=>match[1])};
+});
+const passed = (suite, name) => suites.some(item => item.suite === suite && item.failures === 0 && item.errors === 0 && item.skipped === 0 && item.cases.includes(name));
+const cases = verification.cases.map(item => ({...item, scope:'Demo fixture/API/SMTP'}));
+function set(number, condition, evidence, scope) {cases[number-1] = {id:'TC'+String(number).padStart(2,'0'), status:condition?'PASS':'FAIL', evidence, scope};}
+set(6, passed('DirectContractMysqlTest', 'ownerDraftIsSharedWithoutOccupancyOrMoney'), 'DirectContractMysqlTest.ownerDraftIsSharedWithoutOccupancyOrMoney', 'Service, separate isolated fixture');
+set(40, passed('ContractChangeMysqlTest', 'flowA_expiredOccupancyRenewsThenBillsAgreedNewPrice'), 'ContractChangeMysqlTest.flowA_expiredOccupancyRenewsThenBillsAgreedNewPrice; confirmations/history', 'Service, separate isolated fixture');
+set(42, passed('PropertyServiceCatalogMysqlTest', 'feesUseAgreementUsageEvidenceAndOncePeriodWithoutPayments') && passed('PropertyServiceCatalogMysqlTest', 'personFeesUseActualResidentsAndIgnoreInactiveOrFutureRules') && passed('PropertyServiceCatalogMysqlTest', 'editingServicesInvalidatesBothConfirmationsButNotOtherContracts'), 'PropertyServiceCatalogMysqlTest: usage/effective dates/next period/snapshot/confirmation invalidation', 'Service, separate isolated fixture');
+const lifecycle = read(path.join(out, 'lifecycle.json'));
+const lifecyclePassed = passed('SystemAcceptanceMysqlTest', 'completeStaffAssistedLifecycleOverRealHttp') && lifecycle.steps.some(step=>step.startsWith('38-40'));
+for (const [number, evidence] of [[41,'Tenant repair, technician assignment/work/photo/completion, manager inspection'],[43,'Tenant checkout request and approved schedule'],[44,'Final meters/assets and signed settlement'],[45,'Approved noncash deposit deduction'],[46,'Approved refund paid through ledger'],[47,'CLEANING followed by inspected READY']]) set(number,lifecyclePassed,'SystemAcceptanceMysqlTest.completeStaffAssistedLifecycleOverRealHttp: '+evidence,'HTTP + service, separate isolated fixture');
+const residence = read(path.join(out,'residence.json'));
+set(48,lifecyclePassed && residence.status==='MOVED_OUT' && residence.profileRetained===true,'Read-only SQL after actual checkout; MOVED_OUT dates and tenant profile retained','Acceptance fixture database');
+const browser = read(path.join(out,'browser/results.json'));
+set(37,cases[36].status==='PASS' && browser.results.some(item=>item.name==='Tenant inbox and bell render without resource error' && item.status==='PASS') && fs.existsSync(path.join(out,'browser/tenant-invoice.png')),'Authenticated unread API plus actual Chrome screenshot: badge and overdue invoice','Demo browser + API');
+const isolation = read(path.join(out,'isolation.json'));
+set(50,isolation.fixtureMatchesInApplication===0 && isolation.applicationPort!==isolation.demoPort && isolation.demoTestClassesInProductionArtifact===0,'Read-only application database fixture matches=0; production JAR contains no demo test classes','Application isolation + artifact inspection');
+const totals = cases.reduce((result,item)=>(result[item.status]=(result[item.status]||0)+1,result),{});
+fs.writeFileSync(path.join(out,'fixture-verification.json'),JSON.stringify(verification,null,2));
+fs.writeFileSync(path.join(out,'suites.json'),JSON.stringify({suites,total:suites.reduce((sum,item)=>sum+item.tests,0)},null,2));
+fs.writeFileSync(path.join(out,'matrix.json'),JSON.stringify({generatedAt:new Date().toISOString(),clock:verification.clock,totals,cases},null,2));
+const rows=cases.map(item=>`| ${item.id} | ${item.status} | ${item.scope} | ${item.evidence.replaceAll('|','/').replaceAll('\n',' ')} |`).join('\n');
+fs.writeFileSync(path.join(out,'REPORT.md'),`# Prompt 14 — kết quả kiểm thử\n\n${Object.entries(totals).map(([status,total])=>total+' '+status).join(', ')} trong ma trận TC01–TC50. Phạm vi từng dòng ghi rõ; không xem các bài service là thao tác UI đã bấm tự động.\n\nBackend: ${suites.reduce((sum,item)=>sum+item.tests,0)} test trong 7 suite, failures=${suites.reduce((sum,item)=>sum+item.failures,0)}, errors=${suites.reduce((sum,item)=>sum+item.errors,0)}, skipped=${suites.reduce((sum,item)=>sum+item.skipped,0)}. Chrome: ${browser.results.filter(item=>item.status==='PASS').length}/${browser.results.length} PASS, API thật, không intercept. Fixture timeline: ${verification.cases.filter(item=>item.status==='PASS').length} PASS; Clock dừng ${verification.clock}.\n\nTC24 BLOCKED: không có provider/callback gateway. CARD không hỗ trợ bị từ chối và không ghi tiền, nhưng không gọi đó là phiên gateway FAILED. Không dựng trạng thái bằng SQL.\n\nCác lần chạy đầu phát hiện assertion thông báo phụ thuộc giờ máy và bộ lọc kế toán mặc định tháng hiện tại. Đã chỉnh fixture giờ gửi và chọn đúng kỳ 10/2026 trong kiểm thử trình duyệt; kết quả cuối lưu ở suites.json và browser/results.json.\n\nDữ liệu demo: 6 hóa đơn × 4.200.000đ = 25.200.000đ. Sau Verify, B/D/F thu đủ tổng 12.600.000đ, A/C/E còn nợ tổng 12.600.000đ; C chờ duyệt không tạo khoản thu. Cọc 6 hợp đồng là 21.000.000đ, tách khỏi doanh thu tiền thuê. Hợp đồng demo vẫn có hiệu lực để tự thao tác gia hạn, bảo trì và trả phòng. Quy trình hoàn cọc đã được chạy trên schema acceptance riêng, không kết thúc hợp đồng demo này.\n\nKhông sửa migration cũ; schema seed dở được giữ nguyên, không DROP. Start lại schema COMPLETE không seed thêm. Kiểm tra chỉ đọc trên database ứng dụng chính: ${isolation.fixtureMatchesInApplication} mã/tài khoản fixture. Production JAR: ${isolation.demoTestClassesInProductionArtifact} test runtime class.\n\nXem [hướng dẫn thao tác và tài khoản](GUIDE.md), [ma trận JSON](matrix.json), [hóa đơn tenant](browser/tenant-invoice.png), [hộp thư tenant](browser/tenant-inbox.png).\n\n| TC | Kết quả | Phạm vi | Bằng chứng |\n|---|---|---|---|\n${rows}\n`);
+console.log(JSON.stringify({totals,backendTests:suites.reduce((sum,item)=>sum+item.tests,0),browser:browser.results.map(item=>({name:item.name,status:item.status}))},null,2));
+if(cases.some(item=>item.status==='FAIL') || suites.some(item=>item.failures+item.errors+item.skipped>0) || browser.results.some(item=>item.status!=='PASS'))process.exitCode=1;

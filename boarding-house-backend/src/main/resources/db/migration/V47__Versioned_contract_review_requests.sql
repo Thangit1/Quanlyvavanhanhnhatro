@@ -1,0 +1,23 @@
+CREATE TABLE contract_review_requests (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    contract_id BIGINT UNSIGNED NOT NULL,
+    contract_version_id BIGINT UNSIGNED NOT NULL,
+    tenant_id BIGINT UNSIGNED NOT NULL,
+    decision VARCHAR(30) NOT NULL,
+    reason VARCHAR(1000) NOT NULL,
+    request_key VARCHAR(100) NOT NULL,
+    request_hash CHAR(64) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'OPEN',
+    response VARCHAR(1000) NULL,
+    responded_by BIGINT UNSIGNED NULL,
+    responded_at DATETIME(6) NULL,
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    UNIQUE KEY uq_contract_review_request(tenant_id,request_key),
+    INDEX idx_contract_review_version(contract_version_id,status),
+    FOREIGN KEY(contract_id) REFERENCES contracts(id),
+    FOREIGN KEY(contract_version_id) REFERENCES contract_versions(id),
+    FOREIGN KEY(tenant_id) REFERENCES users(id),
+    FOREIGN KEY(responded_by) REFERENCES users(id),
+    CHECK(decision IN ('REQUEST_CHANGES','DECLINE')),
+    CHECK(status IN ('OPEN','RESPONDED','SUPERSEDED'))
+) ENGINE=InnoDB;

@@ -59,14 +59,14 @@ function PreferenceForm({ initial }: { initial: AccountPreferences }) {
       {message && (
         <p
           role="status"
-          className="rounded-xl bg-blue-50 p-3 font-semibold text-blue-800"
+          className="rounded-xl bg-accent p-3 font-semibold text-link"
         >
           {message}
         </p>
       )}
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="flex items-center gap-2 text-lg font-black">
-          <MonitorCog className="text-blue-600" />
+          <MonitorCog className="text-link" />
           Giao diện
         </h2>
         <div className="mt-4 grid grid-cols-3 gap-3">
@@ -75,7 +75,7 @@ function PreferenceForm({ initial }: { initial: AccountPreferences }) {
               key={theme}
               onClick={() => setTheme(theme)}
               aria-pressed={value.theme === theme}
-              className={`rounded-xl border p-4 font-bold ${value.theme === theme ? "border-blue-600 bg-blue-50 text-blue-700" : ""}`}
+              className={`rounded-xl border p-4 font-bold ${value.theme === theme ? "border-blue-600 bg-accent text-link" : ""}`}
             >
               {theme === "LIGHT"
                 ? "Sáng"
@@ -133,7 +133,7 @@ function PreferenceForm({ initial }: { initial: AccountPreferences }) {
           />
           <span>
             <b>Giảm hiệu ứng chuyển động</b>
-            <small className="block text-slate-500">
+            <small className="block text-muted-foreground">
               Hạn chế animation để cải thiện khả năng tiếp cận.
             </small>
           </span>
@@ -141,7 +141,7 @@ function PreferenceForm({ initial }: { initial: AccountPreferences }) {
         <button
           onClick={save}
           disabled={actions.updatePreferences.isPending}
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-6 py-3 font-bold text-white"
         >
           <Save className="size-4" />
           {actions.updatePreferences.isPending ? "Đang lưu..." : "Lưu cài đặt"}

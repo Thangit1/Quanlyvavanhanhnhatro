@@ -1,5 +1,8 @@
 "use client";
 import Link from "next/link";
+import { CreateAccountWizard } from "@/components/admin/accounts/create-account-wizard";
+import { DepositLedgerPanel } from "@/components/shared/deposit-ledger-panel";
+import { TenantMembersPanel } from "./tenant-members-panel";
 import { useState } from "react";
 import {
   ArrowLeft,
@@ -35,6 +38,7 @@ const tabs = [
   "Hợp đồng",
   "Hóa đơn",
   "Thanh toán",
+  "Tiền cọc",
   "Điện & nước",
   "Thành viên",
   "Yêu cầu hỗ trợ",
@@ -62,7 +66,9 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
       </AdminShell>
     );
   const d = query.data;
-  const current = d.residences.find((r) => r.status === "ACTIVE");
+  const current = d.residences.find(
+    (r) => r.status === "ACTIVE" && r.roomId != null,
+  );
   const currentContract = d.contracts.find((item) =>
     ["ACTIVE", "EXPIRING", "PENDING_CONFIRMATION"].includes(item.status),
   );
@@ -78,7 +84,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/admin/tenants"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-secondary-foreground hover:text-link"
           >
             <ArrowLeft className="size-4" />
             Danh sách người thuê
@@ -98,12 +104,20 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
               {d.status === "ACTIVE" &&
                 current?.residenceRole === "REPRESENTATIVE" && (
                   <Link
-                    href="/admin/rental-lifecycle"
+                    href={`/admin/rental-lifecycle?propertyId=${current?.propertyId ?? d.managementPropertyId ?? ""}&roomId=${current?.roomId ?? ""}`}
                     className={outlineButton}
                   >
                     Chuyển phòng qua bàn giao và hợp đồng
                   </Link>
                 )}
+              {current && current.residenceRole !== "REPRESENTATIVE" && (
+                <button
+                  onClick={() => setAction("moveout")}
+                  className={outlineButton}
+                >
+                  Ghi nhận thành viên rời phòng
+                </button>
+              )}
               <button
                 onClick={() => setAction("temporary")}
                 className={outlineButton}
@@ -114,7 +128,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
               {["ACTIVE", "NOTICE"].includes(d.status) && currentContract && (
                 <Link
                   href="/admin/rental-lifecycle"
-                  className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700"
+                  className="inline-flex items-center gap-2 rounded-xl border border-danger-border bg-card px-3 py-2 text-sm font-semibold text-danger"
                 >
                   <LogOut className="size-4" /> Thực hiện trả phòng
                 </Link>
@@ -124,9 +138,17 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                   Thực hiện nhận phòng
                 </Link>
               )}
+              {!current && (
+                <Link
+                  href={`/admin/contracts/new?tenantProfileId=${tenantId}&propertyId=${d.managementPropertyId ?? ""}`}
+                  className={outlineButton}
+                >
+                  Tiếp nhận / Lập hợp đồng
+                </Link>
+              )}
               <Link
                 href={`/admin/tenants/${tenantId}/edit`}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-3 py-2 text-sm font-semibold text-white"
               >
                 <Pencil className="size-4" />
                 Chỉnh sửa
@@ -134,19 +156,19 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
             </div>
           )}
         </div>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="surface-card p-5 sm:p-6 ">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <span className="grid size-20 place-items-center rounded-2xl bg-blue-100 text-blue-700">
+            <span className="grid size-20 place-items-center rounded-2xl bg-accent text-link">
               <UserRound className="size-10" />
             </span>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl font-extrabold text-slate-900">
+                <h1 className="text-2xl font-extrabold text-foreground">
                   {d.fullName}
                 </h1>
                 <StatusBadge status={d.status} />
               </div>
-              <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500">
+              <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-1.5">
                   <Phone className="size-4" />
                   {d.phone}
@@ -159,18 +181,18 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                 </span>
               </div>
             </div>
-            <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm">
-              <p className="text-slate-500">Tài khoản</p>
+            <div className="rounded-xl bg-muted px-4 py-3 text-sm">
+              <p className="text-muted-foreground">Tài khoản</p>
               <div className="mt-1 flex items-center gap-2">
                 {d.hasAccount ? (
                   <StatusBadge status={d.accountStatus ?? "ACTIVE"} />
                 ) : (
-                  <span className="font-semibold text-slate-600">Chưa tạo</span>
+                  <span className="font-semibold text-secondary-foreground">Chưa tạo</span>
                 )}
                 {canWrite && (
                   <button
                     onClick={() => setAction("account")}
-                    className="font-semibold text-blue-700"
+                    className="font-semibold text-link"
                   >
                     {d.hasAccount ? "Quản lý" : "Tạo ngay"}
                   </button>
@@ -179,56 +201,95 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
             </div>
           </div>
         </section>
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white p-1">
+        <div className="overflow-x-auto rounded-xl border border-border bg-card p-1">
           <nav className="flex min-w-max gap-1">
-            {tabs.map((item) => (
-              <button
-                key={item}
-                onClick={() => setTab(item)}
-                className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${tab === item ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-50"}`}
-              >
-                {item}
-              </button>
-            ))}
+            {tabs
+              .filter(
+                (item) =>
+                  d.canReadFinance ||
+                  ![
+                    "Hóa đơn",
+                    "Thanh toán",
+                    "Tiền cọc",
+                    "Điện & nước",
+                  ].includes(item),
+              )
+              .map((item) => (
+                <button
+                  key={item}
+                  onClick={() => setTab(item)}
+                  className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${tab === item ? "bg-primary hover:bg-primary-hover text-white" : "text-secondary-foreground hover:bg-muted"}`}
+                >
+                  {item}
+                </button>
+              ))}
           </nav>
         </div>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="surface-card p-5 sm:p-6 ">
+          {tab === "Tiền cọc" && d.canReadFinance && (
+            <div className="space-y-4">
+              {d.contracts.length ? (
+                d.contracts.map((c) => (
+                  <div key={c.id}>
+                    <h2 className="font-bold">{c.code}</h2>
+                    <DepositLedgerPanel
+                      portal="admin"
+                      contractId={c.id}
+                      writeAllowed={canWrite}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p>Chưa có hợp đồng để theo dõi sổ cọc.</p>
+              )}
+            </div>
+          )}
+          {tab === "Thành viên" && current?.roomId && (
+            <TenantMembersPanel
+              propertyId={current.propertyId}
+              roomId={current.roomId}
+              contractId={current.contractId ?? undefined}
+              canWrite={canWrite}
+            />
+          )}
           {tab === "Tổng quan" && (
             <div className="space-y-6">
               {currentContract && currentContract.daysToExpiry <= 30 && (
                 <div
-                  className={`rounded-xl border p-4 text-sm font-semibold ${currentContract.daysToExpiry < 0 ? "border-red-200 bg-red-50 text-red-700" : "border-amber-200 bg-amber-50 text-amber-800"}`}
+                  className={`rounded-xl border p-4 text-sm font-semibold ${currentContract.daysToExpiry < 0 ? "border-danger-border bg-danger-muted text-danger" : "border-warning-border bg-warning-muted text-warning"}`}
                 >
                   {currentContract.daysToExpiry < 0
                     ? "Hợp đồng đã hết hạn"
                     : `Hợp đồng sẽ hết hạn sau ${currentContract.daysToExpiry} ngày`}
                 </div>
               )}
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                <MoneyCard
-                  label="Tổng hóa đơn"
-                  value={d.financial.totalInvoiced}
-                />
-                <MoneyCard
-                  label="Đã thanh toán"
-                  value={d.financial.totalPaid}
-                  tone="success"
-                />
-                <MoneyCard
-                  label="Còn phải thu"
-                  value={d.financial.outstandingDebt}
-                  tone="danger"
-                />
-                <MoneyCard
-                  label="Nợ quá hạn"
-                  value={d.financial.overdueDebt}
-                  tone="danger"
-                />
-                <MoneyCard
-                  label="Tiền cọc đang giữ"
-                  value={d.financial.depositHeld}
-                />
-              </div>
+              {d.canReadFinance && (
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                  <MoneyCard
+                    label="Tổng hóa đơn"
+                    value={d.financial.totalInvoiced}
+                  />
+                  <MoneyCard
+                    label="Đã thanh toán"
+                    value={d.financial.totalPaid}
+                    tone="success"
+                  />
+                  <MoneyCard
+                    label="Còn phải thu"
+                    value={d.financial.outstandingDebt}
+                    tone="danger"
+                  />
+                  <MoneyCard
+                    label="Nợ quá hạn"
+                    value={d.financial.overdueDebt}
+                    tone="danger"
+                  />
+                  <MoneyCard
+                    label="Tiền cọc đang giữ"
+                    value={d.financial.depositHeld}
+                  />
+                </div>
+              )}
               <div className="grid gap-6 lg:grid-cols-2">
                 <Panel title="Thông tin cá nhân">
                   <Info label="Mã người thuê" value={d.tenantCode} />
@@ -378,7 +439,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                   <p>
                     Chu kỳ {item.paymentCycle} · Công nợ:{" "}
                     <strong
-                      className={item.outstandingDebt > 0 ? "text-red-600" : ""}
+                      className={item.outstandingDebt > 0 ? "text-danger" : ""}
                     >
                       {formatCurrency(item.outstandingDebt)}
                     </strong>
@@ -386,14 +447,14 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                   <div className="flex flex-wrap gap-3 pt-2">
                     <Link
                       href={`/admin/contracts/${item.id}`}
-                      className="font-semibold text-blue-700"
+                      className="font-semibold text-link"
                     >
                       Xem hợp đồng
                     </Link>
                     {["ACTIVE", "EXPIRING"].includes(item.status) && (
                       <Link
                         href={`/admin/contracts/${item.id}`}
-                        className="font-semibold text-amber-700"
+                        className="font-semibold text-warning"
                       >
                         Gia hạn
                       </Link>
@@ -421,7 +482,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                   </p>
                   <Link
                     href={`/admin/invoices/${item.id}`}
-                    className="inline-block pt-2 font-semibold text-blue-700"
+                    className="inline-block pt-2 font-semibold text-link"
                   >
                     Xem chi tiết
                   </Link>
@@ -444,7 +505,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                   <p>
                     Hóa đơn {item.invoiceCode} · {item.paymentMethod}
                   </p>
-                  <p className="font-bold text-emerald-700">
+                  <p className="font-bold text-success">
                     {formatCurrency(item.amount)}
                   </p>
                   {item.referenceCode && (
@@ -461,7 +522,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
             >
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[850px] text-left text-sm">
-                  <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                  <thead className="bg-muted text-xs uppercase text-muted-foreground">
                     <tr>
                       <th className="px-3 py-3">Tháng</th>
                       <th>Điện cũ</th>
@@ -516,7 +577,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                     </p>
                     <Link
                       href={`/admin/tenants/${item.id}`}
-                      className="font-semibold text-blue-700"
+                      className="font-semibold text-link"
                     >
                       Xem hồ sơ
                     </Link>
@@ -545,7 +606,7 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
                   <p>Tạo lúc {formatDate(item.createdAt)}</p>
                   <Link
                     href={`/admin/maintenance/${item.id}`}
-                    className="font-semibold text-blue-700"
+                    className="font-semibold text-link"
                   >
                     Xem ticket
                   </Link>
@@ -587,14 +648,14 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
               {d.activities.map((item) => (
                 <div
                   key={item.id}
-                  className="flex gap-3 border-b border-slate-100 py-3 last:border-0"
+                  className="flex gap-3 border-b border-border py-3 last:border-0"
                 >
-                  <span className="mt-1 size-2 rounded-full bg-blue-600" />
+                  <span className="mt-1 size-2 rounded-full bg-primary hover:bg-primary-hover" />
                   <div>
-                    <p className="font-semibold text-slate-800">
+                    <p className="font-semibold text-foreground">
                       {item.description}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {item.actorName ?? "Hệ thống"} ·{" "}
                       {formatDate(item.createdAt)}
                     </p>
@@ -605,7 +666,21 @@ export function TenantDetailPage({ tenantId }: { tenantId: number }) {
           )}
         </section>
       </div>
-      {action && (
+      {action === "account" && !d.hasAccount && (
+        <CreateAccountWizard
+          profile={{
+            profile_id: d.id,
+            full_name: d.fullName,
+            phone: d.phone,
+            email: d.email,
+          }}
+          onClose={() => setAction(null)}
+          onCreated={async () => {
+            await query.refetch();
+          }}
+        />
+      )}
+      {action && (action !== "account" || d.hasAccount) && (
         <ActionDialog
           action={action}
           tenant={d}
@@ -695,7 +770,7 @@ function ActionDialog({
   };
   return (
     <div className="fixed inset-0 z-[70] grid place-items-center bg-slate-950/50 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl">
+      <div className="w-full max-w-lg rounded-2xl bg-card p-5 shadow-2xl">
         <div className="flex justify-between gap-3">
           <h2 className="text-lg font-bold">{titles[action]}</h2>
           <button onClick={onClose} aria-label="Đóng">
@@ -704,7 +779,7 @@ function ActionDialog({
         </div>
         <form onSubmit={submit} className="mt-5 space-y-4">
           {error && (
-            <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+            <p className="rounded-lg bg-danger-muted p-3 text-sm text-danger">
               {error}
             </p>
           )}
@@ -745,7 +820,7 @@ function ActionDialog({
                   className={inputClass}
                 />
               </Field>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Kết thúc hợp đồng phải qua Vòng đời thuê sau bàn giao và quyết
                 toán.
               </p>
@@ -819,7 +894,7 @@ function ActionDialog({
                     required
                     className={inputClass}
                   />
-                  <p className="mt-1 text-xs font-normal text-slate-500">
+                  <p className="mt-1 text-xs font-normal text-muted-foreground">
                     Tối thiểu 8 ký tự, có chữ hoa, chữ thường và số. Mật khẩu
                     được lưu bằng BCrypt.
                   </p>
@@ -837,7 +912,7 @@ function ActionDialog({
             </button>
             <button
               disabled={busy}
-              className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
             >
               {busy ? "Đang xử lý..." : "Xác nhận"}
             </button>
@@ -869,7 +944,7 @@ function Documents({
   return (
     <div>
       {canWrite && (
-        <label className="mb-5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-blue-200 bg-blue-50 p-5 font-semibold text-blue-700">
+        <label className="mb-5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-accent-border bg-accent p-5 font-semibold text-link">
           <Upload className="size-5" />
           Tải PDF/JPG/PNG (tối đa 5 MB)
           <input
@@ -894,14 +969,14 @@ function Documents({
         {documents.map((item) => (
           <div
             key={item.id}
-            className="flex items-center gap-3 border-b border-slate-100 py-3"
+            className="flex items-center gap-3 border-b border-border py-3"
           >
-            <span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-blue-700">
+            <span className="grid size-10 place-items-center rounded-xl bg-accent text-link">
               <FileText className="size-5" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold">{item.originalName}</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 {item.documentType} · {(item.fileSize / 1024).toFixed(1)} KB ·{" "}
                 {formatDate(item.uploadedAt)}
               </p>
@@ -934,7 +1009,7 @@ function Panel({
 }) {
   return (
     <div>
-      <h2 className="mb-4 font-bold text-slate-900">{title}</h2>
+      <h2 className="mb-4 font-bold text-foreground">{title}</h2>
       <dl className="space-y-3">{children}</dl>
     </div>
   );
@@ -950,13 +1025,13 @@ function MoneyCard({
 }) {
   const color =
     tone === "danger"
-      ? "text-red-700"
+      ? "text-danger"
       : tone === "success"
-        ? "text-emerald-700"
-        : "text-slate-900";
+        ? "text-success"
+        : "text-foreground";
   return (
-    <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <article className="rounded-xl border border-border bg-muted p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
       <p className={`mt-2 text-lg font-extrabold ${color}`}>
@@ -973,9 +1048,9 @@ function Info({
   value: string | null | undefined;
 }) {
   return (
-    <div className="grid gap-1 border-b border-slate-100 pb-3 sm:grid-cols-[150px_1fr]">
-      <dt className="text-sm text-slate-500">{label}</dt>
-      <dd className="text-sm font-semibold text-slate-800">{value || "—"}</dd>
+    <div className="grid gap-1 border-b border-border pb-3 sm:grid-cols-[150px_1fr]">
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="text-sm font-semibold text-foreground">{value || "—"}</dd>
     </div>
   );
 }
@@ -989,12 +1064,12 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <article className="rounded-xl border border-slate-200 p-4">
+    <article className="rounded-xl border border-border p-4">
       <div className="flex justify-between gap-3">
         <h3 className="font-bold">{title}</h3>
         <StatusBadge status={status} />
       </div>
-      <div className="mt-2 space-y-1 text-sm text-slate-600">{children}</div>
+      <div className="mt-2 space-y-1 text-sm text-secondary-foreground">{children}</div>
     </article>
   );
 }
@@ -1021,13 +1096,13 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block text-sm font-semibold text-slate-700">
+    <label className="block text-sm font-semibold text-secondary-foreground">
       {label}
       {children}
     </label>
   );
 }
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500";
+  "mt-1.5 w-full rounded-xl border border-border px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring";
 const outlineButton =
-  "inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700";
+  "inline-flex items-center gap-2 rounded-xl border border-input bg-card px-3 py-2 text-sm font-semibold text-secondary-foreground";

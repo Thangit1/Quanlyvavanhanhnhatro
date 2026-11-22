@@ -1,4 +1,4 @@
-import { AccountantResourcePage } from "@/components/accountant/accountant-pages";
+import { PaymentTransactionsPanel } from "@/components/shared/payment-transactions-panel";
 export default function Page() {
-  return <AccountantResourcePage resource="reconciliation/payment-gateways" />;
+  return <PaymentTransactionsPanel management />;
 }

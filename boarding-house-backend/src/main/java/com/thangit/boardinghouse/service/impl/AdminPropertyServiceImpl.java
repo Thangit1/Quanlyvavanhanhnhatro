@@ -40,6 +40,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     }
     @Override @Transactional
     public Created createProperty(AuthenticatedUser principal,SaveProperty request){
+        validateImageReference(request,null);
         requireOwner(principal); validateProperty(request,null); long id=repository.createProperty(principal.id(),request);
         repository.assignManager(id,request.managerId(),principal.id());
         repository.addActivity(id,principal.id(),"PROPERTY_CREATED","Đã tạo nhà trọ "+request.name()+".","/admin/properties/"+id);
@@ -48,6 +49,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     @Override @Transactional
     public PropertyDetail updateProperty(AuthenticatedUser principal,long id,SaveProperty request){
         requirePropertyWrite(principal,id); validateProperty(request,id);
+        validateImageReference(request,id);
         if(principal.activeRole()==RoleCode.MANAGER&&request.managerId()!=null&&!repository.assignedManager(id,request.managerId()))throw new AuthException(HttpStatus.FORBIDDEN,"MANAGER_ASSIGNMENT_OWNER_ONLY","Only the property owner may change manager assignments.");
         if(repository.updateProperty(id,request)==0) throw conflict();
         if(principal.activeRole()==RoleCode.OWNER)repository.assignManager(id,request.managerId(),principal.id());
@@ -76,12 +78,17 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
         return new Created(id,request.code().toUpperCase());
     }
     @Override @Transactional(readOnly=true)
-    public PropertyOptions options(AuthenticatedUser principal){requireRole(principal);return new PropertyOptions(repository.propertyOptions(principal.id(),principal.activeRole()),repository.buildingOptions(principal.id(),principal.activeRole()),repository.floorOptions(principal.id(),principal.activeRole()),repository.amenities());}
+    public PropertyOptions options(AuthenticatedUser principal){requireRole(principal);return new PropertyOptions(repository.propertyOptions(principal.id(),principal.activeRole()),repository.buildingOptions(principal.id(),principal.activeRole()),repository.floorOptions(principal.id(),principal.activeRole()),repository.amenities(),repository.propertyContexts(principal.id(),principal.activeRole()));}
     @Override @Transactional(readOnly=true)
     public RoomList listRooms(AuthenticatedUser principal,Long propertyId,Long buildingId,Long floorId,String status,String keyword,int page,int size){
+        return listRooms(principal,propertyId,buildingId,floorId,status,keyword,page,size,null,null);
+    }
+    @Override @Transactional(readOnly=true)
+    public RoomList listRooms(AuthenticatedUser principal,Long propertyId,Long buildingId,Long floorId,String status,String keyword,int page,int size,BigDecimal minimumRent,BigDecimal maximumRent){
         requireRole(principal); if(propertyId!=null) requireProperty(principal,propertyId); int safePage=Math.max(page,0),safeSize=Math.min(Math.max(size,10),100);
-        long total=repository.countRooms(principal.id(),principal.activeRole(),propertyId,buildingId,floorId,status,keyword);
-        return new RoomList(repository.roomSummary(principal.id(),principal.activeRole(),propertyId),new Page<>(repository.rooms(principal.id(),principal.activeRole(),propertyId,buildingId,floorId,status,keyword,safePage*safeSize,safeSize),safePage,safeSize,total,(int)Math.ceil(total/(double)safeSize)));
+        if((minimumRent!=null&&minimumRent.signum()<0)||(maximumRent!=null&&maximumRent.signum()<0)||(minimumRent!=null&&maximumRent!=null&&minimumRent.compareTo(maximumRent)>0))throw bad("ROOM_RENT_RANGE_INVALID","Khoảng giá thuê không hợp lệ.");
+        long total=repository.countRooms(principal.id(),principal.activeRole(),propertyId,buildingId,floorId,status,keyword,minimumRent,maximumRent);
+        return new RoomList(repository.roomSummary(principal.id(),principal.activeRole(),propertyId),new Page<>(repository.rooms(principal.id(),principal.activeRole(),propertyId,buildingId,floorId,status,keyword,safePage*safeSize,safeSize,minimumRent,maximumRent),safePage,safeSize,total,(int)Math.ceil(total/(double)safeSize)));
     }
     @Override @Transactional(readOnly=true)
     public RoomDetail room(AuthenticatedUser principal,long id){
@@ -114,7 +121,7 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
     @Override @Transactional
     public RoomDetail changePrice(AuthenticatedUser principal,long id,ChangePrice request){
         RoomRow room=repository.roomView(id,principal).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,room.propertyId());
-        if(request.effectiveDate().isBefore(LocalDate.now())) throw bad("PRICE_DATE_INVALID","Ngày áp dụng giá không được ở quá khứ.");
+        if(request.effectiveDate().isBefore(com.thangit.boardinghouse.service.BusinessTime.today())) throw bad("PRICE_DATE_INVALID","Ngày áp dụng giá không được ở quá khứ.");
         if(repository.changePrice(id,room.monthlyRent(),request,principal.id())==0) throw conflict(); repository.addActivity(room.propertyId(),principal.id(),"ROOM_PRICE_CHANGED","Đã đổi giá phòng "+room.roomCode()+" thành "+request.newPrice()+".","/admin/rooms/"+id); return room(principal,id);
     }
     @Override @Transactional
@@ -122,11 +129,12 @@ public class AdminPropertyServiceImpl implements AdminPropertyService {
         RoomRow room=repository.roomView(id,principal).orElseThrow(()->notFound("Không tìm thấy phòng.")); requirePropertyWrite(principal,room.propertyId()); rooms.access(principal,room.propertyId());rooms.manual(id,request.status(),request.version(),request.reason(),request.readinessConfirmed(),principal.id());
         repository.addActivity(room.propertyId(),principal.id(),"ROOM_STATUS_CHANGED","Đã chuyển phòng "+room.roomCode()+" từ "+room.status()+" sang "+request.status()+".","/admin/rooms/"+id); return room(principal,id);
     }
-    private void validateProperty(SaveProperty request,Long excluded){if(repository.codeExists(request.code().trim(),excluded)) throw bad("PROPERTY_CODE_EXISTS","Mã nhà trọ đã tồn tại."); if(request.operationStartDate()!=null&&request.operationStartDate().isAfter(LocalDate.now().plusYears(1))) throw bad("OPERATION_DATE_INVALID","Ngày vận hành không hợp lệ.");}
-    private void validateRoom(SaveRoom request,Long excluded){if(!repository.validHierarchy(request.propertyId(),request.buildingId(),request.floorId())) throw bad("ROOM_HIERARCHY_INVALID","Tòa hoặc tầng không thuộc nhà trọ đã chọn."); if(repository.roomCodeExists(request.propertyId(),request.code().trim(),excluded)) throw bad("ROOM_CODE_EXISTS","Mã phòng đã tồn tại trong nhà trọ.");}
+    private void validateProperty(SaveProperty request,Long excluded){if(repository.codeExists(request.code().trim(),excluded)) throw bad("PROPERTY_CODE_EXISTS","Mã nhà trọ đã tồn tại."); if(request.operationStartDate()!=null&&request.operationStartDate().isAfter(com.thangit.boardinghouse.service.BusinessTime.today().plusYears(1))) throw bad("OPERATION_DATE_INVALID","Ngày vận hành không hợp lệ.");}
+    private void validateRoom(SaveRoom request,Long excluded){String image=request.imageUrl()==null?null:request.imageUrl().trim();if(image!=null&&image.startsWith("/admin/properties/")&&(excluded==null||!java.util.Objects.equals(repository.roomRaw(excluded).orElseThrow().get("image_url"),image)))throw bad("IMAGE_REFERENCE_INVALID","Please upload room images directly.");if(!repository.validHierarchy(request.propertyId(),request.buildingId(),request.floorId())) throw bad("ROOM_HIERARCHY_INVALID","Tòa hoặc tầng không thuộc nhà trọ đã chọn."); if(repository.roomCodeExists(request.propertyId(),request.code().trim(),excluded)) throw bad("ROOM_CODE_EXISTS","Mã phòng đã tồn tại trong nhà trọ.");}
 
     private void requireRole(AuthenticatedUser p){if(!Set.of(RoleCode.OWNER,RoleCode.MANAGER,RoleCode.ACCOUNTANT).contains(p.activeRole()))throw forbidden();}
     private boolean canWrite(AuthenticatedUser p){return Set.of(RoleCode.OWNER,RoleCode.MANAGER).contains(p.activeRole());}
+    private void validateImageReference(SaveProperty request,Long id){String url=request.thumbnailUrl()==null?null:request.thumbnailUrl().trim();if(url!=null&&url.startsWith("/admin/properties/")&&(id==null||!java.util.Objects.equals(repository.property(id).orElseThrow().get("thumbnail_url"),url)))throw bad("IMAGE_REFERENCE_INVALID","Vui lòng chọn ảnh trực tiếp từ thiết bị.");}
     private void requireOwner(AuthenticatedUser p){if(p.activeRole()!=RoleCode.OWNER)throw new AuthException(HttpStatus.FORBIDDEN,"OWNER_REQUIRED","Chỉ chủ trọ được thực hiện thao tác này.");}
     private void requirePropertyWrite(AuthenticatedUser p,long id){if(!canWrite(p))throw forbidden();requireProperty(p,id);}
     private void requireProperty(AuthenticatedUser p,long id){requireRole(p);if(!repository.canAccess(p.id(),p.activeRole(),id))throw forbidden();}

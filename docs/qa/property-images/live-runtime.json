@@ -1,0 +1,15 @@
+﻿{
+    "checkedAt":  "2026-11-18T21:22:49.2738041+07:00",
+    "port":  8080,
+    "pid":  9076,
+    "healthStatus":  200,
+    "runtimePaths":  532,
+    "propertyImageApiPresent":  true,
+    "anonymousImageStatus":  401,
+    "corsStatus":  200,
+    "corsOrigin":  "http://localhost:3000",
+    "schemaBefore":  41,
+    "schemaUnchanged":  true,
+    "newMigrationsApplied":  0,
+    "realTestWrites":  false
+}

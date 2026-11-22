@@ -34,7 +34,7 @@ public final class TenantInvoiceResponses {
             BigDecimal subtotalAmount,BigDecimal discountAmount,BigDecimal previousDebtAmount,
             BigDecimal lateFeeAmount,BigDecimal totalAmount,BigDecimal paidAmount,BigDecimal remainingAmount,
             List<Payment> payments,List<Adjustment> adjustments,List<Proof> paymentProofs,List<Review> reviewRequests,
-            List<PaymentMethod> paymentMethods,Permissions permissions,long version) {}
+            List<PaymentMethod> paymentMethods,Permissions permissions,long version,LocalDate paymentAvailableFrom) {}
     public record PaymentSession(Long id,Long invoiceId,BigDecimal amount,String paymentMethod,String status,
             String transferContent,LocalDateTime expiresAt) {}
     public record CreatedReview(Long id,String requestCode,String status) {}
