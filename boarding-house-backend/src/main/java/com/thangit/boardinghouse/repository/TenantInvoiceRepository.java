@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TenantInvoiceRepository {
     private static final String EFFECTIVE_STATUS = """
-        CASE WHEN i.status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND i.remaining_amount>0 AND i.due_date<CURRENT_DATE
+        CASE WHEN i.status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND i.remaining_amount>0 AND i.due_date<DATE(UTC_TIMESTAMP() + INTERVAL 7 HOUR)
              THEN 'OVERDUE' ELSE i.status END
         """;
     private final JdbcClient jdbc;
@@ -40,7 +40,7 @@ public class TenantInvoiceRepository {
     public Summary summary(long tenantId) {
         Map<String,Object> totals=jdbc.sql("""
             SELECT COALESCE(SUM(CASE WHEN status<>'CANCELLED' THEN remaining_amount ELSE 0 END),0) outstanding,
-              SUM(CASE WHEN status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND remaining_amount>0 AND due_date<CURRENT_DATE THEN 1 ELSE 0 END) overdue_count,
+              SUM(CASE WHEN status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND remaining_amount>0 AND due_date<DATE(UTC_TIMESTAMP() + INTERVAL 7 HOUR) THEN 1 ELSE 0 END) overdue_count,
               SUM(CASE WHEN status NOT IN ('PAID','CANCELLED','DRAFT','PENDING_REVIEW') AND remaining_amount>0 THEN 1 ELSE 0 END) unpaid_count
             FROM invoices WHERE tenant_id=:tenantId AND status NOT IN ('DRAFT','PENDING_REVIEW')
             """).param("tenantId",tenantId).query().singleRow();
@@ -68,7 +68,7 @@ public class TenantInvoiceRepository {
         JdbcClient.StatementSpec query=bind(jdbc.sql("""
             SELECT i.id,i.code,i.billing_period,p.name property_name,r.code room_code,i.issue_date,i.due_date,
               i.total_amount,i.paid_amount,i.remaining_amount,
-              GREATEST(DATEDIFF(CURRENT_DATE,i.due_date),0) overdue_days,
+              GREATEST(DATEDIFF(DATE(UTC_TIMESTAMP() + INTERVAL 7 HOUR),i.due_date),0) overdue_days,
             """+EFFECTIVE_STATUS+" status "+base+" ORDER BY "+orderBy+" LIMIT :size OFFSET :offset"),
             tenantId,status,search,from,to).param("size",size).param("offset",page*size);
         List<InvoiceRow> rows=query.query((rs,n)->new InvoiceRow(rs.getLong("id"),rs.getString("code"),
@@ -151,15 +151,15 @@ public class TenantInvoiceRepository {
 
     public void expireUnsubmittedSessions(long invoiceId){jdbc.sql("""
         UPDATE tenant_payment_sessions s JOIN invoices i ON i.id=s.invoice_id SET s.status='EXPIRED'
-        WHERE s.invoice_id=:invoice AND s.status='AWAITING_TRANSFER' AND (s.expires_at<=CURRENT_TIMESTAMP OR s.amount<>i.remaining_amount)
+        WHERE s.invoice_id=:invoice AND s.status='AWAITING_TRANSFER' AND (s.expires_at<=:businessNow OR s.amount<>i.remaining_amount)
           AND NOT EXISTS(SELECT 1 FROM tenant_payment_proofs p WHERE p.session_id=s.id AND p.status IN ('PENDING','APPROVED'))
-        """).param("invoice",invoiceId).update();}
+        """).param("businessNow",com.thangit.boardinghouse.service.BusinessTime.now()).param("invoice",invoiceId).update();}
     public Optional<PaymentSession> activeSession(long tenantId,long invoiceId){return jdbc.sql("""
         SELECT id,invoice_id,amount,payment_method,status,transfer_content,expires_at
         FROM tenant_payment_sessions WHERE tenant_id=:tenant AND invoice_id=:invoice
-          AND (status IN ('PROOF_SUBMITTED','PROCESSING','PENDING') OR (status='AWAITING_TRANSFER' AND expires_at>CURRENT_TIMESTAMP))
+          AND (status IN ('PROOF_SUBMITTED','PROCESSING','PENDING') OR (status='AWAITING_TRANSFER' AND expires_at>:businessNow))
         ORDER BY id DESC LIMIT 1
-        """).param("tenant",tenantId).param("invoice",invoiceId)
+        """).param("tenant",tenantId).param("businessNow",com.thangit.boardinghouse.service.BusinessTime.now()).param("invoice",invoiceId)
         .query((r,n)->new PaymentSession(r.getLong("id"),r.getLong("invoice_id"),r.getBigDecimal("amount"),r.getString("payment_method"),r.getString("status"),r.getString("transfer_content"),r.getObject("expires_at",LocalDateTime.class))).optional();}
 
     public Optional<PaymentSession> session(long tenantId,String key){return jdbc.sql("""
@@ -176,7 +176,7 @@ public class TenantInvoiceRepository {
     public boolean proofReferenceExists(long tenantId,long invoiceId,String reference){return jdbc.sql("SELECT COUNT(*) FROM tenant_payment_proofs WHERE tenant_id=:tenant AND invoice_id=:invoice AND transaction_reference=:reference AND status IN ('PENDING','APPROVED')").param("tenant",tenantId).param("invoice",invoiceId).param("reference",reference.trim()).query(Long.class).single()>0;}
     public void markSessionProofSubmitted(long sessionId){jdbc.sql("UPDATE tenant_payment_sessions SET status='PROOF_SUBMITTED' WHERE id=:id AND status='AWAITING_TRANSFER'").param("id",sessionId).update();}
     public PaymentSession createSession(long invoiceId,long tenantId,BigDecimal amount,String method,String key,String content){
-        KeyHolder kh=new GeneratedKeyHolder();LocalDateTime expires=LocalDateTime.now().plusHours(24);
+        KeyHolder kh=new GeneratedKeyHolder();LocalDateTime expires=com.thangit.boardinghouse.service.BusinessTime.now().plusHours(24);
         int inserted=jdbc.sql("""
             INSERT IGNORE INTO tenant_payment_sessions(invoice_id,tenant_id,amount,payment_method,idempotency_key,status,transfer_content,expires_at)
             VALUES(:invoice,:tenant,:amount,:method,:key,'AWAITING_TRANSFER',:content,:expires)

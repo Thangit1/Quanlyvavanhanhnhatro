@@ -16,27 +16,27 @@ const statusConfig: Record<
 > = {
   DRAFT: {
     label: "Bản nháp",
-    className: "border-slate-200 bg-slate-50 text-slate-700",
+    className: "border-border bg-muted text-secondary-foreground",
     icon: FilePenLine,
   },
   PENDING_CONFIRMATION: {
     label: "Chờ hoàn tất nhận phòng",
-    className: "border-blue-200 bg-blue-50 text-blue-700",
+    className: "border-accent-border bg-accent text-link",
     icon: Hourglass,
   },
   ACTIVE: {
     label: "Đang hiệu lực",
-    className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    className: "border-success-border bg-success-muted text-success",
     icon: CheckCircle2,
   },
   EXPIRING: {
     label: "Sắp hết hạn",
-    className: "border-amber-200 bg-amber-50 text-amber-800",
+    className: "border-warning-border bg-warning-muted text-warning",
     icon: Clock3,
   },
   EXPIRED: {
     label: "Đã hết hạn",
-    className: "border-slate-200 bg-slate-100 text-slate-700",
+    className: "border-border bg-muted text-secondary-foreground",
     icon: XCircle,
   },
   TERMINATION_REQUESTED: {
@@ -46,17 +46,17 @@ const statusConfig: Record<
   },
   TERMINATED: {
     label: "Đã chấm dứt",
-    className: "border-slate-300 bg-slate-100 text-slate-700",
+    className: "border-input bg-muted text-secondary-foreground",
     icon: Ban,
   },
   SETTLING: {
     label: "Đang quyết toán tài chính",
-    className: "border-amber-200 bg-amber-50 text-amber-800",
+    className: "border-warning-border bg-warning-muted text-warning",
     icon: Clock3,
   },
   CANCELLED: {
     label: "Đã hủy",
-    className: "border-red-200 bg-red-50 text-red-700",
+    className: "border-danger-border bg-danger-muted text-danger",
     icon: CircleDashed,
   },
 };

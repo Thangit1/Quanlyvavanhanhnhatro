@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { GatewayPaymentPanel } from "./gateway-payment-panel";
+import { VietQrPanel } from "./vietqr-panel";
 import { useRef, useState } from "react";
 import { ArrowLeft, Building2, CheckCircle2, Copy, Upload } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
@@ -50,15 +52,21 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
   if (!d.permissions.canPay)
     return (
       <main className="mx-auto max-w-3xl p-6">
-        <Link href={`/tenant/invoices/${invoiceId}`} className="text-blue-600">
+        <Link href={`/tenant/invoices/${invoiceId}`} className="text-link">
           ← Quay lại hóa đơn
         </Link>
-        <div className="mt-6 rounded-2xl border bg-white p-8 text-center">
-          <CheckCircle2 className="mx-auto size-10 text-emerald-600" />
+        <div className="mt-6 surface-card p-8 text-center">
+          <CheckCircle2 className="mx-auto size-10 text-success" />
           <h1 className="mt-3 text-2xl font-black">
-            Hóa đơn không cần thanh toán
+            {d.remainingAmount > 0
+              ? "Chưa thể thanh toán ở thời điểm này"
+              : "Hóa đơn không còn số dư phải trả"}
           </h1>
-          <p className="mt-2 text-slate-500">Trạng thái hiện tại: {d.status}</p>
+          <p className="mt-2 text-muted-foreground">
+            Trạng thái: {d.status}. Thanh toán từ{" "}
+            {d.paymentAvailableFrom ?? d.issueDate ?? "ngày phát hành"} đến hết{" "}
+            {d.dueDate}; quá hạn vẫn được thanh toán số dư hợp lệ.
+          </p>
         </div>
       </main>
     );
@@ -85,7 +93,7 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
     }
   }
   async function proof() {
-    if (!session || !file) return;
+    if (!session || !file || !at || !reference.trim()) return;
     setMessage("");
     try {
       await a.proof.mutateAsync({
@@ -110,34 +118,34 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
     <main className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
       <Link
         href={`/tenant/invoices/${invoiceId}`}
-        className="inline-flex items-center gap-2 font-semibold text-slate-600"
+        className="inline-flex items-center gap-2 font-semibold text-secondary-foreground"
       >
         <ArrowLeft className="size-4" />
         Chi tiết hóa đơn
       </Link>
       <div>
         <h1 className="text-3xl font-black">Thanh toán {d.invoiceCode}</h1>
-        <p className="mt-1 text-slate-500">
-          Còn phải trả:{" "}
-          <b className="text-blue-700">{money(d.remainingAmount)}</b>
+        <p className="mt-1 text-muted-foreground">
+          Còn phải trả: <b className="text-link">{money(d.remainingAmount)}</b>
         </p>
       </div>
       {message && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-blue-800">
+        <div className="rounded-xl border border-accent-border bg-accent p-3 text-link">
           {message}
         </div>
       )}
       {d.status === "OVERDUE" && (
-        <p className="rounded-xl bg-amber-50 p-4 text-amber-800">
+        <p className="rounded-xl bg-warning-muted p-4 text-warning">
           Hóa đơn của bạn đã quá hạn. Vui lòng thanh toán toàn bộ số tiền còn
           phải trả.
         </p>
       )}
+      <GatewayPaymentPanel invoiceId={invoiceId} />
       {!session ? (
-        <section className="rounded-2xl border bg-white p-6 shadow-sm">
+        <section className="surface-card p-6 ">
           <h2 className="text-xl font-bold">1. Chọn phương thức</h2>
           {!d.paymentMethods.length ? (
-            <p className="mt-4 rounded-xl bg-amber-50 p-4 text-amber-800">
+            <p className="mt-4 rounded-xl bg-warning-muted p-4 text-warning">
               Chủ trọ chưa cấu hình phương thức thanh toán. Vui lòng liên hệ
               quản lý.
             </p>
@@ -151,12 +159,12 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
                       setMethod(x.code);
                       idempotencyKey.current = null;
                     }}
-                    className={`rounded-xl border p-4 text-left ${method === x.code ? "border-blue-600 bg-blue-50" : "border-slate-200"}`}
+                    className={`rounded-xl border p-4 text-left ${method === x.code ? "border-blue-600 bg-accent" : "border-border"}`}
                   >
-                    <Building2 className="size-5 text-blue-600" />
+                    <Building2 className="size-5 text-link" />
                     <b className="mt-2 block">{x.label}</b>
                     {x.code === "BANK_TRANSFER" && (
-                      <span className="text-sm text-slate-500">
+                      <span className="text-sm text-muted-foreground">
                         {x.bankName} · {x.accountNumber}
                       </span>
                     )}
@@ -166,17 +174,17 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
               {method && (
                 <div className="mt-5">
                   <label className="text-sm font-semibold">Số tiền</label>
-                  <p className="mt-1 rounded-xl bg-slate-100 p-3 font-bold">
+                  <p className="mt-1 rounded-xl bg-muted p-3 font-bold">
                     {money(d.remainingAmount)}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Thanh toán toàn bộ số dư, bao gồm phần còn thiếu sau đối
                     soát.
                   </p>
                   <button
                     disabled={d.remainingAmount <= 0 || a.session.isPending}
                     onClick={create}
-                    className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-50"
+                    className="mt-5 rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white disabled:opacity-50"
                   >
                     Tiếp tục
                   </button>
@@ -187,9 +195,9 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
         </section>
       ) : (
         <>
-          <section className="rounded-2xl border bg-white p-6 shadow-sm">
+          <section className="surface-card p-6 ">
             <h2 className="text-xl font-bold">2. Hướng dẫn thanh toán</h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Phiên hết hạn lúc{" "}
               {new Date(session.expiresAt).toLocaleString("vi-VN")}
             </p>
@@ -199,7 +207,7 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
                 : "Đang chờ kết quả thanh toán"}
             </p>
             <button
-              className="mt-2 text-blue-700 underline"
+              className="mt-2 text-link underline"
               onClick={() => {
                 void active.refetch();
                 void q.refetch();
@@ -208,32 +216,35 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
               Kiểm tra lại trạng thái
             </button>
             {session.status === "PROOF_SUBMITTED" ? (
-              <p className="mt-4 rounded-xl bg-amber-50 p-4 text-amber-800">
+              <p className="mt-4 rounded-xl bg-warning-muted p-4 text-warning">
                 Minh chứng đã được gửi. Vui lòng chờ nhân viên kiểm tra khoản
                 thực thu trước khi chuyển thêm tiền.
               </p>
             ) : session.paymentMethod === "CASH" ? (
-              <p className="mt-4 rounded-xl bg-blue-50 p-4 text-blue-800">
+              <p className="mt-4 rounded-xl bg-accent p-4 text-link">
                 Vui lòng thanh toán {money(session.amount)} trực tiếp tại văn
                 phòng quản lý và nhận biên nhận sau khi nhân viên xác nhận.
               </p>
             ) : (
-              <BankInfo
-                method={d.paymentMethods.find(
-                  (x) => x.code === "BANK_TRANSFER",
-                )}
-                content={session.transferContent}
-                amount={session.amount}
-              />
+              <>
+                <BankInfo
+                  method={d.paymentMethods.find(
+                    (x) => x.code === "BANK_TRANSFER",
+                  )}
+                  content={session.transferContent}
+                  amount={session.amount}
+                />
+                <VietQrPanel invoiceId={invoiceId} sessionId={session.id} />
+              </>
             )}
           </section>
           {session.paymentMethod === "BANK_TRANSFER" &&
             session.status === "AWAITING_TRANSFER" && (
-              <section className="rounded-2xl border bg-white p-6 shadow-sm">
+              <section className="surface-card p-6 ">
                 <h2 className="text-xl font-bold">
                   3. Gửi minh chứng chuyển khoản
                 </h2>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   JPG, PNG, WEBP hoặc PDF; tối đa 5 MB. Minh chứng không tự động
                   xác nhận thanh toán.
                 </p>
@@ -250,13 +261,13 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
                     onChange={setBank}
                   />
                   <Field
-                    label="Mã giao dịch"
+                    label="Mã giao dịch ngân hàng (bắt buộc)"
                     value={reference}
                     onChange={setReference}
                   />
                   <Field label="Ghi chú" value={note} onChange={setNote} />
                 </div>
-                <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-blue-300 bg-blue-50 p-4 text-blue-700">
+                <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-blue-300 bg-accent p-4 text-link">
                   <Upload className="size-5" />
                   <span>{file?.name ?? "Chọn tệp minh chứng"}</span>
                   <input
@@ -271,9 +282,11 @@ export function InvoicePaymentPage({ invoiceId }: { invoiceId: number }) {
                   />
                 </label>
                 <button
-                  disabled={!file || !at || a.proof.isPending}
+                  disabled={
+                    !file || !at || !reference.trim() || a.proof.isPending
+                  }
                   onClick={proof}
-                  className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-50"
+                  className="mt-5 rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white disabled:opacity-50"
                 >
                   Gửi minh chứng
                 </button>
@@ -295,7 +308,7 @@ function BankInfo({
 }) {
   if (!method) return null;
   return (
-    <div className="mt-4 space-y-2 rounded-xl bg-slate-50 p-4">
+    <div className="mt-4 space-y-2 rounded-xl bg-muted p-4">
       <p>
         Số tiền: <b>{money(amount)}</b>
       </p>
@@ -313,7 +326,7 @@ function BankInfo({
           Chi nhánh: <b>{method.bankBranch}</b>
         </p>
       )}
-      <div className="flex items-center justify-between rounded-lg bg-white p-3">
+      <div className="flex items-center justify-between rounded-lg bg-card p-3">
         <span>
           Nội dung: <b>{content}</b>
         </span>
@@ -324,12 +337,6 @@ function BankInfo({
           <Copy className="size-4" />
         </button>
       </div>
-      {method.qrEnabled && (
-        <p className="text-sm text-amber-700">
-          QR chưa có nguồn ảnh được cấu hình nên không hiển thị. Vui lòng dùng
-          thông tin tài khoản ở trên.
-        </p>
-      )}
     </div>
   );
 }

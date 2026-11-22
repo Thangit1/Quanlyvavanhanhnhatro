@@ -26,6 +26,7 @@ public class AdminMaintenanceRepository {
 
     private String scope(RoleCode role, String propertyAlias) {
         if (role == RoleCode.OWNER) return propertyAlias + ".owner_id=:userId";
+        if (role == RoleCode.ACCOUNTANT) return "EXISTS(SELECT 1 FROM accountant_property_assignments a JOIN accountant_profiles ap ON ap.user_id=a.accountant_id WHERE a.property_id="+propertyAlias+".id AND a.accountant_id=:userId)";
         if (role == RoleCode.TECHNICIAN) return "(m.assigned_to=:userId OR EXISTS(SELECT 1 FROM maintenance_assignments ma WHERE ma.maintenance_request_id=m.id AND ma.user_id=:userId AND ma.unassigned_at IS NULL))";
         return "EXISTS(SELECT 1 FROM property_managers pm WHERE pm.property_id=" + propertyAlias + ".id AND pm.manager_id=:userId)";
     }
@@ -117,6 +118,9 @@ public class AdminMaintenanceRepository {
                 .param("userId", userId).update(keys,"id");
         return keys.getKey().longValue();
     }
+    public void lockCreator(long actor,long property){long owner=jdbc.sql("SELECT owner_id FROM properties WHERE id=:property").param("property",property).query(Long.class).single();jdbc.sql("SELECT id FROM users WHERE id=:owner FOR UPDATE").param("owner",owner).query(Long.class).single();jdbc.sql("INSERT INTO maintenance_creation_locks(actor_id) VALUES(:id) ON DUPLICATE KEY UPDATE actor_id=actor_id").param("id",actor).update();jdbc.sql("SELECT actor_id FROM maintenance_creation_locks WHERE actor_id=:id FOR UPDATE").param("id",actor).query(Long.class).single();}
+    public Created createdByKey(long actor,String key,String request){var records=jdbc.sql("SELECT id,code,status,admin_creation_fingerprint=SHA2(:request,256) same_request FROM maintenance_requests WHERE created_by=:actor AND admin_creation_key=:key FOR UPDATE").param("actor",actor).param("key",key).param("request",request).query().listOfRows();if(records.isEmpty())return null;var row=records.getFirst();if(!Boolean.TRUE.equals(row.get("same_request"))&&(!(row.get("same_request") instanceof Number n)||n.intValue()!=1))throw new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.CONFLICT,"MAINTENANCE_KEY_REUSED","Khóa chống trùng đã dùng cho nội dung khác.");return new Created(((Number)row.get("id")).longValue(),row.get("code").toString(),row.get("status").toString());}
+    public void creationKey(long id,String key,String request){jdbc.sql("UPDATE maintenance_requests SET admin_creation_key=:key,admin_creation_fingerprint=SHA2(:request,256) WHERE id=:id").param("id",id).param("key",key).param("request",request).update();}
 
     public int updateTriage(long id, String category, String priority, LocalDateTime sla,
                             boolean risk, long version) {
@@ -156,7 +160,7 @@ public class AdminMaintenanceRepository {
     public int workLog(long id, String action, int progress, String diagnosis, String work,
                        String note, LocalDateTime started, LocalDateTime ended, long actor,
                        long version, String nextStatus) {
-        int changed = jdbc.sql("UPDATE maintenance_requests SET progress_percent=:progress,diagnosis=COALESCE(:diagnosis,diagnosis),status=:status,version=version+1 WHERE id=:id AND version=:version AND status NOT IN ('RESOLVED','REJECTED','CANCELLED')")
+        int changed = jdbc.sql("UPDATE maintenance_requests SET progress_percent=:progress,diagnosis=COALESCE(:diagnosis,diagnosis),status=:status,version=version+1 WHERE id=:id AND version=:version AND status NOT IN ('RESOLVED','REJECTED','CANCELLED','INSPECTION_PENDING','COMPLETED')")
                 .param("progress", progress).param("diagnosis", blank(diagnosis)).param("status", nextStatus)
                 .param("id", id).param("version", version).update();
         if (changed > 0) jdbc.sql("INSERT INTO maintenance_work_logs(maintenance_request_id,action_type,progress_percent,diagnosis,work_performed,note,started_at,ended_at,created_by) VALUES(:id,:action,:progress,:diagnosis,:work,:note,:started,:ended,:actor)")
@@ -168,14 +172,8 @@ public class AdminMaintenanceRepository {
 
     public int addMaterial(long id, Long materialId, String name, BigDecimal quantity,
                            String unit, BigDecimal price, long actor, long version) {
-        int changed = jdbc.sql("UPDATE maintenance_requests SET actual_cost=actual_cost+:amount,version=version+1 WHERE id=:id AND version=:version AND status NOT IN ('RESOLVED','CANCELLED')")
-                .param("amount", quantity.multiply(price)).param("id", id).param("version", version).update();
-        if (changed > 0) {
-            jdbc.sql("INSERT INTO maintenance_material_usages(maintenance_request_id,material_id,material_name,quantity,unit,unit_price,amount,created_by) VALUES(:id,:material,:name,:quantity,:unit,:price,:amount,:actor)")
-                    .param("id", id).param("material", materialId).param("name", name).param("quantity", quantity)
-                    .param("unit", unit).param("price", price).param("amount", quantity.multiply(price)).param("actor", actor).update();
-            if (materialId != null) jdbc.sql("UPDATE maintenance_materials SET stock_quantity=GREATEST(0,stock_quantity-:quantity) WHERE id=:id").param("quantity", quantity).param("id", materialId).update();
-        }
+        int changed=jdbc.sql("UPDATE maintenance_requests SET version=version+1 WHERE id=:id AND version=:version AND status NOT IN ('RESOLVED','REJECTED','CANCELLED','INSPECTION_PENDING','COMPLETED')").param("id",id).param("version",version).update();
+        if(changed>0)new com.thangit.boardinghouse.service.MaintenanceInventory(jdbc).use(id,materialId,name,quantity,unit,price,actor,null);
         return changed;
     }
 
@@ -183,7 +181,7 @@ public class AdminMaintenanceRepository {
                        BigDecimal other, String responsibility, BigDecimal tenantShare,
                        String note, long actor, long version) {
         BigDecimal total = labor.add(material).add(external).add(other);
-        int changed = jdbc.sql("UPDATE maintenance_requests SET actual_cost=:total,cost_responsibility=:responsibility,status='WAITING_APPROVAL',version=version+1 WHERE id=:id AND version=:version AND status NOT IN ('RESOLVED','CANCELLED')")
+        int changed = jdbc.sql("UPDATE maintenance_requests SET estimated_cost=:total,cost_responsibility=:responsibility,status='WAITING_APPROVAL',version=version+1 WHERE id=:id AND version=:version AND status NOT IN ('RESOLVED','CANCELLED')")
                 .param("total", total).param("responsibility", responsibility).param("id", id).param("version", version).update();
         if (changed > 0) jdbc.sql("INSERT INTO maintenance_costs(maintenance_request_id,labor_cost,material_cost,external_service_cost,other_cost,total_cost,responsibility,tenant_share_amount,proposed_by,note) VALUES(:id,:labor,:material,:external,:other,:total,:responsibility,:tenant,:actor,:note)")
                 .param("id", id).param("labor", labor).param("material", material).param("external", external).param("other", other).param("total", total).param("responsibility", responsibility).param("tenant", tenantShare).param("actor", actor).param("note", blank(note)).update();
@@ -191,7 +189,7 @@ public class AdminMaintenanceRepository {
     }
 
     public int complete(long id, String diagnosis, String resolution, long version) {
-        return jdbc.sql("UPDATE maintenance_requests SET diagnosis=:diagnosis,resolution=:resolution,progress_percent=100,status='INSPECTION_PENDING',completed_at=NOW(),version=version+1 WHERE id=:id AND version=:version AND status IN ('IN_PROGRESS','WAITING_PARTS','WAITING_TENANT','WAITING_APPROVAL','ON_HOLD')")
+        return jdbc.sql("UPDATE maintenance_requests SET diagnosis=:diagnosis,resolution=:resolution,progress_percent=100,status='INSPECTION_PENDING',completed_at=NOW(),version=version+1 WHERE id=:id AND version=:version AND status IN ('IN_PROGRESS','WAITING_PARTS','WAITING_TENANT','WAITING_APPROVAL','ON_HOLD') AND NOT EXISTS(SELECT 1 FROM maintenance_costs pending WHERE pending.maintenance_request_id=:id AND pending.approval_status='PENDING')")
                 .param("diagnosis", diagnosis).param("resolution", resolution).param("id", id).param("version", version).update();
     }
 
@@ -202,6 +200,10 @@ public class AdminMaintenanceRepository {
                 .param("status", status).param("id", id).param("version", version).update();
         if (changed > 0) jdbc.sql("INSERT INTO maintenance_inspections(maintenance_request_id,inspector_id,result,rating,comment,asset_working,cost_confirmed) VALUES(:id,:actor,:result,:rating,:comment,:working,:cost)")
                 .param("id", id).param("actor", actor).param("result", result).param("rating", rating).param("comment", blank(comment)).param("working", working).param("cost", costConfirmed).update();
+        if(changed>0&&"PASSED".equals(result)) {
+            jdbc.sql("INSERT INTO room_asset_history(asset_id,action,previous_condition,new_condition,previous_status,new_status,reason,performed_by) SELECT a.id,'MAINTENANCE_INSPECTED',a.condition_status,IF(:working,'GOOD','DAMAGED'),a.lifecycle_status,IF(:working,'IN_USE','NEEDS_CHECK'),CONCAT('Nghiệm thu ',m.code),:actor FROM room_assets a JOIN maintenance_requests m ON m.asset_id=a.id WHERE m.id=:id").param("working",working).param("actor",actor).param("id",id).update();
+            jdbc.sql("UPDATE room_assets a JOIN maintenance_requests m ON m.asset_id=a.id SET a.condition_status=IF(:working,'GOOD','DAMAGED'),a.lifecycle_status=IF(:working,'IN_USE','NEEDS_CHECK'),a.last_maintained_at=CURDATE(),a.version=a.version+1 WHERE m.id=:id").param("working",working).param("id",id).update();
+        }
         return changed;
     }
 
@@ -219,6 +221,12 @@ public class AdminMaintenanceRepository {
     public List<Option> assets(long userId, RoleCode role) { return options("SELECT a.id,a.name,a.room_id parent_id,a.condition_status detail FROM room_assets a JOIN rooms r ON r.id=a.room_id JOIN properties p ON p.id=r.property_id WHERE " + scope(role, "p").replace("m.assigned_to=:userId", "FALSE") + " ORDER BY a.name", userId); }
     public List<Option> technicians() { return jdbc.sql("SELECT DISTINCT u.id,u.full_name name,NULL parent_id,u.phone detail FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles ro ON ro.id=ur.role_id WHERE ro.code='TECHNICIAN' AND u.status='ACTIVE' ORDER BY u.full_name").query(this::option).list(); }
     public boolean isActiveTechnician(long id) { return jdbc.sql("SELECT COUNT(*) FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE u.id=:id AND u.status='ACTIVE' AND r.code='TECHNICIAN'").param("id",id).query(Long.class).single()>0; }
+    public boolean technicianAt(long id,long property) { return jdbc.sql("SELECT COUNT(*) FROM users u JOIN technician_property_assignments t ON t.technician_id=u.id JOIN user_roles ur ON ur.user_id=u.id JOIN roles ro ON ro.id=ur.role_id WHERE u.id=:id AND u.status='ACTIVE' AND ro.code='TECHNICIAN' AND t.property_id=:property AND t.revoked_at IS NULL").param("id",id).param("property",property).query(Long.class).single()>0; }
+    public List<Option> technicians(long user,RoleCode role) { return options("SELECT DISTINCT u.id,u.full_name name,NULL parent_id,NULL detail FROM users u JOIN technician_property_assignments t ON t.technician_id=u.id JOIN properties p ON p.id=t.property_id JOIN user_roles ur ON ur.user_id=u.id JOIN roles ro ON ro.id=ur.role_id WHERE ro.code='TECHNICIAN' AND u.status='ACTIVE' AND t.revoked_at IS NULL AND "+scope(role,"p")+" ORDER BY u.full_name",user); }
+    public boolean finance(long user,RoleCode role,long property,boolean write) { return role==RoleCode.OWNER || role==RoleCode.ACCOUNTANT&&!write || role==RoleCode.MANAGER&&jdbc.sql("SELECT COUNT(*) FROM manager_property_capabilities WHERE manager_id=:user AND property_id=:property AND capability=:capability").param("user",user).param("property",property).param("capability",write?"FINANCE_WRITE":"FINANCE_READ").query(Long.class).single()>0; }
+    public void validateLocation(long property,Long room,Long asset,Long reporter) {
+        if(room!=null&&jdbc.sql("SELECT COUNT(*) FROM rooms WHERE id=:room AND property_id=:property").param("room",room).param("property",property).query(Long.class).single()!=1 || asset!=null&&jdbc.sql("SELECT COUNT(*) FROM room_assets WHERE id=:asset AND room_id=:room AND lifecycle_status NOT IN ('RETIRED','DISPOSED')").param("asset",asset).param("room",room).query(Long.class).single()!=1 || reporter!=null&&jdbc.sql("SELECT COUNT(*) FROM tenant_residences tr JOIN tenant_profiles tp ON tp.id=tr.tenant_profile_id WHERE tp.user_id=:reporter AND tr.property_id=:property AND tr.room_id=:room AND tr.status='ACTIVE'").param("reporter",reporter).param("property",property).param("room",room).query(Long.class).single()==0) throw new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.BAD_REQUEST,"MAINTENANCE_LOCATION_INVALID","Phòng, tài sản hoặc người thuê không thuộc địa điểm đã chọn.");
+    }
     private List<Option> options(String sql, long userId) { return jdbc.sql(sql).param("userId", userId).query(this::option).list(); }
 
     public List<Schedule> schedules(long id) { return jdbc.sql("SELECT * FROM maintenance_schedules WHERE maintenance_request_id=:id ORDER BY scheduled_start DESC").param("id", id).query((r,n)->new Schedule(r.getLong("id"),dt(r,"scheduled_start"),dt(r,"scheduled_end"),r.getInt("estimated_duration_minutes"),r.getBoolean("tenant_presence_required"),r.getString("status"))).list(); }
@@ -240,7 +248,7 @@ public class AdminMaintenanceRepository {
 
     private RequestRow row(ResultSet r, int n) throws SQLException {
         LocalDateTime sla=dt(r,"sla_due_at"); String status=r.getString("status");
-        return new RequestRow(r.getLong("id"),r.getString("code"),r.getString("title"),r.getString("issue_type"),r.getString("priority"),status,r.getBoolean("safety_risk"),new Option(r.getLong("property_id"),r.getString("property_name"),null,null),r.getObject("room_id")==null?null:new Option(r.getLong("room_id"),r.getString("room_code"),r.getLong("property_id"),null),r.getObject("reporter_id")==null&&r.getObject("tenant_id")==null?null:new Option(r.getLong("reporter_id")>0?r.getLong("reporter_id"):r.getLong("tenant_id"),r.getString("reporter_name"),null,r.getString("reporter_phone")),r.getObject("assigned_to")==null?null:new Option(r.getLong("assigned_to"),r.getString("assignee_name"),null,null),dt(r,"created_at"),dt(r,"scheduled_start"),sla,Math.max(0,java.time.Duration.between(dt(r,"created_at"),LocalDateTime.now()).toHours()),sla!=null&&sla.isBefore(LocalDateTime.now())&&!List.of("RESOLVED","CANCELLED").contains(status),money(r,"estimated_cost"),money(r,"actual_cost"),r.getInt("progress_percent"),r.getLong("version"));
+        return new RequestRow(r.getLong("id"),r.getString("code"),r.getString("title"),r.getString("issue_type"),r.getString("priority"),status,r.getBoolean("safety_risk"),new Option(r.getLong("property_id"),r.getString("property_name"),null,null),r.getObject("room_id")==null?null:new Option(r.getLong("room_id"),r.getString("room_code"),r.getLong("property_id"),null),r.getObject("reporter_id")==null&&r.getObject("tenant_id")==null?null:new Option(r.getLong("reporter_id")>0?r.getLong("reporter_id"):r.getLong("tenant_id"),r.getString("reporter_name"),null,r.getString("reporter_phone")),r.getObject("assigned_to")==null?null:new Option(r.getLong("assigned_to"),r.getString("assignee_name"),null,null),dt(r,"created_at"),dt(r,"scheduled_start"),sla,Math.max(0,java.time.Duration.between(dt(r,"created_at"),com.thangit.boardinghouse.service.BusinessTime.now()).toHours()),sla!=null&&sla.isBefore(com.thangit.boardinghouse.service.BusinessTime.now())&&!List.of("RESOLVED","CANCELLED").contains(status),money(r,"estimated_cost"),money(r,"actual_cost"),r.getInt("progress_percent"),r.getLong("version"));
     }
     private Option option(ResultSet r, int n) throws SQLException {
         Number parentId = (Number) r.getObject("parent_id");

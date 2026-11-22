@@ -32,7 +32,7 @@ export function NotificationDetailPage() {
   if (detail.isLoading)
     return (
       <main className="mx-auto max-w-4xl p-6">
-        <div className="rounded-2xl border bg-white p-10 text-center text-slate-500">
+        <div className="surface-card p-10 text-center text-muted-foreground">
           Đang tải thông báo...
         </div>
       </main>
@@ -49,7 +49,7 @@ export function NotificationDetailPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/tenant/notifications"
-          className="inline-flex items-center gap-2 font-bold text-blue-700"
+          className="inline-flex items-center gap-2 font-bold text-link"
         >
           <ArrowLeft className="size-4" />
           Trở lại thông báo
@@ -59,7 +59,7 @@ export function NotificationDetailPage() {
             <button
               onClick={() => actions.restore.mutate(id)}
               disabled={actions.restore.isPending}
-              className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold"
+              className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2 font-semibold"
             >
               <RotateCcw className="size-4" />
               Khôi phục
@@ -72,7 +72,7 @@ export function NotificationDetailPage() {
                 })
               }
               disabled={actions.archive.isPending}
-              className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold"
+              className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2 font-semibold"
             >
               <Archive className="size-4" />
               Lưu trữ
@@ -81,15 +81,15 @@ export function NotificationDetailPage() {
           {item.permissions.canMarkUnread && (
             <button
               onClick={() => actions.unread.mutate(id)}
-              className="rounded-xl border bg-white px-4 py-2 font-semibold"
+              className="rounded-xl border bg-card px-4 py-2 font-semibold"
             >
               Đánh dấu chưa đọc
             </button>
           )}
         </div>
       </div>
-      <article className="overflow-hidden rounded-3xl border bg-white shadow-sm">
-        <header className="border-b bg-slate-50 p-5 sm:p-7">
+      <article className="overflow-hidden rounded-3xl border bg-card shadow-card">
+        <header className="border-b bg-muted p-5 sm:p-7">
           <div className="flex items-start gap-4">
             <NotificationIcon
               category={item.category}
@@ -100,20 +100,20 @@ export function NotificationDetailPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <SeverityBadge severity={item.severity} />
                 {item.requiresAction && (
-                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">
+                  <span className="rounded-full bg-warning-muted px-2.5 py-1 text-xs font-bold text-warning">
                     Cần xử lý
                   </span>
                 )}
                 {item.acknowledgedAt && (
-                  <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
+                  <span className="rounded-full bg-success-muted px-2.5 py-1 text-xs font-bold text-success">
                     Đã xác nhận
                   </span>
                 )}
               </div>
-              <h1 className="mt-3 text-2xl font-black text-slate-950 sm:text-3xl">
+              <h1 className="mt-3 text-2xl font-black text-foreground sm:text-3xl">
                 {item.title}
               </h1>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {categoryLabel(item.category)} ·{" "}
                 <time dateTime={item.createdAt}>
                   {fullNotificationTime(item.createdAt)}
@@ -124,11 +124,11 @@ export function NotificationDetailPage() {
           </div>
         </header>
         <div className="p-5 sm:p-7">
-          <div className="whitespace-pre-wrap text-[15px] leading-7 text-slate-700">
+          <div className="whitespace-pre-wrap text-[15px] leading-7 text-secondary-foreground">
             {item.content}
           </div>
           {item.place && (item.place.propertyName || item.place.roomCode) && (
-            <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm">
+            <div className="mt-6 rounded-xl bg-muted p-4 text-sm">
               <b>Địa điểm:</b>{" "}
               {[
                 item.place.propertyName,
@@ -145,7 +145,7 @@ export function NotificationDetailPage() {
                 <Link
                   key={`${action.type}-${index}`}
                   href={href}
-                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 font-bold ${action.primary ? "bg-blue-600 text-white" : "border bg-white text-blue-700"}`}
+                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 font-bold ${action.primary ? "bg-primary hover:bg-primary-hover text-white" : "border bg-card text-link"}`}
                 >
                   {action.label}
                   <ExternalLink className="size-4" />
@@ -158,7 +158,7 @@ export function NotificationDetailPage() {
                 <button
                   onClick={() => actions.acknowledge.mutate(id)}
                   disabled={actions.acknowledge.isPending}
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white"
                 >
                   <CheckCheck className="size-4" />
                   Tôi đã hiểu và xác nhận
@@ -169,7 +169,7 @@ export function NotificationDetailPage() {
             !item.actions.some((action) =>
               safeNotificationRoute(action.type, item.reference),
             ) && (
-              <p className="mt-4 text-sm text-amber-700">
+              <p className="mt-4 text-sm text-warning">
                 Liên kết xử lý này chưa khả dụng. Dữ liệu thông báo vẫn được giữ
                 nguyên.
               </p>

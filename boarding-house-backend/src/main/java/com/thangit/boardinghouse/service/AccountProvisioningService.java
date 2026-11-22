@@ -140,11 +140,28 @@ public class AccountProvisioningService {
         boolean must=Boolean.TRUE.equals(db.sql("SELECT must_change_password FROM users WHERE id=:id").param("id",user).query(Boolean.class).single());
         return new Result(user,request.roles(),email==null?phone:email,initial,existing,must,existing?0:48,profileId);
     }
+    /** Contract submission may provision a new account, but never guesses an existing identity or resets it. */
+    @Transactional
+    public long ensureContractTenant(AuthenticatedUser actor,long profileId,long property){
+        administrator(actor);var person=profile(actor,profileId);propertyOwner(actor,property);
+        if(person.get("user_id")!=null){
+            long user=num(person,"user_id");
+            if(db.sql("SELECT COUNT(*) FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE u.id=:id AND u.status='ACTIVE' AND (u.locked_until IS NULL OR u.locked_until<=UTC_TIMESTAMP(6)) AND r.code='TENANT'").param("id",user).query(Long.class).single()!=1)
+                throw conflict("Tài khoản người thuê bị khóa, ngừng hoạt động hoặc thiếu vai trò TENANT. Không thể gửi hợp đồng.");
+            return user;
+        }
+        String email=clean((String)person.get("email"));
+        if(email==null||!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))throw conflict("Bổ sung email hợp lệ cho người thuê để gửi liên kết thiết lập mật khẩu. Bản nháp đã được giữ.");
+        var result=create(actor,new Create((String)person.get("full_name"),(String)person.get("phone"),email,Set.of("TENANT"),"ACTIVE",List.of(),null,property,profileId,null,null,Map.of(),false,true,"Cấp tài khoản tự động khi gửi hợp đồng"));
+        db.sql("INSERT INTO account_password_setups(user_id) VALUES(:id)").param("id",result.id()).update();
+        return result.id();
+    }
     @Transactional
     public Result reset(AuthenticatedUser actor,long user,Reason request){
         actorLock(actor);var current=controlled(actor,user);String initial=randomPassword();
         db.sql("UPDATE users SET password_hash=:hash,must_change_password=TRUE,initial_password_expires_at=DATE_ADD(UTC_TIMESTAMP(6),INTERVAL 48 HOUR),password_changed_at=UTC_TIMESTAMP(6),failed_login_attempts=0,locked_until=NULL WHERE id=:user").param("hash",passwords.encode(initial)).param("user",user).update();
         audit.record(actor.id(),"ACCOUNT_PASSWORD_RESET","USER",user,"SUCCESS",request.reason());
+        db.sql("UPDATE account_password_setups SET token_hash=NULL,issued_at=NULL,expires_at=NULL,consumed_at=NULL WHERE user_id=:id").param("id",user).update();
         Set<String> roles=new LinkedHashSet<>(db.sql("SELECT r.code FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=:user").param("user",user).query(String.class).list());
         return new Result(user,roles,(String)(current.get("email")==null?current.get("phone"):current.get("email")),initial,false,true,48,null);
     }

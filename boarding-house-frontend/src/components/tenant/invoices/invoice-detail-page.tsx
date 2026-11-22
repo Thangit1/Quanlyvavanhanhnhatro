@@ -64,7 +64,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
     <main className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
       <Link
         href="/tenant/invoices"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-secondary-foreground"
       >
         <ArrowLeft className="size-4" />
         Danh sách hóa đơn
@@ -72,26 +72,26 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-black text-slate-950">
+            <h1 className="text-3xl font-black text-foreground">
               {d.invoiceCode}
             </h1>
             <InvoiceBadge status={d.status} />
           </div>
-          <p className="mt-2 text-slate-500">
+          <p className="mt-2 text-muted-foreground">
             Kỳ {d.billingPeriod} · {d.property.name} · Phòng {d.room.name}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={document}
-            className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold"
+            className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2 font-semibold"
           >
             <Download className="size-4" />
             Bản in
           </button>
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold"
+            className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2 font-semibold"
           >
             <Printer className="size-4" />
             In trang
@@ -99,7 +99,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
           {d.permissions.canRequestReview && (
             <button
               onClick={() => setReview(true)}
-              className="inline-flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 font-semibold text-amber-800"
+              className="inline-flex items-center gap-2 rounded-xl border border-amber-300 bg-warning-muted px-4 py-2 font-semibold text-warning"
             >
               <MessageSquareWarning className="size-4" />
               Yêu cầu rà soát
@@ -108,7 +108,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
           {d.permissions.canPay && (
             <Link
               href={`/tenant/invoices/${invoiceId}/payment`}
-              className="rounded-xl bg-blue-600 px-5 py-2 font-bold text-white"
+              className="rounded-xl bg-primary hover:bg-primary-hover px-5 py-2 font-bold text-white"
             >
               Thanh toán
             </Link>
@@ -116,16 +116,16 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
         </div>
       </div>
       {message && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-blue-800">
+        <div className="rounded-xl border border-accent-border bg-accent p-3 text-link">
           {message}
         </div>
       )}
       <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
-        <section className="rounded-2xl border bg-white p-5 shadow-sm">
+        <section className="surface-card p-5 sm:p-6 ">
           <h2 className="text-lg font-bold">Chi tiết hạng mục</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-500">
+              <thead className="bg-muted text-left text-muted-foreground">
                 <tr>
                   <th className="p-3">Hạng mục</th>
                   <th className="p-3">Số lượng</th>
@@ -138,7 +138,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
                   <tr key={x.id} className="border-t">
                     <td className="p-3">
                       <b>{x.name}</b>
-                      <p className="text-xs text-slate-500">{x.description}</p>
+                      <p className="text-xs text-muted-foreground">{x.description}</p>
                     </td>
                     <td className="p-3">
                       {x.quantity} {x.unit}
@@ -153,13 +153,16 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
             </table>
           </div>
         </section>
-        <aside className="rounded-2xl border bg-white p-5 shadow-sm">
+        <aside className="surface-card p-5 sm:p-6 ">
           <h2 className="text-lg font-bold">Tổng thanh toán</h2>
           <Rows
             rows={[
               ["Tạm tính", d.subtotalAmount],
               ["Giảm trừ", -d.discountAmount],
-              ["Nợ cũ tham khảo (không cộng vào hóa đơn)", d.previousDebtAmount],
+              [
+                "Nợ cũ tham khảo (không cộng vào hóa đơn)",
+                d.previousDebtAmount,
+              ],
               ["Phí trễ hạn", d.lateFeeAmount],
             ]}
           />
@@ -167,26 +170,26 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
             <span>Tổng cộng</span>
             <span>{money(d.totalAmount)}</span>
           </div>
-          <div className="mt-2 flex justify-between text-emerald-700">
+          <div className="mt-2 flex justify-between text-success">
             <span>Đã thanh toán</span>
             <b>{money(d.paidAmount)}</b>
           </div>
-          <div className="mt-2 flex justify-between rounded-xl bg-blue-50 p-3 text-blue-800">
+          <div className="mt-2 flex justify-between rounded-xl bg-accent p-3 text-link">
             <span>Còn lại</span>
             <b>{money(d.remainingAmount)}</b>
           </div>
-          <p className="mt-4 text-sm text-slate-500">
-            Hạn thanh toán:{" "}
+          <p className="mt-4 text-sm text-muted-foreground">
+            Thanh toán từ {date(d.paymentAvailableFrom ?? d.issueDate)} đến hết:{" "}
             <b
               className={
-                d.status === "OVERDUE" ? "text-red-600" : "text-slate-800"
+                d.status === "OVERDUE" ? "text-danger" : "text-foreground"
               }
             >
               {date(d.dueDate)}
             </b>
           </p>
           {d.permissions.canPay && !d.paymentMethods.length && (
-            <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+            <p className="mt-3 rounded-lg bg-warning-muted p-3 text-sm text-warning">
               Chủ trọ chưa cấu hình phương thức thanh toán. Vui lòng liên hệ
               quản lý.
             </p>
@@ -197,7 +200,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
         <Section title="Chỉ số điện nước">
           <div className="grid gap-3 sm:grid-cols-2">
             {d.utilityReadings.map((x) => (
-              <div key={x.type} className="rounded-xl bg-slate-50 p-4">
+              <div key={x.type} className="rounded-xl bg-muted p-4">
                 <b>{label(x.type)}</b>
                 <p className="mt-2 text-sm">
                   Chỉ số: {x.previousValue} → {x.currentValue}
@@ -205,7 +208,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
                 <p>
                   Tiêu thụ: <b>{x.consumption}</b>
                 </p>
-                <p className="text-blue-700">{money(x.amount)}</p>
+                <p className="text-link">{money(x.amount)}</p>
               </div>
             ))}
           </div>
@@ -218,13 +221,23 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
               <div key={x.id} className="flex justify-between border-b py-3">
                 <div>
                   <b>{x.receiptCode}</b>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {label(x.paymentMethod)} · {date(x.paidAt)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <b className={x.status === "CONFIRMED" ? "text-emerald-700" : "text-slate-500"}>{money(x.amount)}</b>
-                  <div className="mt-1"><InvoiceBadge status={x.status} /></div>
+                  <b
+                    className={
+                      x.status === "CONFIRMED"
+                        ? "text-success"
+                        : "text-muted-foreground"
+                    }
+                  >
+                    {money(x.amount)}
+                  </b>
+                  <div className="mt-1">
+                    <InvoiceBadge status={x.status} />
+                  </div>
                 </div>
               </div>
             ))
@@ -238,7 +251,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
               <div key={x.id} className="flex justify-between border-b py-3">
                 <div>
                   <b>{x.originalName}</b>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {date(x.transferredAt)} ·{" "}
                     {x.transactionReference || "Không có mã tham chiếu"}
                   </p>
@@ -261,9 +274,9 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
                 </b>
                 <InvoiceBadge status={x.status} />
               </div>
-              <p className="mt-1 text-sm text-slate-600">{x.description}</p>
+              <p className="mt-1 text-sm text-secondary-foreground">{x.description}</p>
               {x.managerResponse && (
-                <p className="mt-2 rounded-lg bg-blue-50 p-2 text-sm">
+                <p className="mt-2 rounded-lg bg-accent p-2 text-sm">
                   Phản hồi: {x.managerResponse}
                 </p>
               )}
@@ -275,7 +288,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
       </Section>
       {review && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+          <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl">
             <h2 className="text-xl font-black">Yêu cầu rà soát hóa đơn</h2>
             <label className="mt-4 block text-sm font-semibold">
               Hạng mục (không bắt buộc)
@@ -324,7 +337,7 @@ export function InvoiceDetailPage({ invoiceId }: { invoiceId: number }) {
               <button
                 disabled={!description.trim() || actions.review.isPending}
                 onClick={submitReview}
-                className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-50"
+                className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-semibold text-white disabled:opacity-50"
               >
                 Gửi yêu cầu
               </button>
@@ -343,7 +356,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border bg-white p-5 shadow-sm">
+    <section className="surface-card p-5 sm:p-6 ">
       <h2 className="mb-3 text-lg font-bold">{title}</h2>
       {children}
     </section>
@@ -356,7 +369,7 @@ function Rows({ rows }: { rows: Array<[string, number]> }) {
         .filter(([, v]) => v !== 0)
         .map(([k, v]) => (
           <div key={k} className="flex justify-between">
-            <span className="text-slate-500">{k}</span>
+            <span className="text-muted-foreground">{k}</span>
             <span>{money(v)}</span>
           </div>
         ))}

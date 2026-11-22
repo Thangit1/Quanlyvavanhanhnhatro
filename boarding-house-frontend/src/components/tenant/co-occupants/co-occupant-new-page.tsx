@@ -62,7 +62,7 @@ const empty: CreateCoOccupant = {
 type Selected = { type: string; file: File; preview?: string };
 const today = new Date().toISOString().slice(0, 10);
 const input =
-  "mt-1 block w-full rounded-xl border border-slate-300 bg-white px-3 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+  "mt-1 block w-full rounded-xl border border-input bg-card px-3 py-3 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring focus:ring-4 focus:ring-ring";
 function Field({
   labelText,
   children,
@@ -73,9 +73,9 @@ function Field({
   required?: boolean;
 }) {
   return (
-    <label className="block text-sm font-semibold text-slate-700">
+    <label className="block text-sm font-semibold text-secondary-foreground">
       {labelText}
-      {required && <span className="text-red-600"> *</span>}
+      {required && <span className="text-danger"> *</span>}
       {children}
     </label>
   );
@@ -139,14 +139,14 @@ export function CoOccupantNewPage() {
   if (!overview.data.permissions.canCreateOccupantRequest)
     return (
       <main className="mx-auto max-w-2xl p-6">
-        <Link href="/tenant/co-occupants" className="text-blue-700">
+        <Link href="/tenant/co-occupants" className="text-link">
           ← Quay lại
         </Link>
-        <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center">
+        <div className="mt-5 rounded-2xl border border-warning-border bg-warning-muted p-8 text-center">
           <h1 className="text-2xl font-black">
             Không thể đăng ký người ở cùng
           </h1>
-          <p className="mt-2 text-amber-800">
+          <p className="mt-2 text-warning">
             {overview.data.permissions.createDisabledReason}
           </p>
         </div>
@@ -183,23 +183,23 @@ export function CoOccupantNewPage() {
     <main className="mx-auto max-w-6xl p-4 pb-28 sm:p-6 lg:pb-8">
       <Link
         href="/tenant/co-occupants"
-        className="inline-flex items-center gap-2 font-semibold text-slate-600"
+        className="inline-flex items-center gap-2 font-semibold text-secondary-foreground"
       >
         <ArrowLeft className="size-4" />
         Người ở cùng
       </Link>
       <div className="mt-4">
         <h1 className="text-3xl font-black">Đăng ký người ở cùng</h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-muted-foreground">
           Yêu cầu chỉ có hiệu lực sau khi được quản lý phê duyệt.
         </p>
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className="hidden rounded-2xl border bg-white p-4 lg:block">
+        <aside className="hidden surface-card p-4 lg:block">
           {steps.map((x, i) => (
             <div
               key={x}
-              className={`flex gap-3 border-l-2 px-3 py-3 ${i === step ? "border-blue-600 bg-blue-50 font-bold text-blue-700" : i < step ? "border-emerald-500 text-emerald-700" : "border-slate-200 text-slate-500"}`}
+              className={`flex gap-3 border-l-2 px-3 py-3 ${i === step ? "border-blue-600 bg-accent font-bold text-link" : i < step ? "border-emerald-500 text-success" : "border-border text-muted-foreground"}`}
             >
               <span className="grid size-6 shrink-0 place-items-center rounded-full border text-xs">
                 {i < step ? <Check className="size-3" /> : i + 1}
@@ -208,15 +208,15 @@ export function CoOccupantNewPage() {
             </div>
           ))}
         </aside>
-        <section className="rounded-2xl border bg-white p-5 shadow-sm sm:p-7">
+        <section className="surface-card p-5 sm:p-7">
           <div className="mb-6 lg:hidden">
             <div className="flex justify-between text-sm font-bold">
               <span>Bước {step + 1}/6</span>
               <span>{steps[step]}</span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full bg-blue-600"
+                className="h-full bg-primary hover:bg-primary-hover"
                 style={{ width: `${((step + 1) / 6) * 100}%` }}
               />
             </div>
@@ -225,7 +225,7 @@ export function CoOccupantNewPage() {
           {error && (
             <p
               role="alert"
-              className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700"
+              className="mt-4 rounded-xl bg-danger-muted p-3 text-sm text-danger"
             >
               {error}
             </p>
@@ -417,12 +417,12 @@ export function CoOccupantNewPage() {
             )}
             {step === 3 && (
               <div className="space-y-5">
-                <div className="rounded-2xl bg-slate-50 p-4 text-sm">
+                <div className="rounded-2xl bg-muted p-4 text-sm">
                   <b>
                     {overview.data.room.propertyName} · Phòng{" "}
                     {overview.data.room.roomCode}
                   </b>
-                  <p className="mt-1 text-slate-500">
+                  <p className="mt-1 text-muted-foreground">
                     {overview.data.room.currentOccupantCount}/
                     {overview.data.room.maximumOccupants} người · Hợp đồng{" "}
                     {overview.data.contract.code}
@@ -480,7 +480,7 @@ export function CoOccupantNewPage() {
                     <span>
                       <b>Đề nghị tạo tài khoản SmartHome AI</b>
                       <br />
-                      <span className="text-slate-500">
+                      <span className="text-muted-foreground">
                         Việc chọn không đồng nghĩa tài khoản được tạo tự động.
                       </span>
                     </span>
@@ -498,11 +498,11 @@ export function CoOccupantNewPage() {
                     className={input}
                   />
                 </Field>
-                <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+                <div className="rounded-2xl border border-accent-border bg-accent p-4 text-sm text-link">
                   Thông tin được sử dụng để hỗ trợ quản lý hồ sơ cư trú. Trạng
                   thái khai báo chỉ được cập nhật sau khi quản lý xác nhận.
                 </div>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Các giấy tờ tạm trú bổ sung có thể chọn ở bước giấy tờ hoặc
                   tải thêm sau khi gửi yêu cầu.
                 </p>
@@ -510,7 +510,7 @@ export function CoOccupantNewPage() {
             )}
             {step === 5 && (
               <div className="space-y-5">
-                <div className="grid gap-4 rounded-2xl bg-slate-50 p-5 text-sm sm:grid-cols-2">
+                <div className="grid gap-4 rounded-2xl bg-muted p-5 text-sm sm:grid-cols-2">
                   <Review name="Họ tên" value={form.fullName} />
                   <Review
                     name="Ngày sinh"
@@ -561,7 +561,7 @@ export function CoOccupantNewPage() {
             {step < 5 ? (
               <button
                 onClick={next}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white"
               >
                 Tiếp tục
                 <ArrowRight className="size-4" />
@@ -570,7 +570,7 @@ export function CoOccupantNewPage() {
               <button
                 disabled={create.isPending || !accepted}
                 onClick={() => void submit()}
-                className="rounded-xl bg-blue-600 px-6 py-3 font-bold text-white disabled:opacity-40"
+                className="rounded-xl bg-primary hover:bg-primary-hover px-6 py-3 font-bold text-white disabled:opacity-40"
               >
                 {create.isPending ? "Đang gửi..." : "Gửi yêu cầu"}
               </button>
@@ -584,7 +584,7 @@ export function CoOccupantNewPage() {
 function Review({ name, value }: { name: string; value: string }) {
   return (
     <div>
-      <p className="text-slate-500">{name}</p>
+      <p className="text-muted-foreground">{name}</p>
       <p className="font-semibold">{value || "—"}</p>
     </div>
   );
@@ -690,7 +690,7 @@ function FilePicker({
       <p className="text-sm font-semibold">
         Ảnh và tài liệu (JPG, PNG, WEBP, PDF; tối đa 5MB/tệp)
       </p>
-      <label className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-6 text-sm font-semibold text-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
+      <label className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-6 text-sm font-semibold text-link focus-within:ring-4 focus-within:ring-ring">
         <Upload className="size-5" />
         Chọn hoặc chụp giấy tờ
         <input
@@ -715,7 +715,7 @@ function FilePicker({
             <button
               aria-label={`Xóa ${x.file.name}`}
               onClick={() => setFiles((v) => v.filter((_, j) => j !== i))}
-              className="rounded-lg p-2 text-red-600"
+              className="rounded-lg p-2 text-danger"
             >
               <Trash2 className="size-4" />
             </button>
@@ -736,7 +736,7 @@ function FilePreview({ item }: { item: Selected }) {
       className="size-11 rounded-lg object-cover"
     />
   ) : (
-    <span className="grid size-11 place-items-center rounded-lg bg-red-50 text-red-600">
+    <span className="grid size-11 place-items-center rounded-lg bg-danger-muted text-danger">
       <FileText className="size-5" />
     </span>
   );

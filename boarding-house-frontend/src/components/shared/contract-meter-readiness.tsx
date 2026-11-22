@@ -13,7 +13,7 @@ export function ContractMeterReadiness({
   if (!roomId || !requiredTypes.length) return null;
   const link = (
     <Link
-      className="font-semibold text-blue-700 underline"
+      className="font-semibold text-link underline"
       href={`/admin/rooms/${roomId}/edit#room-meters`}
       target="_blank"
       rel="noopener noreferrer"
@@ -25,7 +25,7 @@ export function ContractMeterReadiness({
     return (
       <aside
         role="alert"
-        className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm"
+        className="rounded-xl border border-amber-300 bg-warning-muted p-4 text-sm"
       >
         Chưa kiểm tra được công tơ. {link}
       </aside>
@@ -40,7 +40,7 @@ export function ContractMeterReadiness({
   );
   if (!missing.length)
     return (
-      <aside className="rounded-xl bg-blue-50 p-3 text-sm">
+      <aside className="rounded-xl bg-accent p-3 text-sm">
         Đã có công tơ hoạt động cho các loại tính theo số đo. Khi bàn giao vẫn
         phải đối chiếu mã công tơ và chỉ số thực tế. {link}
       </aside>
@@ -48,7 +48,7 @@ export function ContractMeterReadiness({
   return (
     <aside
       role="alert"
-      className="space-y-2 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950"
+      className="space-y-2 rounded-xl border border-amber-300 bg-warning-muted p-4 text-sm text-amber-950"
     >
       <p className="font-semibold">
         Thiếu công tơ hoạt động:{" "}

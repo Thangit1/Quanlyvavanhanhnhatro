@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PaymentTransactionsPanel } from "@/components/shared/payment-transactions-panel";
 import { Download, ReceiptText } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { useTenantPayments } from "@/hooks/use-tenant-invoices";
@@ -29,26 +30,25 @@ export function PaymentHistoryPage() {
   return (
     <main className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
       <div>
-        <p className="text-sm font-medium text-blue-600">
-          Tài chính / Thanh toán
-        </p>
+        <p className="text-sm font-medium text-link">Tài chính / Thanh toán</p>
         <h1 className="mt-1 text-3xl font-black">Lịch sử thanh toán</h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-muted-foreground">
           Các khoản tiền đã được quản lý xác nhận.
         </p>
       </div>
       {error && (
-        <p className="rounded-xl bg-red-50 p-3 text-red-700">{error}</p>
+        <p className="rounded-xl bg-danger-muted p-3 text-danger">{error}</p>
       )}
+      <PaymentTransactionsPanel />
       {query.isError ? (
         <ErrorState onRetry={() => void query.refetch()} />
       ) : !query.data?.content.length ? (
         <EmptyState text="Chưa có giao dịch thanh toán." />
       ) : (
-        <section className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+        <section className="overflow-hidden surface-card ">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-500">
+              <thead className="bg-muted text-left text-muted-foreground">
                 <tr>
                   <th className="p-4">Biên nhận</th>
                   <th className="p-4">Hóa đơn</th>
@@ -63,24 +63,30 @@ export function PaymentHistoryPage() {
                 {query.data.content.map((x) => (
                   <tr key={x.id} className="border-t">
                     <td className="p-4 font-semibold">
-                      <ReceiptText className="mr-2 inline size-4 text-blue-600" />
+                      <ReceiptText className="mr-2 inline size-4 text-link" />
                       {x.receiptCode}
                     </td>
-                    <td className="p-4 text-blue-700">{x.invoiceCode}</td>
+                    <td className="p-4 text-link">{x.invoiceCode}</td>
                     <td className="p-4">{date(x.paidAt)}</td>
                     <td className="p-4">{label(x.paymentMethod)}</td>
-                    <td className="p-4"><InvoiceBadge status={x.status} /></td>
-                    <td className={`p-4 text-right font-bold ${x.status === "CONFIRMED" ? "text-emerald-700" : "text-slate-500"}`}>
+                    <td className="p-4">
+                      <InvoiceBadge status={x.status} />
+                    </td>
+                    <td
+                      className={`p-4 text-right font-bold ${x.status === "CONFIRMED" ? "text-success" : "text-muted-foreground"}`}
+                    >
                       {money(x.amount)}
                     </td>
                     <td className="p-4">
-                      {x.status === "CONFIRMED" && <button
-                        onClick={() => receipt(x.id)}
-                        className="inline-flex items-center gap-1 text-blue-600"
-                      >
-                        <Download className="size-4" />
-                        Biên nhận
-                      </button>}
+                      {x.status === "CONFIRMED" && (
+                        <button
+                          onClick={() => receipt(x.id)}
+                          className="inline-flex items-center gap-1 text-link"
+                        >
+                          <Download className="size-4" />
+                          Biên nhận
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -1,0 +1,17 @@
+{
+  "runId": "28a5f697-bb2c-4369-a584-c4457d2c1619",
+  "status": "FAIL",
+  "browser": "Installed Chromium via native CDP",
+  "browserVersion": "",
+  "cases": [
+    {
+      "id": "bootstrap",
+      "status": "FAIL",
+      "error": "CDP timeout Runtime.enable"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "apiErrors": [],
+  "authChallenges": []
+}

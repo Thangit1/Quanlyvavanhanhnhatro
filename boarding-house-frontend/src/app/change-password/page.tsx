@@ -35,17 +35,17 @@ export default function Page() {
     }
   }
   const input =
-    "min-h-12 w-full rounded-xl border border-slate-200 p-3 text-sm";
+    "min-h-12 w-full rounded-xl border border-border p-3 text-sm";
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-50 p-5">
-      <section className="w-full max-w-lg space-y-5 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="font-bold text-blue-600">SmartHome AI</p>
+    <main className="grid min-h-screen place-items-center bg-muted p-5">
+      <section className="w-full max-w-lg space-y-5 surface-card p-8 ">
+        <p className="font-bold text-link">SmartHome AI</p>
         <h1 className="text-2xl font-extrabold">Đổi mật khẩu khởi tạo</h1>
         {isBootstrapping || !user ? (
           <p role="status">Đang kiểm tra phiên đăng nhập...</p>
         ) : (
           <>
-            <p className="text-sm leading-6 text-slate-600">
+            <p className="text-sm leading-6 text-secondary-foreground">
               {user.email || user.phone || user.fullName}: đặt mật khẩu riêng
               trước khi vào hệ thống. Sau khi đổi, đăng nhập lại bằng mật khẩu
               mới.
@@ -53,7 +53,7 @@ export default function Page() {
             {error && (
               <p
                 role="alert"
-                className="rounded-xl bg-red-50 p-3 text-sm text-red-700"
+                className="rounded-xl bg-danger-muted p-3 text-sm text-danger"
               >
                 {error}
               </p>
@@ -83,7 +83,7 @@ export default function Page() {
                     maxLength={72}
                     pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+"
                   />
-                  <span className="block text-xs font-normal text-slate-500">
+                  <span className="block text-xs font-normal text-muted-foreground">
                     Ít nhất 8 ký tự, có chữ hoa, chữ thường và chữ số.
                   </span>
                 </label>
@@ -98,14 +98,14 @@ export default function Page() {
                     maxLength={72}
                   />
                 </label>
-                <button className="w-full rounded-xl bg-blue-600 p-3 text-sm font-bold text-white disabled:opacity-50">
+                <button className="w-full rounded-xl bg-primary hover:bg-primary-hover p-3 text-sm font-bold text-white disabled:opacity-50">
                   {busy
                     ? "Đang đổi mật khẩu..."
                     : "Đổi mật khẩu và đăng nhập lại"}
                 </button>
                 <button
                   type="button"
-                  className="w-full text-sm font-semibold text-slate-500"
+                  className="w-full text-sm font-semibold text-muted-foreground"
                   onClick={() => void logout()}
                 >
                   Đăng xuất

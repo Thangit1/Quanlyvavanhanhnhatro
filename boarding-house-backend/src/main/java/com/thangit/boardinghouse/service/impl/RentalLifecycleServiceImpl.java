@@ -11,6 +11,7 @@ import com.thangit.boardinghouse.service.DepositLedgerService;
 import com.thangit.boardinghouse.service.RoomLifecycleGuard;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import static com.thangit.boardinghouse.service.BusinessTime.today;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,12 +34,12 @@ public class RentalLifecycleServiceImpl implements RentalLifecycleService {
     public LifecycleBoard board(AuthenticatedUser p,Long propertyId){role(p);if(propertyId!=null)property(p,propertyId);return repository.board(p.id(),p.activeRole(),propertyId);}
 
     @Override @Transactional
-    public Created createBooking(AuthenticatedUser p,CreateBooking r){role(p);if(!r.reservationStart().isBefore(r.reservationEnd())||r.reservationStart().isBefore(LocalDate.now()))throw bad("BOOKING_DATE_INVALID","Giữ chỗ dùng khoảng [ngày bắt đầu, ngày hết hạn), không bắt đầu ở quá khứ.");
+    public Created createBooking(AuthenticatedUser p,CreateBooking r){role(p);if(!r.reservationStart().isBefore(r.reservationEnd())||r.reservationStart().isBefore(today()))throw bad("BOOKING_DATE_INVALID","Giữ chỗ dùng khoảng [ngày bắt đầu, ngày hết hạn), không bắt đầu ở quá khứ.");
         rooms.lockRoom(r.roomId());Map<String,Object>room=repository.room(r.roomId()).orElseThrow(()->notFound("Không tìm thấy phòng."));long property=number(room,"property_id");property(p,property);rooms.availableForBooking(r.roomId());
         if(!Set.of("VACANT","READY").contains(text(room,"status")))throw conflict("ROOM_NOT_AVAILABLE","Phòng không ở trạng thái sẵn sàng để giữ chỗ.");
 
         if(!repository.tenantInProperty(r.tenantProfileId(),property))throw bad("TENANT_PROPERTY_MISMATCH","Người thuê chưa thuộc phạm vi nhà trọ đã chọn.");
-        String code="BK-"+LocalDate.now().getYear()+"-"+UUID.randomUUID().toString().substring(0,8).toUpperCase();Created created=repository.createBooking(code,property,r,p.id());
+        String code="BK-"+today().getYear()+"-"+UUID.randomUUID().toString().substring(0,8).toUpperCase();Created created=repository.createBooking(code,property,r,p.id());
         repository.roomStatus(r.roomId(),"RESERVED","Giữ chỗ theo booking "+code,p.id());repository.activity(property,p.id(),"BOOKING_CREATED","Đã giữ phòng "+room.get("code")+" cho booking "+code,"/admin/rental-lifecycle");return created;}
 
     @Override @Transactional
@@ -47,7 +48,7 @@ public class RentalLifecycleServiceImpl implements RentalLifecycleService {
         boolean allowed=switch(before){case "RESERVED"->Set.of("DEPOSITED","CANCELLED","EXPIRED").contains(r.status());case "DEPOSITED"->Set.of("CANCELLED","EXPIRED").contains(r.status());default->false;};
         if(!allowed)throw conflict("BOOKING_TRANSITION_INVALID","Không thể chuyển booking từ "+before+" sang "+r.status()+".");
         if(r.reason()==null||r.reason().isBlank())throw bad("BOOKING_REASON_REQUIRED","Cần lý do hủy hoặc hết hạn giữ chỗ.");
-        if("EXPIRED".equals(r.status())&&RoomLifecycleGuard.date(b.get("reservation_end")).isAfter(LocalDate.now()))throw conflict("BOOKING_NOT_EXPIRED","Booking chưa đến ngày hết hạn.");
+        if("EXPIRED".equals(r.status())&&RoomLifecycleGuard.date(b.get("reservation_end")).isAfter(today()))throw conflict("BOOKING_NOT_EXPIRED","Booking chưa đến ngày hết hạn.");
         if(repository.changeBooking(id,before,r,p.id())==0)throw conflict("BOOKING_VERSION_CONFLICT","Booking đã được người khác cập nhật. Vui lòng tải lại.");
         if(Set.of("CANCELLED","EXPIRED").contains(r.status()))repository.releaseRoomAfterBooking(number(b,"room_id"),id,p.id());}
 
@@ -56,12 +57,12 @@ public class RentalLifecycleServiceImpl implements RentalLifecycleService {
         if(p.activeRole()==RoleCode.MANAGER)rooms.capability(p,number(b,"property_id"),com.thangit.boardinghouse.security.PropertyAuthorization.Capability.CONTRACT_APPROVE);
         deposits.verifyReservation(bookingId);
         LocalDate expiry=b.get("reservation_end") instanceof java.sql.Date date?date.toLocalDate():(LocalDate)b.get("reservation_end");
-        if(!expiry.isAfter(LocalDate.now()))throw conflict("BOOKING_EXPIRED","Booking đã quá hạn giữ chỗ.");
+        if(!expiry.isAfter(today()))throw conflict("BOOKING_EXPIRED","Booking đã quá hạn giữ chỗ.");
         if(!"DEPOSITED".equals(status)&&!("RESERVED".equals(status)&&money(b,"deposit_amount").signum()==0))throw conflict("BOOKING_DEPOSIT_REQUIRED","Phải xác nhận tiền giữ chỗ trước khi tạo hợp đồng.");
         if(b.get("contract_id")!=null)throw conflict("BOOKING_CONTRACT_EXISTS","Booking đã có hợp đồng.");if(b.get("tenant_user_id")==null)throw bad("TENANT_ACCOUNT_REQUIRED","Cần tạo tài khoản người thuê trước khi lập hợp đồng.");
         if(r.endDate().isBefore(r.startDate()))throw bad("CONTRACT_DATE_INVALID","Ngày kết thúc hợp đồng phải sau ngày bắt đầu.");
         rooms.newContract(number(b,"room_id"),r.startDate(),r.endDate(),bookingId);
-        String code="HD-"+LocalDate.now().getYear()+"-"+UUID.randomUUID().toString().substring(0,8).toUpperCase();Created result=repository.createContract(bookingId,code,b,r,p.id());
+        String code="HD-"+today().getYear()+"-"+UUID.randomUUID().toString().substring(0,8).toUpperCase();Created result=repository.createContract(bookingId,code,b,r,p.id());
         deposits.transferBooking(bookingId,result.id(),r.reservationTransferAmount(),p.id());onboarding.initialize(result.id(),r,p.id());
         repository.activity(number(b,"property_id"),p.id(),"CONTRACT_CREATED","Đã tạo hợp đồng "+code+" từ booking "+b.get("code"),"/admin/contracts/"+result.id());return result;}
 
@@ -77,13 +78,11 @@ public class RentalLifecycleServiceImpl implements RentalLifecycleService {
         Map<String,Object> c=contract(p,number(ci,"contract_id"));
         if(p.activeRole()==RoleCode.MANAGER)rooms.capability(p,number(c,"property_id"),com.thangit.boardinghouse.security.PropertyAuthorization.Capability.CONTRACT_APPROVE);
         if(!"PENDING_CONFIRMATION".equals(text(c,"status")))throw conflict("CONTRACT_NOT_READY_FOR_CHECKIN","Hợp đồng không còn chờ nhận phòng.");
-        rooms.checkin(number(ci,"contract_id"),LocalDate.now());deposits.requireFunded(number(ci,"contract_id"));
+        rooms.checkin(number(ci,"contract_id"),today());deposits.requireFunded(number(ci,"contract_id"));
         onboarding.requireReady(number(ci,"contract_id"),r);if(repository.completeCheckin(id,r,p.id())==0)throw conflict("CHECKIN_VERSION_CONFLICT","Phiếu check-in đã thay đổi hoặc không còn sẵn sàng.");repository.activateAfterCheckin(ci,r,p.id());onboarding.activated(number(ci,"contract_id"),id,p.id());repository.activity(number(ci,"property_id"),p.id(),"CHECKIN_COMPLETED","Hoàn tất check-in hợp đồng #"+ci.get("contract_id"),"/admin/rental-lifecycle");}
 
     @Override @Transactional
-    public Created requestCheckout(AuthenticatedUser p,RequestCheckout r){role(p);Map<String,Object>c=contract(p,r.contractId());if(!Set.of("ACTIVE","EXPIRING","EXPIRED","TERMINATION_REQUESTED").contains(text(c,"status")))throw conflict("CONTRACT_NOT_ACTIVE","Chỉ hợp đồng đang thuê mới được tạo check-out.");
-        rooms.checkout(r.contractId(),null);
-        if(repository.hasCheckout(r.contractId()))throw conflict("CHECKOUT_EXISTS","Hợp đồng đã có yêu cầu check-out.");String code="CO-"+LocalDate.now().getYear()+"-"+UUID.randomUUID().toString().substring(0,8).toUpperCase();var result=repository.requestCheckout(code,r,c,p.id());checkoutWorkflow.onRequested(p,result.id());return result;}
+    public Created requestCheckout(AuthenticatedUser p,RequestCheckout r){role(p);return checkoutWorkflow.request(p,r);}
 
     @Override @Transactional
     public Settlement completeCheckout(AuthenticatedUser p,long id,CompleteCheckout r){role(p);Map<String,Object>co=checkout(p,id);Map<String,Object>c=contract(p,number(co,"contract_id"));BigDecimal debt=deposits.settlementDebt(number(co,"contract_id")),deposit=deposits.held(number(co,"contract_id"));
@@ -97,7 +96,7 @@ public class RentalLifecycleServiceImpl implements RentalLifecycleService {
 
     @Override @Transactional
     public void extendBooking(AuthenticatedUser p,long id,ExtendBooking r){role(p);var b=booking(p,id);
-        if(!Set.of("RESERVED","DEPOSITED").contains(b.get("status"))||b.get("contract_id")!=null||!RoomLifecycleGuard.date(b.get("reservation_end")).isAfter(LocalDate.now()))throw conflict("BOOKING_EXTENSION_NOT_ALLOWED","Chỉ gia hạn booking còn hiệu lực, chưa chuyển hợp đồng.");
+        if(!Set.of("RESERVED","DEPOSITED").contains(b.get("status"))||b.get("contract_id")!=null||!RoomLifecycleGuard.date(b.get("reservation_end")).isAfter(today()))throw conflict("BOOKING_EXTENSION_NOT_ALLOWED","Chỉ gia hạn booking còn hiệu lực, chưa chuyển hợp đồng.");
         if(!r.reservationEnd().isAfter(RoomLifecycleGuard.date(b.get("reservation_end"))))throw bad("BOOKING_DATE_INVALID","Hạn giữ chỗ mới phải muộn hơn hạn cũ.");
         if(repository.extendBooking(id,r)==0)throw conflict("BOOKING_VERSION_CONFLICT","Booking đã thay đổi; vui lòng tải lại.");
         repository.history(id,text(b,"status"),text(b,"status"),"Gia hạn giữ chỗ đến "+r.reservationEnd()+": "+r.reason(),p.id());

@@ -15,7 +15,7 @@ public final class RentalLifecycleResponses {
                              Long propertyId, String propertyName, Long roomId, String roomCode,
                              LocalDate reservationStart, LocalDate reservationEnd, BigDecimal depositAmount,
                              String depositStatus, String status, Long contractId, long version,
-                             LocalDateTime updatedAt) {}
+                             LocalDateTime updatedAt, String tenantPhone, LocalDateTime createdAt, String createdByName) {}
     public record CheckinRow(Long id, Long contractId, String contractCode, String tenantName,
                              String propertyName, Long roomId, String roomCode, LocalDate scheduledDate,
                              LocalDateTime actualCheckinAt, String status, boolean identityVerified,

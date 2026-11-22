@@ -140,13 +140,13 @@ function ProfileForm({
       {message && (
         <p
           role="status"
-          className="rounded-xl bg-blue-50 p-3 font-semibold text-blue-800"
+          className="rounded-xl bg-accent p-3 font-semibold text-link"
         >
           {message}
         </p>
       )}
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-black">Ảnh đại diện</h2>
+      <section className="surface-card p-5 sm:p-6 ">
+        <h2 className="text-base font-semibold text-foreground">Ảnh đại diện</h2>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <AccountAvatar
             name={initial.profile.fullName}
@@ -163,7 +163,7 @@ function ProfileForm({
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => fileRef.current?.click()}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-bold text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-bold text-white"
               >
                 <Camera className="size-4" />
                 Thay đổi ảnh
@@ -178,14 +178,14 @@ function ProfileForm({
                       },
                     })
                   }
-                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-red-700"
+                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-danger"
                 >
                   <Trash2 className="size-4" />
                   Xóa ảnh
                 </button>
               )}
             </div>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-muted-foreground">
               JPG, PNG hoặc WEBP · tối đa 5 MB
             </p>
             {progress > 0 && (
@@ -194,20 +194,20 @@ function ProfileForm({
           </div>
         </div>
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg font-black">
+            <h2 className="text-base font-semibold text-foreground">
               Thông tin do quản lý xác nhận
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               <LockKeyhole className="mr-1 inline size-4" />
               Các trường này không thể sửa trực tiếp.
             </p>
           </div>
           <button
             onClick={() => setRequestOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-blue-700"
+            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-link"
           >
             <FilePenLine className="size-4" />
             Gửi yêu cầu cập nhật
@@ -247,8 +247,8 @@ function ProfileForm({
           />
         </div>
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-black">Thông tin liên hệ và nghề nghiệp</h2>
+      <section className="surface-card p-5 sm:p-6 ">
+        <h2 className="text-base font-semibold text-foreground">Thông tin liên hệ và nghề nghiệp</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field
             label="Nghề nghiệp"
@@ -280,7 +280,7 @@ function ProfileForm({
             autoComplete="email"
             onChange={(v) => change("contactEmail", v)}
           />
-          <label className="sm:col-span-2 text-sm font-bold">
+          <label className="sm:col-span-2 text-sm font-medium text-muted-foreground">
             Địa chỉ thường trú
             <textarea
               value={value.addressDetail ?? ""}
@@ -348,7 +348,7 @@ function ProfileForm({
               setPhoneTouched(false);
               setEmergencyPhoneTouched(false);
             }}
-            className="rounded-xl bg-white/10 px-4 py-2 font-bold"
+            className="rounded-xl bg-card/10 px-4 py-2 font-bold"
           >
             Hủy thay đổi
           </button>
@@ -361,16 +361,16 @@ function ProfileForm({
           </button>
         </div>
       )}
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="font-black">Yêu cầu cập nhật gần đây</h2>
         {requests.length ? (
           <div className="mt-3 space-y-2">
             {requests.slice(0, 5).map((r) => (
               <div
                 key={r.id}
-                className="flex items-center gap-3 rounded-xl bg-slate-50 p-3"
+                className="flex items-center gap-3 rounded-xl bg-muted p-3"
               >
-                <CheckCircle2 className="size-4 text-blue-600" />
+                <CheckCircle2 className="size-4 text-link" />
                 <span className="flex-1 text-sm">{r.reason}</span>
                 <StatusPill>
                   {r.status === "PENDING" ? "Chờ duyệt" : r.status}
@@ -379,7 +379,7 @@ function ProfileForm({
             ))}
           </div>
         ) : (
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Bạn chưa gửi yêu cầu cập nhật nào.
           </p>
         )}
@@ -390,9 +390,9 @@ function ProfileForm({
           aria-modal="true"
           className="fixed inset-0 z-[70] grid place-items-end bg-slate-950/50 sm:place-items-center"
         >
-          <section className="w-full rounded-t-3xl bg-white p-5 sm:max-w-lg sm:rounded-2xl">
-            <h2 className="text-xl font-black">Yêu cầu đổi họ tên pháp lý</h2>
-            <p className="mt-1 text-sm text-slate-500">
+          <section className="w-full rounded-t-3xl bg-card p-5 sm:max-w-lg sm:rounded-2xl">
+            <h2 className="text-lg font-semibold text-foreground">Yêu cầu đổi họ tên pháp lý</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               Dữ liệu chính thức chỉ thay đổi sau khi quản lý phê duyệt.
             </p>
             <Field
@@ -400,7 +400,7 @@ function ProfileForm({
               value={legalName}
               onChange={setLegalName}
             />
-            <label className="mt-3 block text-sm font-bold">
+            <label className="mt-3 block text-sm font-medium text-muted-foreground">
               Lý do
               <textarea
                 value={reason}
@@ -442,7 +442,7 @@ function ProfileForm({
                     },
                   )
                 }
-                className="rounded-xl bg-blue-600 p-3 font-bold text-white disabled:opacity-40"
+                className="rounded-xl bg-primary hover:bg-primary-hover p-3 font-bold text-white disabled:opacity-40"
               >
                 Gửi yêu cầu
               </button>
@@ -480,7 +480,7 @@ function Field({
   [key: string]: unknown;
 }) {
   return (
-    <label className="mt-3 block text-sm font-bold">
+    <label className="mt-3 block text-sm font-medium text-muted-foreground">
       {label}
       <input
         {...props}
@@ -488,10 +488,10 @@ function Field({
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
         aria-invalid={Boolean(error)}
-        className={`mt-1 w-full rounded-xl border px-3 py-2.5 font-normal ${error ? "border-red-500 focus:border-red-500 focus:outline-red-200" : ""}`}
+        className={`mt-1 w-full rounded-xl border border-input px-3 py-2.5 font-normal text-foreground ${error ? "border-danger focus:border-danger focus:outline-red-200" : ""}`}
       />
       {error && (
-        <span className="mt-1 block text-xs font-medium text-red-600">
+        <span className="mt-1 block text-xs font-medium text-danger">
           {error}
         </span>
       )}
@@ -501,8 +501,8 @@ function Field({
 function Read({ label, value }: { label: string; value?: string }) {
   return (
     <div>
-      <p className="text-xs font-bold uppercase text-slate-400">{label}</p>
-      <p className="mt-1 font-semibold">{value || "Chưa cập nhật"}</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className={`mt-1 font-semibold ${value?"text-foreground":"text-muted-foreground"}`}>{value || "Chưa cập nhật"}</p>
     </div>
   );
 }

@@ -29,8 +29,11 @@ public final class AdminPropertyResponses {
                                  BigDecimal outstandingDebt, List<Building> buildings,
                                  List<Activity> activities) {}
     public record Option(Long id, String label, Long parentId) {}
+    public record PropertyContext(Long propertyId, Long organizationId, String organizationName, Long areaId, String areaName, List<Manager> managers, boolean canReadFinance, boolean canExport) {}
     public record PropertyOptions(List<Option> properties, List<Option> buildings, List<Option> floors,
-                                  List<Amenity> amenities) {}
+                                  List<Amenity> amenities, List<PropertyContext> contexts) {
+        public PropertyOptions(List<Option> properties,List<Option> buildings,List<Option> floors,List<Amenity> amenities){this(properties,buildings,floors,amenities,List.of());}
+    }
     public record Amenity(Long id, String code, String name, String icon) {}
     public record Created(Long id, String code) {}
 
@@ -43,7 +46,7 @@ public final class AdminPropertyResponses {
                           String floorName, String roomType, BigDecimal area, BigDecimal monthlyRent,
                           BigDecimal depositAmount, int maxOccupants, long currentOccupants,
                           Tenant representativeTenant, Contract currentContract, BigDecimal outstandingDebt,
-                          long openMaintenanceCount, String status, long version, LocalDateTime updatedAt) {}
+                          long openMaintenanceCount, String status, long version, LocalDateTime updatedAt, long overdueInvoiceCount) {}
     public record RoomList(RoomSummary summary, Page<RoomRow> page) {}
     public record Asset(Long id, String name, int quantity, String conditionStatus, String note) {}
     public record Meter(Long id, String meterType, String meterCode, BigDecimal currentReading,

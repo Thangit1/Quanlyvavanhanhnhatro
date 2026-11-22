@@ -1,7 +1,6 @@
 import Link from "next/link";
 import {
   Bot,
-  Building2,
   ChevronDown,
   Download,
   ExternalLink,
@@ -16,13 +15,16 @@ import {
 import { formatCurrency, formatDate, statusLabel } from "@/lib/format";
 import type { ContractDetail } from "@/types/tenant-contract";
 import { EmptyState, StatusBadge } from "@/components/shared/dashboard-ui";
+import { PropertyImage } from "@/components/shared/image-upload";
 
 export function DetailPanel({
+  id,
   title,
   icon: Icon,
   children,
   className = "",
 }: {
+  id?: string;
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   children: React.ReactNode;
@@ -30,10 +32,11 @@ export function DetailPanel({
 }) {
   return (
     <section
-      className={`break-inside-avoid rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 ${className}`}
+      id={id}
+      className={`break-inside-avoid surface-card p-5 sm:p-6 ${className}`}
     >
-      <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900">
-        <Icon className="size-5 text-blue-600" />
+      <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+        <Icon className="size-5 text-link" />
         {title}
       </h2>
       <div className="mt-5">{children}</div>
@@ -44,9 +47,9 @@ function Description({ items }: { items: Array<[string, React.ReactNode]> }) {
   return (
     <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
       {items.map(([label, value]) => (
-        <div key={label} className="border-b border-slate-100 pb-3">
-          <dt className="text-sm text-slate-500">{label}</dt>
-          <dd className="mt-1 font-semibold text-slate-800">{value ?? "—"}</dd>
+        <div key={label} className="border-b border-border pb-3">
+          <dt className="text-sm text-muted-foreground">{label}</dt>
+          <dd className="mt-1 font-semibold text-foreground">{value ?? "—"}</dd>
         </div>
       ))}
     </dl>
@@ -80,21 +83,18 @@ export function ContractGeneralSections({ data }: { data: ContractDetail }) {
           ]}
         />
       </DetailPanel>
-      <DetailPanel title="Khu trọ và phòng" icon={Home}>
+      <DetailPanel id="room-details" title="Khu trọ và phòng" icon={Home}>
         <div className="grid gap-5 sm:grid-cols-[120px_1fr]">
-          <div className="grid h-28 place-items-center overflow-hidden rounded-2xl bg-blue-50 text-blue-600">
-            {data.room.imageUrl ? (
-              <span
-                role="img"
-                aria-label={`Phòng ${data.room.roomCode}`}
-                className="size-full bg-cover bg-center"
-                style={{
-                  backgroundImage: `url("${data.room.imageUrl.replaceAll('"', "%22")}")`,
-                }}
-              />
-            ) : (
-              <Building2 className="size-10" />
-            )}
+          <div className="grid h-28 place-items-center overflow-hidden rounded-2xl bg-accent text-link">
+            <PropertyImage
+              src={
+                data.room.imageUrl?.startsWith("/admin/properties/")
+                  ? `/tenant/contracts/${data.id}/room-images/${data.room.imageUrl.split("/").at(-1)}`
+                  : data.room.imageUrl || undefined
+              }
+              alt={`Phòng ${data.room.roomCode}`}
+              className="h-28 w-full"
+            />
           </div>
           <Description
             items={[
@@ -123,14 +123,14 @@ export function ContractGeneralSections({ data }: { data: ContractDetail }) {
         </div>
         <div className="mt-4 flex flex-wrap gap-2 print:hidden">
           <Link
-            href="/tenant/room"
-            className="rounded-xl border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700"
+            href={`/tenant/contracts/${data.id}#room-details`}
+            className="rounded-xl border border-accent-border px-4 py-2 text-sm font-semibold text-link"
           >
             Xem thông tin phòng
           </Link>
           <Link
-            href="/tenant/rules"
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600"
+            href={`/tenant/contracts/${data.id}#contract-terms`}
+            className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-secondary-foreground"
           >
             Nội quy khu trọ
           </Link>
@@ -142,8 +142,8 @@ export function ContractGeneralSections({ data }: { data: ContractDetail }) {
         className="xl:col-span-2"
       >
         <div className="grid gap-5 md:grid-cols-2">
-          <div className="rounded-xl bg-slate-50 p-4">
-            <h3 className="font-bold text-slate-800">Bên cho thuê</h3>
+          <div className="rounded-xl bg-muted p-4">
+            <h3 className="font-bold text-foreground">Bên cho thuê</h3>
             <Description
               items={[
                 ["Họ tên", data.landlord.fullName],
@@ -153,8 +153,8 @@ export function ContractGeneralSections({ data }: { data: ContractDetail }) {
               ]}
             />
           </div>
-          <div className="rounded-xl bg-blue-50 p-4">
-            <h3 className="font-bold text-blue-900">Bên thuê</h3>
+          <div className="rounded-xl bg-accent p-4">
+            <h3 className="font-bold text-link">Bên thuê</h3>
             <Description
               items={[
                 ["Họ tên", data.tenant.fullName],
@@ -203,7 +203,7 @@ export function ContractFinancialSections({ data }: { data: ContractDetail }) {
             ["Giảm giá", formatCurrency(data.financial.discountAmount)],
           ]}
         />
-        <p className="mt-4 rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
+        <p className="mt-4 rounded-xl bg-muted p-3 text-xs text-muted-foreground">
           Các mức phí trên là giá trị đã được backend xác nhận trong hợp đồng.
         </p>
       </DetailPanel>
@@ -215,20 +215,20 @@ export function ContractFinancialSections({ data }: { data: ContractDetail }) {
             {rates.map((item) => (
               <div
                 key={`${item.code}-${item.id}`}
-                className="flex flex-col justify-between gap-2 rounded-xl border border-slate-200 p-4 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-2 rounded-xl border border-border p-4 sm:flex-row sm:items-center"
               >
                 <div>
-                  <p className="font-semibold text-slate-800">{item.name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="font-semibold text-foreground">{item.name}</p>
+                  <p className="text-xs text-muted-foreground">
                     {statusLabel(item.calculationMethod)} · Áp dụng{" "}
                     {formatDate(item.effectiveDate)}
                   </p>
                 </div>
                 <div className="text-left sm:text-right">
-                  <p className="font-bold text-blue-700">
+                  <p className="font-bold text-link">
                     {formatCurrency(item.unitPrice)}
                   </p>
-                  <p className="text-xs text-slate-500">/{item.unit}</p>
+                  <p className="text-xs text-muted-foreground">/{item.unit}</p>
                 </div>
               </div>
             ))}
@@ -250,7 +250,7 @@ export function ContractPeopleAssets({ data }: { data: ContractDetail }) {
             {data.occupants.map((item) => (
               <article
                 key={item.id}
-                className="rounded-xl border border-slate-200 p-4"
+                className="rounded-xl border border-border p-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="font-semibold">{item.fullName}</p>
@@ -258,19 +258,19 @@ export function ContractPeopleAssets({ data }: { data: ContractDetail }) {
                 </div>
                 <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
                   <div>
-                    <dt className="text-slate-500">Quan hệ</dt>
+                    <dt className="text-muted-foreground">Quan hệ</dt>
                     <dd>{item.relationship ?? "—"}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Ngày chuyển vào</dt>
+                    <dt className="text-muted-foreground">Ngày chuyển vào</dt>
                     <dd>{formatDate(item.moveInDate)}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Tạm trú</dt>
+                    <dt className="text-muted-foreground">Tạm trú</dt>
                     <dd>{statusLabel(item.temporaryResidenceStatus)}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Giấy tờ</dt>
+                    <dt className="text-muted-foreground">Giấy tờ</dt>
                     <dd>{item.maskedIdentityNumber ?? "Không hiển thị"}</dd>
                   </div>
                 </dl>
@@ -280,11 +280,11 @@ export function ContractPeopleAssets({ data }: { data: ContractDetail }) {
         )}
         <Link
           href="/tenant/co-occupants/new"
-          className="mt-4 inline-flex rounded-xl border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 print:hidden"
+          className="mt-4 inline-flex rounded-xl border border-accent-border px-4 py-2 text-sm font-semibold text-link print:hidden"
         >
           Đăng ký người ở cùng
         </Link>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-muted-foreground">
           Yêu cầu cần được quản lý phê duyệt trước khi thêm vào hợp đồng.
         </p>
       </DetailPanel>
@@ -296,20 +296,22 @@ export function ContractPeopleAssets({ data }: { data: ContractDetail }) {
             {data.assets.map((asset) => (
               <article
                 key={asset.id}
-                className="rounded-xl border border-slate-200 p-4"
+                className="rounded-xl border border-border p-4"
               >
                 <div className="flex justify-between gap-3">
                   <p className="font-semibold">{asset.name}</p>
-                  <span className="text-sm font-bold text-blue-700">
+                  <span className="text-sm font-bold text-link">
                     × {asset.quantity}
                   </span>
                 </div>
                 <p className="mt-2 text-sm">
-                  <span className="text-slate-500">Tình trạng:</span>{" "}
+                  <span className="text-muted-foreground">Tình trạng:</span>{" "}
                   {asset.handoverCondition}
                 </p>
                 {asset.note && (
-                  <p className="mt-1 text-sm text-slate-600">{asset.note}</p>
+                  <p className="mt-1 text-sm text-secondary-foreground">
+                    {asset.note}
+                  </p>
                 )}
               </article>
             ))}
@@ -333,6 +335,7 @@ export function ContractTermsDocuments({
     <>
       <DetailPanel
         title="Điều khoản và quy định"
+        id="contract-terms"
         icon={FileText}
         className="xl:col-span-2"
       >
@@ -344,13 +347,13 @@ export function ContractTermsDocuments({
               <details
                 key={term.id}
                 open={index === 0}
-                className="group rounded-xl border border-slate-200"
+                className="group rounded-xl border border-border"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-100">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold focus:outline-none focus:ring-4 focus:ring-ring">
                   {term.title}
                   <ChevronDown className="size-5 transition group-open:rotate-180" />
                 </summary>
-                <div className="border-t border-slate-100 p-4 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700">
+                <div className="border-t border-border p-4 whitespace-pre-wrap break-words text-sm leading-7 text-secondary-foreground">
                   {term.content}
                 </div>
               </details>
@@ -366,17 +369,17 @@ export function ContractTermsDocuments({
             {data.documents.map((document) => (
               <article
                 key={document.id}
-                className="rounded-xl border border-slate-200 p-4"
+                className="rounded-xl border border-border p-4"
               >
                 <div className="flex items-start gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-red-50 text-red-600">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-danger-muted text-danger">
                     <FileText className="size-5" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">
                       {document.originalName}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       {document.contentType} · {formatBytes(document.fileSize)}{" "}
                       · {formatDate(document.uploadedAt)}
                     </p>
@@ -386,7 +389,7 @@ export function ContractTermsDocuments({
                       aria-label={`Tải ${document.originalName}`}
                       onClick={onDownload}
                       disabled={downloading}
-                      className="rounded-lg p-2 text-blue-700 hover:bg-blue-50 disabled:opacity-50 print:hidden"
+                      className="rounded-lg p-2 text-link hover:bg-accent disabled:opacity-50 print:hidden"
                     >
                       <Download className="size-5" />
                     </button>
@@ -401,17 +404,17 @@ export function ContractTermsDocuments({
         {!data.history.length ? (
           <EmptyState text="Chưa có lịch sử hợp đồng dành cho khách thuê." />
         ) : (
-          <ol className="relative ml-2 border-l border-blue-200 pl-5">
+          <ol className="relative ml-2 border-l border-accent-border pl-5">
             {data.history.map((event) => (
               <li key={event.id} className="relative pb-5 last:pb-0">
-                <span className="absolute -left-[1.7rem] top-1 size-3 rounded-full border-2 border-white bg-blue-600" />
-                <time className="text-xs text-slate-500">
+                <span className="absolute -left-[1.7rem] top-1 size-3 rounded-full border-2 border-white bg-primary hover:bg-primary-hover" />
+                <time className="text-xs text-muted-foreground">
                   {formatDate(event.occurredAt, true)}
                 </time>
                 <p className="mt-1 text-sm font-semibold">
                   {event.description}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {event.actorName ?? "Hệ thống"}
                   {event.note ? ` · ${event.note}` : ""}
                 </p>
@@ -425,15 +428,15 @@ export function ContractTermsDocuments({
         icon={Bot}
         className="xl:col-span-2 print:hidden"
       >
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
-          <p className="font-semibold text-blue-900">
+        <div className="rounded-xl border border-accent-border bg-accent p-5">
+          <p className="font-semibold text-link">
             Trợ lý AI chưa được cấu hình
           </p>
-          <p className="mt-2 text-sm text-slate-700">
+          <p className="mt-2 text-sm text-secondary-foreground">
             Khi backend AI sẵn sàng, trợ lý sẽ chỉ giải thích nội dung hợp đồng
             này và không tự sửa hoặc gửi yêu cầu thay bạn.
           </p>
-          <p className="mt-3 flex items-start gap-2 text-xs font-semibold text-amber-800">
+          <p className="mt-3 flex items-start gap-2 text-xs font-semibold text-warning">
             <Info className="mt-0.5 size-4 shrink-0" />
             Nội dung AI chỉ nhằm hỗ trợ giải thích. Hợp đồng chính thức là căn
             cứ được ưu tiên và không phải tư vấn pháp lý.

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   CalendarClock,
@@ -13,6 +14,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { useManagementProperty } from "@/providers/management-scope";
 import {
   EmptyState,
   ErrorState,
@@ -23,17 +25,69 @@ import { useAdminTenants } from "@/hooks/use-admin-tenants";
 import { adminTenantService } from "@/services/admin-tenant.service";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useAuth } from "@/providers/auth-provider";
+import { SummaryCard } from "@/components/shared/management-ui";
+import { useScopedQuery } from "@/hooks/use-scoped-query";
+import { adminPropertyService } from "@/services/admin-property.service";
+import { useManagementScope } from "@/providers/management-scope";
+import { CreateAccountWizard } from "@/components/admin/accounts/create-account-wizard";
+import type { TenantRow } from "@/types/admin-tenant";
 
 export function TenantListPage() {
+  const params = useSearchParams();
   const { user } = useAuth();
+  const scope = useManagementScope();
+  const directory = useScopedQuery({
+    queryKey: ["tenant-property-context"],
+    queryFn: ({ signal }) => adminPropertyService.options(signal),
+  });
+  const [organizationId, setOrganization] = useState<number>();
+  const [areaId, setArea] = useState<number>();
+  const contexts = directory.data?.contexts ?? [];
+  const organizations = [
+    ...new Map(
+      contexts
+        .filter((c) => c.organizationId != null)
+        .map((c) => [c.organizationId!, c.organizationName]),
+    ).entries(),
+  ];
+  const areas = [
+    ...new Map(
+      contexts
+        .filter(
+          (c) =>
+            c.areaId != null &&
+            (!organizationId || c.organizationId === organizationId),
+        )
+        .map((c) => [c.areaId!, c.areaName]),
+    ).entries(),
+  ];
   const [keywordInput, setKeywordInput] = useState("");
   const [keyword, setKeyword] = useState("");
-  const [propertyId, setPropertyId] = useState<number>();
-  const [roomId, setRoomId] = useState<number>();
+  const [propertyId, setPropertyId] = useManagementProperty(
+    Number(params.get("propertyId")) || undefined,
+  );
+  const [roomId, setRoomId] = useState<number | undefined>(
+    Number(params.get("roomId")) || undefined,
+  );
   const [status, setStatus] = useState("");
   const [debtStatus, setDebtStatus] = useState("");
   const [contractStatus, setContractStatus] = useState("");
   const [page, setPage] = useState(0);
+  const [moveInFrom, setFrom] = useState("");
+  const [moveInTo, setTo] = useState("");
+  const [accountStatus, setAccount] = useState("");
+  const [view, setView] = useState("table");
+  const [accountProfile, setAccountProfile] = useState<TenantRow>();
+  const [previousProperty, setPreviousProperty] = useState(propertyId);
+  if (previousProperty !== propertyId) {
+    setPreviousProperty(propertyId);
+    setPage(0);
+    setRoomId(
+      propertyId === Number(params.get("propertyId"))
+        ? Number(params.get("roomId")) || undefined
+        : undefined,
+    );
+  }
   const [sort, setSort] = useState("fullName");
   const [direction, setDirection] = useState("asc");
 
@@ -49,6 +103,11 @@ export function TenantListPage() {
     () => ({
       propertyId,
       roomId,
+      moveInFrom: moveInFrom || undefined,
+      moveInTo: moveInTo || undefined,
+      accountStatus: accountStatus || undefined,
+      organizationId,
+      areaId,
       status: status || undefined,
       debtStatus: debtStatus || undefined,
       contractStatus: contractStatus || undefined,
@@ -60,6 +119,11 @@ export function TenantListPage() {
     }),
     [
       contractStatus,
+      moveInFrom,
+      moveInTo,
+      accountStatus,
+      organizationId,
+      areaId,
       debtStatus,
       direction,
       keyword,
@@ -83,6 +147,11 @@ export function TenantListPage() {
     setStatus("");
     setDebtStatus("");
     setContractStatus("");
+    setFrom("");
+    setTo("");
+    setAccount("");
+    setOrganization(undefined);
+    setArea(undefined);
     setPage(0);
   };
 
@@ -94,7 +163,7 @@ export function TenantListPage() {
     >
       <div className="mx-auto max-w-[1600px] space-y-6">
         <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <p className="max-w-2xl text-sm text-slate-500">
+          <p className="max-w-2xl text-sm text-muted-foreground">
             Theo dõi khách thuê từ lúc chờ nhận phòng đến khi hoàn tất trả
             phòng, cùng hợp đồng và công nợ thực tế.
           </p>
@@ -108,17 +177,112 @@ export function TenantListPage() {
               <Download className="size-4" /> Xuất CSV
             </button>
             {canWrite && (
-              <Link href="/admin/tenants/new" className={primaryButton}>
-                <Plus className="size-4" /> Thêm khách hàng
-              </Link>
+              <>
+                <Link href="/admin/tenants/intake" className={outlineButton}>
+                  Tiếp nhận khách
+                </Link>
+                <Link href="/admin/tenants/new" className={primaryButton}>
+                  <Plus className="size-4" /> Tạo hồ sơ
+                </Link>
+              </>
             )}
           </div>
         </section>
 
+        <div className="flex flex-wrap items-end gap-3 surface-card p-4">
+          <label className="text-xs text-muted-foreground">
+            Công ty
+            <select
+              className={inputClass}
+              value={organizationId ?? ""}
+              onChange={(e) => {
+                setOrganization(Number(e.target.value) || undefined);
+                setArea(undefined);
+                setPropertyId(undefined);
+                setPage(0);
+              }}
+            >
+              <option value="">Tất cả được phân quyền</option>
+              {organizations.map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Khu
+            <select
+              className={inputClass}
+              value={areaId ?? ""}
+              onChange={(e) => {
+                setArea(Number(e.target.value) || undefined);
+                setPropertyId(undefined);
+                setPage(0);
+              }}
+            >
+              <option value="">Tất cả khu</option>
+              {areas.map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Tài khoản
+            <select
+              className={inputClass}
+              value={accountStatus}
+              onChange={(e) => {
+                setAccount(e.target.value);
+                setPage(0);
+              }}
+            >
+              <option value="">Tất cả</option>
+              <option value="NO_ACCOUNT">Chưa có</option>
+              <option value="ACTIVE">Hoạt động</option>
+              <option value="LOCKED">Đã khóa</option>
+            </select>
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Vào ở từ
+            <input
+              type="date"
+              className={inputClass}
+              value={moveInFrom}
+              onChange={(e) => {
+                setFrom(e.target.value);
+                setPage(0);
+              }}
+            />
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Đến ngày
+            <input
+              type="date"
+              min={moveInFrom}
+              className={inputClass}
+              value={moveInTo}
+              onChange={(e) => {
+                setTo(e.target.value);
+                setPage(0);
+              }}
+            />
+          </label>
+          <button
+            className={outlineButton}
+            onClick={() => setView(view === "table" ? "cards" : "table")}
+          >
+            {view === "table" ? "Dạng thẻ" : "Dạng bảng"}
+          </button>
+        </div>
         {query.isError && <ErrorState onRetry={() => void query.refetch()} />}
         {data && (
           <>
-            <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+              <SummaryCard label="Tổng hồ sơ" value={data.summary.total} />
+              <SummaryCard label="Đã trả phòng" value={data.summary.movedOut} />
               <Metric
                 label="Tổng khách đang thuê"
                 value={data.summary.active}
@@ -132,8 +296,8 @@ export function TenantListPage() {
                 tone="amber"
               />
               <Metric
-                label="Khách có công nợ"
-                value={data.summary.customersWithDebt}
+                label="Khách có hóa đơn quá hạn"
+                value={scope.canReadFinance ? data.summary.overdueDebt : "—"}
                 icon={WalletCards}
                 tone="red"
               />
@@ -145,15 +309,15 @@ export function TenantListPage() {
               />
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <section className="surface-card p-4 ">
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
                 <label className="relative xl:col-span-2">
-                  <Search className="absolute left-3 top-3 size-4 text-slate-400" />
+                  <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
                   <input
                     value={keywordInput}
                     onChange={(event) => setKeywordInput(event.target.value)}
                     className={`${inputClass} w-full pl-9`}
-                    placeholder="Tên, SĐT, email, CCCD, mã khách, HĐ, phòng..."
+                    placeholder="Tên, SĐT, email, mã khách, hợp đồng, phòng..."
                   />
                 </label>
                 <Select
@@ -228,12 +392,12 @@ export function TenantListPage() {
                     <RotateCcw className="size-4" /> Đặt lại bộ lọc
                   </button>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-500">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   Sắp xếp
                   <select
                     value={sort}
                     onChange={(event) => setSort(event.target.value)}
-                    className="rounded-lg border border-slate-200 px-2 py-1.5"
+                    className="rounded-lg border border-input px-2 py-1.5"
                   >
                     <option value="fullName">Họ tên</option>
                     <option value="contractEndDate">Hạn hợp đồng</option>
@@ -245,7 +409,7 @@ export function TenantListPage() {
                         value === "asc" ? "desc" : "asc",
                       )
                     }
-                    className="rounded-lg border border-slate-200 px-3 py-1.5 font-semibold"
+                    className="rounded-lg border border-border px-3 py-1.5 font-semibold"
                   >
                     {direction === "asc" ? "Tăng" : "Giảm"}
                   </button>
@@ -257,10 +421,16 @@ export function TenantListPage() {
               <EmptyState text="Chưa có khách hàng phù hợp. Thêm khách hàng đầu tiên để bắt đầu quản lý cư dân." />
             ) : (
               <>
-                <section className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:block">
+                <section
+                  className={
+                    view === "table"
+                      ? "hidden overflow-hidden surface-card lg:block"
+                      : "hidden"
+                  }
+                >
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[1280px] text-left text-sm">
-                      <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                      <thead className="bg-muted text-xs uppercase text-muted-foreground">
                         <tr>
                           <th className="px-4 py-3">Khách hàng</th>
                           <th>Liên hệ</th>
@@ -278,21 +448,21 @@ export function TenantListPage() {
                         {data.page.items.map((row) => (
                           <tr
                             key={row.id}
-                            className="border-t border-slate-100 hover:bg-blue-50/30"
+                            className="border-t border-border hover:bg-accent/30"
                           >
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-blue-100 font-bold text-blue-700">
+                                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent font-bold text-link">
                                   {row.fullName.trim().charAt(0).toUpperCase()}
                                 </span>
                                 <div>
                                   <Link
                                     href={`/admin/tenants/${row.id}`}
-                                    className="font-bold text-slate-900 hover:text-blue-700"
+                                    className="font-bold text-foreground hover:text-link"
                                   >
                                     {row.fullName}
                                   </Link>
-                                  <p className="text-xs text-slate-500">
+                                  <p className="text-xs text-muted-foreground">
                                     {row.tenantCode}
                                   </p>
                                 </div>
@@ -303,42 +473,69 @@ export function TenantListPage() {
                             <td>
                               {row.roomCode ? `Phòng ${row.roomCode}` : "—"}
                             </td>
-                            <td>{row.contractCode ?? "—"}</td>
+                            <td>
+                              {row.contractId ? (
+                                <Link
+                                  className="text-link"
+                                  href={`/admin/contracts/${row.contractId}`}
+                                >
+                                  {row.contractCode}
+                                </Link>
+                              ) : (
+                                "—"
+                              )}
+                            </td>
                             <td>{formatDate(row.moveInDate)}</td>
                             <td>{formatDate(row.contractEndDate)}</td>
                             <td>
                               <p
                                 className={
                                   row.outstandingDebt > 0
-                                    ? "font-bold text-red-600"
-                                    : "text-slate-500"
+                                    ? "font-bold text-danger"
+                                    : "text-muted-foreground"
                                 }
                               >
-                                {formatCurrency(row.outstandingDebt)}
+                                {row.propertyId &&
+                                scope.canReadFinanceFor(row.propertyId)
+                                  ? formatCurrency(row.outstandingDebt)
+                                  : "Không có quyền xem"}
                               </p>
                               {row.financialStatus === "OVERDUE" && (
-                                <span className="text-xs font-semibold text-red-600">
+                                <span className="text-xs font-semibold text-danger">
                                   Quá hạn
                                 </span>
                               )}
                             </td>
                             <td>
                               <StatusBadge status={row.status} />
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                {row.hasAccount
+                                  ? `Tài khoản: ${row.accountStatus}`
+                                  : "Chưa có tài khoản"}
+                              </p>
                             </td>
                             <td className="pr-4 text-right">
                               <Link
                                 href={`/admin/tenants/${row.id}`}
-                                className="font-semibold text-blue-700"
+                                className="font-semibold text-link"
                               >
                                 Xem
                               </Link>
                               {canWrite && (
                                 <Link
                                   href={`/admin/tenants/${row.id}/edit`}
-                                  className="ml-3 font-semibold text-slate-600"
+                                  className="ml-3 font-semibold text-secondary-foreground"
                                 >
                                   Sửa
                                 </Link>
+                              )}
+                              {canWrite && !row.hasAccount && (
+                                <button
+                                  className="mt-2 block text-xs font-semibold text-link"
+                                  onClick={() => setAccountProfile(row)}
+                                >
+                                  Cấp tài khoản
+                                </button>
                               )}
                             </td>
                           </tr>
@@ -347,17 +544,23 @@ export function TenantListPage() {
                     </table>
                   </div>
                 </section>
-                <section className="grid gap-3 lg:hidden">
+                <section
+                  className={
+                    view === "cards"
+                      ? "grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+                      : "grid gap-3 lg:hidden"
+                  }
+                >
                   {data.page.items.map((row) => (
                     <Link
                       href={`/admin/tenants/${row.id}`}
                       key={row.id}
-                      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                      className="rounded-2xl border border-border bg-card p-4 shadow-card"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="font-bold">{row.fullName}</p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-muted-foreground">
                             {row.tenantCode} · {row.phone}
                           </p>
                         </div>
@@ -369,16 +572,19 @@ export function TenantListPage() {
                           ? `Phòng ${row.roomCode}`
                           : "Chưa gán phòng"}
                       </p>
-                      <div className="mt-3 flex justify-between text-xs text-slate-500">
+                      <div className="mt-3 flex justify-between text-xs text-muted-foreground">
                         <span>{row.contractCode ?? "Chưa có hợp đồng"}</span>
                         <span
                           className={
                             row.outstandingDebt > 0
-                              ? "font-semibold text-red-600"
+                              ? "font-semibold text-danger"
                               : ""
                           }
                         >
-                          Nợ {formatCurrency(row.outstandingDebt)}
+                          {row.propertyId &&
+                          scope.canReadFinanceFor(row.propertyId)
+                            ? `Nợ ${formatCurrency(row.outstandingDebt)}`
+                            : "Không có quyền xem tài chính"}
                         </span>
                       </div>
                     </Link>
@@ -395,6 +601,20 @@ export function TenantListPage() {
           </>
         )}
       </div>
+      {accountProfile && (
+        <CreateAccountWizard
+          profile={{
+            profile_id: accountProfile.id,
+            full_name: accountProfile.fullName,
+            phone: accountProfile.phone,
+            email: accountProfile.email,
+          }}
+          onClose={() => setAccountProfile(undefined)}
+          onCreated={async () => {
+            await query.refetch();
+          }}
+        />
+      )}
     </AdminShell>
   );
 }
@@ -406,22 +626,22 @@ function Metric({
   tone,
 }: {
   label: string;
-  value: number;
+  value: number | string;
   icon: typeof Users;
   tone: "blue" | "emerald" | "amber" | "red";
 }) {
   const colors = {
-    blue: "bg-blue-50 text-blue-700",
-    emerald: "bg-emerald-50 text-emerald-700",
-    amber: "bg-amber-50 text-amber-700",
-    red: "bg-red-50 text-red-700",
+    blue: "bg-accent text-link",
+    emerald: "bg-success-muted text-success",
+    amber: "bg-warning-muted text-warning",
+    red: "bg-danger-muted text-danger",
   };
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <article className="surface-card p-5 sm:p-6 ">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-extrabold text-slate-900">{value}</p>
+          <p className="text-sm text-muted-foreground">{label}</p>
+          <p className="mt-2 text-3xl font-extrabold text-foreground">{value}</p>
         </div>
         <span
           className={`grid size-10 place-items-center rounded-xl ${colors[tone]}`}
@@ -472,7 +692,7 @@ function Pagination({
   onChange: (page: number) => void;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 text-sm text-slate-600">
+    <div className="flex items-center justify-between rounded-xl bg-card px-4 py-3 text-sm text-secondary-foreground">
       <span>
         {total} kết quả · Trang {Math.min(page + 1, Math.max(totalPages, 1))}/
         {Math.max(totalPages, 1)}
@@ -498,10 +718,10 @@ function Pagination({
 }
 
 const inputClass =
-  "min-w-40 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500";
+  "min-w-40 rounded-xl border border-border bg-card px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring";
 const outlineButton =
-  "inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-blue-300";
+  "inline-flex items-center gap-2 rounded-xl border border-input bg-card px-4 py-2.5 text-sm font-semibold text-secondary-foreground hover:border-blue-300";
 const primaryButton =
-  "inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700";
+  "inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white shadow-card hover:bg-primary-hover";
 const pageButton =
   "rounded-lg border px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-40";

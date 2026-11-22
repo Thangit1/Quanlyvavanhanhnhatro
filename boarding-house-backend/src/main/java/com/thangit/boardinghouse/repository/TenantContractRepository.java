@@ -56,7 +56,7 @@ public class TenantContractRepository {
                     rs.getObject("start_date", LocalDate.class), rs.getObject("end_date", LocalDate.class),
                     rs.getBigDecimal("monthly_rent"), rs.getBigDecimal("deposit_amount"),
                     Math.max(0, java.time.temporal.ChronoUnit.DAYS.between(
-                            LocalDate.now(), rs.getObject("end_date", LocalDate.class))),
+                            com.thangit.boardinghouse.service.BusinessTime.today(), rs.getObject("end_date", LocalDate.class))),
                     "REPRESENTATIVE", contractStatus, rs.getBoolean("has_document"),
                     canAct(contractStatus) && !pendingExtension,
                     canAct(contractStatus) && !pendingTermination);
@@ -265,8 +265,8 @@ public class TenantContractRepository {
     }
     public static String effectiveStatus(String status, LocalDate endDate) {
         if (!"ACTIVE".equals(status) && !"EXPIRING".equals(status)) return status;
-        if (endDate.isBefore(LocalDate.now())) return "EXPIRED";
-        if (!endDate.isAfter(LocalDate.now().plusDays(30))) return "EXPIRING";
+        if (endDate.isBefore(com.thangit.boardinghouse.service.BusinessTime.today())) return "EXPIRED";
+        if (!endDate.isAfter(com.thangit.boardinghouse.service.BusinessTime.today().plusDays(30))) return "EXPIRING";
         return "ACTIVE";
     }
     private static String mask(String lastFour) {

@@ -9,22 +9,22 @@ export function NoCoOccupantResidence() {
       <div className="mx-auto max-w-7xl space-y-6">
         <RepresentativeInvitations />
         <header>
-          <p className="text-sm text-slate-500">Trang chủ / Người ở cùng</p>
-          <h1 className="mt-1 text-3xl font-black text-slate-950">
+          <p className="text-sm text-muted-foreground">Trang chủ / Người ở cùng</p>
+          <h1 className="mt-1 text-3xl font-black text-foreground">
             Người ở cùng
           </h1>
-          <p className="mt-1 text-slate-600">
+          <p className="mt-1 text-secondary-foreground">
             Quản lý thông tin những người đang cư trú cùng phòng với bạn.
           </p>
         </header>
-        <section className="rounded-3xl border border-blue-200 bg-white px-6 py-12 text-center shadow-lg shadow-slate-300/40 sm:px-10">
-          <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-blue-100 text-blue-700">
+        <section className="rounded-3xl border border-accent-border bg-card px-6 py-12 text-center shadow-lg shadow-slate-300/40 sm:px-10">
+          <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-accent text-link">
             <House className="size-8" />
           </span>
-          <h2 className="mt-5 text-xl font-extrabold text-slate-950">
+          <h2 className="mt-5 text-xl font-extrabold text-foreground">
             Chưa có phòng đang cư trú
           </h2>
-          <p className="mx-auto mt-2 max-w-xl text-slate-600">
+          <p className="mx-auto mt-2 max-w-xl text-secondary-foreground">
             Tài khoản của bạn chưa được liên kết với phòng và hợp đồng thuê đang
             hiệu lực. Sau khi quản lý xác nhận thông tin cư trú, danh sách người
             ở cùng sẽ hiển thị tại đây.
@@ -32,13 +32,13 @@ export function NoCoOccupantResidence() {
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/tenant/contracts"
-              className="rounded-xl bg-blue-600 px-5 py-3 font-bold text-white shadow-sm hover:bg-blue-700"
+              className="rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white shadow-card hover:bg-primary-hover"
             >
               Kiểm tra hợp đồng
             </Link>
             <Link
               href="/tenant/home"
-              className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 hover:bg-slate-50"
+              className="rounded-xl border border-input bg-card px-5 py-3 font-bold text-secondary-foreground hover:bg-muted"
             >
               Về trang chủ
             </Link>

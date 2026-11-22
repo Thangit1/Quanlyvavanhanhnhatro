@@ -1,6 +1,7 @@
 package com.thangit.boardinghouse.repository;
 
 import com.thangit.boardinghouse.domain.auth.RoleCode;
+import com.thangit.boardinghouse.security.AuthenticatedUser;
 import com.thangit.boardinghouse.dto.request.tenant.AdminTenantRequests.SaveTenant;
 import com.thangit.boardinghouse.dto.response.tenant.AdminTenantResponses.*;
 import java.math.BigDecimal;
@@ -19,12 +20,21 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AdminTenantRepository {
     private final JdbcClient jdbc;
+    // Share the same registry lock as DirectContractService.newProfile to serialize duplicate checks and inserts.
+    public void lockProfileRegistry(){jdbc.sql("SELECT id FROM roles WHERE code='TENANT' FOR UPDATE").query(Long.class).single();}
     public void requireExport(com.thangit.boardinghouse.security.AuthenticatedUser p,Long property){new com.thangit.boardinghouse.security.PropertyAuthorization(jdbc,new com.thangit.boardinghouse.security.SecurityAudit(jdbc)).requireExport(p,property);}
     private String financialContractScope(RoleCode role,String contract){return contractScope(role,contract)+(role==RoleCode.MANAGER?" AND EXISTS(SELECT 1 FROM manager_property_capabilities mc JOIN rooms scoped_fr ON scoped_fr.property_id=mc.property_id WHERE scoped_fr.id="+contract+".room_id AND mc.manager_id=:userId AND mc.capability='FINANCE_READ')":"");}
     private String resourceScope(RoleCode role,String property){return "EXISTS(SELECT 1 FROM properties scoped_p WHERE scoped_p.id="+property+" AND "+propertyScope(role,"scoped_p")+")";}
     private String contractScope(RoleCode role,String contract){return resourceScope(role,"(SELECT scoped_r.property_id FROM rooms scoped_r WHERE scoped_r.id="+contract+".room_id)");}
     private final com.thangit.boardinghouse.service.RoomLifecycleGuard rooms;
     public AdminTenantRepository(JdbcClient jdbc,com.thangit.boardinghouse.service.RoomLifecycleGuard rooms) { this.jdbc = jdbc;this.rooms=rooms; }
+    public void setManagementProperty(long id,Long property){jdbc.sql("UPDATE tenant_profiles SET management_property_id=:property WHERE id=:id").param("id",id).param("property",property).update();}
+    public Map<String,Object> lockProfile(long id){return jdbc.sql("SELECT * FROM tenant_profiles WHERE id=:id FOR UPDATE").param("id",id).query(AdminTenantRepository::mapRow).single();}
+    public boolean identityVerified(long id){return jdbc.sql("SELECT COUNT(*) FROM tenant_identity_verifications WHERE tenant_profile_id=:id").param("id",id).query(Long.class).single()>0;}
+    public boolean canReadTenantFinance(AuthenticatedUser p,long tenant){
+        if(p.activeRole()!=RoleCode.MANAGER)return true;
+        return jdbc.sql("SELECT COUNT(*) FROM properties p WHERE "+propertyScope(p.activeRole(),"p")+" AND EXISTS(SELECT 1 FROM manager_property_capabilities mc WHERE mc.manager_id=:userId AND mc.property_id=p.id AND mc.capability='FINANCE_READ') AND (EXISTS(SELECT 1 FROM tenant_residences tr WHERE tr.tenant_profile_id=:tenant AND tr.property_id=p.id) OR EXISTS(SELECT 1 FROM tenant_profiles tp WHERE tp.id=:tenant AND tp.management_property_id=p.id))").param("userId",p.id()).param("tenant",tenant).query(Long.class).single()>0;
+    }
 
     private String propertyScope(RoleCode role, String alias) {
         return switch (role) {
@@ -70,7 +80,7 @@ public class AdminTenantRepository {
     }
 
     private String lifecycleStatus() {
-        return "CASE WHEN tr.id IS NULL THEN 'PENDING' WHEN " + ResidentSql.current("tr")
+        return "CASE WHEN tr.id IS NULL OR tr.room_id IS NULL THEN 'PENDING' WHEN " + ResidentSql.current("tr")
                 + " THEN CASE WHEN r.status='NOTICE' OR EXISTS(SELECT 1 FROM rental_checkouts rc WHERE rc.contract_id=c.id AND rc.status IN ('REQUESTED','INSPECTING')) THEN 'NOTICE' ELSE 'ACTIVE' END"
                 + " WHEN c.status IN ('DRAFT','PENDING_CONFIRMATION') THEN 'PENDING'"
                 + " WHEN tr.status='MOVED_OUT' OR c.status='TERMINATED' THEN 'CHECKED_OUT'"
@@ -78,12 +88,14 @@ public class AdminTenantRepository {
                 + " ELSE 'INACTIVE' END";
     }
 
+    private String intakeScope(){return " AND (:organizationId IS NULL OR EXISTS(SELECT 1 FROM organization_property_relationships ox WHERE ox.property_id=p.id AND ox.organization_id=:organizationId AND ox.ended_at IS NULL AND ox.effective_from<=CURRENT_DATE)) AND (:areaId IS NULL OR EXISTS(SELECT 1 FROM organization_property_relationships ax WHERE ax.property_id=p.id AND ax.area_id=:areaId AND ax.ended_at IS NULL AND ax.effective_from<=CURRENT_DATE)) AND (:moveInFrom IS NULL OR tr.move_in_date>=:moveInFrom) AND (:moveInTo IS NULL OR tr.move_in_date<=:moveInTo)";}
     private record QueryParts(String where, Map<String, Object> params) {}
     private QueryParts filters(long userId, RoleCode role, Long propertyId, Long roomId, String status,
                                String temporaryStatus, String accountStatus, String keyword,
-                               String debtStatus, String contractStatus) {
-        StringBuilder where = new StringBuilder(tenantScope(role));
+                               String debtStatus, String contractStatus,Long organizationId,Long areaId,LocalDate moveInFrom,LocalDate moveInTo) {
+        StringBuilder where = new StringBuilder(tenantScope(role)+intakeScope());
         Map<String, Object> params = new HashMap<>();
+        params.put("organizationId",organizationId);params.put("areaId",areaId);params.put("moveInFrom",moveInFrom);params.put("moveInTo",moveInTo);
         params.put("userId", userId);
         params.put("isManager",role==RoleCode.MANAGER?1:0);
         if (propertyId != null) { where.append(" AND p.id=:propertyId"); params.put("propertyId", propertyId); }
@@ -113,7 +125,6 @@ public class AdminTenantRepository {
             where.append("""
                      AND (LOWER(tp.full_name) LIKE :keyword OR LOWER(tp.tenant_code) LIKE :keyword
                      OR LOWER(tp.phone) LIKE :keyword OR LOWER(COALESCE(tp.email,'')) LIKE :keyword
-                     OR LOWER(COALESCE(tp.identity_number,'')) LIKE :keyword
                      OR LOWER(COALESCE(r.code,'')) LIKE :keyword OR LOWER(COALESCE(c.code,'')) LIKE :keyword)
                     """);
             params.put("keyword", "%" + keyword.trim().toLowerCase() + "%");
@@ -138,7 +149,8 @@ public class AdminTenantRepository {
         return new QueryParts(where.toString(), params);
     }
 
-    public Summary summary(long userId, RoleCode role, Long propertyId) {
+    public Summary summary(long userId, RoleCode role, Long propertyId) {return summary(userId,role,propertyId,null,null,null,null);}
+    public Summary summary(long userId, RoleCode role, Long propertyId,Long organizationId,Long areaId,LocalDate moveInFrom,LocalDate moveInTo) {
         return jdbc.sql("""
                 SELECT COUNT(DISTINCT tp.id) total,
                   COUNT(DISTINCT CASE WHEN %s THEN tp.id END) active_count,
@@ -154,7 +166,7 @@ public class AdminTenantRepository {
                   COUNT(DISTINCT CASE WHEN EXISTS(SELECT 1 FROM invoices ix JOIN contracts cx ON cx.id=ix.contract_id
                 WHERE (cx.tenant_profile_id=tp.id OR cx.tenant_id=tp.user_id) AND ix.property_id=p.id AND (:isManager=0 OR EXISTS(SELECT 1 FROM manager_property_capabilities mc WHERE mc.manager_id=:userId AND mc.property_id=p.id AND mc.capability='FINANCE_READ')) AND ix.status NOT IN ('DRAFT','PENDING_REVIEW','CANCELLED')
                 AND ix.remaining_amount>0) THEN tp.id END) debtors,
-                  COUNT(DISTINCT CASE WHEN c.status IN ('DRAFT','PENDING_CONFIRMATION') THEN tp.id END) pending_checkin
+                  COUNT(DISTINCT CASE WHEN tr.id IS NULL OR tr.room_id IS NULL OR c.status IN ('DRAFT','PENDING_CONFIRMATION') THEN tp.id END) pending_checkin
                 FROM tenant_profiles tp
                 LEFT JOIN tenant_residences tr ON tr.id=(
                     SELECT tr2.id FROM tenant_residences tr2 WHERE tr2.tenant_profile_id=tp.id
@@ -165,8 +177,8 @@ public class AdminTenantRepository {
                     ORDER BY (c2.status IN ('ACTIVE','EXPIRING','PENDING_CONFIRMATION','DRAFT')) DESC,c2.id DESC LIMIT 1)
                 LEFT JOIN temporary_residence_records tpr ON tpr.tenant_profile_id=tp.id AND tpr.property_id=p.id
                 WHERE %s AND (:propertyId IS NULL OR p.id=:propertyId)
-                """.formatted(ResidentSql.current("tr"), tenantScope(role)))
-                .param("userId", userId).param("isManager",role==RoleCode.MANAGER?1:0).param("propertyId", propertyId)
+                """.formatted(ResidentSql.current("tr"), tenantScope(role)+intakeScope()))
+                .param("userId", userId).param("isManager",role==RoleCode.MANAGER?1:0).param("propertyId", propertyId).param("organizationId",organizationId).param("areaId",areaId).param("moveInFrom",moveInFrom).param("moveInTo",moveInTo)
                 .query((rs, n) -> new Summary(rs.getLong("total"), rs.getLong("active_count"),
                         rs.getLong("expiring"), rs.getLong("overdue"), rs.getLong("moved_out"),
                         rs.getLong("temp_registered"), rs.getLong("temp_pending"), rs.getLong("no_account"),
@@ -176,9 +188,13 @@ public class AdminTenantRepository {
     public Page<TenantRow> list(long userId, RoleCode role, Long propertyId, Long roomId, String status,
                                 String temporaryStatus, String accountStatus, String keyword,
                                 String debtStatus, String contractStatus, String sort, String direction,
-                                int page, int size) {
+                                int page, int size) {return list(userId,role,propertyId,roomId,status,temporaryStatus,accountStatus,keyword,debtStatus,contractStatus,sort,direction,page,size,null,null,null,null);}
+    public Page<TenantRow> list(long userId, RoleCode role, Long propertyId, Long roomId, String status,
+                                String temporaryStatus, String accountStatus, String keyword,
+                                String debtStatus, String contractStatus, String sort, String direction,
+                                int page,int size,Long organizationId,Long areaId,LocalDate moveInFrom,LocalDate moveInTo) {
         QueryParts parts = filters(userId, role, propertyId, roomId, status, temporaryStatus,
-                accountStatus, keyword, debtStatus, contractStatus);
+                accountStatus, keyword, debtStatus, contractStatus,organizationId,areaId,moveInFrom,moveInTo);
         String sortColumn = switch (sort == null ? "" : sort) {
             case "tenantCode" -> "tp.tenant_code";
             case "phone" -> "tp.phone";
@@ -207,7 +223,7 @@ public class AdminTenantRepository {
         Map<String, Object> params = new HashMap<>(parts.params());
         params.put("limit", size); params.put("offset", page * size);
         List<TenantRow> rows = jdbc.sql("""
-                SELECT tp.id,tp.tenant_code,tp.full_name,tp.phone,tp.email,tp.avatar_url,p.name property_name,
+                SELECT tp.id,tp.tenant_code,tp.full_name,tp.phone,tp.email,tp.avatar_url,p.name property_name,p.id property_id,r.id room_id,c.id contract_id,tp.status profile_status,
                   r.code room_code,r.building_name,tr.residence_role,
                   %s lifecycle_status,
                   c.code contract_code,c.end_date,tr.move_in_date,
@@ -227,7 +243,7 @@ public class AdminTenantRepository {
                         rs.getString("contract_code"), nullableDate(rs, "end_date"),
                         nullableDate(rs, "move_in_date"), rs.getBigDecimal("outstanding_debt"),
                         rs.getString("financial_status"), rs.getString("temporary_status"),
-                        rs.getBoolean("has_account"), rs.getString("account_status"))).list();
+                        rs.getBoolean("has_account"), rs.getString("account_status"),nullableLong(rs,"property_id"),nullableLong(rs,"room_id"),nullableLong(rs,"contract_id"),rs.getString("profile_status"))).list();
         return new Page<>(rows, page, size, total, (int) Math.ceil(total / (double) size));
     }
 
@@ -258,8 +274,8 @@ public class AdminTenantRepository {
     }
 
     private void residenceDate(Long contract,LocalDate at){
-        if(at==null)at=LocalDate.now();
-        if(at.isAfter(LocalDate.now()))throw com.thangit.boardinghouse.service.MonthlyBillingService.fail("RESIDENT_DATE_INVALID","Chỉ ghi nhận cư trú thực tế, không kích hoạt hồ sơ tương lai.");
+        if(at==null)at=com.thangit.boardinghouse.service.BusinessTime.today();
+        if(at.isAfter(com.thangit.boardinghouse.service.BusinessTime.today()))throw com.thangit.boardinghouse.service.MonthlyBillingService.fail("RESIDENT_DATE_INVALID","Chỉ ghi nhận cư trú thực tế, không kích hoạt hồ sơ tương lai.");
         if(contract==null)return;rooms.lockContract(contract);
         var c=jdbc.sql("SELECT * FROM contracts WHERE id=:id FOR UPDATE").param("id",contract).query().singleRow();
         if(at.isBefore(com.thangit.boardinghouse.service.MonthlyBillingService.date(c.get("start_date"))))throw com.thangit.boardinghouse.service.MonthlyBillingService.fail("RESIDENT_DATE_INVALID","Ngày cư trú trước thời hạn hợp đồng.");
@@ -280,7 +296,7 @@ public class AdminTenantRepository {
                 VALUES(:tenantId,:propertyId,:roomId,:contractId,:role,'ACTIVE',:moveIn,:actorId)
                 """).param("tenantId", tenantId).param("propertyId", propertyId).param("roomId", roomId)
                 .param("contractId", contractId).param("role", role == null ? "REPRESENTATIVE" : role)
-                .param("moveIn", moveIn == null ? LocalDate.now() : moveIn).param("actorId", actorId).update();
+                .param("moveIn", moveIn == null ? com.thangit.boardinghouse.service.BusinessTime.today() : moveIn).param("actorId", actorId).update();
     }
 
     public void updateProfile(long id, SaveTenant r) {

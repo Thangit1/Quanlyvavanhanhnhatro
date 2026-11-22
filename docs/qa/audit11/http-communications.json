@@ -1,0 +1,398 @@
+{
+  "runId": "aa1651f9-1887-4c97-a2e0-9106f8d7d63c",
+  "status": "PASS",
+  "cases": [
+    {
+      "method": "GET",
+      "path": "/communications/inbox",
+      "expected": 401,
+      "actual": 401,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/health",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/options",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/preferences",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar?from=2026-11-01&to=2026-11-30",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=all",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?from=not-a-date",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/communications/inbox/read-all",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/options",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/preferences",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar?from=2026-11-01&to=2026-11-30",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=all",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?from=not-a-date",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=99999999",
+      "expected": 403,
+      "actual": 403,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/communications/inbox/read-all",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/options",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/preferences",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar?from=2026-11-01&to=2026-11-30",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=all",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?from=not-a-date",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=99999999",
+      "expected": 403,
+      "actual": 403,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/communications/inbox/read-all",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/options",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/preferences",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar?from=2026-11-01&to=2026-11-30",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=all",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?from=not-a-date",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=99999999",
+      "expected": 403,
+      "actual": 403,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/communications/inbox/read-all",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/options",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/preferences",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar?from=2026-11-01&to=2026-11-30",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=all",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?from=not-a-date",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/calendar",
+      "expected": 400,
+      "actual": 400,
+      "status": "PASS"
+    },
+    {
+      "method": "GET",
+      "path": "/communications/inbox?propertyId=99999999",
+      "expected": 403,
+      "actual": 403,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/communications/inbox/read-all",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    }
+  ]
+}

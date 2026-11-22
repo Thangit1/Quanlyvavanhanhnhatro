@@ -106,6 +106,7 @@ export type PaymentMethod = {
   allowPartialPayment: boolean;
 };
 export type InvoiceDetail = {
+  paymentAvailableFrom?: string;
   id: number;
   invoiceCode: string;
   billingPeriod: string;

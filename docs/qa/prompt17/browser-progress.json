@@ -1,0 +1,1329 @@
+{
+  "runId": "1cfa20b9-6ca8-4195-a691-d8cfc8baecec",
+  "cases": [
+    {
+      "name": "Login real owner",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E02 activation arrives through isolated Mailpit after contract commit",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E05 landlord confirms the same version without activating occupancy",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E06 accountant records one confirmed deposit; missing handover still blocks checkin",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "status": "PASS"
+    },
+    {
+      "name": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "responses": [
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:56039/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:56039/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/creation-options?propertyId=17&keyword=",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/rooms/21",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/creation-options?propertyId=17&keyword=",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/rooms/21",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/properties/17/services",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/properties/17/services",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts",
+      "status": 201
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/creation-options?propertyId=17&keyword=",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/extensions",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/monthly-billing/20?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/delivery",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/extensions",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/delivery",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20/resident-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/monthly-billing/20?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20/resident-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E01 four-step contract wizard provisions a tenant without leaving the form",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E02 activation arrives through isolated Mailpit after contract commit",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E02 activation arrives through isolated Mailpit after contract commit",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E02 activation arrives through isolated Mailpit after contract commit",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E02 activation arrives through isolated Mailpit after contract commit",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E02 activation arrives through isolated Mailpit after contract commit",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E02 activation arrives through isolated Mailpit after contract commit",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/password-setup",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/password-setup",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E03 one-time setup removes token from URL and tenant logs in",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/confirmations",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/confirmations",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E04 tenant reads the version and explicitly confirms own contract",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/extensions",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/monthly-billing/20?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/delivery",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/extensions",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/delivery",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/monthly-billing/20?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20/resident-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20/resident-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20/confirmations",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/extensions",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20/confirmations",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/delivery",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/extensions",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20/resident-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/monthly-billing/20?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/delivery",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contracts/20/extensions",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/contract-changes/contracts/20/resident-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/monthly-billing/20?period=2026-11-01",
+      "status": 200
+    },
+    {
+      "case": "E2E05 landlord confirms the same version without activating occupancy",
+      "url": "http://127.0.0.1:56039/api/admin/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/handover-confirmations",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/handover-confirmations",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    },
+    {
+      "case": "E2E07 tenant confirms actual handover document then landlord completes checkin",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/checkout-settlement/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-changes/contracts/20",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/deposit-ledger/18/transfer-requests",
+      "status": 200
+    },
+    {
+      "case": "E2E08 refresh preserves progress and mobile has no horizontal overflow",
+      "url": "http://127.0.0.1:56039/api/tenant/contract-onboarding/20/reviews",
+      "status": 200
+    }
+  ]
+}

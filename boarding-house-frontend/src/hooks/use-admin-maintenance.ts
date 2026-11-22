@@ -1,5 +1,7 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useScopedQuery as useQuery } from "@/hooks/use-scoped-query";
 import { adminMaintenanceService as api } from "@/services/admin-maintenance.service";
 import type {
   MaintenanceFilters,
@@ -14,7 +16,6 @@ export function useMaintenanceData(filters: MaintenanceFilters) {
     list: useQuery({
       queryKey: ["admin-maintenance", filters],
       queryFn: () => api.list(filters),
-      placeholderData: (p) => p,
     }),
     options: useQuery({
       queryKey: ["maintenance-options"],
@@ -31,17 +32,17 @@ export function useMaintenanceDetail(id: number) {
   });
 }
 export function useMaintenanceMutations(id?: number) {
+  const [creationKey] = useState(() => crypto.randomUUID());
   const qc = useQueryClient();
   const refresh = async () => {
     await qc.invalidateQueries({ queryKey: ["admin-maintenance"] });
     await qc.invalidateQueries({ queryKey: ["maintenance-summary"] });
     await qc.invalidateQueries({ queryKey: ["maintenance-calendar"] });
-    if (id)
-      await qc.invalidateQueries({ queryKey: ["maintenance-detail", id] });
+    if (id) await qc.invalidateQueries({ queryKey: ["maintenance-detail"] });
   };
   return {
     create: useMutation({
-      mutationFn: (p: MaintenancePayload) => api.create(p),
+      mutationFn: (p: MaintenancePayload) => api.create(p, creationKey),
       onSuccess: refresh,
     }),
     triage: useMutation({

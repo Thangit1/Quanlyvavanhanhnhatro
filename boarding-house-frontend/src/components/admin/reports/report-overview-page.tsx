@@ -152,11 +152,11 @@ export function ReportOverviewPage() {
       <div className="space-y-5">
         <header className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-sm text-slate-500">Tổng quan / Báo cáo</p>
-            <h1 className="mt-1 text-3xl font-black text-slate-950">
+            <p className="text-sm text-muted-foreground">Tổng quan / Báo cáo</p>
+            <h1 className="mt-1 text-3xl font-black text-foreground">
               Báo cáo và thống kê
             </h1>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Dữ liệu tổng hợp trực tiếp từ các phân hệ vận hành.
             </p>
           </div>
@@ -190,7 +190,7 @@ export function ReportOverviewPage() {
         {query.isError && <ReportError retry={() => void query.refetch()} />}
         {data && (
           <>
-            <p className="text-right text-xs text-slate-500">
+            <p className="text-right text-xs text-muted-foreground">
               Cập nhật lúc {formatDate(data.updatedAt, true)}
             </p>
             <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -239,7 +239,7 @@ export function ReportOverviewPage() {
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <p className="py-20 text-center text-slate-500">
+                  <p className="py-20 text-center text-muted-foreground">
                     Chưa có dữ liệu tài chính trong kỳ.
                   </p>
                 )}
@@ -275,7 +275,7 @@ export function ReportOverviewPage() {
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <p className="py-20 text-center text-slate-500">
+                  <p className="py-20 text-center text-muted-foreground">
                     Chưa có dữ liệu phòng.
                   </p>
                 )}
@@ -288,17 +288,17 @@ export function ReportOverviewPage() {
                     <Link
                       key={a.code}
                       href={a.actionUrl}
-                      className="rounded-xl border border-amber-200 bg-amber-50 p-4 hover:border-amber-400"
+                      className="rounded-xl border border-warning-border bg-warning-muted p-4 hover:border-amber-400"
                     >
                       <p className="font-bold text-amber-900">{a.title}</p>
-                      <p className="mt-1 text-sm text-amber-800">
+                      <p className="mt-1 text-sm text-warning">
                         {a.description}
                       </p>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Không có cảnh báo đáng chú ý trong phạm vi hiện tại.
                 </p>
               )}

@@ -20,7 +20,10 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { roleHome } from "@/types/auth";
-import { useTechnicianNotifications } from "@/hooks/use-technician";
+import {
+  CommunicationBell,
+  useCommunicationUnread,
+} from "@/components/shared/communication-bell";
 
 const nav = [
   ["Tổng quan", "/technician/dashboard", LayoutDashboard],
@@ -41,7 +44,7 @@ export function TechnicianShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const notifications = useTechnicianNotifications();
+  const notifications = useCommunicationUnread();
   useEffect(() => {
     if (isBootstrapping) return;
     if (!user)
@@ -51,11 +54,11 @@ export function TechnicianShell({ children }: { children: React.ReactNode }) {
   }, [isBootstrapping, pathname, router, user]);
   if (isBootstrapping || !user || user.activeRole !== "TECHNICIAN")
     return (
-      <div className="grid min-h-screen place-items-center bg-slate-50 text-sm text-slate-500">
+      <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">
         Đang mở cổng kỹ thuật…
       </div>
     );
-  const unread = notifications.data?.filter((x) => !x.read).length ?? 0;
+  const unread = notifications.data?.unreadCount ?? 0;
   const links = (
     <nav className="space-y-1">
       {nav.map(([label, href, Icon]) => {
@@ -68,13 +71,13 @@ export function TechnicianShell({ children }: { children: React.ReactNode }) {
             href={href}
             onClick={() => setOpen(false)}
             aria-current={active ? "page" : undefined}
-            className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition ${active ? "bg-blue-600 text-white shadow-md shadow-blue-200" : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"}`}
+            className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition ${active ? "bg-accent font-semibold text-link" : "text-secondary-foreground hover:bg-muted hover:text-foreground"}`}
           >
             <Icon className="size-5" />
             <span className="flex-1">{label}</span>
             {href === "/technician/notifications" && unread > 0 && (
               <span
-                className={`rounded-full px-2 py-0.5 text-[11px] ${active ? "bg-white text-blue-700" : "bg-red-500 text-white"}`}
+                className={`rounded-full px-2 py-0.5 text-[11px] ${active ? "bg-card text-link" : "bg-danger-solid text-white"}`}
               >
                 {unread}
               </span>
@@ -85,15 +88,15 @@ export function TechnicianShell({ children }: { children: React.ReactNode }) {
     </nav>
   );
   return (
-    <div className="min-h-screen bg-slate-50 pb-16 lg:pb-0">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-68 border-r border-slate-200 bg-white p-5 lg:block">
+    <div className="min-h-screen bg-background pb-16 lg:pb-0">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-68 border-r border-border bg-card p-5 lg:block">
         <Brand />
         <div className="mt-7">{links}</div>
         <button
           onClick={() =>
             window.confirm("Bạn có chắc muốn đăng xuất?") && void logout()
           }
-          className="absolute bottom-5 left-5 right-5 flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-slate-600 hover:bg-red-50 hover:text-red-700"
+          className="absolute bottom-5 left-5 right-5 flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-secondary-foreground hover:bg-danger-muted hover:text-danger"
         >
           <LogOut className="size-5" />
           Đăng xuất
@@ -106,11 +109,11 @@ export function TechnicianShell({ children }: { children: React.ReactNode }) {
             aria-label="Đóng menu"
             onClick={() => setOpen(false)}
           />
-          <aside className="relative h-full w-72 overflow-y-auto bg-white p-5 shadow-2xl">
+          <aside className="relative h-full w-72 overflow-y-auto bg-card p-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <Brand />
               <button
-                className="rounded-xl p-2 hover:bg-slate-100"
+                className="rounded-xl p-2 hover:bg-muted"
                 aria-label="Đóng menu"
                 onClick={() => setOpen(false)}
               >
@@ -122,45 +125,36 @@ export function TechnicianShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
       <div className="lg:pl-68">
-        <header className="sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b border-border bg-card px-4 backdrop-blur sm:px-6">
           <button
-            className="rounded-xl p-2 hover:bg-slate-100 lg:hidden"
+            className="rounded-xl p-2 hover:bg-muted lg:hidden"
             aria-label="Mở menu"
             onClick={() => setOpen(true)}
           >
             <Menu />
           </button>
           <div className="flex-1">
-            <p className="font-bold text-slate-900">Cổng làm việc kỹ thuật</p>
-            <p className="hidden text-xs text-slate-500 sm:block">
+            <p className="font-bold text-foreground">Cổng làm việc kỹ thuật</p>
+            <p className="hidden text-xs text-muted-foreground sm:block">
               Theo dõi công việc, SLA và hồ sơ sửa chữa được giao
             </p>
           </div>
-          <Link
-            href="/technician/notifications"
-            className="relative rounded-xl p-2 hover:bg-slate-100"
-            aria-label={`Thông báo${unread ? `, ${unread} chưa đọc` : ""}`}
-          >
-            <Bell className="size-5" />
-            {unread > 0 && (
-              <span className="absolute right-1 top-1 size-2 rounded-full bg-red-500" />
-            )}
-          </Link>
+          <CommunicationBell />
           <Link
             href="/technician/account"
-            className="grid size-10 place-items-center rounded-full bg-blue-100 font-bold text-blue-700"
+            className="grid size-10 place-items-center rounded-full bg-accent font-bold text-link"
           >
             {user.fullName.slice(0, 1).toUpperCase()}
           </Link>
         </header>
         {children}
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
         {nav.slice(0, 5).map(([label, href, Icon]) => (
           <Link
             key={href}
             href={href}
-            className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] ${pathname.startsWith(href) ? "font-semibold text-blue-700" : "text-slate-500"}`}
+            className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] ${pathname.startsWith(href) ? "font-semibold text-link" : "text-muted-foreground"}`}
           >
             <Icon className="size-5" />
             {label}
@@ -174,9 +168,9 @@ function Brand() {
   return (
     <Link
       href="/technician/dashboard"
-      className="flex items-center gap-3 font-extrabold text-blue-700"
+      className="flex items-center gap-3 font-extrabold text-link"
     >
-      <span className="grid size-10 place-items-center rounded-xl bg-blue-600 text-white">
+      <span className="grid size-10 place-items-center rounded-xl bg-primary hover:bg-primary-hover text-white">
         <Wrench />
       </span>
       <span>SmartHome AI</span>

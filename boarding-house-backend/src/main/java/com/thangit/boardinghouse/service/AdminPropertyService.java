@@ -15,6 +15,7 @@ public interface AdminPropertyService {
     Created createFloor(AuthenticatedUser principal,long buildingId,SaveFloor request);
     PropertyOptions options(AuthenticatedUser principal);
     RoomList listRooms(AuthenticatedUser principal,Long propertyId,Long buildingId,Long floorId,String status,String keyword,int page,int size);
+    RoomList listRooms(AuthenticatedUser principal,Long propertyId,Long buildingId,Long floorId,String status,String keyword,int page,int size,java.math.BigDecimal minimumRent,java.math.BigDecimal maximumRent);
     RoomDetail room(AuthenticatedUser principal,long id);
     Created createRoom(AuthenticatedUser principal,SaveRoom request);
     RoomDetail updateRoom(AuthenticatedUser principal,long id,SaveRoom request);

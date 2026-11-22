@@ -1,0 +1,1102 @@
+{
+  "InvoiceFinanceWorkspaceMysqlTest.legacyNullOpeningPreservesHistoricalPaymentEligibility": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "legacyNullOpeningPreservesHistoricalPaymentEligibility",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.policyClampsMonthEndAndDoesNotRewriteExistingInvoice": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "policyClampsMonthEndAndDoesNotRewriteExistingInvoice",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.listDebtBreakdownAndExportShareScopeAndFilters": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "listDebtBreakdownAndExportShareScopeAndFilters",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.overdueInvoiceStillAcceptsFullActualReceipt": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "overdueInvoiceStillAcceptsFullActualReceipt",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.printableInvoiceUsesRealItemsAndUtf8": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "printableInvoiceUsesRealItemsAndUtf8",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.accountantUiPermissionsMatchAssignedCapabilities": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "accountantUiPermissionsMatchAssignedCapabilities",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.invalidWindowLeavesNoDraftOrItems": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "invalidWindowLeavesNoDraftOrItems",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.batchRejectsChangedSourceThenCreatesDraftExactlyOnce": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "batchRejectsChangedSourceThenCreatesDraftExactlyOnce",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.futureOpeningBlocksOwnerAndTenantWithoutChangingDebt": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "futureOpeningBlocksOwnerAndTenantWithoutChangingDebt",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.previewDoesNotCreateFinancialRows": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "previewDoesNotCreateFinancialRows",
+    "status": "PASS"
+  },
+  "InvoiceDocumentsTest.workbookContainsUnicodeNumericAmountsAndInertFormulaText": {
+    "suite": "InvoiceDocumentsTest",
+    "name": "workbookContainsUnicodeNumericAmountsAndInertFormulaText",
+    "status": "PASS"
+  },
+  "InvoicePaymentRulesTest.draftsAndCancelledInvoicesAreNeverOverdue": {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "draftsAndCancelledInvoicesAreNeverOverdue",
+    "status": "PASS"
+  },
+  "InvoicePaymentRulesTest.openingDateIsIndependentOfDeadlineAndAllowsLateReceipts": {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "openingDateIsIndependentOfDeadlineAndAllowsLateReceipts",
+    "status": "PASS"
+  },
+  "InvoicePaymentRulesTest.deadlineIsInclusiveAndLatePaymentKeepsOriginalDeadline": {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "deadlineIsInclusiveAndLatePaymentKeepsOriginalDeadline",
+    "status": "PASS"
+  },
+  "InvoicePaymentRulesTest.legacyNullAndJdbcDatesAreSupported": {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "legacyNullAndJdbcDatesAreSupported",
+    "status": "PASS"
+  },
+  "InvoicePaymentRulesTest.exceptionalShortReceiptRemainsOverdue": {
+    "suite": "InvoicePaymentRulesTest",
+    "name": "exceptionalShortReceiptRemainsOverdue",
+    "status": "PASS"
+  },
+  "AdminInvoiceServiceImplTest.previousDebtIsSnapshotOnlyAndDoesNotIncreaseNewInvoiceObligation": {
+    "suite": "AdminInvoiceServiceImplTest",
+    "name": "previousDebtIsSnapshotOnlyAndDoesNotIncreaseNewInvoiceObligation",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.oldKeyCannotReplayLegacyPartialPaymentInstructions": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "oldKeyCannotReplayLegacyPartialPaymentInstructions",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.paidInvoiceDoesNotExposeOldSession": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "paidInvoiceDoesNotExposeOldSession",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.tenantCannotRequestLessThanFullBalance": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "tenantCannotRequestLessThanFullBalance",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.aSessionCannotSubmitTwoPendingProofs": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "aSessionCannotSubmitTwoPendingProofs",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.cannotSwitchMethodWhileTransferAwaitsReconciliation": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "cannotSwitchMethodWhileTransferAwaitsReconciliation",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.overdueInvoiceStillAcceptsFullPaymentSession": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "overdueInvoiceStillAcceptsFullPaymentSession",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.missingAmountIsRejected": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "missingAmountIsRejected",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.submittingProofOnlyCreatesPendingEvidenceAndDoesNotConfirmPayment": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "submittingProofOnlyCreatesPendingEvidenceAndDoesNotConfirmPayment",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.activeSessionIsReusedWithNewKey": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "activeSessionIsReusedWithNewKey",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.anotherTenantsInvoiceCannotBeResumed": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "anotherTenantsInvoiceCannotBeResumed",
+    "status": "PASS"
+  },
+  "TenantInvoicePaymentServiceImplTest.sessionIdempotencyKeyWithDifferentPayloadIsRejected": {
+    "suite": "TenantInvoicePaymentServiceImplTest",
+    "name": "sessionIdempotencyKeyWithDifferentPayloadIsRejected",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc04_lowerWithoutReplacementRejected": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc04_lowerWithoutReplacementRejected",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc16_leapFebruary": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc16_leapFebruary",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc25_partialPaymentExactlyOnce": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc25_partialPaymentExactlyOnce",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc34_settlementCannotChargeBilledUtilitiesAgain": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc34_settlementCannotChargeBilledUtilitiesAgain",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc23_totalsIncludeDiscountOnce": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc23_totalsIncludeDiscountOnce",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc20_twoStaffCannotCreateDuplicate": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc20_twoStaffCannotCreateDuplicate",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc14_firstMonthProratesActualDays": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc14_firstMonthProratesActualDays",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc05_concurrentVersionCannotOverwrite": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc05_concurrentVersionCannotOverwrite",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.staleDraftRequiresRecalculation": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "staleDraftRequiresRecalculation",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc28_adjustmentAuditAndNoNegativeDebt": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc28_adjustmentAuditAndNoNegativeDebt",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc06_previousPeriodEndAutomaticallyCarried": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc06_previousPeriodEndAutomaticallyCarried",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.bulkKeepsValidRoomWhenOtherRoomLacksMeterData": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "bulkKeepsValidRoomWhenOtherRoomLacksMeterData",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.pendingReviewIsNotOfficialDebt": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "pendingReviewIsNotOfficialDebt",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc08_futureRateDoesNotRepriceIssuedInvoice": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc08_futureRateDoesNotRepriceIssuedInvoice",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc17_draftStoresEverySnapshotItem": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc17_draftStoresEverySnapshotItem",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc31_issueAndPaymentNeverBreakBalance": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc31_issueAndPaymentNeverBreakBalance",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.accountantReconciledShortReceiptKeepsCorrectState": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "accountantReconciledShortReceiptKeepsCorrectState",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc21_schedulerRetryDoesNotDuplicate": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc21_schedulerRetryDoesNotDuplicate",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.issuedReadingsCannotBeEdited": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "issuedReadingsCannotBeEdited",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.springWiresBatchWithoutCircularCreation": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "springWiresBatchWithoutCircularCreation",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc18_missingReadingsBlocksIssuing": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc18_missingReadingsBlocksIssuing",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc12_quantityServiceDoesNotDefaultOne": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc12_quantityServiceDoesNotDefaultOne",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc11_perPersonUsesResidents": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc11_perPersonUsesResidents",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc26_fullPaymentLeavesZeroDebt": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc26_fullPaymentLeavesZeroDebt",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc27_cancelledExcludedFromDebt": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc27_cancelledExcludedFromDebt",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.endToEndTenantSeesSameObligationAndActualPayments": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "endToEndTenantSeesSameObligationAndActualPayments",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc32_summaryDoesNotDuplicateAllocations": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc32_summaryDoesNotDuplicateAllocations",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.draftRecalculationKeepsHistoryAndIssuesNewSnapshot": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "draftRecalculationKeepsHistoryAndIssuesNewSnapshot",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tenantUtilityViewUsesReplacementConsumption": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tenantUtilityViewUsesReplacementConsumption",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc13_endedServiceExcluded": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc13_endedServiceExcluded",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.schedulerAutoIssuesOnlyValidConfirmedSources": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "schedulerAutoIssuesOnlyValidConfirmedSources",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc15_lastMonthExcludesHandoverDay": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc15_lastMonthExcludesHandoverDay",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.accountantCannotIssueStaleDraftThroughOtherPortal": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "accountantCannotIssueStaleDraftThroughOtherPortal",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc29_tenantCannotReadOtherBilling": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc29_tenantCannotReadOtherBilling",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc03_negativeReadingRejected": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc03_negativeReadingRejected",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.actualDaysAreUsedByInvoiceEngine": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "actualDaysAreUsedByInvoiceEngine",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc33_futureUnagreedContractCannotBill": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc33_futureUnagreedContractCannotBill",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc02_waterReadingAndAmount": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc02_waterReadingAndAmount",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.closedAccountingPeriodBlocksInvoice": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "closedAccountingPeriodBlocksInvoice",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc10_listingChangeDoesNotChangeRent": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc10_listingChangeDoesNotChangeRent",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.missingServiceUsageIsNotZero": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "missingServiceUsageIsNotZero",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc24_previousDebtIsNotAddedToNewTotal": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc24_previousDebtIsNotAddedToNewTotal",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc30_accountantOutsideAssignmentDenied": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc30_accountantOutsideAssignmentDenied",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc09_contractRentUsed": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc09_contractRentUsed",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc01_electricityReadingAndAmount": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc01_electricityReadingAndAmount",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc07_meterReplacementSumsSegments": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc07_meterReplacementSumsSegments",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.cancelledInvoiceCanBeReplacedWithoutOverlappingDebt": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "cancelledInvoiceCanBeReplacedWithoutOverlappingDebt",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.usageServiceHasQuantityAndEvidence": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "usageServiceHasQuantityAndEvidence",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.serviceStopHasEffectiveDateAndAudit": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "serviceStopHasEffectiveDateAndAudit",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc22_bulkIsolatesFailureAndKeepsExisting": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc22_bulkIsolatesFailureAndKeepsExisting",
+    "status": "PASS"
+  },
+  "MonthlyBillingMysqlTest.tc19_duplicatePeriodBlocked": {
+    "suite": "MonthlyBillingMysqlTest",
+    "name": "tc19_duplicatePeriodBlocked",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.requestForShortAmountCannotCreateSession": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "requestForShortAmountCannotCreateSession",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.legacyPartialSessionCannotBeUsedAsPaymentInstructions": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "legacyPartialSessionCannotBeUsedAsPaymentInstructions",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.sessionSurvivesNewServiceInstance": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "sessionSurvivesNewServiceInstance",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.reconciledShortBankReceiptReleasesSessionForExactRemainder": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "reconciledShortBankReceiptReleasesSessionForExactRemainder",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.proofAwaitingReconciliationDoesNotExpireOrCreateAnotherSession": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "proofAwaitingReconciliationDoesNotExpireOrCreateAnotherSession",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.concurrentDifferentKeysProduceOnlyOneActiveSession": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "concurrentDifferentKeysProduceOnlyOneActiveSession",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.expiredUnsubmittedSessionCanBeRetried": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "expiredUnsubmittedSessionCanBeRetried",
+    "status": "PASS"
+  },
+  "MonthlyPaymentSessionMysqlTest.concurrentSameKeyIsIdempotent": {
+    "suite": "MonthlyPaymentSessionMysqlTest",
+    "name": "concurrentSameKeyIsIdempotent",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc19_assetPurchaseIsNotOperatingCost": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc19_assetPurchaseIsNotOperatingCost",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc26_tenantCannotReadFinance": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc26_tenantCannotReadFinance",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc10_rejectedPaymentIsNotCash": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc10_rejectedPaymentIsNotCash",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc12_idempotentPayment": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc12_idempotentPayment",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc39_concurrentVoucherPaymentHasSingleCashEvent": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc39_concurrentVoucherPaymentHasSingleCashEvent",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc09_pendingPaymentIsNotCash": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc09_pendingPaymentIsNotCash",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc36_exportCannotIncludeAnotherOwnersProperty": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc36_exportCannotIncludeAnotherOwnersProperty",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc32_reconciliationDetectsOverAllocation": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc32_reconciliationDetectsOverAllocation",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc17_voucherCannotBePaidTwice": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc17_voucherCannotBePaidTwice",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc08_transferDoesNotCreateCash": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc08_transferDoesNotCreateCash",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc13_referenceCannotBeRepostedByAnotherRole": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc13_referenceCannotBeRepostedByAnotherRole",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc14_draftVoucherIsNotCash": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc14_draftVoucherIsNotCash",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc05_depositIsCashButNotServiceIncome": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc05_depositIsCashButNotServiceIncome",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc22_paymentDoesNotMoveInvoicePeriod": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc22_paymentDoesNotMoveInvoicePeriod",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc31_depositTotalReconcilesToLedger": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc31_depositTotalReconcilesToLedger",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc27_technicianCannotReadFinance": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc27_technicianCannotReadFinance",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc28_closedPeriodBlocksOwnerAlternatePaymentApi": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc28_closedPeriodBlocksOwnerAlternatePaymentApi",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc30_closedPeriodBlocksReversal": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc30_closedPeriodBlocksReversal",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc16_paidVoucherUsesPaymentDate": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc16_paidVoucherUsesPaymentDate",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc11_reversalRemovesCashExactlyOnce": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc11_reversalRemovesCashExactlyOnce",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc07_offsetIsNotCash": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc07_offsetIsNotCash",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.preparingExistingPeriodNeverReopensIt": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "preparingExistingPeriodNeverReopensIt",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc04_oldDebtIsNotAddedToNextObligation": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc04_oldDebtIsNotAddedToNextObligation",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc29_reopenRequiresPermission": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc29_reopenRequiresPermission",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc18_repairCostIsSeparateFromPayable": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc18_repairCostIsSeparateFromPayable",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc23_advanceIsUnallocatedNotRevenue": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc23_advanceIsUnallocatedNotRevenue",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.duplicateOtherIncomeKeyIsIdempotent": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "duplicateOtherIncomeKeyIsIdempotent",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc06_refundChangesCashOnlyWhenPaid": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc06_refundChangesCashOnlyWhenPaid",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc02_partialPayment": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc02_partialPayment",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc15_submittedVoucherIsNotCash": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc15_submittedVoucherIsNotCash",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc03_fullPayment": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc03_fullPayment",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc35_exportIncludesMoreThanTwoHundredSourcePayments": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc35_exportIncludesMoreThanTwoHundredSourcePayments",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.payingApprovedCostFromClosedPriorMonthDoesNotEditTheCost": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "payingApprovedCostFromClosedPriorMonthDoesNotEditTheCost",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc38_zeroPriorPeriodHasNoFabricatedGrowth": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc38_zeroPriorPeriodHasNoFabricatedGrowth",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc34_reversedVoucherCannotReverseTwice": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc34_reversedVoucherCannotReverseTwice",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.voucherDocumentsRequireObjectScopeAndKeepBytes": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "voucherDocumentsRequireObjectScopeAndKeepBytes",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.linkedExpenseIsNotCountedTwice": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "linkedExpenseIsNotCountedTwice",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc24_ownerAndAccountantShareDefinitions": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc24_ownerAndAccountantShareDefinitions",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.sameBankReferenceCannotBecomeBothInvoiceCashAndDepositOrOtherIncome": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "sameBankReferenceCannotBecomeBothInvoiceCashAndDepositOrOtherIncome",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.paidVoucherCannotBeApprovedByCreator": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "paidVoucherCannotBeApprovedByCreator",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc21_doesNotClaimAccountingProfit": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc21_doesNotClaimAccountingProfit",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc01_issuedObligationIsNotCash": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc01_issuedObligationIsNotCash",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc33_overpaymentCannotMakeNegativeDebt": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc33_overpaymentCannotMakeNegativeDebt",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc25_managerOutsideScopeIsDenied": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc25_managerOutsideScopeIsDenied",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc20_netCashIsCashInMinusCashOut": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc20_netCashIsCashInMinusCashOut",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.paidVoucherReversalKeepsHistory": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "paidVoucherReversalKeepsHistory",
+    "status": "PASS"
+  },
+  "ManagementFinanceMysqlTest.tc37_emptyScopeProducesZeros": {
+    "suite": "ManagementFinanceMysqlTest",
+    "name": "tc37_emptyScopeProducesZeros",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc11_fullCancellationRefund": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc11_fullCancellationRefund",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc21_transactionFailureRollsBack": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc21_transactionFailureRollsBack",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc01_bookingStartsUnpaid": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc01_bookingStartsUnpaid",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc10_unpaidCancellationHasNoRefund": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc10_unpaidCancellationHasNoRefund",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.refundFailureRollsBackLedgerAndRequest": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "refundFailureRollsBackLedgerAndRequest",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc25_migrationDoesNotInventHistoricalCash": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc25_migrationDoesNotInventHistoricalCash",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc24_ledgerMatchesAccountantBalance": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc24_ledgerMatchesAccountantBalance",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc09_checkinRequiresActualFunds": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc09_checkinRequiresActualFunds",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc03_confirmedCollectionHasEvidence": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc03_confirmedCollectionHasEvidence",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc06_transferReducesRemainingDue": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc06_transferReducesRemainingDue",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc20_partialThenFullRefundClosesCheckout": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc20_partialThenFullRefundClosesCheckout",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc14_twoAccountantsCannotDoubleRefund": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc14_twoAccountantsCannotDoubleRefund",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc22_scopeAndRoleAreEnforced": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc22_scopeAndRoleAreEnforced",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc23_closedPeriodRejectsCollection": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc23_closedPeriodRejectsCollection",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc16_transferCreatesNoNewCash": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc16_transferCreatesNoNewCash",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tenantCanReadOwnUnsignedBigintAccount": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tenantCanReadOwnUnsignedBigintAccount",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc18_offsetReducesDebtWithoutCash": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc18_offsetReducesDebtWithoutCash",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc13_cannotRefundMoreThanBalance": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc13_cannotRefundMoreThanBalance",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.contractTransferIsInternalAndIdempotent": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "contractTransferIsInternalAndIdempotent",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.cashbookIncludesOnlyRealDepositCash": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "cashbookIncludesOnlyRealDepositCash",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc12_partialRetention": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc12_partialRetention",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.unexplainedBalanceIsBlocked": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "unexplainedBalanceIsBlocked",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc19_unpaidRefundPreventsClosure": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc19_unpaidRefundPreventsClosure",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc04_duplicateCollectionIsIdempotent": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc04_duplicateCollectionIsIdempotent",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.loweringRequirementCreatesRefundWithoutInventingPayout": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "loweringRequirementCreatesRefundWithoutInventingPayout",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc17_settlementUsesActualBalance": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc17_settlementUsesActualBalance",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.bankReferenceCannotBeReusedAcrossDepositAndRent": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "bankReferenceCannotBeReusedAcrossDepositAndRent",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.reservationExcessRemainsAvailableUntilRefunded": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "reservationExcessRemainsAvailableUntilRefunded",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc08_topUpPreservesRequirement": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc08_topUpPreservesRequirement",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc05_zeroReservationCanCreateContract": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc05_zeroReservationCanCreateContract",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc07_cannotTransferTwice": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc07_cannotTransferTwice",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.bankReceiptRequiresReconciliation": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "bankReceiptRequiresReconciliation",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc02_cannotFakeDeposited": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc02_cannotFakeDeposited",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.tc15_depositDoesNotCreateRentPayment": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "tc15_depositDoesNotCreateRentPayment",
+    "status": "PASS"
+  },
+  "DepositLedgerMysqlTest.legacyUnprovenLedgerRemainsUnderReview": {
+    "suite": "DepositLedgerMysqlTest",
+    "name": "legacyUnprovenLedgerRemainsUnderReview",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.absentHandoverNeedsDocumentedBasisAndNoForgedTenantSignature": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "absentHandoverNeedsDocumentedBasisAndNoForgedTenantSignature",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc05_shortNoticeDoesNotForfeitDeposit": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc05_shortNoticeDoesNotForfeitDeposit",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc14_alreadyBilledServiceIsNotRepeated": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc14_alreadyBilledServiceIsNotRepeated",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc07_rescheduleRejectsPastAndKeepsAudit": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc07_rescheduleRejectsPastAndKeepsAudit",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc25_failedCheckoutRollsBackAllTables": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc25_failedCheckoutRollsBackAllTables",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc22_offsetReducesDebtWithoutNewCashReceipt": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc22_offsetReducesDebtWithoutNewCashReceipt",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc02_unsignedContractCannotCheckout": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc02_unsignedContractCannotCheckout",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc06_onTimeRequestDoesNotInventPenalty": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc06_onTimeRequestDoesNotInventPenalty",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc08_inventoryUsesCheckinSnapshotNotCatalogue": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc08_inventoryUsesCheckinSnapshotNotCatalogue",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc04_requestDoesNotReleaseOccupancy": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc04_requestDoesNotReleaseOccupancy",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc20_refundRequestIsNotActualCash": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc20_refundRequestIsNotActualCash",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc03_twoRequestsCannotCoexist": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc03_twoRequestsCannotCoexist",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc23_tenantCanStillSeeUnpaidInvoiceAfterHandover": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc23_tenantCanStillSeeUnpaidInvoiceAfterHandover",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.lateFinancialSettlementCannotChangeNewBookingRoomState": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "lateFinancialSettlementCannotChangeNewBookingRoomState",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc13_dailyRentIncludesHandoverOnlyWhenAgreed": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc13_dailyRentIncludesHandoverOnlyWhenAgreed",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc26_allLinkedResidentsMoveOut": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc26_allLinkedResidentsMoveOut",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.finalizedHandoverInspectionCannotBeSilentlyChanged": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "finalizedHandoverInspectionCannotBeSilentlyChanged",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.staffRequestDoesNotImpersonateTenantConsent": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "staffRequestDoesNotImpersonateTenantConsent",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.openDisputeBlocksRefundAndFinancialClose": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "openDisputeBlocksRefundAndFinancialClose",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc17_debtAboveDepositRemainsCollectible": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc17_debtAboveDepositRemainsCollectible",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc11_finalMetersArePersisted": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc11_finalMetersArePersisted",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc10_sameDamageCannotBeAddedTwice": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc10_sameDamageCannotBeAddedTwice",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc29_otherTenantCannotReadOrChangeCheckout": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc29_otherTenantCannotReadOrChangeCheckout",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.replacedMeterFinalReadingBelowCheckinStillUsesAllSegments": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "replacedMeterFinalReadingBelowCheckinStillUsesAllSegments",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.concurrentInspectionEditsKeepOneAcceptedVersion": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "concurrentInspectionEditsKeepOneAcceptedVersion",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.newMonthlyInvoiceCannotRepeatFinalSettlement": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "newMonthlyInvoiceCannotRepeatFinalSettlement",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc18_offsetCannotExceedRealDeposit": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc18_offsetCannotExceedRealDeposit",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.handoverCannotPrecedeActualCheckin": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "handoverCannotPrecedeActualCheckin",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc34_reportsUseNetRemainingAfterDeposit": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc34_reportsUseNetRemainingAfterDeposit",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.originalContractEndIsPreservedAfterClosure": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "originalContractEndIsPreservedAfterClosure",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc21_failedRefundRollsBackCash": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc21_failedRefundRollsBackCash",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc01_staffRequestHasSourceAndHistory": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc01_staffRequestHasSourceAndHistory",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc19_refundReplayHasOneActualPayout": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc19_refundReplayHasOneActualPayout",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.physicalHandoverDoesNotPretendFinancialCompletion": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "physicalHandoverDoesNotPretendFinancialCompletion",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc12_onlyUnbilledConsumptionIsCharged": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc12_onlyUnbilledConsumptionIsCharged",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.cancelledRequestCanBeReplacedWithoutDeletingHistory": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "cancelledRequestCanBeReplacedWithoutDeletingHistory",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc09_unconfirmedDamageDoesNotCreateDebt": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc09_unconfirmedDamageDoesNotCreateDebt",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.paymentAfterApprovalRequiresNewReview": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "paymentAfterApprovalRequiresNewReview",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc28_roomNeedsExplicitAcceptanceBeforeReady": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc28_roomNeedsExplicitAcceptanceBeforeReady",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc32_settlementInvoiceHasSourceAndAudit": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc32_settlementInvoiceHasSourceAndAudit",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc30_accountantCannotRefundOutsideScope": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc30_accountantCannotRefundOutsideScope",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc24_parallelCheckoutHasOneSettlement": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc24_parallelCheckoutHasOneSettlement",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.physicalHandoverCanProceedWhileMoneyDisputeRemainsOpen": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "physicalHandoverCanProceedWhileMoneyDisputeRemainsOpen",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc31_technicianCannotApproveOrTerminate": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc31_technicianCannotApproveOrTerminate",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tenantRequestToRealRefundClosureAndAcceptedReadyRoom": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tenantRequestToRealRefundClosureAndAcceptedReadyRoom",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc27_physicalDamageRequiresMaintenanceWithoutAutomaticFee": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc27_physicalDamageRequiresMaintenanceWithoutAutomaticFee",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc15_oldDebtIsNotDuplicatedIntoSettlementInvoice": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc15_oldDebtIsNotDuplicatedIntoSettlementInvoice",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc16_threeMillionDepositOneMillionObligationRefundsTwoMillion": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc16_threeMillionDepositOneMillionObligationRefundsTwoMillion",
+    "status": "PASS"
+  },
+  "CheckoutSettlementMysqlTest.tc33_offsetDoesNotDuplicateCashbook": {
+    "suite": "CheckoutSettlementMysqlTest",
+    "name": "tc33_offsetDoesNotDuplicateCashbook",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.twoStaffCannotBothCollectTheFullBalance": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "twoStaffCannotBothCollectTheFullBalance",
+    "status": "PASS"
+  },
+  "InvoiceFinanceWorkspaceMysqlTest.inAppReminderIsPersistedButEmailCannotClaimDelivery": {
+    "suite": "InvoiceFinanceWorkspaceMysqlTest",
+    "name": "inAppReminderIsPersistedButEmailCannotClaimDelivery",
+    "status": "PASS"
+  }
+}

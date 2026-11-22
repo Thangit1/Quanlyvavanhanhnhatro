@@ -6,6 +6,7 @@ export type AccountAssignment = {
   property_name: string;
   role_code: AccountRole;
   is_primary?: boolean;
+  organization_name?: string | null;
   area_id?: number | null;
   area_name?: string | null;
 };
@@ -34,6 +35,7 @@ export type AccountPage = {
   summary: Record<string, number>;
 };
 export type AccountOptions = {
+  organizations?: { id: number; name: string }[];
   managerAssignments: {
     property_id: number;
     manager_id: number;
@@ -116,6 +118,7 @@ export const ownerAccountsService = {
     params: {
       propertyId?: number;
       areaId?: number;
+      organizationId?: number;
       role?: string;
       keyword?: string;
       status?: string;

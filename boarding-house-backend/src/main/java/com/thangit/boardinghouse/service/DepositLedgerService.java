@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 /** All changes to held money are posted to the existing deposit ledger in one transaction. */
 @Service
 public class DepositLedgerService {
+    private ContractDeliveryService delivery;
+    @org.springframework.beans.factory.annotation.Autowired public void delivery(ContractDeliveryService delivery){this.delivery=delivery;}
     public record Cash(@NotNull @DecimalMin("0.01") @Digits(integer=13,fraction=2) BigDecimal amount,
             @NotBlank @Pattern(regexp="CASH|BANK_TRANSFER") String method,
             @NotNull @PastOrPresent LocalDateTime occurredAt,
@@ -72,8 +74,13 @@ public class DepositLedgerService {
     public Map<String,Object> detail(AuthenticatedUser p,long id) {
         Map<String,Object> d=account(p,id,false);
         Map<String,Object> result=new LinkedHashMap<>(d);
-        result.put("can_approve_refund",p.activeRole()==RoleCode.ACCOUNTANT&&accounting.permission(p.id(),"can_approve_refund")?1:0);
+        long property=((Number)d.get("property_id")).longValue();
+        boolean managerWrite=p.activeRole()==RoleCode.MANAGER&&jdbc.sql("SELECT EXISTS(SELECT 1 FROM manager_property_capabilities WHERE manager_id=:actor AND property_id=:property AND capability='FINANCE_WRITE')").param("actor",p.id()).param("property",property).query(Boolean.class).single();
+        boolean managerApprove=p.activeRole()==RoleCode.MANAGER&&jdbc.sql("SELECT EXISTS(SELECT 1 FROM manager_property_capabilities WHERE manager_id=:actor AND property_id=:property AND capability='DEPOSIT_APPROVE')").param("actor",p.id()).param("property",property).query(Boolean.class).single();
+        result.put("can_write",p.activeRole()==RoleCode.OWNER||managerWrite||p.activeRole()==RoleCode.ACCOUNTANT&&accounting.permission(p.id(),"can_record_payment"));
+        result.put("can_approve_refund",p.activeRole()==RoleCode.OWNER||managerApprove||p.activeRole()==RoleCode.ACCOUNTANT&&accounting.permission(p.id(),"can_approve_refund")?1:0);
         result.put("transactions",jdbc.sql("SELECT * FROM deposit_transactions WHERE deposit_id=:id ORDER BY id DESC").param("id",id).query().listOfRows());
+        result.put("collection_ready",d.get("contract_id")==null||onboarding.directDepositReady(num(d,"contract_id")));
         result.put("refunds",jdbc.sql("SELECT * FROM deposit_refund_requests WHERE deposit_id=:id ORDER BY id DESC").param("id",id).query().listOfRows());
         return result;
     }
@@ -83,12 +90,13 @@ public class DepositLedgerService {
         writer(p);Map<String,Object> d=account(p,id,true);verified(d);cash(r);open(d,r.occurredAt().toLocalDate());
         String fingerprint=hash("COLLECT|"+id+"|"+r);
         var prior=replay(key,fingerprint);if(prior.isPresent())return prior.get();
+        if(d.get("contract_id")!=null&&!onboarding.directDepositReady(num(d,"contract_id")))throw fail("CONTRACT_NOT_CONFIRMED","Hai bên cần xác nhận cùng phiên bản trước khi thu cọc hợp đồng trực tiếp.");
         if(pending(id).signum()>0)throw fail("DEPOSIT_REFUND_PENDING","Khoản cọc đang chờ xử lý hoàn.");
         String bookingBefore=null;
         if(d.get("booking_id")!=null) {
             var b=jdbc.sql("SELECT * FROM rental_bookings WHERE id=:id FOR UPDATE").param("id",d.get("booking_id")).query().singleRow();
             bookingBefore=b.get("status").toString();
-            if(!Set.of("RESERVED","DEPOSITED").contains(b.get("status"))||!date(b.get("reservation_end")).isAfter(LocalDate.now()))throw fail("BOOKING_NOT_COLLECTIBLE","Booking đã hết hiệu lực.");
+            if(!Set.of("RESERVED","DEPOSITED").contains(b.get("status"))||!date(b.get("reservation_end")).isAfter(com.thangit.boardinghouse.service.BusinessTime.today()))throw fail("BOOKING_NOT_COLLECTIBLE","Booking đã hết hiệu lực.");
         } else {
             String status=jdbc.sql("SELECT status FROM contracts WHERE id=:id FOR UPDATE").param("id",d.get("contract_id")).query(String.class).single();
             if(!Set.of("PENDING_CONFIRMATION","ACTIVE","EXPIRING").contains(status))throw fail("CONTRACT_NOT_COLLECTIBLE","Hợp đồng không còn nhận cọc.");
@@ -104,7 +112,7 @@ public class DepositLedgerService {
 
     @Transactional
     public long requestRefund(AuthenticatedUser p,long id,Refund r) {
-        writer(p);Map<String,Object>d=account(p,id,true);verified(d);open(d,LocalDate.now());
+        writer(p);Map<String,Object>d=account(p,id,true);verified(d);open(d,com.thangit.boardinghouse.service.BusinessTime.today());
         if(r.amount().signum()<0||r.retainedAmount().signum()<0||r.amount().add(r.retainedAmount()).signum()<=0)throw fail("REFUND_AMOUNT_INVALID","Số tiền hoàn/giữ lại không hợp lệ.");
         Long checkout=null;
         if(d.get("booking_id")!=null) {
@@ -124,7 +132,7 @@ public class DepositLedgerService {
 
     @Transactional
     public void approveRefund(AuthenticatedUser p,long id,long requestId) {
-        requireUser(p);if(p.activeRole()==RoleCode.ACCOUNTANT){if(!accounting.permission(p.id(),"can_approve_refund"))throw new AuthException(HttpStatus.FORBIDDEN,"DEPOSIT_APPROVAL_DENIED","Chưa được ủy quyền duyệt hoàn cọc.");}else approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,LocalDate.now());var r=refund(id,requestId);
+        requireUser(p);if(p.activeRole()==RoleCode.ACCOUNTANT){if(!accounting.permission(p.id(),"can_approve_refund"))throw new AuthException(HttpStatus.FORBIDDEN,"DEPOSIT_APPROVAL_DENIED","Chưa được ủy quyền duyệt hoàn cọc.");}else approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,com.thangit.boardinghouse.service.BusinessTime.today());var r=refund(id,requestId);
         requireNoCheckoutDispute(d);
         if(!"REQUESTED".equals(r.get("status")))throw fail("REFUND_ALREADY_REVIEWED","Đề nghị đã được xử lý.");
         if(pending(id).compareTo(money(d,"balance_amount"))>0)throw fail("REFUND_EXCEEDS_BALANCE","Số dư không đủ để duyệt.");
@@ -154,7 +162,7 @@ public class DepositLedgerService {
 
     @Transactional
     public void requirement(AuthenticatedUser p,long id,Requirement r) {
-        approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,LocalDate.now());
+        approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,com.thangit.boardinghouse.service.BusinessTime.today());
         if(d.get("contract_id")==null||pending(id).signum()>0)throw fail("DEPOSIT_AMENDMENT_INVALID","Chỉ điều chỉnh cọc hợp đồng chưa chờ hoàn.");
         String status=jdbc.sql("SELECT status FROM contracts WHERE id=:id FOR UPDATE").param("id",d.get("contract_id")).query(String.class).single();
         if(!Set.of("PENDING_CONFIRMATION","ACTIVE","EXPIRING").contains(status))throw fail("CONTRACT_NOT_ACTIVE","Hợp đồng không còn được điều chỉnh cọc.");
@@ -173,7 +181,7 @@ public class DepositLedgerService {
         approver(p);if(id==r.targetDepositId())throw fail("DEPOSIT_TRANSFER_INVALID","Không được chuyển vào chính sổ nguồn.");
         var source=account(p,id,true);var target=account(p,r.targetDepositId(),true);
         approvalCapability(p,source);approvalCapability(p,target);
-        verified(source);verified(target);open(source,LocalDate.now());open(target,LocalDate.now());
+        verified(source);verified(target);open(source,com.thangit.boardinghouse.service.BusinessTime.today());open(target,com.thangit.boardinghouse.service.BusinessTime.today());
         String fingerprint=hash("TRANSFER|"+id+"|"+r);var prior=replay(key,fingerprint);if(prior.isPresent())return prior.get();
         if(source.get("contract_id")==null||target.get("contract_id")==null||num(source,"tenant_id")!=num(target,"tenant_id"))throw fail("DEPOSIT_TRANSFER_INVALID","Chỉ chuyển cọc giữa hợp đồng của cùng người thuê.");
         long owners=jdbc.sql("SELECT COUNT(DISTINCT owner_id) FROM properties WHERE id IN (:source,:target)").param("source",source.get("property_id")).param("target",target.get("property_id")).query(Long.class).single();
@@ -217,7 +225,7 @@ public class DepositLedgerService {
         jdbc.sql("UPDATE tenant_deposits SET tenant_id=:tenant WHERE id=:id").param("tenant",target.get("tenant_id")).param("id",source.get("id")).update();
         if(amount.signum()<0||amount.compareTo(available)>0||amount.compareTo(money(target,"required_amount"))>0)throw fail("RESERVATION_EXCESS_AGREEMENT_REQUIRED","Cần chỉ rõ số giữ chỗ được chuyển theo thỏa thuận, trong phạm vi số thực nhận và cọc hợp đồng.");
         if(amount.signum()>0) {
-            open(source,LocalDate.now());
+            open(source,com.thangit.boardinghouse.service.BusinessTime.today());
             post(source,"TRANSFER_OUT",amount,actor,"booking-out-"+bookingId,hash("out-"+bookingId),null,num(target,"id"),null,null);
             post(target,"TRANSFER_IN",amount,actor,"booking-in-"+bookingId,hash("in-"+bookingId),null,num(source,"id"),null,null);
         }
@@ -234,7 +242,7 @@ public class DepositLedgerService {
     public void verifyReservation(long bookingId) {var d=byBooking(bookingId);verified(d);if(money(d,"balance_amount").compareTo(money(d,"required_amount"))<0)throw fail("BOOKING_DEPOSIT_REQUIRED","Chưa đủ giao dịch thực thu tiền giữ chỗ.");}
 
     public BigDecimal settlementDebt(long contractId) {
-        var d=byContract(contractId);verified(d);open(d,LocalDate.now());
+        var d=byContract(contractId);verified(d);open(d,com.thangit.boardinghouse.service.BusinessTime.today());
         var invoices=jdbc.sql("SELECT * FROM invoices WHERE contract_id=:id AND status<>'CANCELLED' ORDER BY id FOR UPDATE").param("id",contractId).query().listOfRows();
         if(invoices.stream().anyMatch(i->Set.of("DRAFT","PENDING_REVIEW").contains(i.get("status"))))throw fail("FINAL_INVOICE_NOT_ISSUED","Cần phát hành hoặc hủy hóa đơn nháp trước khi quyết toán.");
         if(jdbc.sql("SELECT COUNT(*) FROM invoice_debt_carryover_anomalies WHERE contract_id=:id").param("id",contractId).query(Long.class).single()>0)throw fail("DEBT_RECONCILIATION_REQUIRED","Công nợ lịch sử cần đối soát trước khi bù trừ.");
@@ -242,7 +250,7 @@ public class DepositLedgerService {
     }
 
     public void settle(long contractId,long checkoutId,BigDecimal charges,long actor) {
-        var d=byContract(contractId);verified(d);open(d,LocalDate.now());
+        var d=byContract(contractId);verified(d);open(d,com.thangit.boardinghouse.service.BusinessTime.today());
         if(pending(num(d,"id")).signum()>0)throw fail("REFUND_ALREADY_PENDING","Đã có đề nghị hoàn cọc.");
         if(charges.signum()>0) {
             GeneratedKeyHolder kh=new GeneratedKeyHolder();
@@ -278,7 +286,7 @@ public class DepositLedgerService {
 
     @Transactional
     public void closeCheckout(AuthenticatedUser p,long id) {
-        approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,LocalDate.now());
+        approver(p);var d=account(p,id,true);approvalCapability(p,d);verified(d);open(d,com.thangit.boardinghouse.service.BusinessTime.today());
         if(d.get("contract_id")==null)throw fail("CONTRACT_REQUIRED","Sổ cọc không thuộc hợp đồng.");
         var co=jdbc.sql("SELECT * FROM rental_checkouts WHERE contract_id=:id AND status='SETTLEMENT' FOR UPDATE").param("id",d.get("contract_id")).query(DepositLedgerService::row).optional().orElseThrow(()->fail("SETTLEMENT_REQUIRED","Chưa có quyết toán để đóng."));
         if(co.get("actual_checkout_at")==null||co.get("approved_version_id")==null||co.get("settlement_applied_at")==null)throw fail("CHECKOUT_RECONCILIATION_REQUIRED","Thiếu chứng cứ bàn giao hoặc phê duyệt quyết toán; cần đối soát hồ sơ.");
@@ -326,7 +334,7 @@ public class DepositLedgerService {
                 .param("property",d.get("property_id")).param("date",date).query(String.class).list();
         if(statuses.contains("CLOSED"))throw fail("ACCOUNTING_PERIOD_CLOSED","Kỳ kế toán đã khóa.");
     }
-    private void cash(Cash r) {if(r.amount()==null||r.amount().signum()<=0||r.amount().scale()>2||r.occurredAt()==null||r.occurredAt().isAfter(LocalDateTime.now())||!Set.of("CASH","BANK_TRANSFER").contains(r.method())||r.evidence()==null||r.evidence().isBlank())throw fail("DEPOSIT_CASH_INVALID","Thiếu thông tin hoặc chứng từ giao dịch thực tế.");if("BANK_TRANSFER".equals(r.method())&&(!r.reconciled()||r.reference()==null||r.reference().isBlank()))throw fail("BANK_RECONCILIATION_REQUIRED","Chuyển khoản phải có mã giao dịch đã đối soát.");}
+    private void cash(Cash r) {if(r.amount()==null||r.amount().signum()<=0||r.amount().scale()>2||r.occurredAt()==null||r.occurredAt().isAfter(com.thangit.boardinghouse.service.BusinessTime.now())||!Set.of("CASH","BANK_TRANSFER").contains(r.method())||r.evidence()==null||r.evidence().isBlank())throw fail("DEPOSIT_CASH_INVALID","Thiếu thông tin hoặc chứng từ giao dịch thực tế.");if("BANK_TRANSFER".equals(r.method())&&(!r.reconciled()||r.reference()==null||r.reference().isBlank()))throw fail("BANK_RECONCILIATION_REQUIRED","Chuyển khoản phải có mã giao dịch đã đối soát.");}
     private Optional<Map<String,Object>> replay(String key,String fingerprint) {if(key==null||key.isBlank()||key.length()>100)throw fail("IDEMPOTENCY_KEY_REQUIRED","Cần Idempotency-Key hợp lệ.");var prior=jdbc.sql("SELECT * FROM deposit_transactions WHERE idempotency_key=:key").param("key",key).query(DepositLedgerService::row).optional();if(prior.isPresent()&&!fingerprint.equals(prior.get().get("request_fingerprint")))throw fail("IDEMPOTENCY_KEY_REUSED","Khóa đã dùng với nội dung khác.");return prior;}
     private BigDecimal pending(long id) {return jdbc.sql("SELECT COALESCE(SUM(amount-paid_amount+CASE WHEN status='REQUESTED' THEN retained_amount ELSE 0 END),0) FROM deposit_refund_requests WHERE deposit_id=:id AND status IN ('REQUESTED','APPROVED','PARTIAL')").param("id",id).query(BigDecimal.class).single();}
     private Map<String,Object> refund(long deposit,long id) {return jdbc.sql("SELECT * FROM deposit_refund_requests WHERE id=:id AND deposit_id=:deposit FOR UPDATE").param("id",id).param("deposit",deposit).query(DepositLedgerService::row).optional().orElseThrow(()->fail("REFUND_NOT_FOUND","Không tìm thấy đề nghị hoàn trong sổ cọc."));}
@@ -343,12 +351,13 @@ public class DepositLedgerService {
         jdbc.sql("""
             INSERT INTO deposit_transactions(deposit_id,transaction_code,transaction_type,amount,reason,reference_code,transacted_by,transacted_at,status,payment_method,evidence,idempotency_key,request_fingerprint,reference_dedup_key,related_deposit_id,checkout_id,refund_request_id)
             VALUES(:deposit,:code,:type,:amount,:reason,:reference,:actor,:at,'CONFIRMED',:method,:evidence,:key,:fingerprint,:dedup,:related,:checkout,:refund)
-            """).param("deposit",d.get("id")).param("code","CD-"+UUID.randomUUID()).param("type",type).param("amount",amount).param("reason",cash==null?type+"; hồ sơ "+(checkout==null?refund:checkout):cash.reason()).param("reference",cash==null?null:cash.reference()).param("actor",actor).param("at",cash==null?LocalDateTime.now():cash.occurredAt()).param("method",cash==null?null:cash.method()).param("evidence",cash==null?null:cash.evidence()).param("key",key).param("fingerprint",fingerprint).param("dedup",referenceKey).param("related",related).param("checkout",checkout).param("refund",refund).update(kh,"id");
+            """).param("deposit",d.get("id")).param("code","CD-"+UUID.randomUUID()).param("type",type).param("amount",amount).param("reason",cash==null?type+"; hồ sơ "+(checkout==null?refund:checkout):cash.reason()).param("reference",cash==null?null:cash.reference()).param("actor",actor).param("at",cash==null?com.thangit.boardinghouse.service.BusinessTime.now():cash.occurredAt()).param("method",cash==null?null:cash.method()).param("evidence",cash==null?null:cash.evidence()).param("key",key).param("fingerprint",fingerprint).param("dedup",referenceKey).param("related",related).param("checkout",checkout).param("refund",refund).update(kh,"id");
         jdbc.sql("UPDATE tenant_deposits SET status=CASE WHEN balance_amount+:signed=0 THEN 'SETTLED' WHEN balance_amount+:signed>=required_amount THEN 'HELD' ELSE 'PARTIAL' END,balance_amount=balance_amount+:signed,version=version+1 WHERE id=:id").param("signed",signed).param("id",d.get("id")).update();
-        long tx=kh.getKey().longValue();accounting.audit(num(d,"property_id"),actor,"DEPOSIT_TRANSACTION",tx,type,"Số tiền "+amount+"; sổ "+d.get("id"));return tx;
+        long tx=kh.getKey().longValue();accounting.audit(num(d,"property_id"),actor,"DEPOSIT_TRANSACTION",tx,type,"Số tiền "+amount+"; sổ "+d.get("id"));
+        if(delivery!=null&&type.equals("COLLECT")&&d.get("contract_id")!=null)delivery.enqueue(num(d,"contract_id"),"DEPOSIT-"+tx,"initial");return tx;
     }
     private static Map<String,Object> row(java.sql.ResultSet rs,int n)throws java.sql.SQLException {Map<String,Object> row=new LinkedHashMap<>();var meta=rs.getMetaData();for(int i=1;i<=meta.getColumnCount();i++)row.put(meta.getColumnLabel(i),rs.getObject(i));return row;}
-    private static LocalDate date(Object o) {return o==null?LocalDate.now():o instanceof LocalDate d?d:((java.sql.Date)o).toLocalDate();}
+    private static LocalDate date(Object o) {return o==null?com.thangit.boardinghouse.service.BusinessTime.today():o instanceof LocalDate d?d:((java.sql.Date)o).toLocalDate();}
     public static BigDecimal money(Map<String,Object>d,String key) {Object v=d.get(key);return v==null?BigDecimal.ZERO:new BigDecimal(v.toString());}
     public static long num(Map<String,Object>d,String key) {return ((Number)d.get(key)).longValue();}
     private static String hash(String s) {try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8)));}catch(Exception e){throw new IllegalStateException(e);}}

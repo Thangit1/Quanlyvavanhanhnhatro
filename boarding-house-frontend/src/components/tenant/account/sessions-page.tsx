@@ -35,7 +35,7 @@ export function SessionsPage() {
       actions={
         <button
           onClick={() => setTarget("all")}
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 font-bold text-red-700"
+          className="rounded-xl border border-danger-border bg-danger-muted px-4 py-2 font-bold text-danger"
         >
           Đăng xuất thiết bị khác
         </button>
@@ -50,9 +50,9 @@ export function SessionsPage() {
           {query.data.map((s) => (
             <article
               key={s.id}
-              className="flex flex-wrap items-center gap-4 rounded-2xl border bg-white p-5 shadow-sm"
+              className="flex flex-wrap items-center gap-4 surface-card p-5 sm:p-6 "
             >
-              <span className="grid size-12 place-items-center rounded-xl bg-blue-50 text-blue-700">
+              <span className="grid size-12 place-items-center rounded-xl bg-accent text-link">
                 {s.operatingSystem.includes("Android") ||
                 s.operatingSystem.includes("iOS") ? (
                   <Smartphone />
@@ -70,24 +70,24 @@ export function SessionsPage() {
                     <StatusPill tone="slate">Đã hết phiên</StatusPill>
                   )}
                 </div>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {s.maskedIpAddress} · Hoạt động{" "}
                   {accountDate(s.lastActiveAt, true)}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   Đăng nhập {accountDate(s.createdAt, true)}
                 </p>
               </div>
               {s.active && !s.currentSession && (
                 <button
                   onClick={() => setTarget(s.id)}
-                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-red-700"
+                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-danger"
                 >
                   <LogOut className="size-4" />
                   Đăng xuất phiên
                 </button>
               )}
-              {s.currentSession && <ShieldCheck className="text-emerald-600" />}
+              {s.currentSession && <ShieldCheck className="text-success" />}
             </article>
           ))}
         </section>

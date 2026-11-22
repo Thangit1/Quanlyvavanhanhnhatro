@@ -27,7 +27,7 @@ export function SettingsNavigation({
                 ? "/admin/settings"
                 : `/admin/settings/${event.target.value}`;
           }}
-          className="min-h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-semibold text-slate-800 shadow-sm outline-none focus:border-blue-500"
+          className="min-h-12 w-full appearance-none rounded-xl border border-input bg-card px-4 pr-10 text-sm font-semibold text-foreground shadow-card focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring"
         >
           {visible.map((item) => (
             <option key={item.section} value={item.section}>
@@ -35,9 +35,9 @@ export function SettingsNavigation({
             </option>
           ))}
         </select>
-        <ChevronDown className="pointer-events-none absolute right-3 top-3.5 size-5 text-slate-400" />
+        <ChevronDown className="pointer-events-none absolute right-3 top-3.5 size-5 text-muted-foreground" />
       </label>
-      <aside className="hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-sm lg:block">
+      <aside className="hidden surface-card p-2 lg:block">
         <nav aria-label="Danh mục cài đặt" className="space-y-1">
           {visible.map((item) => {
             const Icon = item.icon;
@@ -50,13 +50,13 @@ export function SettingsNavigation({
                     ? "/admin/settings"
                     : `/admin/settings/${item.section}`
                 }
-                className={`flex gap-3 rounded-xl px-3 py-3 transition ${active ? "bg-blue-600 text-white shadow-sm" : "text-slate-700 hover:bg-slate-50"}`}
+                className={`flex gap-3 rounded-xl px-3 py-3 transition ${active ? "bg-primary hover:bg-primary-hover text-white shadow-card" : "text-secondary-foreground hover:bg-muted"}`}
               >
                 <Icon className="mt-0.5 size-5 shrink-0" />
                 <span>
                   <span className="block text-sm font-bold">{item.label}</span>
                   <span
-                    className={`mt-0.5 block text-xs ${active ? "text-blue-100" : "text-slate-400"}`}
+                    className={`mt-0.5 block text-xs ${active ? "text-blue-100" : "text-muted-foreground"}`}
                   >
                     {item.description}
                   </span>

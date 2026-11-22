@@ -1,4 +1,4 @@
-import { CalendarPage } from "@/components/technician/technician-resource-pages";
+import { CommunicationWorkspace } from "@/components/shared/communication-workspace";
 export default function Page() {
-  return <CalendarPage />;
+  return <CommunicationWorkspace initialTab="calendar" />;
 }

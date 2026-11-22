@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
+import { disableWebPush } from "@/services/web-push.service";
 import {
   refreshAccessToken,
   setAccessToken,
@@ -103,6 +104,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [clearSession],
   );
   const logout = useCallback(async () => {
+    try {
+      await disableWebPush();
+    } catch {
+      /* Logout still clears the authenticated session. */
+    }
     clearSession();
     const epoch = currentSessionEpoch();
     try {

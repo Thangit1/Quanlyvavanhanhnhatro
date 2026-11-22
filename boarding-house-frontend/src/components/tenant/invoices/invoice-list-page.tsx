@@ -44,11 +44,11 @@ export function InvoiceListPage() {
   return (
     <main className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
       <div>
-        <p className="text-sm font-medium text-blue-600">Tài chính / Hóa đơn</p>
-        <h1 className="mt-1 text-3xl font-black text-slate-950">
+        <p className="text-sm font-medium text-link">Tài chính / Hóa đơn</p>
+        <h1 className="mt-1 text-3xl font-black text-foreground">
           Hóa đơn của tôi
         </h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-muted-foreground">
           Theo dõi công nợ, hạn thanh toán và minh chứng đã gửi.
         </p>
       </div>
@@ -77,9 +77,9 @@ export function InvoiceListPage() {
           />
         </div>
       )}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="surface-card p-4 ">
         <div className="relative">
-          <Search className="absolute left-3 top-3 size-5 text-slate-400" />
+          <Search className="absolute left-3 top-3 size-5 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => {
@@ -87,7 +87,7 @@ export function InvoiceListPage() {
               setPage(0);
             }}
             placeholder="Tìm mã hóa đơn, nhà trọ hoặc phòng..."
-            className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-3 outline-none focus:border-blue-500"
+            className="w-full rounded-xl border border-input py-2.5 pl-10 pr-3 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring"
           />
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -98,7 +98,7 @@ export function InvoiceListPage() {
                 setStatus(v);
                 setPage(0);
               }}
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${status === v ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}
+              className={`rounded-full px-4 py-2 text-sm font-semibold ${status === v ? "bg-primary hover:bg-primary-hover text-white" : "bg-muted text-secondary-foreground"}`}
             >
               {t}
             </button>
@@ -115,40 +115,40 @@ export function InvoiceListPage() {
             <Link
               key={x.id}
               href={`/tenant/invoices/${x.id}`}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+              className="rounded-2xl border border-border bg-card p-5 shadow-card transition hover:border-blue-300 hover:shadow-md"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <FileText className="size-5 text-blue-600" />
-                    <h2 className="font-bold text-slate-900">
+                    <FileText className="size-5 text-link" />
+                    <h2 className="font-bold text-foreground">
                       {x.invoiceCode}
                     </h2>
                     <InvoiceBadge status={x.status} />
                   </div>
-                  <p className="mt-2 text-sm text-slate-500">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     {x.propertyName} · Phòng {x.roomCode} · Kỳ {x.billingPeriod}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-black text-slate-950">
+                  <p className="text-lg font-black text-foreground">
                     {money(x.remainingAmount)}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     còn phải trả / {money(x.totalAmount)}
                   </p>
                 </div>
               </div>
-              <div className="mt-4 flex justify-between border-t border-slate-100 pt-3 text-sm">
+              <div className="mt-4 flex justify-between border-t border-border pt-3 text-sm">
                 <span>
                   Hạn: {date(x.dueDate)}
                   {x.overdueDays > 0 && (
-                    <b className="ml-2 text-red-600">
+                    <b className="ml-2 text-danger">
                       quá {x.overdueDays} ngày
                     </b>
                   )}
                 </span>
-                <span className="font-semibold text-blue-600">
+                <span className="font-semibold text-link">
                   Xem chi tiết →
                 </span>
               </div>
@@ -190,10 +190,10 @@ function Card({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <Icon className="size-6 text-blue-600" />
-      <p className="mt-3 text-sm text-slate-500">{title}</p>
-      <p className="mt-1 text-xl font-black text-slate-950">{value}</p>
+    <div className="surface-card p-5 sm:p-6 ">
+      <Icon className="size-6 text-link" />
+      <p className="mt-3 text-sm text-muted-foreground">{title}</p>
+      <p className="mt-1 text-xl font-black text-foreground">{value}</p>
     </div>
   );
 }

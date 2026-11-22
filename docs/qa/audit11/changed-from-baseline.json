@@ -1,0 +1,19 @@
+[
+  "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+  "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+  "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+  "boarding-house-frontend/src/components/tenant/contracts/contract-detail-sections.tsx",
+  "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+  "boarding-house-frontend/src/lib/api-error.ts",
+  "boarding-house-frontend/src/services/api-client.ts",
+  "boarding-house-frontend/src/services/health.service.ts",
+  "boarding-house-frontend/scripts/session-security.test.cjs",
+  "boarding-house-backend/src/main/java/com/thangit/boardinghouse/common/exception/GlobalExceptionHandler.java",
+  "boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/RentalLifecycleRepository.java",
+  "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CommunicationService.java",
+  "boarding-house-backend/src/test/java/com/thangit/boardinghouse/controller/CommunicationControllerTest.java",
+  "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/CommunicationMysqlTest.java",
+  "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/SystemAcceptanceMysqlTest.java",
+  "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/TenantWorkspaceMysqlTest.java",
+  "boarding-house-frontend/next.config.ts"
+]

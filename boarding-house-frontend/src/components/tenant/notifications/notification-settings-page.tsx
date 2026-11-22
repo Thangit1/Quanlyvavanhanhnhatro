@@ -18,7 +18,7 @@ export function NotificationSettingsPage() {
     query = useNotificationPreferences(user?.activeRole === "TENANT");
   if (query.isLoading)
     return (
-      <main className="mx-auto max-w-4xl p-6 text-center text-slate-500">
+      <main className="mx-auto max-w-4xl p-6 text-center text-muted-foreground">
         Đang tải cài đặt...
       </main>
     );
@@ -46,53 +46,53 @@ function PreferenceForm({ initial }: { initial: NotificationPreferences }) {
     <main className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
       <Link
         href="/tenant/notifications"
-        className="inline-flex items-center gap-2 font-bold text-blue-700"
+        className="inline-flex items-center gap-2 font-bold text-link"
       >
         <ArrowLeft className="size-4" />
         Trở lại thông báo
       </Link>
       <div>
-        <h1 className="text-3xl font-black text-slate-950">
+        <h1 className="text-3xl font-black text-foreground">
           Cài đặt thông báo
         </h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-muted-foreground">
           Chọn loại thông báo bạn muốn nhận trong ứng dụng.
         </p>
       </div>
       {message && (
         <p
           role="status"
-          className="rounded-xl bg-blue-50 p-3 font-semibold text-blue-800"
+          className="rounded-xl bg-accent p-3 font-semibold text-link"
         >
           {message}
         </p>
       )}
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="text-lg font-black">Kênh nhận thông báo</h2>
         <label className="mt-4 flex items-center justify-between rounded-xl border p-4">
           <span>
             <b>Trong ứng dụng</b>
-            <small className="mt-1 block text-slate-500">
+            <small className="mt-1 block text-muted-foreground">
               Chuông thông báo và Trung tâm thông báo
             </small>
           </span>
           <input type="checkbox" checked disabled className="size-5" />
         </label>
-        <div className="mt-3 flex items-center justify-between rounded-xl border border-dashed p-4 text-slate-500">
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-dashed p-4 text-muted-foreground">
           <span>
             <b>Email</b>
             <small className="mt-1 block">
               Chưa được cấu hình trên hệ thống
             </small>
           </span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold">
+          <span className="rounded-full bg-muted px-3 py-1 text-xs font-bold">
             Chưa khả dụng
           </span>
         </div>
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="text-lg font-black">Danh mục</h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Thông báo hóa đơn, hợp đồng, bảo mật và khẩn cấp là bắt buộc.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -104,7 +104,7 @@ function PreferenceForm({ initial }: { initial: NotificationPreferences }) {
               <span className="flex items-center gap-2 font-semibold">
                 {label}
                 {mandatory.has(key) && (
-                  <LockKeyhole className="size-3.5 text-slate-400" />
+                  <LockKeyhole className="size-3.5 text-muted-foreground" />
                 )}
               </span>
               <input
@@ -126,7 +126,7 @@ function PreferenceForm({ initial }: { initial: NotificationPreferences }) {
           ))}
         </div>
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="text-lg font-black">Tần suất và giờ yên lặng</h2>
         <label className="mt-4 block text-sm font-semibold">
           Tần suất
@@ -195,7 +195,7 @@ function PreferenceForm({ initial }: { initial: NotificationPreferences }) {
       <button
         onClick={save}
         disabled={mutation.isPending}
-        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-6 py-3 font-bold text-white disabled:opacity-50"
       >
         <Save className="size-4" />
         {mutation.isPending ? "Đang lưu..." : "Lưu cài đặt"}

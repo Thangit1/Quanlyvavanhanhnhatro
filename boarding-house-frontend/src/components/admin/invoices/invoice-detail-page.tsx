@@ -19,7 +19,7 @@ import { adminInvoiceService } from "@/services/admin-invoice.service";
 import { apiErrorMessage } from "@/lib/api-error";
 import { formatCurrency, formatDate } from "@/lib/format";
 const input =
-  "w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500";
+  "w-full rounded-xl border border-border px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring";
 function localDateTime() {
   const d = new Date(),
     z = (n: number) => String(n).padStart(2, "0");
@@ -37,6 +37,10 @@ export function InvoiceDetailPage({ id }: { id: number }) {
   const [type, setType] = useState("DECREASE");
   const [method, setMethod] = useState("BANK_TRANSFER");
   const [reason, setReason] = useState("");
+  const [reference, setReference] = useState("");
+  const [received, setReceived] = useState(false);
+  const [paidAt, setPaidAt] = useState(localDateTime);
+  const actionInFlight = useRef(false);
   const [error, setError] = useState("");
   const paymentAttempt = useRef<{
     signature: string;
@@ -52,12 +56,20 @@ export function InvoiceDetailPage({ id }: { id: number }) {
     );
   const d = q.data;
   const action = async () => {
+    if (actionInFlight.current) return;
+    actionInFlight.current = true;
     setError("");
     try {
       if (dialog === "payment") {
+        if (!received)
+          throw new Error("Xác nhận đã nhận tiền thực tế trước khi ghi sổ.");
+        if (method === "BANK_TRANSFER" && !reference.trim())
+          throw new Error("Cần mã giao dịch ngân hàng đã đối soát.");
         const signature = JSON.stringify({
           amount: requiredNumericValue(amount),
           method,
+          reference,
+          paidAt,
           reason,
           version: d.version,
         });
@@ -65,13 +77,14 @@ export function InvoiceDetailPage({ id }: { id: number }) {
           paymentAttempt.current = {
             signature,
             key: globalThis.crypto.randomUUID(),
-            paidAt: localDateTime(),
+            paidAt,
           };
         const payload = {
           amount: requiredNumericValue(amount),
           paymentMethod: method,
           paidAt: paymentAttempt.current.paidAt,
           note: reason,
+          referenceCode: reference.trim() || undefined,
           version: d.version,
         };
         await m.payment.mutateAsync({
@@ -93,7 +106,9 @@ export function InvoiceDetailPage({ id }: { id: number }) {
       setDialog(null);
       setReason("");
     } catch (e) {
-      setError(apiErrorMessage(e));
+      setError(apiErrorMessage(e, e instanceof Error ? e.message : undefined));
+    } finally {
+      actionInFlight.current = false;
     }
   };
   return (
@@ -103,10 +118,18 @@ export function InvoiceDetailPage({ id }: { id: number }) {
       readOnly
     >
       <div className="mx-auto max-w-6xl space-y-5">
+        {error && !dialog && (
+          <p
+            role="alert"
+            className="rounded-xl bg-danger-muted p-3 text-sm text-danger"
+          >
+            {error}
+          </p>
+        )}
         {d.status === "DRAFT" && (
           <>
             <MonthlyBillingPanel contractId={d.contract.id} />
-            <details className="rounded-2xl border bg-white p-5">
+            <details className="rounded-2xl border bg-card p-5">
               <summary>Kiểm tra nguồn và tính lại bản nháp</summary>
               <form
                 className="mt-3 space-y-3"
@@ -194,15 +217,33 @@ export function InvoiceDetailPage({ id }: { id: number }) {
         <div className="flex flex-wrap justify-between gap-3">
           <Link
             href="/admin/invoices"
-            className="text-sm font-semibold text-blue-600"
+            className="text-sm font-semibold text-link"
           >
             ← Danh sách hóa đơn
           </Link>
           <div className="flex flex-wrap gap-2">
             {d.permissions.canIssue && (
               <button
-                onClick={() => void m.issue.mutateAsync(d.version)}
-                className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white"
+                disabled={m.issue.isPending}
+                onClick={async () => {
+                  if (
+                    actionInFlight.current ||
+                    !window.confirm(
+                      `Phát hành ${d.invoiceCode} với tổng tiền ${formatCurrency(d.totalAmount)}? Hãy kiểm tra kỳ sử dụng và khoảng thanh toán.`,
+                    )
+                  )
+                    return;
+                  actionInFlight.current = true;
+                  setError("");
+                  try {
+                    await m.issue.mutateAsync(d.version);
+                  } catch (error) {
+                    setError(apiErrorMessage(error));
+                  } finally {
+                    actionInFlight.current = false;
+                  }
+                }}
+                className="rounded-xl bg-primary hover:bg-primary-hover px-3 py-2 text-sm font-semibold text-white"
               >
                 Phát hành
               </button>
@@ -211,9 +252,12 @@ export function InvoiceDetailPage({ id }: { id: number }) {
               <button
                 onClick={() => {
                   setAmount(d.remainingAmount);
+                  setReceived(false);
+                  setReference("");
+                  setPaidAt(localDateTime());
                   setDialog("payment");
                 }}
-                className="rounded-xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white"
+                className="rounded-xl bg-primary hover:bg-primary-hover px-3 py-2 text-sm font-semibold text-white"
               >
                 <WalletCards className="mr-1 inline size-4" />
                 Ghi nhận thanh toán
@@ -225,7 +269,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                   setType("IN_APP");
                   setDialog("remind");
                 }}
-                className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+                className="rounded-xl border bg-card px-3 py-2 text-sm font-semibold"
               >
                 <Send className="mr-1 inline size-4" />
                 Nhắc thanh toán
@@ -233,43 +277,51 @@ export function InvoiceDetailPage({ id }: { id: number }) {
             )}
             <button
               onClick={() =>
-                void adminInvoiceService.download(id, d.invoiceCode)
+                void adminInvoiceService
+                  .print(id)
+                  .catch((e) => setError(apiErrorMessage(e)))
               }
-              className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+              className="rounded-xl border bg-card px-3 py-2 text-sm font-semibold"
             >
               <Download className="mr-1 inline size-4" />
-              PDF
+              In / Lưu PDF
             </button>
             <button
-              onClick={() => window.print()}
-              className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+              onClick={() =>
+                void adminInvoiceService
+                  .print(id)
+                  .catch((e) => setError(apiErrorMessage(e)))
+              }
+              className="rounded-xl border bg-card px-3 py-2 text-sm font-semibold"
             >
               <Printer className="mr-1 inline size-4" />
               In
             </button>
           </div>
         </div>
-        <section className="rounded-2xl border bg-white p-6 shadow-sm print:border-0 print:shadow-none">
+        <section className="surface-card p-6 print:border-0 print:shadow-none">
           <div className="flex flex-col justify-between gap-5 sm:flex-row">
             <div>
               <InvoiceBadge status={d.status} />
               <h1 className="mt-3 text-3xl font-extrabold">
                 HÓA ĐƠN {d.invoiceCode}
               </h1>
-              <p className="mt-2 text-slate-500">
+              <p className="mt-2 text-muted-foreground">
                 Kỳ {d.billingPeriod} · {formatDate(d.periodStartDate)}–
                 {formatDate(d.periodEndDate)}
               </p>
             </div>
             <div className="sm:text-right">
-              <p className="text-sm text-slate-500">Còn phải thu</p>
+              <p className="text-sm text-muted-foreground">Còn phải thu</p>
               <p
-                className={`text-3xl font-extrabold ${d.remainingAmount > 0 ? "text-red-600" : "text-emerald-600"}`}
+                className={`text-3xl font-extrabold ${d.remainingAmount > 0 ? "text-danger" : "text-success"}`}
               >
                 {formatCurrency(d.remainingAmount)}
               </p>
-              <p className="text-sm text-slate-500">
-                Hạn {formatDate(d.dueDate)}
+              <p className="text-sm text-muted-foreground">
+                Thanh toán từ{" "}
+                {formatDate(d.paymentAvailableFrom ?? d.issueDate)} đến hết{" "}
+                {formatDate(d.dueDate)}
               </p>
             </div>
           </div>
@@ -281,7 +333,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
           </div>
           <div className="mt-6 overflow-x-auto">
             <table className="w-full min-w-[700px] text-sm">
-              <thead className="bg-slate-50 text-left">
+              <thead className="bg-muted text-left">
                 <tr>
                   <th className="p-3">Khoản thu</th>
                   <th className="p-3">Diễn giải</th>
@@ -294,7 +346,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                 {d.items.map((x) => (
                   <tr key={x.id} className="border-t">
                     <td className="p-3 font-semibold">{x.name}</td>
-                    <td className="p-3 text-slate-500">{x.description}</td>
+                    <td className="p-3 text-muted-foreground">{x.description}</td>
                     <td className="p-3 text-right">
                       {x.quantity} {x.unit}
                     </td>
@@ -331,7 +383,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
               >
                 <span>
                   <strong>{x.receiptCode}</strong>
-                  <small className="block text-slate-500">
+                  <small className="block text-muted-foreground">
                     {x.paymentMethod} · {formatDate(x.paidAt, true)} ·{" "}
                     {x.status === "REVERSED" ? "Đã đảo" : "Đã xác nhận"}
                   </small>
@@ -339,8 +391,8 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                 <strong
                   className={
                     x.status === "REVERSED"
-                      ? "text-slate-400 line-through"
-                      : "text-emerald-700"
+                      ? "text-muted-foreground line-through"
+                      : "text-success"
                   }
                 >
                   {formatCurrency(x.amount)}
@@ -348,20 +400,20 @@ export function InvoiceDetailPage({ id }: { id: number }) {
               </div>
             ))}
             {!d.payments.length && (
-              <p className="text-sm text-slate-400">Chưa có thanh toán.</p>
+              <p className="text-sm text-muted-foreground">Chưa có thanh toán.</p>
             )}
           </Card>
           <Card title="Lịch sử thay đổi">
             {d.history.map((x) => (
               <div key={x.id} className="border-b py-3 text-sm">
                 <strong>{x.action}</strong>
-                <p className="text-slate-500">
+                <p className="text-muted-foreground">
                   {x.actorName} · {formatDate(x.createdAt, true)} · {x.reason}
                 </p>
               </div>
             ))}
             {!d.history.length && (
-              <p className="text-sm text-slate-400">Chưa có lịch sử.</p>
+              <p className="text-sm text-muted-foreground">Chưa có lịch sử.</p>
             )}
           </Card>
         </section>
@@ -373,7 +425,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                 setType("DECREASE");
                 setDialog("adjust");
               }}
-              className="rounded-xl border bg-white px-4 py-2 text-sm font-semibold"
+              className="rounded-xl border bg-card px-4 py-2 text-sm font-semibold"
             >
               Tạo điều chỉnh
             </button>
@@ -381,7 +433,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
           {d.permissions.canCancel && (
             <button
               onClick={() => setDialog("cancel")}
-              className="rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600"
+              className="rounded-xl border border-danger-border bg-card px-4 py-2 text-sm font-semibold text-danger"
             >
               Hủy hóa đơn
             </button>
@@ -393,7 +445,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
           <div
             role="dialog"
             aria-modal="true"
-            className="w-full max-w-md rounded-2xl bg-white p-6"
+            className="w-full max-w-md rounded-2xl bg-card p-6"
           >
             <h2 className="text-lg font-bold">
               {dialog === "payment"
@@ -406,6 +458,36 @@ export function InvoiceDetailPage({ id }: { id: number }) {
             </h2>
             {dialog === "payment" && (
               <>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Mặc định thu đủ số dư. Chỉ ghi số tiền thực nhận; chuyển khoản
+                  phải được đối chiếu ngân hàng, ảnh minh chứng chưa đủ để ghi
+                  đã thu.
+                </p>
+                <label className="mt-3 block text-sm">
+                  Thời điểm thực thu
+                  <input
+                    type="datetime-local"
+                    className={input}
+                    value={paidAt}
+                    onChange={(e) => setPaidAt(e.target.value)}
+                  />
+                </label>
+                <label className="mt-3 block text-sm">
+                  Mã giao dịch / chứng từ
+                  <input
+                    className={input}
+                    value={reference}
+                    onChange={(e) => setReference(e.target.value)}
+                  />
+                </label>
+                <label className="mt-3 flex gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={received}
+                    onChange={(e) => setReceived(e.target.checked)}
+                  />
+                  Tôi đã nhận và đối chiếu số tiền thực tế
+                </label>
                 <CurrencyInput
                   type="number"
                   min="1"
@@ -451,8 +533,6 @@ export function InvoiceDetailPage({ id }: { id: number }) {
                 onChange={(e) => setType(e.target.value)}
               >
                 <option value="IN_APP">Thông báo trong ứng dụng</option>
-                <option value="EMAIL">Email</option>
-                <option value="SMS">SMS</option>
               </select>
             )}
             {dialog !== "remind" && (
@@ -466,7 +546,7 @@ export function InvoiceDetailPage({ id }: { id: number }) {
               />
             )}{" "}
             {error && (
-              <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              <p className="mt-3 rounded-xl bg-danger-muted p-3 text-sm text-danger">
                 {error}
               </p>
             )}
@@ -483,11 +563,19 @@ export function InvoiceDetailPage({ id }: { id: number }) {
               <button
                 onClick={() => void action()}
                 disabled={
+                  m.payment.isPending ||
+                  m.adjust.isPending ||
+                  m.cancel.isPending ||
+                  m.remind.isPending ||
+                  (dialog === "payment" &&
+                    (!received ||
+                      !paidAt ||
+                      (method === "BANK_TRANSFER" && !reference.trim()))) ||
                   (dialog !== "remind" && dialog !== "payment" && !reason) ||
                   ((dialog === "payment" || dialog === "adjust") &&
                     numericPreview(amount) <= 0)
                 }
-                className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40"
+                className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-semibold text-white disabled:opacity-40"
               >
                 Xác nhận
               </button>
@@ -500,8 +588,8 @@ export function InvoiceDetailPage({ id }: { id: number }) {
 }
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-3">
-      <p className="text-xs text-slate-500">{label}</p>
+    <div className="rounded-xl bg-muted p-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className="font-semibold">{value}</p>
     </div>
   );
@@ -532,7 +620,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border bg-white p-5 shadow-sm">
+    <section className="surface-card p-5 sm:p-6 ">
       <h2 className="font-bold">{title}</h2>
       <div className="mt-2">{children}</div>
     </section>

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/accountant")
 public class AccountantPortalController {
+    @org.springframework.beans.factory.annotation.Autowired private com.thangit.boardinghouse.service.PaymentTransactionService transactions;
     private final AccountantPortalService service;
     public AccountantPortalController(AccountantPortalService service){this.service=service;}
 
@@ -58,7 +59,7 @@ public class AccountantPortalController {
     @GetMapping("/reports") public ApiResponse<Map<String,Object>> report(@AuthenticationPrincipal AuthenticatedUser p,@RequestParam(required=false)Long propertyId,@RequestParam(required=false)String period){return ok("Lập báo cáo tài chính thành công.",service.report(p,propertyId,period));}
     @GetMapping("/exports") public ApiResponse<Map<String,Object>> exports(@AuthenticationPrincipal AuthenticatedUser p,@RequestParam(required=false)Long propertyId,@RequestParam(required=false)String period){return ok("Dữ liệu xuất báo cáo đã sẵn sàng.",service.report(p,propertyId,period));}
     @GetMapping("/reconciliation/bank") public ApiResponse<Map<String,Object>> bankReconciliation(@AuthenticationPrincipal AuthenticatedUser p,@RequestParam(required=false)Long propertyId,@RequestParam(required=false)String period,@RequestParam(defaultValue="0")int page,@RequestParam(defaultValue="50")int size){Map<String,Object> data=service.books(p,propertyId,period,"BANK",page,size);data.put("automaticMatching",false);data.put("message","Chưa cấu hình kết nối ngân hàng; chỉ hiển thị giao dịch thật đã ghi nhận.");return ok("Lấy dữ liệu đối soát ngân hàng thành công.",data);}
-    @GetMapping("/reconciliation/payment-gateways") public ApiResponse<Map<String,Object>> gateways(@AuthenticationPrincipal AuthenticatedUser p){service.account(p);return ok("Chưa có cổng thanh toán được cấu hình.",Map.of("content",java.util.List.of(),"configured",false));}
+    @GetMapping("/reconciliation/payment-gateways") public ApiResponse<Map<String,Object>> gateways(@AuthenticationPrincipal AuthenticatedUser p){service.account(p);return ok("Giao dịch gateway và mô phỏng trong phạm vi được giao",transactions.managementHistory(p,null,0,50));}
 
     @GetMapping("/notifications") public ApiResponse<Object> notifications(@AuthenticationPrincipal AuthenticatedUser p){return ApiResponse.success("Lấy thông báo kế toán thành công.",service.notifications(p));}
     @PostMapping("/notifications/{id}/read") public ApiResponse<Void> read(@AuthenticationPrincipal AuthenticatedUser p,@PathVariable long id){service.readNotification(p,id);return ok("Đã đánh dấu đã đọc.",null);}

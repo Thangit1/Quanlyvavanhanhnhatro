@@ -32,11 +32,11 @@ export const adminMaintenanceService = {
   detail: async (id: number) =>
     (await apiClient.get<ApiEnvelope<MaintenanceDetail>>(`${base}/${id}`)).data
       .data,
-  create: async (payload: MaintenancePayload) =>
+  create: async (payload: MaintenancePayload, key: string) =>
     (
       await apiClient.post<
         ApiEnvelope<{ id: number; requestCode: string; status: string }>
-      >(base, payload)
+      >(base, payload, { headers: { "Idempotency-Key": key } })
     ).data.data,
   triage: async (id: number, payload: object) =>
     (

@@ -55,12 +55,12 @@ const residenceState: Record<string, string> = {
 };
 
 const input =
-  "min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500";
+  "min-h-11 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring";
 const primary =
-  "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50";
+  "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white disabled:opacity-50";
 const secondary =
-  "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 disabled:opacity-50";
-const card = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
+  "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-secondary-foreground disabled:opacity-50";
+const card = "rounded-2xl border border-border bg-card p-5 shadow-card";
 export { AccountField, AccountModal } from "./account-ui";
 export function AccountsPage() {
   return (
@@ -81,9 +81,10 @@ export function AccountsWorkspace({
   const { user } = useAuth();
   const client = useQueryClient();
   const owner = user?.activeRole === "OWNER";
-  const [tab, setTab] = useState("overview"),
+  const [tab, setTab] = useState("staff"),
     [property, setProperty] = useState(0),
     [area, setArea] = useState(0),
+    [organization, setOrganization] = useState(0),
     [keyword, setKeyword] = useState(""),
     [status, setStatus] = useState(""),
     [page, setPage] = useState(0);
@@ -106,7 +107,9 @@ export function AccountsWorkspace({
     ? "MANAGER"
     : ["MANAGER", "TENANT", "ACCOUNTANT", "TECHNICIAN"].includes(tab)
       ? tab
-      : undefined;
+      : tab === "staff"
+        ? "STAFF"
+        : undefined;
   const key = ["owner-accounts", user?.id, user?.activeRole];
   const options = useQuery({
     queryKey: [...key, "options"],
@@ -115,13 +118,23 @@ export function AccountsWorkspace({
     refetchInterval: 15000,
   });
   const accounts = useQuery({
-    queryKey: [...key, property, area, role, keyword, status, page],
+    queryKey: [
+      ...key,
+      property,
+      area,
+      organization,
+      role,
+      keyword,
+      status,
+      page,
+    ],
     enabled: owner,
     queryFn: ({ signal }) =>
       service.list(
         {
           propertyId: property || undefined,
           areaId: area || undefined,
+          organizationId: organization || undefined,
           role,
           keyword,
           status,
@@ -188,6 +201,7 @@ export function AccountsWorkspace({
       ]
     : [
         ["overview", "Tổng quan"],
+        ["staff", "Nhân viên"],
         ...Object.entries(roleLabels),
         ["permissions", "Phân quyền"],
         ["management", "Quản lý tài khoản"],
@@ -199,14 +213,14 @@ export function AccountsWorkspace({
         className={`${card} flex flex-wrap items-center justify-between gap-4`}
       >
         <div>
-          <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600">
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-link">
             <Users className="size-4" />
             SmartHome AI
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-950">
+          <h1 className="text-2xl font-extrabold text-foreground">
             {embedded ? "Phân công tại cơ sở" : "Tài khoản & Nhân sự"}
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Tạo tài khoản, quản lý phạm vi làm việc và trạng thái đăng nhập.
           </p>
         </div>
@@ -228,7 +242,7 @@ export function AccountsWorkspace({
       {error && (
         <p
           role="alert"
-          className="rounded-xl bg-red-50 p-4 text-sm text-red-700"
+          className="rounded-xl bg-danger-muted p-4 text-sm text-danger"
         >
           {error}
         </p>
@@ -236,7 +250,7 @@ export function AccountsWorkspace({
       {notice && (
         <p
           role="status"
-          className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700"
+          className="rounded-xl bg-success-muted p-4 text-sm text-success"
         >
           {notice}
         </p>
@@ -244,7 +258,8 @@ export function AccountsWorkspace({
       {!embedded && accounts.data && (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            ["Tổng tài khoản", "totalAccounts"],
+            ["Tổng nhân viên", "totalStaff"],
+            ["Tổng tài khoản theo bộ lọc", "totalAccounts"],
             ["Người quản lý", "MANAGER"],
             ["Người thuê", "TENANT"],
             ["Kế toán", "ACCOUNTANT"],
@@ -254,8 +269,8 @@ export function AccountsWorkspace({
             ["Tài khoản bị khóa", "locked"],
           ].map(([label, key]) => (
             <div className={card} key={key}>
-              <p className="text-sm text-slate-500">{label}</p>
-              <p className="mt-2 text-2xl font-extrabold text-slate-900">
+              <p className="text-sm text-muted-foreground">{label}</p>
+              <p className="mt-2 text-2xl font-extrabold text-foreground">
                 {accounts.data.summary[key] ?? 0}
               </p>
             </div>
@@ -289,7 +304,7 @@ export function AccountsWorkspace({
           <div className={`${card} grid gap-4 md:grid-cols-4`}>
             <AccountField title="Tìm kiếm">
               <div className="relative">
-                <Search className="absolute right-3 top-3 size-4 text-slate-400" />
+                <Search className="absolute right-3 top-3 size-4 text-muted-foreground" />
                 <input
                   className={input}
                   placeholder="Tên, email, số điện thoại..."
@@ -300,6 +315,25 @@ export function AccountsWorkspace({
                   }}
                 />
               </div>
+            </AccountField>
+            <AccountField title="Công ty">
+              <select
+                className={input}
+                value={organization}
+                onChange={(e) => {
+                  setOrganization(Number(e.target.value));
+                  setArea(0);
+                  setProperty(0);
+                  setPage(0);
+                }}
+              >
+                <option value={0}>Tất cả công ty</option>
+                {options.data?.organizations?.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
             </AccountField>
             <AccountField title="Khu vực">
               <select
@@ -353,8 +387,8 @@ export function AccountsWorkspace({
             </AccountField>
           </div>
           {tab === "permissions" && (
-            <div className={`${card} text-sm leading-6 text-slate-600`}>
-              <ShieldCheck className="mb-2 size-6 text-blue-600" />
+            <div className={`${card} text-sm leading-6 text-secondary-foreground`}>
+              <ShieldCheck className="mb-2 size-6 text-link" />
               Chọn nhân sự → Phân công → Chọn nhà trọ hoặc khu vực → Chọn quyền
               → Xác nhận. Quyền kế toán áp dụng cho toàn bộ nhà trọ được giao
               của tài khoản; chỉ quản trị viên duy nhất được thay đổi. Phân công
@@ -374,14 +408,15 @@ export function AccountsWorkspace({
             />
           )}
           {accounts.data && (
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section className="overflow-hidden surface-card ">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                  <thead className="bg-muted text-xs uppercase text-muted-foreground">
                     <tr>
                       {[
                         ["account", "Tài khoản"],
                         ["role", "Vai trò"],
+                        ["company", "Công ty"],
                         ["property", "Nhà trọ / Phòng"],
                         ["residence", "Cư trú"],
                         ["account-status", "Trạng thái tài khoản"],
@@ -395,25 +430,35 @@ export function AccountsWorkspace({
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-divider">
                     {accounts.data.items.map((row) => (
                       <tr
                         key={`${row.role_code}-${row.id ?? `profile-${row.profile_id}`}`}
-                        className="hover:bg-slate-50/70"
+                        className="hover:bg-muted/70"
                       >
                         <td className="px-5 py-4">
-                          <p className="font-semibold text-slate-900">
+                          <p className="font-semibold text-foreground">
                             {row.full_name}
                           </p>
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="mt-1 text-xs text-muted-foreground">
                             {row.email ?? "Chưa có email"}
                           </p>
-                          <p className="text-xs text-slate-500">
-                            {row.phone ?? ""} {row.tenant_code ?? ""}
+                          <p className="text-xs text-muted-foreground">
+                            {row.phone ?? ""}{" "}
+                            {row.tenant_code ?? (row.id ? `NV-${row.id}` : "")}
                           </p>
                         </td>
                         <td className="px-5 py-4">
                           {roleLabels[row.role_code]}
+                        </td>
+                        <td className="px-5 py-4">
+                          {Array.from(
+                            new Set(
+                              row.assignments
+                                .map((a) => a.organization_name)
+                                .filter(Boolean),
+                            ),
+                          ).join(", ") || "Chưa gắn công ty"}
                         </td>
                         <td className="max-w-64 px-5 py-4">
                           {row.assignments.length ? (
@@ -424,12 +469,12 @@ export function AccountsWorkspace({
                               </p>
                             ))
                           ) : (
-                            <span className="text-slate-400">
+                            <span className="text-muted-foreground">
                               Chưa phân công
                             </span>
                           )}
                           {row.room_code && (
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                               Phòng {row.room_code} ·{" "}
                               {row.contract_code ?? "Chưa có hợp đồng"}
                             </p>
@@ -449,24 +494,24 @@ export function AccountsWorkspace({
                         </td>
                         <td className="px-5 py-4">
                           {row.status === "NO_ACCOUNT" ? (
-                            <span className="text-slate-500">
+                            <span className="text-muted-foreground">
                               Chưa có tài khoản
                             </span>
                           ) : (
                             <StatusBadge status={row.status} />
                           )}
                           {row.must_change_password && (
-                            <p className="mt-1 text-xs text-amber-700">
+                            <p className="mt-1 text-xs text-warning">
                               Chờ đổi mật khẩu lần đầu
                             </p>
                           )}
                         </td>
-                        <td className="px-5 py-4 text-slate-600">
+                        <td className="px-5 py-4 text-secondary-foreground">
                           {row.assignments.length
                             ? "Đã phân công phạm vi"
                             : "Chưa phân công"}
                         </td>
-                        <td className="px-5 py-4 text-slate-600">
+                        <td className="px-5 py-4 text-secondary-foreground">
                           {row.created_at
                             ? new Date(row.created_at).toLocaleDateString(
                                 "vi-VN",
@@ -476,7 +521,7 @@ export function AccountsWorkspace({
                         <td className="px-5 py-4">
                           <div className="flex flex-wrap gap-2">
                             <button
-                              className="font-semibold text-blue-600"
+                              className="font-semibold text-link"
                               onClick={() => setSelected(row)}
                             >
                               Chi tiết
@@ -491,7 +536,7 @@ export function AccountsWorkspace({
                             )}
                             {row.id && (
                               <button
-                                className="font-semibold text-blue-600"
+                                className="font-semibold text-link"
                                 onClick={() => setEditingAccount(row)}
                               >
                                 Chỉnh sửa
@@ -518,7 +563,7 @@ export function AccountsWorkspace({
               {!accounts.data.items.length && (
                 <EmptyState text="Chưa có tài khoản phù hợp. Mời nhân sự hoặc mở hồ sơ cư trú để quản lý người thuê." />
               )}
-              <div className="flex items-center justify-between border-t border-slate-100 p-4 text-sm">
+              <div className="flex items-center justify-between border-t border-border p-4 text-sm">
                 <span>
                   {accounts.data.total} kết quả · Trang {page + 1}
                 </span>
@@ -546,7 +591,7 @@ export function AccountsWorkspace({
       {tab === "management" && (
         <section className={card}>
           <h2 className="font-bold">Quản lý đăng nhập và trạng thái</h2>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Dùng Chi tiết để chỉnh sửa thông tin, khóa/mở hoặc cấp lại mật khẩu
             khởi tạo trong phạm vi bạn được quản trị.
           </p>
@@ -573,7 +618,7 @@ export function AccountsWorkspace({
           >
             Thêm liên kết tùy chọn
           </button>
-          <p className="mb-5 text-sm text-slate-500">
+          <p className="mb-5 text-sm text-muted-foreground">
             Liên kết có hiệu lực 48 giờ. Gửi lại sẽ vô hiệu hóa liên kết trước.
             Chưa cấu hình dịch vụ email; bạn sao chép liên kết và chuyển riêng
             cho người nhận.
@@ -589,16 +634,16 @@ export function AccountsWorkspace({
             {invitations.data?.slice(page * 20, (page + 1) * 20).map((i) => (
               <article
                 key={i.id}
-                className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 p-4"
+                className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border p-4"
               >
                 <div>
                   <p className="font-semibold">
                     {i.full_name} · {roleLabels[i.role_code]}
                   </p>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     {i.email} · Hết hạn {i.expires_at}
                   </p>
-                  <p className="mt-1 text-xs font-bold text-blue-600">
+                  <p className="mt-1 text-xs font-bold text-link">
                     {accountState[i.status] ?? i.status}
                   </p>
                 </div>
@@ -670,12 +715,12 @@ export function AccountsWorkspace({
           <div className="space-y-4">
             {history.data?.map((h) => (
               <article
-                className="border-b border-slate-100 pb-3 text-sm"
+                className="border-b border-border pb-3 text-sm"
                 key={h.id}
               >
                 <p className="font-semibold">{h.action}</p>
-                <p className="mt-1 break-words text-slate-600">{h.reason}</p>
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 break-words text-secondary-foreground">{h.reason}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
                   {h.occurred_at} · {h.resource_type} #{h.resource_id}
                 </p>
               </article>
@@ -710,7 +755,7 @@ export function AccountsWorkspace({
         >
           <div className="space-y-5">
             {error && (
-              <p role="alert" className="text-sm text-red-600">
+              <p role="alert" className="text-sm text-danger">
                 {error}
               </p>
             )}
@@ -733,7 +778,7 @@ export function AccountsWorkspace({
                 ["Mã người thuê", selected.tenant_code ?? "Không áp dụng"],
               ].map(([label, value]) => (
                 <div key={label}>
-                  <dt className="text-xs text-slate-500">{label}</dt>
+                  <dt className="text-xs text-muted-foreground">{label}</dt>
                   <dd className="mt-1 font-semibold">
                     {value ?? "Chưa cập nhật"}
                   </dd>
@@ -877,7 +922,7 @@ export function AccountsWorkspace({
           title="Liên kết kích hoạt tài khoản"
           onClose={() => setLink(null)}
         >
-          <p className="mb-4 text-sm text-slate-600">
+          <p className="mb-4 text-sm text-secondary-foreground">
             Gửi riêng liên kết này cho người nhận. Liên kết chỉ hiển thị ở lần
             tạo và dùng được một lần trong {link.expiresInHours} giờ.
           </p>
@@ -939,7 +984,7 @@ function StaffDetails({
   return (
     <div className="space-y-3">
       {row.role_code === "ACCOUNTANT" && (
-        <div className="rounded-xl bg-blue-50 p-4 text-sm">
+        <div className="rounded-xl bg-accent p-4 text-sm">
           <p className="mb-2 font-bold">
             Quyền kế toán trên các cơ sở được giao
           </p>
@@ -953,25 +998,25 @@ function StaffDetails({
       {detail.data.assignments.map((a) => (
         <div
           key={a.property_id}
-          className="rounded-xl border border-slate-200 p-4"
+          className="rounded-xl border border-border p-4"
         >
           <p className="font-bold">
             {a.property_name}
             {a.is_primary ? " · Phụ trách chính" : ""}
           </p>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {a.area_name ?? "Chưa phân khu vực"}
           </p>
           {row.role_code === "MANAGER" && (
             <div className="mt-2 flex flex-wrap gap-2">
-              <span className="rounded bg-slate-100 px-2 py-1 text-xs">
+              <span className="rounded bg-muted px-2 py-1 text-xs">
                 Vận hành cơ bản
               </span>
               {detail.data.capabilities
                 .filter((c) => c.property_id === a.property_id)
                 .map((c) => (
                   <span
-                    className="rounded bg-blue-50 px-2 py-1 text-xs text-blue-700"
+                    className="rounded bg-accent px-2 py-1 text-xs text-link"
                     key={c.capability}
                   >
                     {managerCapabilities[
@@ -982,7 +1027,7 @@ function StaffDetails({
             </div>
           )}
           {row.role_code === "TECHNICIAN" && (
-            <p className="mt-2 text-xs text-slate-600">
+            <p className="mt-2 text-xs text-secondary-foreground">
               {detail.data.technician?.find(
                 (t) => t.property_id === a.property_id,
               )?.can_update !== false
@@ -997,7 +1042,7 @@ function StaffDetails({
             </p>
           )}
           <button
-            className="mt-3 text-sm font-semibold text-red-600"
+            className="mt-3 text-sm font-semibold text-danger"
             onClick={() => onRevoke(a.property_id)}
           >
             Thu hồi phân công tại cơ sở
@@ -1008,7 +1053,7 @@ function StaffDetails({
         <EmptyState text="Tài khoản chưa được giao cơ sở." />
       )}
       {row.role_code === "TECHNICIAN" && (
-        <section className="space-y-3 border-t border-slate-200 pt-4">
+        <section className="space-y-3 border-t border-border pt-4">
           <h3 className="font-bold">
             Lịch sử công việc tại cơ sở được quản lý
           </h3>
@@ -1016,12 +1061,12 @@ function StaffDetails({
             <Link
               key={task.id}
               href={`/admin/maintenance/${task.id}`}
-              className="block rounded-xl border border-slate-200 p-3"
+              className="block rounded-xl border border-border p-3"
             >
-              <p className="font-semibold text-blue-600">
+              <p className="font-semibold text-link">
                 {task.code} · {task.title}
               </p>
-              <p className="my-2 text-sm text-slate-500">
+              <p className="my-2 text-sm text-muted-foreground">
                 {task.property_name}
               </p>
               <StatusBadge status={task.status} />
@@ -1031,7 +1076,7 @@ function StaffDetails({
             <EmptyState text="Chưa có lịch sử công việc trong phạm vi quản lý." />
           )}
           <Link
-            className="text-sm font-bold text-blue-600"
+            className="text-sm font-bold text-link"
             href="/admin/maintenance"
           >
             Mở yêu cầu bảo trì
@@ -1142,7 +1187,7 @@ function AssignmentDialog({
     >
       <form className="space-y-5" onSubmit={save}>
         <fieldset disabled={busy} className="space-y-5">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             {roleLabels[row.role_code]} · {row.email}. Các cơ sở không được chọn
             giữ nguyên phân công.
           </p>
@@ -1177,7 +1222,7 @@ function AssignmentDialog({
             </div>
           )}
           {error && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-danger">
               {error}
             </p>
           )}
@@ -1195,7 +1240,7 @@ function AssignmentDialog({
               ))}
             </select>
           </AccountField>
-          <fieldset className="rounded-xl border border-slate-200 p-4">
+          <fieldset className="rounded-xl border border-border p-4">
             <legend className="px-1 text-sm font-bold">
               Một hoặc nhiều nhà trọ
             </legend>
@@ -1218,28 +1263,28 @@ function AssignmentDialog({
               ))}
             </div>
             {!options.properties.length && (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Chưa có nhà trọ. Tạo nhà trọ trước khi phân công.
               </p>
             )}
           </fieldset>
-          <fieldset className="space-y-3 rounded-xl border border-slate-200 p-4">
+          <fieldset className="space-y-3 rounded-xl border border-border p-4">
             <legend className="px-1 text-sm font-bold">Quyền được cấp</legend>
             {row.role_code === "MANAGER" && (
-              <p className="text-xs leading-5 text-slate-500">
+              <p className="text-xs leading-5 text-muted-foreground">
                 Phân công Manager bao gồm vận hành cơ bản. Các quyền tài chính,
                 phê duyệt và xuất dữ liệu bên dưới cần cấp riêng.
               </p>
             )}
             {row.role_code === "ACCOUNTANT" && (
-              <p className="text-xs leading-5 text-slate-500">
+              <p className="text-xs leading-5 text-muted-foreground">
                 Các quyền kế toán dùng cấu hình hồ sơ hiện có và áp dụng cho
                 toàn bộ cơ sở được giao. Không thể thay đổi hồ sơ dùng chung với
                 chủ sở hữu khác. Hoàn cọc không được cấp mặc định.
               </p>
             )}
             {row.role_code === "TECHNICIAN" && (
-              <p className="text-xs leading-5 text-slate-500">
+              <p className="text-xs leading-5 text-muted-foreground">
                 Chỉ xem công việc được giao riêng trong cơ sở. Phân công cơ sở
                 không tự động giao toàn bộ yêu cầu sửa chữa.
               </p>
@@ -1281,7 +1326,7 @@ function AssignmentDialog({
               maxLength={500}
             />
           </AccountField>
-          <div className="rounded-xl bg-blue-50 p-4 text-sm text-blue-800">
+          <div className="rounded-xl bg-accent p-4 text-sm text-link">
             <Building2 className="mb-2 size-5" />
             Xem trước:{" "}
             {properties
@@ -1343,7 +1388,7 @@ function InvitationDialog({
       <form onSubmit={submit}>
         <fieldset disabled={busy} className="space-y-5">
           {error && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-danger">
               {error}
             </p>
           )}
@@ -1390,7 +1435,7 @@ function InvitationDialog({
               maxLength={500}
             />
           </AccountField>
-          <p className="text-sm leading-6 text-slate-500">
+          <p className="text-sm leading-6 text-muted-foreground">
             Người nhận tự đặt mật khẩu qua liên kết một lần. Tài khoản đã tồn
             tại cần đăng nhập để chấp nhận; không tạo tài khoản trùng. Sau kích
             hoạt, bạn chọn cơ sở và quyền trong mục Phân công.

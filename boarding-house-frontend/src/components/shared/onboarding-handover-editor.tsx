@@ -8,7 +8,7 @@ import type {
 import { formatDate } from "@/lib/format";
 
 const input =
-  "mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm";
+  "mt-1 w-full rounded-xl border border-input px-3 py-2 text-sm";
 const button =
   "rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40";
 const conditions: Record<string, string> = {
@@ -109,7 +109,7 @@ export function OnboardingHandoverEditor({
       >
         {step === 1 && (
           <>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-secondary-foreground">
               Danh mục lấy từ phòng khi chuẩn bị bàn giao. Đối chiếu từng tài
               sản với thực tế.
             </p>
@@ -121,7 +121,7 @@ export function OnboardingHandoverEditor({
             {assets.map((a, i) => (
               <div
                 key={String(a.room_asset_id ?? i)}
-                className="grid gap-2 rounded-xl bg-slate-50 p-3 sm:grid-cols-2"
+                className="grid gap-2 rounded-xl bg-muted p-3 sm:grid-cols-2"
               >
                 <p className="sm:col-span-2">
                   {String(a.asset_name)} · Số lượng {String(a.quantity)}
@@ -165,14 +165,14 @@ export function OnboardingHandoverEditor({
                 </label>
               </div>
             ))}
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-secondary-foreground">
               Nếu danh mục phòng đã thay đổi, nạp lại trước khi kiểm kê. Phiên
               bản biên bản thay đổi cần hai bên xác nhận lại.
             </p>
             <button
               type="button"
               disabled={busy}
-              className="text-sm text-blue-700 underline"
+              className="text-sm text-link underline"
               onClick={async () => {
                 if (
                   window.confirm(
@@ -206,7 +206,7 @@ export function OnboardingHandoverEditor({
                   (m) => m.meter_type === code && m.status === "ACTIVE",
                 );
               return (
-                <div key={code} className="rounded-xl bg-slate-50 p-3 text-sm">
+                <div key={code} className="rounded-xl bg-muted p-3 text-sm">
                   <p>
                     {String(r.name)} ·{" "}
                     {r.calculation_method === "METER"
@@ -246,7 +246,7 @@ export function OnboardingHandoverEditor({
                 className={input}
               />
             </label>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-secondary-foreground">
               Tổng chìa khóa và thẻ từ: tối đa {maxKeys} theo chính sách hiện
               tại; không nhập gộp mã thẻ vào số lượng.
             </p>
@@ -282,7 +282,7 @@ export function OnboardingHandoverEditor({
           </>
         )}
         {step === 3 && (
-          <div className="space-y-2 rounded-xl bg-blue-50 p-4 text-sm">
+          <div className="space-y-2 rounded-xl bg-accent p-4 text-sm">
             <h4 className="font-semibold">Xem trước biên bản</h4>
             <p>
               {String(d.context.property_name)} / {String(d.context.room_code)}{" "}

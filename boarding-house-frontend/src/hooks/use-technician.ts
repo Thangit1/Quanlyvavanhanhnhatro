@@ -1,5 +1,6 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useScopedQuery as useQuery } from "@/hooks/use-scoped-query";
 import { technicianService as api } from "@/services/technician.service";
 import type { TaskFilters } from "@/types/technician";
 const poll = 30_000;
@@ -33,7 +34,7 @@ export function useTaskMutations(id: number) {
   const qc = useQueryClient();
   const refresh = async () => {
     await Promise.all([
-      qc.invalidateQueries({ queryKey: ["technician-task", id] }),
+      qc.invalidateQueries({ queryKey: ["technician-task"] }),
       qc.invalidateQueries({ queryKey: ["technician-tasks"] }),
       qc.invalidateQueries({ queryKey: ["technician-dashboard"] }),
       qc.invalidateQueries({ queryKey: ["technician-emergency"] }),

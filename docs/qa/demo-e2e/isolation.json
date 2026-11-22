@@ -1,0 +1,8 @@
+{
+  "applicationPort": 3306,
+  "fixtureMatchesInApplication": 0,
+  "demoPort": 3317,
+  "readOnly": true,
+  "productionArtifact": "boarding-house-backend-0.0.1-SNAPSHOT-exec.jar",
+  "demoTestClassesInProductionArtifact": 0
+}

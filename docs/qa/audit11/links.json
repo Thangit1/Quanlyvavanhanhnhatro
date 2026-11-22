@@ -1,0 +1,2669 @@
+[
+  {
+    "file": "boarding-house-frontend/src/app/403/page.tsx",
+    "line": 18,
+    "href": "/login",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accept-invitation/page.tsx",
+    "line": 87,
+    "href": "/login#invitation={token}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/change-password/page.tsx",
+    "line": 13,
+    "href": "/login",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/forgot-password/page.tsx",
+    "line": 92,
+    "href": "/login",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/not-found.tsx",
+    "line": 9,
+    "href": "/",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/debts/tenants/{row.tenant_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/invoices/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/payments/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/payment-proofs/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/receipts/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/debts/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/deposits/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/payment-vouchers/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/other-income/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/periods/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/cashbook/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/bankbook/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/cash-flow/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/reports/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/exports/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/reconciliation/bank/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "href": "/accountant/reconciliation/payment-gateways/{row.id}",
+    "routeExists": false,
+    "status": "BROKEN_ROUTE_CANDIDATE"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-shell.tsx",
+    "line": 84,
+    "href": "/login?redirect={encodeURIComponent(pathname)}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-shell.tsx",
+    "line": 229,
+    "href": "/accountant/account",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-shell.tsx",
+    "line": 240,
+    "href": "/accountant/dashboard",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 228,
+    "href": "/admin/tenants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 790,
+    "href": "/admin/tenants/{selected.profile_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 1061,
+    "href": "/admin/maintenance/{task.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 1078,
+    "href": "/admin/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/manager-tenant-accounts.tsx",
+    "line": 92,
+    "href": "/admin/tenants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/manager-tenant-accounts.tsx",
+    "line": 195,
+    "href": "/admin/tenants/{p.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 491,
+    "href": "/admin/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 548,
+    "href": "/admin/reports/expenses",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 623,
+    "href": "/admin/rooms",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 663,
+    "href": "/admin/rooms/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 709,
+    "href": "/admin/rooms?status=VACANT",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 723,
+    "href": "/admin/rooms/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 739,
+    "href": "/admin/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 752,
+    "href": "/admin/invoices/{i.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 769,
+    "href": "/admin/invoices/debt",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 785,
+    "href": "/admin/invoices/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 815,
+    "href": "/admin/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 824,
+    "href": "/admin/contracts/{c.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 846,
+    "href": "/admin/rental-lifecycle?tab=checkin",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 863,
+    "href": "/admin/contracts/{r.contractId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 880,
+    "href": "/admin/rental-lifecycle?tab=checkout",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 897,
+    "href": "/admin/contracts/{r.contractId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 914,
+    "href": "/admin/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 923,
+    "href": "/admin/maintenance/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-shell.tsx",
+    "line": 59,
+    "href": "/login?redirect={encodeURIComponent(pathname)}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-user-menu.tsx",
+    "line": 85,
+    "href": "/accountant/account",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-user-menu.tsx",
+    "line": 85,
+    "href": "/admin/settings/profile",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-user-menu.tsx",
+    "line": 98,
+    "href": "/forgot-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-create-page.tsx",
+    "line": 346,
+    "href": "/admin/contracts/{result.id}?created=draft",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-create-page.tsx",
+    "line": 346,
+    "href": "/admin/contracts/{result.id}?created=pending",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-create-page.tsx",
+    "line": 365,
+    "href": "/admin/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-create-page.tsx",
+    "line": 372,
+    "href": "/admin/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-detail-page.tsx",
+    "line": 52,
+    "href": "/admin/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-detail-page.tsx",
+    "line": 226,
+    "href": "/admin/tenants/{contract.tenantId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 161,
+    "href": "/admin/contracts/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 461,
+    "href": "/admin/contracts/{contract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 472,
+    "href": "/admin/tenants/{contract.tenantId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 519,
+    "href": "/admin/contracts/{contract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 571,
+    "href": "/admin/contracts/{contract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/direct-contract-draft-panel.tsx",
+    "line": 50,
+    "href": "/admin/contracts/{contractId}/edit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/direct-contract-draft-panel.tsx",
+    "line": 56,
+    "href": "/admin/tenants/{tenantId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 218,
+    "href": "/admin/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 112,
+    "href": "/admin/invoices/{result.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 756,
+    "href": "/admin/invoices/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 776,
+    "href": "/admin/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 138,
+    "href": "/admin/invoices/generate",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 144,
+    "href": "/admin/invoices/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 159,
+    "href": "/admin/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 162,
+    "href": "/admin/invoices/generate",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 165,
+    "href": "/admin/invoices/debt",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 168,
+    "href": "/admin/reports/payments",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 417,
+    "href": "/admin/invoices/{i.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 500,
+    "href": "/admin/invoices/{i.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 514,
+    "href": "/admin/invoices/{i.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 226,
+    "href": "/admin/rental-lifecycle?tab=checkin",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 226,
+    "href": "/accountant/deposits",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 493,
+    "href": "/admin/contracts/{r.contract_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 116,
+    "href": "/admin/checkouts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 69,
+    "href": "/admin/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 288,
+    "href": "/admin/maintenance/assets",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-form-page.tsx",
+    "line": 75,
+    "href": "/admin/maintenance/{result.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-form-page.tsx",
+    "line": 87,
+    "href": "/admin/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-form-page.tsx",
+    "line": 305,
+    "href": "/admin/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 129,
+    "href": "/admin/maintenance/assets",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 135,
+    "href": "/admin/maintenance/calendar",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 142,
+    "href": "/admin/maintenance/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 348,
+    "href": "/admin/maintenance/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 402,
+    "href": "/admin/maintenance/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 454,
+    "href": "/admin/maintenance/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-resource-pages.tsx",
+    "line": 45,
+    "href": "/admin/maintenance/{x.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-resource-pages.tsx",
+    "line": 348,
+    "href": "/admin/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 303,
+    "href": "/admin/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 513,
+    "href": "/admin/maintenance/{r.task_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 575,
+    "href": "/admin/finance/vouchers?propertyId={r.property_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 795,
+    "href": "/admin/contracts/{h.contract_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 225,
+    "href": "/admin/accounts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 231,
+    "href": "/admin/settings/organization",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 449,
+    "href": "/admin/properties/{r.property_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 132,
+    "href": "/admin/properties/{p.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 138,
+    "href": "/admin/rooms?propertyId={p.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 145,
+    "href": "/admin/properties/{p.id}/edit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 154,
+    "href": "/admin/properties/{p.id}?tab=staff",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 172,
+    "href": "/admin/properties/{p.id}?tab=reports",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 204,
+    "href": "/admin/properties/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 227,
+    "href": "/admin/rooms",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 360,
+    "href": "/admin/properties/{p.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 411,
+    "href": "/admin/rooms?propertyId={p.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 432,
+    "href": "/admin/properties/{p.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 81,
+    "href": "/admin/properties/{id || (\"id\" in result ? result.id : \"\")}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 294,
+    "href": "/admin/properties",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 302,
+    "href": "/admin/properties/{id}/edit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 309,
+    "href": "/admin/rooms?propertyId={id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 85,
+    "href": "/admin/tenants?propertyId={room.propertyId}&roomId={room.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 99,
+    "href": "/admin/contracts/{room.currentContract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 115,
+    "href": "/admin/invoices?propertyId={room.propertyId}&roomId={room.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 124,
+    "href": "/admin/contracts/{room.currentContract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 140,
+    "href": "/admin/invoices?propertyId={room.propertyId}&roomId={room.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 180,
+    "href": "/admin/maintenance?propertyId={room.propertyId}&roomId={room.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 183,
+    "href": "/admin/maintenance/new?propertyId={room.propertyId}&roomId={room.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 255,
+    "href": "/admin/reports/utilities?propertyIds={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 258,
+    "href": "/admin/contracts?propertyId={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 270,
+    "href": "/admin/rooms?propertyId={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 273,
+    "href": "/admin/reports/assets?propertyIds={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 281,
+    "href": "/admin/reports/occupancy?propertyIds={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 282,
+    "href": "/admin/reports/revenue?propertyIds={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 283,
+    "href": "/admin/reports/debt?propertyIds={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 284,
+    "href": "/admin/reports/expenses?propertyIds={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 290,
+    "href": "/admin/properties/{propertyId}/edit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "line": 291,
+    "href": "/admin/settings/properties?propertyId={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 118,
+    "href": "/admin/properties",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 153,
+    "href": "/admin/rooms/new?propertyId={propertyId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 153,
+    "href": "/admin/rooms/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 385,
+    "href": "/admin/rooms/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 416,
+    "href": "/admin/contracts/{r.currentContract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 147,
+    "href": "/admin/rooms/{id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 147,
+    "href": "/admin/rooms/",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 443,
+    "href": "/admin/rooms",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 481,
+    "href": "/admin/rooms/{id}/edit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 133,
+    "href": "/admin/rooms/{room.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 156,
+    "href": "/admin/contracts/{room.currentContract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 189,
+    "href": "/admin/rooms/{room.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/occupancy?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/occupancy",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/revenue?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/revenue",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/expenses?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/expenses",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/profit?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/profit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/debt?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/debt",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/contracts?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/tenants?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/tenants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/utilities?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/utilities",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/maintenance?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/assets?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/assets",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/operations?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/operations",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/export-history?{search}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 113,
+    "href": "/admin/reports/export-history",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/organization-settings-panel.tsx",
+    "line": 133,
+    "href": "/admin/areas",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/payments",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/general",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/profile",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/organization",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/properties",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/rental",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/billing",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/utilities",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/security",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/ai",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/integrations",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-navigation.tsx",
+    "line": 46,
+    "href": "/admin/settings/audit-logs",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 85,
+    "href": "/admin/tenants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 106,
+    "href": "/admin/rental-lifecycle?propertyId={current?.propertyId ?? d.managementPropertyId ?? \"\"}&roomId={current?.roomId ?? \"\"}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 129,
+    "href": "/admin/rental-lifecycle",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 137,
+    "href": "/admin/rental-lifecycle",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 142,
+    "href": "/admin/contracts/new?tenantProfileId={tenantId}&propertyId={d.managementPropertyId ?? \"\"}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 149,
+    "href": "/admin/tenants/{tenantId}/edit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 448,
+    "href": "/admin/contracts/{item.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 455,
+    "href": "/admin/contracts/{item.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 483,
+    "href": "/admin/invoices/{item.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 578,
+    "href": "/admin/tenants/{item.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 587,
+    "href": "/admin/rental-lifecycle",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 607,
+    "href": "/admin/maintenance/{item.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 190,
+    "href": "/admin/tenants/{tenantId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 193,
+    "href": "/admin/tenants/{created.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 213,
+    "href": "/admin/tenants/{tenantId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 213,
+    "href": "/admin/tenants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 298,
+    "href": "/admin/tenants/{p.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-intake-page.tsx",
+    "line": 68,
+    "href": "/admin/tenants/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-intake-page.tsx",
+    "line": 133,
+    "href": "/admin/contracts/new?tenantProfileId={profile?.id}&propertyId={propertyId}&roomId={roomId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-intake-page.tsx",
+    "line": 139,
+    "href": "/admin/rental-lifecycle?propertyId={propertyId}&roomId={roomId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 181,
+    "href": "/admin/tenants/intake",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 184,
+    "href": "/admin/tenants/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 459,
+    "href": "/admin/tenants/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 478,
+    "href": "/admin/contracts/{row.contractId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 518,
+    "href": "/admin/tenants/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 525,
+    "href": "/admin/tenants/{row.id}/edit",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 555,
+    "href": "/admin/tenants/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-members-panel.tsx",
+    "line": 134,
+    "href": "/admin/tenants/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 203,
+    "href": "/admin/invoices?propertyId={propertyId ?? \"\"}&billingPeriod={period}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 642,
+    "href": "/admin/contracts/{row.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 912,
+    "href": "/admin/rooms/{row.room_id}#room-meters",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/login-form.tsx",
+    "line": 54,
+    "href": "/change-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/login-form.tsx",
+    "line": 98,
+    "href": "/change-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/login-form.tsx",
+    "line": 197,
+    "href": "/forgot-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/login-form.tsx",
+    "line": 250,
+    "href": "/register",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/protected-page.tsx",
+    "line": 24,
+    "href": "/login?redirect={encodeURIComponent(pathname)}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/protected-page.tsx",
+    "line": 25,
+    "href": "/403",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/register-form.tsx",
+    "line": 87,
+    "href": "/login?reason=registered&email={encodeURIComponent(values.email.trim().toLowerCase())}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/register-form.tsx",
+    "line": 295,
+    "href": "/login",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 206,
+    "href": "/admin/contracts/{contractId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 206,
+    "href": "/tenant/contracts/{contractId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 213,
+    "href": "/admin/invoices/{i.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 213,
+    "href": "/accountant/invoices/{i.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 213,
+    "href": "/tenant/invoices/{i.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 112,
+    "href": "/accountant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 112,
+    "href": "/tenant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 112,
+    "href": "/technician/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 112,
+    "href": "/admin/communications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 127,
+    "href": "/accountant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 127,
+    "href": "/tenant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 127,
+    "href": "/technician/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 127,
+    "href": "/admin/communications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 510,
+    "href": "/tenant/notifications/archive",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1520,
+    "href": "/tenant/notifications/{detail.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 403,
+    "href": "/admin/contracts/{q.target_contract_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 403,
+    "href": "/tenant/contracts/{q.target_contract_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-meter-readiness.tsx",
+    "line": 15,
+    "href": "/admin/rooms/{roomId}/edit#room-meters",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 186,
+    "href": "/admin/invoices/{d.initialInvoice.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 186,
+    "href": "/accountant/invoices/{d.initialInvoice.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 186,
+    "href": "/tenant/invoices/{d.initialInvoice.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 237,
+    "href": "/admin/invoices/{d.initialDraftInvoice.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 237,
+    "href": "/accountant/invoices/{d.initialDraftInvoice.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 237,
+    "href": "/tenant/invoices/{d.initialDraftInvoice.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 416,
+    "href": "/admin/invoices/debt",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 416,
+    "href": "/accountant/debts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 996,
+    "href": "/admin/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 996,
+    "href": "/accountant/payments/{r.source_id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-identity-profile.tsx",
+    "line": 72,
+    "href": "/tenant/account",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-dashboard.tsx",
+    "line": 54,
+    "href": "/technician/tasks",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-dashboard.tsx",
+    "line": 108,
+    "href": "/technician/calendar",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-dashboard.tsx",
+    "line": 132,
+    "href": "/technician/tasks/{x.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 78,
+    "href": "/technician/tasks/{x.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 203,
+    "href": "/technician/assets/{x.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 244,
+    "href": "/technician/assets",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 51,
+    "href": "/login?redirect={encodeURIComponent(pathname)}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/dashboard",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/calendar",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/assets",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/tasks",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/emergency",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/preventive-maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/materials",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/material-requests",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/performance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 69,
+    "href": "/technician/account",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 143,
+    "href": "/technician/account",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/dashboard",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/calendar",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/assets",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/tasks",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/emergency",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/preventive-maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/materials",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/material-requests",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/performance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 154,
+    "href": "/technician/account",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 169,
+    "href": "/technician/dashboard",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-task-detail.tsx",
+    "line": 75,
+    "href": "/technician/tasks",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-ui.tsx",
+    "line": 65,
+    "href": "/technician/tasks/{task.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 62,
+    "href": "/tenant/account/profile",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 154,
+    "href": "/tenant/co-occupants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 162,
+    "href": "/tenant/contracts/{x.contract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 179,
+    "href": "/tenant/account/profile",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 179,
+    "href": "/tenant/account/change-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 179,
+    "href": "/tenant/account/security",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 179,
+    "href": "/tenant/notifications/settings",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-overview-page.tsx",
+    "line": 210,
+    "href": "/tenant/account/support",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 79,
+    "href": "/tenant/account",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 104,
+    "href": "/tenant/account/profile",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 104,
+    "href": "/tenant/account/security",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 104,
+    "href": "/tenant/account/documents",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 104,
+    "href": "/tenant/account/sessions",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 104,
+    "href": "/tenant/account/preferences",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 104,
+    "href": "/tenant/account/activity",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 104,
+    "href": "/tenant/account/support",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/change-password-page.tsx",
+    "line": 118,
+    "href": "/forgot-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/security-page.tsx",
+    "line": 35,
+    "href": "/tenant/account/change-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/security-page.tsx",
+    "line": 46,
+    "href": "/tenant/account/sessions",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/support-page.tsx",
+    "line": 81,
+    "href": "/tenant/maintenance/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/support-page.tsx",
+    "line": 87,
+    "href": "/tenant/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/support-page.tsx",
+    "line": 93,
+    "href": "/tenant/co-occupants/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-detail-page.tsx",
+    "line": 61,
+    "href": "/tenant/co-occupants/requests/{x.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-detail-page.tsx",
+    "line": 69,
+    "href": "/tenant/co-occupants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-empty-state.tsx",
+    "line": 33,
+    "href": "/tenant/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-empty-state.tsx",
+    "line": 39,
+    "href": "/tenant/home",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-history-page.tsx",
+    "line": 25,
+    "href": "/tenant/co-occupants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+    "line": 142,
+    "href": "/tenant/co-occupants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+    "line": 177,
+    "href": "/tenant/co-occupants/requests/{created.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+    "line": 184,
+    "href": "/tenant/co-occupants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+    "line": 112,
+    "href": "/tenant/co-occupants/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+    "line": 209,
+    "href": "/tenant/co-occupants/history",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+    "line": 265,
+    "href": "/tenant/co-occupants/{o.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+    "line": 284,
+    "href": "/tenant/co-occupants/requests/{r.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-request-detail-page.tsx",
+    "line": 87,
+    "href": "/tenant/co-occupants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-card.tsx",
+    "line": 104,
+    "href": "/tenant/contracts/{contract.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-card.tsx",
+    "line": 124,
+    "href": "/tenant/contracts/{contract.id}?action=extension",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-card.tsx",
+    "line": 133,
+    "href": "/tenant/contracts/{contract.id}?action=termination",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-page.tsx",
+    "line": 133,
+    "href": "/tenant/home",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-page.tsx",
+    "line": 137,
+    "href": "/tenant/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-page.tsx",
+    "line": 144,
+    "href": "/tenant/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-sections.tsx",
+    "line": 128,
+    "href": "/tenant/contracts/{data.id}#room-details",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-sections.tsx",
+    "line": 134,
+    "href": "/tenant/contracts/{data.id}#contract-terms",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-sections.tsx",
+    "line": 284,
+    "href": "/tenant/co-occupants/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-list-page.tsx",
+    "line": 105,
+    "href": "/tenant/home",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-detail-page.tsx",
+    "line": 65,
+    "href": "/tenant/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-detail-page.tsx",
+    "line": 109,
+    "href": "/tenant/invoices/{invoiceId}/payment",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-list-page.tsx",
+    "line": 115,
+    "href": "/tenant/invoices/{x.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "line": 53,
+    "href": "/tenant/invoices/{invoiceId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "line": 117,
+    "href": "/tenant/invoices/{invoiceId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 139,
+    "href": "/tenant/maintenance",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 176,
+    "href": "/tenant/maintenance/{d.id}/feedback",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-feedback-page.tsx",
+    "line": 39,
+    "href": "/tenant/maintenance/{requestId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-feedback-page.tsx",
+    "line": 56,
+    "href": "/tenant/maintenance/{requestId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-feedback-page.tsx",
+    "line": 82,
+    "href": "/tenant/maintenance/{requestId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-feedback-page.tsx",
+    "line": 89,
+    "href": "/tenant/maintenance/{requestId}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-list-page.tsx",
+    "line": 85,
+    "href": "/tenant/maintenance/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-list-page.tsx",
+    "line": 259,
+    "href": "/tenant/maintenance/{x.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 144,
+    "href": "/tenant/maintenance/{made.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-detail-page.tsx",
+    "line": 50,
+    "href": "/tenant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-detail-page.tsx",
+    "line": 71,
+    "href": "/tenant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 123,
+    "href": "/tenant/notifications/settings",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 403,
+    "href": "/tenant/notifications/{item.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-settings-page.tsx",
+    "line": 47,
+    "href": "/tenant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 88,
+    "href": "/login?redirect={encodeURIComponent(pathname)}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 121,
+    "href": "/tenant/notifications",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 247,
+    "href": "/tenant/contracts/{data.contract.id}#room-details",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 247,
+    "href": "/tenant/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 253,
+    "href": "/tenant/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 298,
+    "href": "/tenant/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 305,
+    "href": "/tenant/payments",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 322,
+    "href": "/tenant/account/support",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 322,
+    "href": "/tenant/co-occupants",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 322,
+    "href": "/tenant/invoices",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 322,
+    "href": "/tenant/utilities",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 322,
+    "href": "/tenant/payments",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 322,
+    "href": "/tenant/maintenance/new",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 322,
+    "href": "/tenant/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 429,
+    "href": "/tenant/contracts",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 471,
+    "href": "/tenant/notifications/{item.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 538,
+    "href": "/tenant/account/support",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-shell.tsx",
+    "line": 31,
+    "href": "/login?redirect={encodeURIComponent(pathname)}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-shell.tsx",
+    "line": 68,
+    "href": "/tenant/home",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-shell.tsx",
+    "line": 111,
+    "href": "/tenant/home",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-user-menu.tsx",
+    "line": 101,
+    "href": "/tenant/account/profile",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-user-menu.tsx",
+    "line": 110,
+    "href": "/tenant/account/change-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 78,
+    "href": "/tenant/home",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 443,
+    "href": "/tenant/invoices/{invoice.id}",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/providers/auth-provider.tsx",
+    "line": 58,
+    "href": "/login?reason=expired",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/providers/auth-provider.tsx",
+    "line": 65,
+    "href": "/change-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/providers/auth-provider.tsx",
+    "line": 90,
+    "href": "/change-password",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/providers/auth-provider.tsx",
+    "line": 114,
+    "href": "/login?reason=logout",
+    "routeExists": true,
+    "status": "STATIC_MATCH_NOT_EXECUTED"
+  }
+]

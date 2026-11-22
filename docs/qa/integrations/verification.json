@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-19",
+  "backend": [
+    {
+      "name": "IntegrationSecurityTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "IntegrationMysqlTest",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "CommunicationMysqlTest",
+      "tests": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "SecurityMysqlIntegrationTest",
+      "tests": 73,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "CommunicationControllerTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "backendTotal": 156,
+  "browserTotal": 7,
+  "frontend": {
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "productionBuild": "PASS"
+  },
+  "externalCredentialChecks": {
+    "ZALO": "BLOCKED_MISSING_CREDENTIALS",
+    "VNPAY": "BLOCKED_MISSING_MERCHANT",
+    "MOMO": "BLOCKED_MISSING_MERCHANT",
+    "AI": "BLOCKED_MISSING_API_KEY"
+  }
+}

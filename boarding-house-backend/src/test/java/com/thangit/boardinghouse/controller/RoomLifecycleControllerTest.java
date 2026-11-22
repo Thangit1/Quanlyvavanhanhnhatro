@@ -20,6 +20,10 @@ class RoomLifecycleControllerTest {
     MockMvc mvc=MockMvcBuilders.standaloneSetup(new AdminPropertyController(properties),new RentalLifecycleController(lifecycle),new AdminContractController(contracts))
             .setControllerAdvice(new com.thangit.boardinghouse.common.exception.GlobalExceptionHandler())
             .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
+    @Test void noHardDeleteRouteExistsForPhysicalRooms()throws Exception {
+        mvc.perform(delete("/api/admin/rooms/1")).andExpect(status().isMethodNotAllowed());
+        verifyNoInteractions(properties);
+    }
     @Test void roomStatusRequiresVersion()throws Exception {
         mvc.perform(patch("/api/admin/rooms/1/status").contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"READY\",\"reason\":\"inspection\",\"readinessConfirmed\":true}"))
                 .andExpect(status().isBadRequest());verifyNoInteractions(properties);

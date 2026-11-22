@@ -198,7 +198,7 @@ public class AdminSettingServiceImpl implements AdminSettingService {
         requireOwner(principal);
         Ai current = ai(principal);
         boolean connected = aiSecretConfigured && current.provider() != null && current.model() != null;
-        return new ConnectionTest(connected, connected ? "Cấu hình AI đã sẵn sàng."
+        return new ConnectionTest(false, connected ? "Đã có cấu hình cục bộ; chưa kiểm tra kết nối hay phản hồi mô hình thực tế."
                 : "Thiếu API key trên máy chủ, nhà cung cấp hoặc mô hình.");
     }
 

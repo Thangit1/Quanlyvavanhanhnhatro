@@ -146,7 +146,7 @@ async function until(expression, timeout = 20000) {
     await sleep(100);
   }
   throw Error(
-    `UI condition timed out: ${expression}; ${await evaluate("document.querySelector('dialog')?.innerText || document.body.innerText")}`,
+    `UI condition timed out: ${expression}; ${await evaluate("document.querySelector('dialog[open]')?.innerText || document.body.innerText")}`,
   );
 }
 const js = (value) => JSON.stringify(value);
@@ -162,7 +162,7 @@ async function fill(selector, value) {
 }
 async function check(label) {
   await evaluate(
-    `(()=>{const row=[...document.querySelectorAll('dialog label')].find(e=>e.textContent.trim()===${js(label)});if(!row)throw Error('Checkbox label missing: '+${js(label)});row.querySelector('input').click();})()`,
+    `(()=>{const row=[...document.querySelectorAll('dialog[open] label')].find(e=>e.textContent.trim()===${js(label)});if(!row)throw Error('Checkbox label missing: '+${js(label)});row.querySelector('input').click();})()`,
   );
 }
 function newInvitation(body) {
@@ -516,15 +516,17 @@ async function intercept(event) {
     cases.push("Account list and tenant profile link render");
     await click("Phân công");
     await until(
-      "document.querySelector('dialog')?.innerText.includes('Nạp phân công hiện tại')",
+      "document.querySelector('dialog[open]')?.innerText.includes('Nạp phân công hiện tại')",
     );
-    await click("House A", "document.querySelector('dialog')");
+    await click("House A", "document.querySelector('dialog[open]')");
     await check("House B");
     await check("Ghi nhận nghiệp vụ tài chính");
     await check("Chỉ định phụ trách chính tại các cơ sở đã chọn");
-    await fill("dialog textarea", "Browser manager assignment");
-    await evaluate("document.querySelector('dialog form').requestSubmit()");
-    await until("!document.querySelector('dialog')");
+    await fill("dialog[open] textarea", "Browser manager assignment");
+    await evaluate(
+      "document.querySelector('dialog[open] form').requestSubmit()",
+    );
+    await until("!document.querySelector('dialog[open]')");
     const assigned = requests.find(
       (r) => r.method === "PUT" && r.route === "/owner/accounts/2/assignments",
     );
@@ -539,52 +541,62 @@ async function intercept(event) {
     );
     await click("Chi tiết");
     await until(
-      "document.querySelector('dialog')?.innerText.includes('Thu hồi phân công tại cơ sở')",
+      "document.querySelector('dialog[open]')?.innerText.includes('Thu hồi phân công tại cơ sở')",
     );
     await click(
       "Thu hồi phân công tại cơ sở",
-      "document.querySelector('dialog')",
+      "document.querySelector('dialog[open]')",
     );
     await until(
-      "!document.querySelector('dialog')?.innerText.includes('House A')",
+      "!document.querySelector('dialog[open]')?.innerText.includes('House A')",
     );
     assert.equal(manager.assignments.length, 1);
     await evaluate(
-      "document.querySelector('dialog button[aria-label=\"Đóng\"]').click()",
+      "document.querySelector('dialog[open] button[aria-label=\"Đóng\"]').click()",
     );
     cases.push(
       "Revoke one property refreshes detail without deleting other assignment",
     );
     await click("+ Tạo tài khoản");
-    await until("!!document.querySelector('dialog input[name=fullName]')");
-    await fill("dialog input[name=fullName]", "Direct Browser Manager");
-    await fill("dialog input[name=phone]", "0901234567");
-    await click("Tiếp tục", "document.querySelector('dialog')");
     await until(
-      "document.querySelector('dialog')?.innerText.includes('Một hoặc nhiều vai trò')",
+      "!!document.querySelector('dialog[open] input[name=fullName]')",
     );
-    await click("Tiếp tục", "document.querySelector('dialog')");
+    await fill("dialog[open] input[name=fullName]", "Direct Browser Manager");
+    await fill("dialog[open] input[name=phone]", "0901234567");
+    await click("Tiếp tục", "document.querySelector('dialog[open]')");
     await until(
-      "document.querySelector('dialog')?.innerText.includes('Một hoặc nhiều nhà trọ')",
+      "document.querySelector('dialog[open]')?.innerText.includes('Một hoặc nhiều vai trò')",
+    );
+    await click("Tiếp tục", "document.querySelector('dialog[open]')");
+    await until(
+      "document.querySelector('dialog[open]')?.innerText.includes('Một hoặc nhiều nhà trọ')",
     );
     await check("House A");
-    await click("Tiếp tục", "document.querySelector('dialog')");
-    await until("!!document.querySelector('dialog textarea[name=reason]')");
-    await fill("dialog textarea[name=reason]", "Browser direct provisioning");
-    await click("Tạo tài khoản", "document.querySelector('dialog')");
+    await click("Tiếp tục", "document.querySelector('dialog[open]')");
     await until(
-      "!!document.querySelector('dialog input[aria-label=\"Mật khẩu khởi tạo\"]')",
+      "!!document.querySelector('dialog[open] textarea[name=reason]')",
+    );
+    await fill(
+      "dialog[open] textarea[name=reason]",
+      "Browser direct provisioning",
+    );
+    await click("Tạo tài khoản", "document.querySelector('dialog[open]')");
+    await until(
+      "!!document.querySelector('dialog[open] input[aria-label=\"Mật khẩu khởi tạo\"]')",
     );
     assert.ok(
       requests.some(
         (r) => r.route === "/admin/account-provisioning" && r.method === "POST",
       ),
     );
-    await click("Đã lưu thông tin an toàn", "document.querySelector('dialog')");
+    await click(
+      "Đã lưu thông tin an toàn",
+      "document.querySelector('dialog[open]')",
+    );
     await until("document.body.innerText.includes('Direct Browser Manager')");
     assert.equal(
       await evaluate(
-        "document.querySelectorAll('dialog input[aria-label=\"Mật khẩu khởi tạo\"]').length",
+        "document.querySelectorAll('dialog[open] input[aria-label=\"Mật khẩu khởi tạo\"]').length",
       ),
       0,
     );
@@ -594,34 +606,38 @@ async function intercept(event) {
     await click("Quản lý tài khoản");
     await click("Thiết lập bằng liên kết (tùy chọn)");
     await click("Thêm liên kết tùy chọn");
-    await until("!!document.querySelector('dialog input[name=name]')");
+    await until("!!document.querySelector('dialog[open] input[name=name]')");
     assert.equal(
       await evaluate(
-        "document.querySelectorAll('dialog input[type=password]').length",
+        "document.querySelectorAll('dialog[open] input[type=password]').length",
       ),
       0,
     );
-    await fill("dialog input[name=name]", "Invited Manager");
-    await fill("dialog input[name=email]", "invited@test.invalid");
-    await fill("dialog textarea[name=reason]", "Browser invite");
-    await evaluate("document.querySelector('dialog form').requestSubmit()");
-    await until("!!document.querySelector('dialog input[readonly]')");
+    await fill("dialog[open] input[name=name]", "Invited Manager");
+    await fill("dialog[open] input[name=email]", "invited@test.invalid");
+    await fill("dialog[open] textarea[name=reason]", "Browser invite");
+    await evaluate(
+      "document.querySelector('dialog[open] form').requestSubmit()",
+    );
+    await until("!!document.querySelector('dialog[open] input[readonly]')");
     assert.match(
-      await evaluate("document.querySelector('dialog input[readonly]').value"),
+      await evaluate(
+        "document.querySelector('dialog[open] input[readonly]').value",
+      ),
       /\/accept-invitation#token=/,
     );
     await evaluate(
-      "document.querySelector('dialog button[aria-label=\"Đóng\"]').click()",
+      "document.querySelector('dialog[open] button[aria-label=\"Đóng\"]').click()",
     );
     cases.push(
       "Invitation returns one-time fragment link without plaintext password",
     );
     await until("document.body.innerText.includes('invited@test.invalid')");
     await click("Gửi lại");
-    await until("!!document.querySelector('dialog input[readonly]')");
+    await until("!!document.querySelector('dialog[open] input[readonly]')");
     assert.equal(invitationSequence, 2);
     await evaluate(
-      "document.querySelector('dialog button[aria-label=\"Đóng\"]').click()",
+      "document.querySelector('dialog[open] button[aria-label=\"Đóng\"]').click()",
     );
     cases.push("Resend invitation updates its state and link");
     await click("Người thuê");

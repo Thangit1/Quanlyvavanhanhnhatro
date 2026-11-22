@@ -78,18 +78,18 @@ export function AccountPageLayout({
         <div>
           <Link
             href="/tenant/account"
-            className="inline-flex items-center gap-1 text-sm font-bold text-blue-600"
+            className="inline-flex items-center gap-1 text-sm font-bold text-link"
           >
             <ArrowLeft className="size-4" />
             Tài khoản
           </Link>
-          <h1 className="mt-2 text-3xl font-black text-slate-950">{title}</h1>
-          <p className="mt-1 text-slate-500">{description}</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">{title}</h1>
+          <p className="mt-1 text-page-secondary">{description}</p>
         </div>
         {actions}
       </div>
       <div className="grid items-start gap-5 lg:grid-cols-[280px_1fr]">
-        <aside className="hidden rounded-2xl border bg-white p-3 shadow-sm lg:block">
+        <aside className="hidden surface-card p-3 lg:block">
           <AccountMenu current={pathname} />
         </aside>
         <div className="min-w-0 space-y-5">{children}</div>
@@ -105,12 +105,12 @@ export function AccountMenu({ current = "" }: { current?: string }) {
           key={href}
           href={href}
           aria-current={current === href ? "page" : undefined}
-          className={`flex items-center gap-3 rounded-xl p-3 ${current === href ? "bg-blue-50 text-blue-700" : "text-slate-700 hover:bg-slate-50"}`}
+          className={`flex items-center gap-3 rounded-xl p-3 ${current === href ? "bg-accent text-link" : "text-secondary-foreground hover:bg-muted"}`}
         >
           <Icon className="size-5 shrink-0" />
           <span className="min-w-0 flex-1">
-            <b className="block text-sm">{name}</b>
-            <small className="line-clamp-1 text-slate-500">{description}</small>
+            <b className="block text-sm font-semibold">{name}</b>
+            <small className={`line-clamp-1 ${current===href?"text-link":"text-muted-foreground"}`}>{description}</small>
           </span>
           <ChevronRight className="size-4" />
         </Link>
@@ -146,7 +146,7 @@ export function AccountAvatar({
   }, [avatarUrl]);
   return (
     <span
-      className={`grid shrink-0 place-items-center overflow-hidden rounded-full bg-blue-100 text-2xl font-black text-blue-700 ${size}`}
+      className={`grid shrink-0 place-items-center overflow-hidden rounded-full border-4 border-card bg-accent ring-2 ring-accent-border text-2xl font-black text-link ${size}`}
     >
       {src ? (
         <Image
@@ -171,11 +171,11 @@ export function StatusPill({
   tone?: "blue" | "green" | "amber" | "red" | "slate";
 }) {
   const colors = {
-    blue: "bg-blue-100 text-blue-700",
-    green: "bg-emerald-100 text-emerald-700",
-    amber: "bg-amber-100 text-amber-800",
-    red: "bg-red-100 text-red-700",
-    slate: "bg-slate-100 text-slate-700",
+    blue: "bg-accent text-link",
+    green: "bg-success-muted text-success",
+    amber: "bg-warning-muted text-warning",
+    red: "bg-danger-muted text-danger",
+    slate: "bg-muted text-secondary-foreground",
   };
   return (
     <span
@@ -187,8 +187,8 @@ export function StatusPill({
 }
 export function AccountLoading() {
   return (
-    <div className="rounded-2xl border bg-white p-10 text-center text-slate-500">
-      <LoaderCircle className="mx-auto mb-2 size-6 animate-spin text-blue-600" />
+    <div className="surface-card p-10 text-center text-muted-foreground">
+      <LoaderCircle className="mx-auto mb-2 size-6 animate-spin text-link" />
       Đang tải dữ liệu tài khoản...
     </div>
   );
@@ -227,11 +227,11 @@ export function ConfirmDialog({
       aria-labelledby="confirm-title"
       className="fixed inset-0 z-[70] grid place-items-end bg-slate-950/50 p-0 sm:place-items-center sm:p-4"
     >
-      <section className="w-full rounded-t-3xl bg-white p-5 shadow-2xl sm:max-w-md sm:rounded-2xl">
+      <section className="w-full rounded-t-3xl bg-card p-5 shadow-2xl sm:max-w-md sm:rounded-2xl">
         <h2 id="confirm-title" className="text-xl font-black">
           {title}
         </h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+        <p className="mt-2 text-sm leading-6 text-secondary-foreground">{description}</p>
         <div className="mt-5 grid grid-cols-2 gap-3">
           <button
             autoFocus
@@ -243,7 +243,7 @@ export function ConfirmDialog({
           <button
             disabled={busy}
             onClick={onConfirm}
-            className={`rounded-xl px-4 py-3 font-bold text-white disabled:opacity-50 ${danger ? "bg-red-600" : "bg-blue-600"}`}
+            className={`rounded-xl px-4 py-3 font-bold text-white disabled:opacity-50 ${danger ? "bg-red-600" : "bg-primary hover:bg-primary-hover"}`}
           >
             {busy ? "Đang xử lý..." : confirmLabel}
           </button>

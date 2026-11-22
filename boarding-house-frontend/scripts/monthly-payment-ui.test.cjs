@@ -59,6 +59,8 @@ function render({ status = "ISSUED", session = null, canPay = true } = {}) {
       PageLoading: () => null,
     },
     "./invoice-ui": { money: (value) => `${value} VND` },
+    "./gateway-payment-panel": { GatewayPaymentPanel: () => null },
+    "./vietqr-panel": { VietQrPanel: () => null },
   };
   vm.runInNewContext(compiled, {
     module: sandboxModule,

@@ -86,11 +86,11 @@ export function AccountingPeriodPanel({
     onError: (e) => setError(apiErrorMessage(e)),
   });
   return (
-    <section className="my-5 space-y-3 rounded-2xl border border-slate-200 bg-white p-5">
-      <h2 className="font-semibold text-slate-900">
+    <section className="my-5 space-y-3 surface-card p-5 sm:p-6">
+      <h2 className="font-semibold text-foreground">
         Đối soát và khóa kỳ kế toán
       </h2>
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted-foreground">
         Đối soát kiểm tra số dư hiện tại và lưu kết quả cho kỳ được chọn; không
         tự sửa lịch sử. Lỗi trọng yếu chặn khóa kỳ.
       </p>
@@ -108,14 +108,14 @@ export function AccountingPeriodPanel({
       ) : query.isError ? (
         <p role="alert">{apiErrorMessage(query.error)}</p>
       ) : !query.data?.content.length ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Chưa có kỳ. Chọn một khu trọ để chuẩn bị kỳ cần khóa.
         </p>
       ) : (
         query.data.content.map((p) => (
           <div
             key={p.id}
-            className="flex flex-wrap items-center gap-3 border-b border-slate-100 py-3 text-sm"
+            className="flex flex-wrap items-center gap-3 border-b border-border py-3 text-sm"
           >
             <span className="flex-1">
               Khu #{p.property_id} · {p.period_code} · {p.status}
@@ -142,7 +142,7 @@ export function AccountingPeriodPanel({
         ))
       )}
       {check && (
-        <div className="rounded-xl bg-slate-50 p-3 text-sm">
+        <div className="rounded-xl bg-muted p-3 text-sm">
           <p>
             Đối soát #{check.id}: {check.blockingCount} vấn đề chặn khóa kỳ.
           </p>
@@ -158,7 +158,7 @@ export function AccountingPeriodPanel({
         </div>
       )}
       {error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-danger">
           {error}
         </p>
       )}

@@ -15,6 +15,73 @@ import type {
 } from "@/types/admin-property";
 
 type Created = { id: number; code: string };
+export type PropertySave = PropertyPayload & {
+  imageFile?: File;
+  onImageProgress?: (percent: number) => void;
+};
+export type RoomSave = RoomPayload & {
+  gallery: { items: string[]; cover: number };
+  imageFiles: File[];
+  requestKey: string;
+  onImageProgress?: (percent: number) => void;
+};
+function roomBody({
+  gallery,
+  imageFiles,
+  requestKey,
+  onImageProgress,
+  ...room
+}: RoomSave) {
+  void requestKey;
+  void onImageProgress;
+  const body = new FormData();
+  body.append(
+    "room",
+    new Blob(
+      [
+        JSON.stringify({
+          ...room,
+          buildingId: room.buildingId || undefined,
+          floorId: room.floorId || undefined,
+        }),
+      ],
+      { type: "application/json" },
+    ),
+  );
+  body.append(
+    "gallery",
+    new Blob([JSON.stringify(gallery)], { type: "application/json" }),
+  );
+  imageFiles.forEach((file) => body.append("images", file));
+  return body;
+}
+function roomUploadOptions(payload: RoomSave) {
+  return {
+    headers: {
+      "Content-Type": undefined,
+      "Idempotency-Key": payload.requestKey,
+    },
+    timeout: 180_000,
+    onUploadProgress: (e: { loaded: number; total?: number }) =>
+      payload.onImageProgress?.(
+        Math.round((e.loaded / (e.total || e.loaded || 1)) * 100),
+      ),
+  };
+}
+function propertyBody({
+  imageFile,
+  onImageProgress: _progress,
+  ...property
+}: PropertySave) {
+  void _progress;
+  const data = new FormData();
+  data.append(
+    "property",
+    new Blob([JSON.stringify(property)], { type: "application/json" }),
+  );
+  if (imageFile) data.append("image", imageFile);
+  return data;
+}
 export const adminPropertyService = {
   async list(filters: PropertyFilters, signal?: AbortSignal) {
     const { data } = await apiClient.get<
@@ -36,17 +103,33 @@ export const adminPropertyService = {
     );
     return data.data;
   },
-  async create(payload: PropertyPayload) {
+  async create(payload: PropertySave) {
     const { data } = await apiClient.post<ApiEnvelope<Created>>(
       "/admin/properties",
-      payload,
+      propertyBody(payload),
+      {
+        headers: { "Content-Type": undefined },
+        timeout: 120_000,
+        onUploadProgress: (e) =>
+          payload.onImageProgress?.(
+            Math.round((e.loaded / (e.total || e.loaded || 1)) * 100),
+          ),
+      },
     );
     return data.data;
   },
-  async update(id: number, payload: PropertyPayload) {
+  async update(id: number, payload: PropertySave) {
     const { data } = await apiClient.put<ApiEnvelope<PropertyDetail>>(
       `/admin/properties/${id}`,
-      payload,
+      propertyBody(payload),
+      {
+        headers: { "Content-Type": undefined },
+        timeout: 120_000,
+        onUploadProgress: (e) =>
+          payload.onImageProgress?.(
+            Math.round((e.loaded / (e.total || e.loaded || 1)) * 100),
+          ),
+      },
     );
     return data.data;
   },
@@ -94,24 +177,26 @@ export const adminPropertyService = {
     );
     return data.data;
   },
-  async createRoom(payload: RoomPayload) {
+  async createRoom(payload: RoomSave) {
     const { data } = await apiClient.post<ApiEnvelope<Created>>(
       "/admin/rooms",
-      payload,
+      roomBody(payload),
+      roomUploadOptions(payload),
     );
     return data.data;
   },
-  async updateRoom(id: number, payload: RoomPayload) {
+  async updateRoom(id: number, payload: RoomSave) {
     const { data } = await apiClient.put<ApiEnvelope<RoomDetail>>(
       `/admin/rooms/${id}`,
-      payload,
+      roomBody(payload),
+      roomUploadOptions(payload),
     );
     return data.data;
   },
   async bulkRooms(payload: {
     propertyId: number;
-    buildingId: number;
-    floorId: number;
+    buildingId?: number;
+    floorId?: number;
     prefix: string;
     fromNumber: number;
     toNumber: number;

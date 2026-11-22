@@ -6,7 +6,7 @@ import type { OnboardingDetail } from "@/types/contract-onboarding";
 import { formatDate } from "@/lib/format";
 
 const input =
-  "mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm";
+  "mt-1 w-full rounded-xl border border-input px-3 py-2 text-sm";
 const button =
   "rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40";
 
@@ -37,7 +37,7 @@ export function OnboardingIdentityProfile({
           <div
             key={f.key}
             className={
-              f.present ? "text-slate-700" : "font-semibold text-amber-800"
+              f.present ? "text-secondary-foreground" : "font-semibold text-warning"
             }
           >
             <dt>{f.label}</dt>
@@ -46,13 +46,13 @@ export function OnboardingIdentityProfile({
         ))}
       </dl>
       {d.identityVerified && p.verification ? (
-        <p role="status" className="text-sm text-emerald-800">
+        <p role="status" className="text-sm text-success">
           Đã đối chiếu bởi {String(p.verification.actor_name)} ·{" "}
           {formatDate(String(p.verification.verified_at), true)} · Tham chiếu:{" "}
           {String(p.verification.evidence_reference)}
         </p>
       ) : (
-        <p className="text-sm text-amber-800">
+        <p className="text-sm text-warning">
           {p.complete
             ? "Hồ sơ đã đầy đủ, cần đối chiếu chứng từ thực tế trước khi xác minh."
             : "Cần bổ sung thông tin còn thiếu trước khi xác minh."}
@@ -71,7 +71,7 @@ export function OnboardingIdentityProfile({
       {portal === "tenant" && (
         <Link
           href="/tenant/account"
-          className="block text-sm text-blue-700 underline"
+          className="block text-sm text-link underline"
         >
           Bổ sung hồ sơ của tôi theo quy trình tài khoản
         </Link>
@@ -81,7 +81,7 @@ export function OnboardingIdentityProfile({
           role="dialog"
           aria-modal="false"
           aria-labelledby="identity-edit-title"
-          className="space-y-3 rounded-xl bg-slate-50 p-4"
+          className="space-y-3 rounded-xl bg-muted p-4"
         >
           <h4 id="identity-edit-title" className="font-semibold">
             Cập nhật hồ sơ người thuê
@@ -179,7 +179,7 @@ export function OnboardingIdentityProfile({
                 className={input}
               />
             </label>
-            <p className="text-xs text-slate-600 sm:col-span-2">
+            <p className="text-xs text-secondary-foreground sm:col-span-2">
               Các thông tin khác được giữ nguyên. Thay đổi dữ liệu định danh yêu
               cầu đối chiếu lại; nếu nội dung hợp đồng thay đổi, hai bên cần xác
               nhận phiên bản mới.
@@ -216,7 +216,7 @@ export function OnboardingIdentityProfile({
       {reviewing && p.complete && d.progress.canVerifyIdentity && (
         <form
           key={p.dataHash}
-          className="space-y-3 rounded-xl bg-blue-50 p-4"
+          className="space-y-3 rounded-xl bg-accent p-4"
           onSubmit={async (e) => {
             e.preventDefault();
             if (!reviewed) return;
@@ -259,7 +259,7 @@ export function OnboardingIdentityProfile({
               aria-describedby="identity-reference-help"
             />
           </label>
-          <p id="identity-reference-help" className="text-xs text-slate-600">
+          <p id="identity-reference-help" className="text-xs text-secondary-foreground">
             Nhập mã hồ sơ, mã tệp giấy tờ hoặc số biên bản đã kiểm tra để truy
             vết. Đây không phải mã OTP và không thay thế việc xem chứng từ.
           </p>

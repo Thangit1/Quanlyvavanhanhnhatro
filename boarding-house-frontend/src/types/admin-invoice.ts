@@ -1,6 +1,15 @@
 export type Party = { id: number; name: string; secondary?: string };
-export type Option = { id: number; label: string; parentId?: number };
+export type Option = {
+  id: number;
+  label: string;
+  parentId?: number;
+  propertyId?: number;
+};
 export type InvoiceSummary = {
+  totalInvoiceCount?: number;
+  issuedInvoiceCount?: number;
+  overdueOutstandingAmount?: number;
+  debtTenantCount?: number;
   totalInvoiceAmount: number;
   totalPaidAmount: number;
   totalOutstandingAmount: number;
@@ -12,6 +21,7 @@ export type InvoiceSummary = {
   overdueInvoiceCount: number;
 };
 export type InvoiceRow = {
+  breakdown?: Record<string, number>;
   id: number;
   invoiceCode: string;
   billingPeriod: string;
@@ -122,6 +132,7 @@ export type InvoicePermissions = {
   canPrint: boolean;
 };
 export type InvoiceDetail = {
+  paymentAvailableFrom?: string;
   id: number;
   invoiceCode: string;
   billingPeriod: string;
@@ -158,6 +169,7 @@ export type AdditionalItem = {
   reason: string;
 };
 export type InvoicePayload = {
+  paymentAvailableFrom?: string;
   roomId: number;
   contractId: number;
   billingPeriod: string;
@@ -173,6 +185,8 @@ export type InvoicePayload = {
   version?: number;
 };
 export type BulkInvoicePayload = {
+  paymentAvailableFrom?: string;
+  expectedHashes?: Record<number, string>;
   propertyId: number;
   billingPeriod: string;
   issueDate: string;
@@ -181,10 +195,28 @@ export type BulkInvoicePayload = {
   action?: "SAVE_DRAFT" | "ISSUE";
 };
 export type BulkPreview = {
+  contractId?: number;
+  contractCode?: string;
+  calculationHash?: string;
+  items?: InvoicePlan["items"];
   roomId: number;
   roomCode: string;
   tenantName: string;
   estimatedAmount: number;
   status: string;
   warning?: string;
+};
+
+export type InvoicePlan = {
+  hash: string;
+  content: string;
+  items: {
+    type: string;
+    name: string;
+    description: string;
+    quantity: number;
+    unit: string;
+    price: number;
+    amount: number;
+  }[];
 };

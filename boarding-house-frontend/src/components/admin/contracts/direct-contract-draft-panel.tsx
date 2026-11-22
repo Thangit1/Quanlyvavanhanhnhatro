@@ -34,28 +34,28 @@ export function DirectContractDraftPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   return (
-    <section className="space-y-4 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+    <section className="space-y-4 rounded-2xl border border-accent-border bg-accent p-5">
       <h2 className="font-semibold">Tiếp tục bản nháp</h2>
-      <p className="text-sm text-slate-600">
-        Kiểm tra điều khoản, tạo tài khoản người thuê nếu chưa có, sau đó gửi
-        xác nhận. Chỉ giữ cam kết lịch thuê từ khi hợp đồng chuyển sang chờ xác
-        nhận.
+      <p className="text-sm text-secondary-foreground">
+        Kiểm tra điều khoản và email người thuê; hệ thống sẽ cấp tài khoản hợp
+        lệ nếu chưa có khi gửi xác nhận. Chỉ giữ cam kết lịch thuê từ khi hợp
+        đồng chuyển sang chờ xác nhận.
       </p>
       {error && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {error}
         </p>
       )}
       <div className="flex flex-wrap gap-3">
         <Link
           href={`/admin/contracts/${contractId}/edit`}
-          className="rounded-lg border border-blue-300 bg-white px-4 py-2 text-sm font-medium text-blue-800"
+          className="rounded-lg border border-blue-300 bg-card px-4 py-2 text-sm font-medium text-link"
         >
           Chỉnh sửa bản nháp
         </Link>
         <Link
           href={`/admin/tenants/${tenantId}`}
-          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm"
+          className="rounded-lg border border-input bg-card px-4 py-2 text-sm"
         >
           Hồ sơ và tài khoản người thuê
         </Link>
@@ -65,7 +65,12 @@ export function DirectContractDraftPanel({
             setBusy(true);
             setError("");
             try {
-              await directContractService.submit(contractId);
+              const result = await directContractService.submit(contractId);
+              if (result.status === "DRAFT")
+                setError(
+                  result.continuationMessage ||
+                    "Đã giữ bản nháp nhưng chưa gửi được hợp đồng.",
+                );
               await client.invalidateQueries();
             } catch (e) {
               setError(apiErrorMessage(e));

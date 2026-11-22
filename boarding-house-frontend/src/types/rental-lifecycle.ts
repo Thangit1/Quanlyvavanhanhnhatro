@@ -14,6 +14,9 @@ export interface LifecycleSummary {
   cleaningOrMaintenance: number;
 }
 export interface BookingRow {
+  tenantPhone?: string;
+  createdAt?: string;
+  createdByName?: string;
   id: number;
   code: string;
   tenantProfileId: number;

@@ -11,7 +11,7 @@ public final class TenantInvoiceRequests {
     private TenantInvoiceRequests() {}
 
     public record CreatePaymentSession(
-            @jakarta.validation.constraints.NotNull @DecimalMin(value = "1") BigDecimal amount,
+            @jakarta.validation.constraints.NotNull @DecimalMin(value = "1") @jakarta.validation.constraints.Digits(integer=13,fraction=2) BigDecimal amount,
             @NotBlank @Pattern(regexp = "CASH|BANK_TRANSFER") String paymentMethod) {}
 
     public record CreateReviewRequest(

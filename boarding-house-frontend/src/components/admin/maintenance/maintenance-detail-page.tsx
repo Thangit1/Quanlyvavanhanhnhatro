@@ -1,4 +1,5 @@
 "use client";
+import { maintenanceStyles } from "./maintenance-styles";
 import { FormInput } from "@/components/ui/number-input";
 import { parseNumericFields } from "@/lib/numeric-input";
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -16,6 +17,7 @@ import {
   ShieldCheck,
   XCircle,
 } from "lucide-react";
+import { MaintenanceEvidence } from "./maintenance-evidence";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { PageLoading } from "@/components/shared/dashboard-ui";
 import {
@@ -40,7 +42,7 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
   if (query.error || !query.data)
     return (
       <AdminShell title="Chi tiết bảo trì">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
+        <div className="rounded-2xl border border-danger-border bg-danger-muted p-6 text-danger">
           {apiErrorMessage(query.error, "Không tìm thấy yêu cầu bảo trì.")}
           <button onClick={() => query.refetch()} className="ml-3 font-bold">
             Thử lại
@@ -66,15 +68,15 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
           <div className="flex items-center gap-3">
             <Link
               href="/admin/maintenance"
-              className="rounded-xl border border-slate-200 bg-white p-2"
+              className="rounded-xl border border-border bg-card p-2"
             >
               <ArrowLeft className="size-5" />
             </Link>
             <div>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Bảo trì / {r.requestCode}
               </p>
-              <h1 className="text-2xl font-black text-slate-950">{r.title}</h1>
+              <h1 className="text-2xl font-black text-foreground">{r.title}</h1>
               <div className="mt-2 flex gap-2">
                 <PriorityBadge priority={r.priority} />
                 <StatusBadge status={r.status} />
@@ -131,7 +133,7 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
           </div>
         </div>
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+          <div className="rounded-xl border border-danger-border bg-danger-muted p-4 text-danger">
             {error}
           </div>
         )}
@@ -157,16 +159,16 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
                   value={r.slaDueAt ? formatDate(r.slaDueAt) : "Chưa thiết lập"}
                 />
               </dl>
-              <div className="mt-5 rounded-xl bg-slate-50 p-4">
-                <p className="text-xs font-bold uppercase text-slate-500">
+              <div className="mt-5 rounded-xl bg-muted p-4">
+                <p className="text-xs font-bold uppercase text-muted-foreground">
                   Mô tả
                 </p>
-                <p className="mt-2 whitespace-pre-wrap text-slate-700">
+                <p className="mt-2 whitespace-pre-wrap text-secondary-foreground">
                   {d.description}
                 </p>
               </div>
               {r.safetyRisk && (
-                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 font-semibold text-red-700">
+                <div className="mt-4 rounded-xl border border-danger-border bg-danger-muted p-4 font-semibold text-danger">
                   Yêu cầu có nguy cơ ảnh hưởng an toàn, cần ưu tiên kiểm tra.
                 </div>
               )}
@@ -177,16 +179,16 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
               ) : (
                 <div className="space-y-4">
                   {d.workLogs.map((x) => (
-                    <div key={x.id} className="border-l-2 border-blue-200 pl-4">
+                    <div key={x.id} className="border-l-2 border-accent-border pl-4">
                       <div className="flex justify-between gap-3">
                         <p className="font-bold">
                           Tiến độ {x.progressPercent}% · {x.actor.name}
                         </p>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-muted-foreground">
                           {formatDate(x.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-1 text-sm text-slate-600">
+                      <p className="mt-1 text-sm text-secondary-foreground">
                         {x.workPerformed || x.note || x.actionType}
                       </p>
                     </div>
@@ -214,7 +216,7 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
               {d.materials.map((x) => (
                 <div
                   key={x.id}
-                  className="flex justify-between border-t border-slate-100 py-3 text-sm"
+                  className="flex justify-between border-t border-border py-3 text-sm"
                 >
                   <span>
                     {x.name} · {x.quantity} {x.unit}
@@ -223,43 +225,44 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
                 </div>
               ))}
               {d.costs.map((x) => (
-                <div key={x.id} className="mt-3 rounded-xl bg-blue-50 p-4">
+                <div key={x.id} className="mt-3 rounded-xl bg-accent p-4">
                   <div className="flex justify-between">
                     <b>Tổng chi phí</b>
-                    <b className="text-blue-700">
+                    <b className="text-link">
                       {formatCurrency(x.totalCost)}
                     </b>
                   </div>
-                  <p className="mt-1 text-xs text-slate-600">
+                  <p className="mt-1 text-xs text-secondary-foreground">
                     Trách nhiệm: {x.responsibility} · {x.approvalStatus}
                   </p>
                 </div>
               ))}
             </Card>
+            <MaintenanceEvidence taskId={id} />
             <Card title="Nghiệm thu">
               {d.permissions.canInspect && (
                 <div className="mb-4 flex gap-2">
                   <button
                     onClick={() => setAction("inspect-pass")}
-                    className="btn-primary"
+                    className={maintenanceStyles.primary}
                   >
                     Nghiệm thu đạt
                   </button>
                   <button
                     onClick={() => setAction("inspect-fail")}
-                    className="btn-secondary"
+                    className={maintenanceStyles.secondary}
                   >
                     Không đạt / Mở lại
                   </button>
                 </div>
               )}
               {d.inspections.map((x) => (
-                <div key={x.id} className="rounded-xl bg-slate-50 p-4">
+                <div key={x.id} className="rounded-xl bg-muted p-4">
                   <p className="font-bold">
                     {x.result === "PASSED" ? "Nghiệm thu đạt" : "Không đạt"} ·{" "}
                     {x.inspector.name}
                   </p>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-secondary-foreground">
                     {x.comment || "Không có ghi chú"}
                   </p>
                 </div>
@@ -272,9 +275,9 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
                 <Empty text="Chưa có lịch xử lý." />
               ) : (
                 d.schedules.map((x) => (
-                  <div key={x.id} className="rounded-xl bg-blue-50 p-4 text-sm">
+                  <div key={x.id} className="rounded-xl bg-accent p-4 text-sm">
                     <b>{formatDate(x.start)}</b>
-                    <p className="mt-1 text-slate-600">
+                    <p className="mt-1 text-secondary-foreground">
                       Dự kiến {x.durationMinutes} phút
                     </p>
                   </div>
@@ -282,12 +285,20 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
               )}
             </Card>
             <Card title="Chi phí">
-              <p className="text-sm text-slate-500">Dự kiến</p>
+              <Link
+                className="text-sm text-link underline"
+                href="/admin/maintenance/assets"
+              >
+                Duyệt vật tư & chi phí tại Tài sản và vận hành
+              </Link>
+              <p className="text-sm text-muted-foreground">Dự kiến</p>
               <p className="text-xl font-black">
                 {formatCurrency(r.estimatedCost)}
               </p>
-              <p className="mt-3 text-sm text-slate-500">Thực tế</p>
-              <p className="text-xl font-black text-blue-700">
+              <p className="mt-3 text-sm text-muted-foreground">
+                Phát sinh đã ghi nhận (chưa phải thực chi)
+              </p>
+              <p className="text-xl font-black text-link">
                 {formatCurrency(r.actualCost)}
               </p>
             </Card>
@@ -296,7 +307,7 @@ export function MaintenanceDetailPage({ id }: { id: number }) {
                 {d.history.map((x) => (
                   <div key={x.id}>
                     <p className="text-sm font-semibold">{x.description}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       {x.actor.name} · {formatDate(x.createdAt)}
                     </p>
                   </div>
@@ -550,7 +561,7 @@ function ActionDialog({
       <form
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl"
+        className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-2xl"
         onSubmit={(e) => {
           e.preventDefault();
           void submit(form);
@@ -559,10 +570,14 @@ function ActionDialog({
         <h2 className="mb-5 text-xl font-black">Cập nhật yêu cầu bảo trì</h2>
         <div className="space-y-4">{fields}</div>
         <div className="mt-6 flex justify-end gap-2">
-          <button type="button" onClick={close} className="btn-secondary">
+          <button
+            type="button"
+            onClick={close}
+            className={maintenanceStyles.secondary}
+          >
             Đóng
           </button>
-          <button type="submit" className="btn-primary">
+          <button type="submit" className={maintenanceStyles.primary}>
             Xác nhận
           </button>
         </div>
@@ -584,7 +599,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="surface-card p-5 sm:p-6 ">
       <h2 className="mb-4 text-lg font-black">{title}</h2>
       {children}
     </section>
@@ -593,13 +608,13 @@ function Card({
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs font-bold uppercase text-slate-400">{label}</dt>
-      <dd className="mt-1 font-semibold text-slate-800">{value}</dd>
+      <dt className="text-xs font-bold uppercase text-muted-foreground">{label}</dt>
+      <dd className="mt-1 font-semibold text-foreground">{value}</dd>
     </div>
   );
 }
 function Empty({ text }: { text: string }) {
-  return <p className="text-sm text-slate-500">{text}</p>;
+  return <p className="text-sm text-muted-foreground">{text}</p>;
 }
 function Action({
   icon: Icon,
@@ -615,7 +630,9 @@ function Action({
   return (
     <button
       onClick={onClick}
-      className={primary ? "btn-primary" : "btn-secondary"}
+      className={
+        primary ? maintenanceStyles.primary : maintenanceStyles.secondary
+      }
     >
       <Icon className="size-4" />
       {label}
@@ -650,7 +667,7 @@ function Input({
         max={type === "number" && /tiến độ/iu.test(label) ? 100 : undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="input"
+        className={maintenanceStyles.input}
       />
     </label>
   );
@@ -672,7 +689,7 @@ function Select({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="input"
+        className={maintenanceStyles.input}
       >
         {options.map((x) => (
           <option key={x[0]} value={x[0]}>

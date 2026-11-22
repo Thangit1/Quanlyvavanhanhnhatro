@@ -540,6 +540,11 @@ export const groupFields: Partial<Record<SettingSection, SettingField[]>> = {
       type: "switch",
     },
     { key: "bankName", label: "Ngân hàng", type: "text" },
+    {
+      key: "bankBin",
+      label: "Mã BIN ngân hàng VietQR (6 chữ số)",
+      type: "text",
+    },
     { key: "accountName", label: "Chủ tài khoản", type: "text" },
     { key: "accountNumber", label: "Số tài khoản", type: "text" },
     { key: "bankBranch", label: "Chi nhánh", type: "text" },

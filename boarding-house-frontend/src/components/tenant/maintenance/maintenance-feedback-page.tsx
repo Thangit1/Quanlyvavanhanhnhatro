@@ -38,13 +38,13 @@ export function MaintenanceFeedbackPage({ requestId }: { requestId: number }) {
       <main className="mx-auto max-w-2xl p-6">
         <Link
           href={`/tenant/maintenance/${requestId}`}
-          className="text-blue-600"
+          className="text-link"
         >
           ← Quay lại
         </Link>
-        <div className="mt-5 rounded-2xl border bg-white p-8 text-center">
+        <div className="mt-5 surface-card p-8 text-center">
           <h1 className="text-2xl font-black">Đã gửi đánh giá</h1>
-          <p className="mt-2 text-slate-500">
+          <p className="mt-2 text-muted-foreground">
             Bạn đã đánh giá {d.feedback.rating}/5 sao cho yêu cầu này.
           </p>
         </div>
@@ -55,13 +55,13 @@ export function MaintenanceFeedbackPage({ requestId }: { requestId: number }) {
       <main className="mx-auto max-w-2xl p-6">
         <Link
           href={`/tenant/maintenance/${requestId}`}
-          className="text-blue-600"
+          className="text-link"
         >
           ← Quay lại
         </Link>
-        <div className="mt-5 rounded-2xl border bg-white p-8 text-center">
+        <div className="mt-5 surface-card p-8 text-center">
           <h1 className="text-2xl font-black">Chưa thể đánh giá</h1>
-          <p className="mt-2 text-slate-500">
+          <p className="mt-2 text-muted-foreground">
             Yêu cầu cần ở trạng thái chờ xác nhận và chưa được đánh giá.
           </p>
         </div>
@@ -88,23 +88,23 @@ export function MaintenanceFeedbackPage({ requestId }: { requestId: number }) {
     <main className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6">
       <Link
         href={`/tenant/maintenance/${requestId}`}
-        className="inline-flex items-center gap-2 font-semibold text-slate-600"
+        className="inline-flex items-center gap-2 font-semibold text-secondary-foreground"
       >
         <ArrowLeft className="size-4" />
         Chi tiết yêu cầu
       </Link>
       <div>
         <h1 className="text-3xl font-black">Xác nhận kết quả sửa chữa</h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-muted-foreground">
           {d.requestCode} · {d.title}
         </p>
       </div>
       {error && (
-        <p role="alert" className="rounded-xl bg-red-50 p-3 text-red-700">
+        <p role="alert" className="rounded-xl bg-danger-muted p-3 text-danger">
           {error}
         </p>
       )}
-      <section className="space-y-5 rounded-2xl border bg-white p-6 shadow-sm">
+      <section className="space-y-5 surface-card p-6 ">
         <label className="block text-sm font-semibold">
           Kết quả
           <select
@@ -148,13 +148,13 @@ export function MaintenanceFeedbackPage({ requestId }: { requestId: number }) {
             (result !== "PASSED" && comment.trim().length < 10)
           }
           onClick={submit}
-          className="w-full rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40"
+          className="w-full rounded-xl bg-primary hover:bg-primary-hover px-5 py-3 font-bold text-white disabled:opacity-40"
         >
           {action.feedback.isPending
             ? "Đang gửi..."
             : "Gửi xác nhận và đánh giá"}
         </button>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           Nếu kết quả chưa đạt, yêu cầu sẽ được mở lại để quản lý tiếp tục xử
           lý.
         </p>
@@ -182,7 +182,7 @@ function Rating({
             aria-label={`${x} sao`}
             aria-pressed={value === x}
             onClick={() => onChange(x)}
-            className="rounded-lg p-1 focus:ring-2 focus:ring-blue-500"
+            className="rounded-lg p-1 focus:ring-2 focus:ring-ring"
           >
             <Star
               className={`size-7 ${x <= value ? "fill-amber-400 text-amber-400" : "text-slate-300"}`}

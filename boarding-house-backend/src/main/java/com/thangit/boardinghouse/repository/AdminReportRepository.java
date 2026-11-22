@@ -51,7 +51,7 @@ public class AdminReportRepository {
     }
 
     public List<PropertyOption> properties(long userId, RoleCode role) {
-        String sql = "SELECT p.id,p.name FROM properties p WHERE p.status='ACTIVE' AND " + scope(role, "p") + " ORDER BY p.name";
+        String sql = "SELECT p.id,p.name FROM properties p WHERE " + scope(role, "p") + " ORDER BY p.name";
         return jdbc.sql(sql).param("userId", userId)
                 .query((r, n) -> new PropertyOption(r.getLong("id"), r.getString("name"))).list();
     }
@@ -66,7 +66,7 @@ public class AdminReportRepository {
                 FROM properties p LEFT JOIN rooms r ON r.property_id=p.id
                 WHERE %s%s
                 """.formatted(scope(role, "p"), propertyFilter(ids, "p"));
-        return one(sql, params(userId, ids, LocalDate.now(), LocalDate.now()));
+        return one(sql, params(userId, ids, com.thangit.boardinghouse.service.BusinessTime.today(), com.thangit.boardinghouse.service.BusinessTime.today()));
     }
 
     public Map<String, Object> periodSummary(long userId, RoleCode role, List<Long> ids, LocalDate start, LocalDate end) {
@@ -95,7 +95,7 @@ public class AdminReportRepository {
     public List<ChartPoint> roomStatuses(long userId, RoleCode role, List<Long> ids) {
         String sql = "SELECT r.status label,COUNT(*) value FROM rooms r JOIN properties p ON p.id=r.property_id WHERE "
                 + scope(role,"p") + propertyFilter(ids,"p") + " GROUP BY r.status ORDER BY value DESC";
-        return points(sql, params(userId, ids, LocalDate.now(), LocalDate.now()));
+        return points(sql, params(userId, ids, com.thangit.boardinghouse.service.BusinessTime.today(), com.thangit.boardinghouse.service.BusinessTime.today()));
     }
 
     public List<ChartPoint> financeTrend(long userId,RoleCode role,List<Long> ids,LocalDate start,LocalDate end){
@@ -107,7 +107,7 @@ public class AdminReportRepository {
         Map<String, Object> raw = roomSummary(userId, role, ids);
         Map<String, BigDecimal> summary = decimals(raw);
         BigDecimal available = summary.getOrDefault("availableRooms", BigDecimal.ZERO);
-        summary.put("occupancyRate", percent(summary.get("occupiedRooms"), available));
+        summary.put("occupancyRate", com.thangit.boardinghouse.service.ReportKpis.occupancy(summary.get("occupiedRooms"),available));
         String sql = """
                 SELECT p.name property_name,COUNT(r.id) total_rooms,SUM(r.status IN ('OCCUPIED','NOTICE')) occupied_rooms,
                  SUM(r.status IN ('VACANT','READY')) vacant_rooms,SUM(r.status='MAINTENANCE') maintenance_rooms,
@@ -211,13 +211,14 @@ public class AdminReportRepository {
                            String fileName, byte[] content) {
         String filterJson=toJson(filters),columnJson=toJson(columns);
         var keys=new org.springframework.jdbc.support.GeneratedKeyHolder();
-        jdbc.sql("INSERT INTO report_export_jobs(requested_by,report_type,format,filter_json,selected_columns,status,file_name,content_type,file_size,file_content,expires_at,started_at,completed_at) VALUES(:user,:type,:format,:filters,:columns,'COMPLETED',:name,'text/csv;charset=UTF-8',:size,:content,DATE_ADD(NOW(),INTERVAL 7 DAY),NOW(),NOW())")
+        jdbc.sql("INSERT INTO report_export_jobs(requested_by,report_type,format,filter_json,selected_columns,status,file_name,content_type,file_size,file_content,expires_at,started_at,completed_at) VALUES(:user,:type,:format,:filters,:columns,'COMPLETED',:name,:contentType,:size,:content,DATE_ADD(NOW(),INTERVAL 7 DAY),NOW(),NOW())")
                 .param("user",userId).param("type",reportType).param("format",format).param("filters",filterJson)
-                .param("columns",columnJson).param("name",fileName).param("size",content.length).param("content",content)
+                .param("columns",columnJson).param("name",fileName).param("contentType","XLSX".equals(format)?"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":"text/csv;charset=UTF-8").param("size",content.length).param("content",content)
                 .update(keys,"id");
         return keys.getKey().longValue();
     }
 
+    public List<Long> exportFinancialProperties(long user,long id){String raw=jdbc.sql("SELECT CAST(filter_json AS CHAR) FROM report_export_jobs WHERE requested_by=:user AND id=:id").param("user",user).param("id",id).query(String.class).single();try{var root=json.readTree(raw);var list=new ArrayList<Long>();for(var item:root.path("financialPropertyIds")){if(!item.isIntegralNumber()||item.asLong()<=0)throw new IllegalArgumentException();list.add(item.asLong());}return list;}catch(Exception e){throw new com.thangit.boardinghouse.common.exception.AuthException(org.springframework.http.HttpStatus.FORBIDDEN,"REPORT_EXPORT_SCOPE_INVALID","Xuất lại báo cáo bằng phạm vi hiện tại.");}}
     public List<ExportJob> exports(long userId) {
         return jdbc.sql("SELECT id,report_type,format,status,file_name,file_size,expires_at,created_at,completed_at,error_message FROM report_export_jobs WHERE requested_by=:user ORDER BY created_at DESC LIMIT 100")
                 .param("user",userId).query(this::exportJob).list();
@@ -226,7 +227,7 @@ public class AdminReportRepository {
     public Optional<byte[]> exportContent(long userId,long id){return jdbc.sql("SELECT file_content FROM report_export_jobs WHERE id=:id AND requested_by=:user AND status='COMPLETED' AND expires_at>NOW()").param("id",id).param("user",userId).query((r,n)->r.getBytes(1)).optional();}
 
     private ExportJob exportJob(ResultSet r,int n)throws SQLException{Number size=(Number)r.getObject("file_size");return new ExportJob(r.getLong("id"),r.getString("report_type"),r.getString("format"),r.getString("status"),r.getString("file_name"),size==null?null:size.longValue(),dateTime(r,"expires_at"),dateTime(r,"created_at"),dateTime(r,"completed_at"),r.getString("error_message"));}
-    private ReportData data(String type,List<Long>ids,LocalDate start,LocalDate end,Map<String,BigDecimal>summary,List<ChartPoint>trend,List<ChartPoint>breakdown,List<Map<String,Object>>rows){return new ReportData(type,new Scope(ids==null?List.of():ids,start,end),summary,trend,breakdown,rows,LocalDateTime.now());}
+    private ReportData data(String type,List<Long>ids,LocalDate start,LocalDate end,Map<String,BigDecimal>summary,List<ChartPoint>trend,List<ChartPoint>breakdown,List<Map<String,Object>>rows){return new ReportData(type,new Scope(ids==null?List.of():ids,start,end),summary,trend,breakdown,rows,com.thangit.boardinghouse.service.BusinessTime.now());}
     private Map<String,Object> one(String sql,Map<String,Object>params){return jdbc.sql(sql).params(params).query(this::map).single();}
     private List<Map<String,Object>> list(String sql,Map<String,Object>params){return jdbc.sql(sql).params(params).query(this::map).list();}
     private List<ChartPoint> points(String sql,Map<String,Object>params){return jdbc.sql(sql).params(params).query((r,n)->new ChartPoint(r.getString("label"),money(r,"value"),has(r,"secondary_value")?money(r,"secondary_value"):null,has(r,"category")?r.getString("category"):null)).list();}

@@ -52,6 +52,15 @@ public class GlobalExceptionHandler {
                 ApiErrorResponse.of("Dữ liệu không hợp lệ.", "VALIDATION_ERROR", errors));
     }
 
+    @ExceptionHandler({org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+            org.springframework.web.bind.MissingServletRequestParameterException.class,
+            org.springframework.web.multipart.support.MissingServletRequestPartException.class,
+            org.springframework.web.method.annotation.HandlerMethodValidationException.class})
+    public ResponseEntity<ApiErrorResponse> handleInvalidParameters(Exception exception) {
+        return ResponseEntity.badRequest().body(ApiErrorResponse.of(
+                "Tham số yêu cầu không hợp lệ hoặc còn thiếu.", "INVALID_REQUEST_PARAMETERS", List.of()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiErrorResponse> handleUnreadableBody(HttpMessageNotReadableException exception) {
         return ResponseEntity.badRequest().body(
@@ -62,6 +71,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleMissingResource(NoResourceFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ApiErrorResponse.of("Không tìm thấy tài nguyên được yêu cầu.", "RESOURCE_NOT_FOUND", List.of()));
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiErrorResponse> handleUnsupportedMethod(org.springframework.web.HttpRequestMethodNotSupportedException exception) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).headers(exception.getHeaders()).body(
+                ApiErrorResponse.of("Thao tác không được hỗ trợ trên tài nguyên này.", "METHOD_NOT_ALLOWED", List.of()));
     }
 
     @ExceptionHandler(Exception.class)

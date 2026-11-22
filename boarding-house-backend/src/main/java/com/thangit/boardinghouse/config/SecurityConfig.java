@@ -36,8 +36,10 @@ public class SecurityConfig {
                 .exceptionHandling(errors -> errors.authenticationEntryPoint(entryPoint).accessDeniedHandler(deniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/gateways/vnpay/ipn","/api/gateways/vnpay/return","/api/integrations/zalo/oauth/callback").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/gateways/momo/ipn","/api/integrations/zalo/webhook/*").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/refresh", "/api/auth/logout",
-                                "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/invitations/accept").permitAll()
+                                "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/invitations/accept", "/api/auth/password-setup").permitAll()
                         .requestMatchers("/api-docs", "/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .requestMatchers("/api/owner/**").hasRole("OWNER")
                         .requestMatchers("/api/manager/**").hasAnyRole("OWNER", "MANAGER")
@@ -52,6 +54,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/reports/**")
                                 .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
                         .requestMatchers("/api/admin/maintenance/**")
+                                .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/operations/**")
                                 .hasAnyRole("OWNER", "MANAGER", "ACCOUNTANT")
                         .requestMatchers("/api/admin/**").hasAnyRole("OWNER", "MANAGER")
                         .requestMatchers("/api/accountant/**").hasRole("ACCOUNTANT")

@@ -1,0 +1,72 @@
+{
+  "cases": [
+    {
+      "name": "TENANT authenticate fixture",
+      "status": "FAIL",
+      "error": "[{\"case\":\"TENANT authenticate fixture\",\"message\":\"SyntaxError: Invalid or unexpected token\"}]\n\n1 !== 0\n"
+    }
+  ],
+  "exceptions": [
+    {
+      "case": "TENANT authenticate fixture",
+      "message": "SyntaxError: Invalid or unexpected token"
+    }
+  ],
+  "responses": [
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile-update-requests",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/preferences",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile",
+      "status": 200
+    },
+    {
+      "case": "TENANT authenticate fixture",
+      "url": "http://127.0.0.1:18083/api/tenant/account/profile-update-requests",
+      "status": 200
+    }
+  ]
+}

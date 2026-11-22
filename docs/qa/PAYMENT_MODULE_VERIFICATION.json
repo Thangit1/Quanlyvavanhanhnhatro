@@ -1,0 +1,202 @@
+{
+  "task": "Payment module development",
+  "date": "2026-11-20",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "status": "Implemented and verified within the recorded scope; real merchant connectivity not certified",
+  "stages": [
+    {
+      "stage": "Assessment",
+      "findings": [
+        "Cash, invoice snapshots, payment ledger and receipts already worked and were reused",
+        "Simulator, dynamic VietQR and gateway lifecycle/history were incomplete",
+        "Accountant gateway reconciliation endpoint previously returned an empty placeholder"
+      ]
+    },
+    {
+      "stage": "Core and simulation",
+      "implemented": [
+        "Existing gateway_sessions reused; V43 adds result codes and transition journal",
+        "Invoice locking, scoped history, local cancellation, expiry and manual reconciliation",
+        "Simulator is local/dev only, always blocked by production profile and never writes real payments or receipts"
+      ],
+      "checkpoint": {
+        "backendUnitTestsPassed": 19
+      }
+    },
+    {
+      "stage": "VietQR and providers",
+      "implemented": [
+        "Server-derived amount and unique transfer reference; owned-session QR endpoint",
+        "Official VietQR Quick Link with text fallback and explicit production template",
+        "VNPAY/MoMo signed result mapping including pending/cancelled/expired",
+        "Return URL is read-only; late successful callbacks require review",
+        "Manual reconciliation uses existing authorized receipt service"
+      ],
+      "checkpoint": {
+        "integrationAndProviderTestsPassed": 23
+      }
+    },
+    {
+      "stage": "UI and notification",
+      "implemented": [
+        "Tenant simulator controls, QR panel, return page and transaction history",
+        "Owner/manager/accountant scoped history and reconciliation decisions",
+        "Environment-only owner-scoped merchant keys; old encrypted payment credentials not deleted",
+        "Known pre-send SMTP connection refusal can use existing worker bounded retries; unknown send outcomes never auto-resend",
+        "Email/Zalo failure after committed payment cannot undo the receipt"
+      ],
+      "businessEmailEnabled": false
+    }
+  ],
+  "verification": {
+    "backend": {
+      "tests": 356,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "package": "BUILD SUCCESS",
+      "log": "boarding-house-backend/payment-module-verified.log"
+    },
+    "frontend": {
+      "tests": 11,
+      "failures": 0,
+      "typecheck": "passed",
+      "lint": {
+        "errors": 0,
+        "warnings": 2,
+        "warningFiles": [
+          "scripts/checkouts-browser.test.cjs",
+          "scripts/integrations-browser.cjs"
+        ]
+      },
+      "productionBuild": "passed",
+      "logs": [
+        "boarding-house-frontend/payment-ui-verified.log",
+        "boarding-house-frontend/payment-types-verified.log",
+        "boarding-house-frontend/payment-lint-verified.log",
+        "boarding-house-frontend/payment-build-verified.log"
+      ]
+    },
+    "runtime": {
+      "profile": [
+        "local",
+        "dev"
+      ],
+      "port": 18097,
+      "database": "isolated test schema on 13319",
+      "healthHttp": 200,
+      "stoppedAfterVerification": true,
+      "schedulersEnabled": false
+    },
+    "database": {
+      "engine": "MySQL 8.0.46",
+      "port": 13319,
+      "migrationsVerifiedThrough": 43,
+      "applicationDatabaseModified": false,
+      "testServerStoppedAfterVerification": true,
+      "realDataDeleted": false
+    },
+    "vietqr": {
+      "publicDocumentationExampleFetched": true,
+      "http": 200,
+      "contentType": "image/svg+xml",
+      "actualTransferPerformed": false
+    },
+    "notifications": {
+      "actualEmailSent": false,
+      "actualZaloSent": false
+    },
+    "gateway": {
+      "actualMerchantApiCalls": false,
+      "testsUseLocallySignedCallbacksAndMockHttp": true
+    }
+  },
+  "mandatoryScenariosVerified": [
+    "Successful receipt and simulated success",
+    "Failure and user cancellation",
+    "Expired transaction and overdue invoice payment",
+    "Duplicate payment and repeated callback",
+    "Forged signature and amount mismatch",
+    "Concurrent competing transactions",
+    "Missing callback expiration",
+    "Tenant cannot access another tenant's session or invoice",
+    "Manager cannot read or reconcile outside scope",
+    "Email and Zalo outage after confirmed receipt",
+    "Production simulator rejection",
+    "VNPAY checkout URL creation and idempotency",
+    "MoMo create connection failure audit",
+    "MoMo pending and zero-reference cancellation handling",
+    "Manual reconciliation replay protection",
+    "Bank transfer expiry independent of database session timezone"
+  ],
+  "endpoints": {
+    "simulationCreate": "POST /api/tenant/invoices/{id}/simulation",
+    "simulationOutcome": "POST /api/tenant/gateway-sessions/{id}/simulation-outcome",
+    "cancel": "POST /api/tenant/gateway-sessions/{id}/cancel",
+    "tenantHistory": "GET /api/tenant/gateway-sessions",
+    "vietqr": "GET /api/tenant/invoices/{invoice}/bank-transfer/{session}/qr",
+    "staffHistory": "GET /api/payments/transactions",
+    "reconcile": "POST /api/payments/transactions/{id}/reconcile",
+    "vnpayReturn": "GET /api/gateways/vnpay/return",
+    "vnpayIpn": "GET /api/gateways/vnpay/ipn",
+    "momoIpn": "POST /api/gateways/momo/ipn"
+  },
+  "sources": [
+    "https://www.vietqr.io/qr-dong",
+    "https://sandbox.vnpayment.vn/apis/docs/thanh-toan-pay/pay.html",
+    "https://developers.momo.vn/v3/vi/docs/payment/api/result-handling/resultcode/"
+  ],
+  "activationNotes": [
+    "Restart the local backend so Flyway applies V43; the running application on 8080 was not restarted.",
+    "Configure real bank metadata and merchant TEST credentials before provider trials.",
+    "Existing encrypted PAYMENT credentials are retained but must be supplied as owner-scoped environment variables for the new gateway flow.",
+    "Production VietQR requires a configured custom template.",
+    "Merchant onboarding, public IPN connectivity and real provider transactions remain unverified.",
+    "Email business delivery remains disabled; no real notifications or fund transfers were triggered."
+  ],
+  "modifiedFiles": [
+    ".env.example",
+    "README.md",
+    "boarding-house-backend/src/main/resources/application-local.yml",
+    "boarding-house-backend/src/main/resources/db/migration/V43__Audit_gateway_transaction_lifecycle.sql",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/PaymentTransactionService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/BankTransferService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/PaymentReconciliationService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/PaymentProviderAdapter.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/config/PaymentExpiryScheduler.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/PaymentTransactionController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/GatewayPaymentController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/AccountantPortalController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/config/SecurityConfig.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/GatewayPayments.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/IntegrationCenter.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/IntegrationVault.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/TenantInvoiceServiceImpl.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/TenantInvoiceRepository.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CommunicationJobs.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/EmailService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/IntegrationAdapters.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/IntegrationChannelRouter.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/PaymentModuleMysqlTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/PaymentProviderAndQrTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/IsolatedMysqlDataSource.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/DepositLedgerMysqlTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/SecurityMysqlIntegrationTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/IntegrationMysqlTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/IntegrationSecurityTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/EmailServiceUnitTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/integration/IntegrationEmailPolicyTest.java",
+    "boarding-house-frontend/src/components/tenant/invoices/gateway-payment-panel.tsx",
+    "boarding-house-frontend/src/components/tenant/invoices/vietqr-panel.tsx",
+    "boarding-house-frontend/src/components/shared/payment-transactions-panel.tsx",
+    "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "boarding-house-frontend/src/components/tenant/invoices/payment-history-page.tsx",
+    "boarding-house-frontend/src/app/admin/invoices/page.tsx",
+    "boarding-house-frontend/src/app/accountant/reconciliation/payment-gateways/page.tsx",
+    "boarding-house-frontend/src/app/tenant/payment-return/page.tsx",
+    "boarding-house-frontend/src/components/admin/settings/integration-center.tsx",
+    "boarding-house-frontend/src/constants/setting-groups.ts",
+    "boarding-house-frontend/scripts/monthly-payment-ui.test.cjs",
+    "boarding-house-frontend/scripts/gateway-payment-ui.test.cjs"
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "date": "2026-11-18",
+  "backend": {
+    "status": "PASS",
+    "uniqueTests": 323,
+    "regressionRun": {
+      "tests": 322,
+      "exitCode": 0,
+      "buildSuccess": true
+    },
+    "finalWorkspaceRun": {
+      "tests": 30,
+      "exitCode": 0,
+      "buildSuccess": true
+    },
+    "suites": [
+      {
+        "name": "controller.CheckoutWorkspaceControllerTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:30:31.634Z"
+      },
+      {
+        "name": "controller.FinanceWorkspaceControllerTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:30:31.955Z"
+      },
+      {
+        "name": "controller.ManagementReportControllerTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:30:32.068Z"
+      },
+      {
+        "name": "controller.OperationsWorkspaceControllerTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:30:32.237Z"
+      },
+      {
+        "name": "service.CheckoutSettlementMysqlTest",
+        "tests": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:32:02.329Z"
+      },
+      {
+        "name": "service.CheckoutWorkspaceMysqlTest",
+        "tests": 30,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:38:10.897Z"
+      },
+      {
+        "name": "service.DepositLedgerMysqlTest",
+        "tests": 35,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:33:09.462Z"
+      },
+      {
+        "name": "service.InvoiceFinanceWorkspaceMysqlTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:33:32.902Z"
+      },
+      {
+        "name": "service.ManagementFinanceMysqlTest",
+        "tests": 47,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:34:38.305Z"
+      },
+      {
+        "name": "service.ManagementReportMysqlTest",
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:35:30.968Z"
+      },
+      {
+        "name": "service.OperationsWorkspaceMysqlTest",
+        "tests": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:35:55.751Z"
+      },
+      {
+        "name": "service.SecurityMysqlIntegrationTest",
+        "tests": 69,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModified": "2026-11-18T05:36:33.397Z"
+      }
+    ],
+    "mysql": "127.0.0.1:3317, isolated schemas, V40 migrated; live 3306 untouched",
+    "privateMysqlStopped": true
+  },
+  "frontend": {
+    "lint": {
+      "status": "PASS",
+      "command": "npm.cmd run lint",
+      "exitCode": 0
+    },
+    "typescript": {
+      "status": "PASS",
+      "command": "npx.cmd tsc --noEmit --incremental false",
+      "exitCode": 0
+    },
+    "productionBuild": {
+      "status": "PASS",
+      "command": "npm.cmd run build",
+      "exitCode": 0,
+      "finalLog": [
+        "✓ Compiled successfully in 20.3s",
+        "  Finished TypeScript in 22.7s ...",
+        "  Generating static pages using 7 workers (0/120) ...",
+        "  Generating static pages using 7 workers (30/120) ",
+        "  Generating static pages using 7 workers (60/120) ",
+        "  Generating static pages using 7 workers (90/120) ",
+        "✓ Generating static pages using 7 workers (120/120) in 4.4s"
+      ]
+    },
+    "node": {
+      "status": "PASS",
+      "tests": 39,
+      "exitCode": 0,
+      "command": "node --test scripts/monthly-payment-ui.test.cjs scripts/numeric-input.test.cjs scripts/session-security.test.cjs scripts/utility-workspace.test.cjs scripts/room-presentation.test.cjs"
+    },
+    "browser": {
+      "status": "PASS",
+      "passed": 11,
+      "cases": [
+        "workspace-source-row",
+        "stage-filter",
+        "financial-filter",
+        "nine-step-dialog",
+        "all-nine-steps-navigate",
+        "print-document-has-source-contract-without-identity-fields",
+        "browser-print-media-and-pdf-output",
+        "mobile-no-page-overflow",
+        "reload-retains-source-record",
+        "read-error-hides-old-data",
+        "accountant-route-one-shell-and-navigation"
+      ],
+      "liveApiWrites": 0,
+      "command": "node scripts/checkouts-browser.test.cjs"
+    }
+  },
+  "notRun": [
+    "Real bank transfer/reconciliation integration",
+    "Four real-role browsers concurrently on production data",
+    "Complete returning-tenant rebooking UAT",
+    "Full Prompt 01–08 browser UAT",
+    "Cross-browser/native printer validation"
+  ],
+  "liveDatabaseMigrated": false,
+  "committed": false
+}

@@ -39,12 +39,19 @@ type Catalog = {
   version: number;
 };
 type CatalogResult = {
+  history?: {
+    id: number;
+    content: string;
+    reason: string;
+    created_at: string;
+    actor_name: string | null;
+  }[];
   items: Catalog[];
   canConfigure: boolean;
   canOverride: boolean;
 };
 const input =
-  "w-full min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm disabled:bg-slate-100";
+  "w-full min-h-10 rounded-lg border border-input bg-card px-3 py-2 text-sm disabled:bg-muted";
 function fromCatalog(c: Catalog): Service {
   return {
     code: c.code,
@@ -69,6 +76,7 @@ export function ContractServicesEditor({
   scopeAccepted,
   onAcceptScope,
   onEditingChange,
+  catalogOnly = false,
 }: {
   propertyId?: number;
   start: string;
@@ -78,6 +86,7 @@ export function ContractServicesEditor({
   scopeAccepted: boolean;
   onAcceptScope: () => void;
   onEditingChange: (editing: boolean) => void;
+  catalogOnly?: boolean;
 }) {
   const { user } = useAuth();
   const client = useQueryClient();
@@ -266,7 +275,7 @@ export function ContractServicesEditor({
   }
   return (
     <section
-      className="space-y-4 rounded-2xl border border-blue-100 p-4"
+      className="space-y-4 rounded-2xl border border-accent-border p-4"
       onKeyDown={(e) => {
         if (
           e.key === "Enter" &&
@@ -277,14 +286,14 @@ export function ContractServicesEditor({
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-semibold">Dịch vụ áp dụng</h3>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-muted-foreground">
           {value.length}/30 dịch vụ · Giá theo thỏa thuận
         </span>
       </div>
       {!scopeAccepted && (
         <div
           role="alert"
-          className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900"
+          className="rounded-xl bg-warning-muted p-3 text-sm text-amber-900"
         >
           Bạn đã đổi nhà trọ hoặc phòng. Các dịch vụ đã nhập vẫn được giữ; cần
           kiểm tra lại trước khi lưu hợp đồng.
@@ -300,12 +309,12 @@ export function ContractServicesEditor({
         </div>
       )}
       {error && (
-        <p role="alert" className="whitespace-pre-wrap text-sm text-red-700">
+        <p role="alert" className="whitespace-pre-wrap text-sm text-danger">
           {error}
         </p>
       )}
       {query.isError && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {apiErrorMessage(query.error)}{" "}
           <button
             type="button"
@@ -359,11 +368,12 @@ export function ContractServicesEditor({
             return (
               <article
                 key={c.id}
-                className={`rounded-xl border p-3 ${c.status !== "ACTIVE" ? "bg-slate-100" : "bg-white"}`}
+                className={`rounded-xl border p-3 ${c.status !== "ACTIVE" ? "bg-muted" : "bg-card"}`}
               >
                 <label className="flex gap-3">
                   <input
                     type="checkbox"
+                    hidden={catalogOnly}
                     className="mt-1"
                     checked={selected}
                     disabled={
@@ -394,7 +404,7 @@ export function ContractServicesEditor({
                   />
                   <span className="min-w-0 flex-1">
                     <strong>{c.name}</strong>
-                    <span className="block whitespace-pre-wrap break-words text-xs text-slate-500">
+                    <span className="block whitespace-pre-wrap break-words text-xs text-muted-foreground">
                       {c.description || serviceCategories[c.category]}
                     </span>
                     <span className="mt-1 block text-sm">
@@ -413,7 +423,7 @@ export function ContractServicesEditor({
                 {query.data?.canConfigure && (
                   <button
                     type="button"
-                    className="mt-2 text-xs text-blue-700 underline"
+                    className="mt-2 text-xs text-link underline"
                     onClick={() => open(undefined, undefined, c)}
                   >
                     Sửa cấu hình
@@ -423,21 +433,40 @@ export function ContractServicesEditor({
             );
           })}
       </div>
+      {catalogOnly && query.data?.history?.length ? (
+        <details className="rounded-xl border p-3">
+          <summary className="cursor-pointer text-sm font-semibold">
+            Lịch sử cấu hình danh mục
+          </summary>
+          {query.data.history.map((h) => (
+            <article key={h.id} className="mt-3 border-t pt-2 text-xs">
+              <p>
+                {h.created_at} · {h.actor_name ?? "—"} · {h.reason}
+              </p>
+              <pre className="mt-1 whitespace-pre-wrap break-words text-muted-foreground">
+                {h.content}
+              </pre>
+            </article>
+          ))}
+        </details>
+      ) : null}
       {!query.isPending && !query.isError && !catalog.length && (
-        <p className="rounded-xl bg-slate-50 p-3 text-sm">
+        <p className="rounded-xl bg-muted p-3 text-sm">
           Nhà trọ chưa cấu hình danh mục dịch vụ. Chủ nhà có thể thêm bảng giá
           bên dưới. Dịch vụ có phí chỉ áp dụng sau khi bạn chủ động chọn.
         </p>
       )}
       <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={!canOverride || value.length >= 30}
-          onClick={() => open()}
-        >
-          + Thêm dịch vụ tùy chỉnh
-        </Button>
+        {!catalogOnly && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={!canOverride || value.length >= 30}
+            onClick={() => open()}
+          >
+            + Thêm dịch vụ tùy chỉnh
+          </Button>
+        )}
         {query.data?.canConfigure && (
           <Button
             type="button"
@@ -476,7 +505,7 @@ export function ContractServicesEditor({
                 <tr key={s.code} className="border-t align-top">
                   <td className="max-w-56 p-2">
                     <strong>{s.name}</strong>
-                    <p className="whitespace-pre-wrap break-words text-xs text-slate-500">
+                    <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">
                       {s.description}
                     </p>
                     {s.note && (
@@ -527,14 +556,14 @@ export function ContractServicesEditor({
                   <td className="space-y-2 p-2">
                     <button
                       type="button"
-                      className="mr-3 text-blue-700 underline"
+                      className="mr-3 text-link underline"
                       onClick={() => open(s, index)}
                     >
                       Sửa
                     </button>
                     <button
                       type="button"
-                      className="text-red-700 underline"
+                      className="text-danger underline"
                       onClick={() =>
                         onChange(value.filter((_, i) => i !== index))
                       }
@@ -587,7 +616,7 @@ export function ContractServicesEditor({
           aria-label={
             editor.configure ? "Cấu hình bảng giá dịch vụ" : "Thông tin dịch vụ"
           }
-          className="space-y-3 rounded-xl border-2 border-blue-200 bg-blue-50 p-4"
+          className="space-y-3 rounded-xl border-2 border-accent-border bg-accent p-4"
         >
           <h4 className="font-semibold">
             {editor.configure

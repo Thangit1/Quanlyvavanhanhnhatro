@@ -1,5 +1,6 @@
 "use client";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
+import { ContractDeliveryStatus } from "./contract-delivery-status";
 import {
   ContractCreatedNotice,
   DirectContractDraftPanel,
@@ -43,6 +44,7 @@ export function AdminContractDetailPage({
   contractId: number;
 }) {
   const query = useAdminContract(contractId);
+  const [tab, setTab] = useState("Tiếp nhận & xác nhận");
   if (query.isLoading) return <PageLoading />;
 
   return (
@@ -50,7 +52,7 @@ export function AdminContractDetailPage({
       <div className="mx-auto max-w-[1400px] space-y-6">
         <Link
           href="/admin/contracts"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-secondary-foreground hover:text-link"
         >
           <ArrowLeft className="size-4" />
           Quay lại danh sách
@@ -59,24 +61,55 @@ export function AdminContractDetailPage({
         <Suspense fallback={null}>
           <ContractCreatedNotice />
         </Suspense>
-        {query.data && (
-          <ContractOnboardingPanel portal="admin" contractId={contractId} />
-        )}
-        {query.data && <ContractContent contract={query.data} />}
-        {query.data?.status === "DRAFT" && (
-          <DirectContractDraftPanel
-            contractId={contractId}
-            tenantId={query.data.tenantId}
-          />
-        )}
-        {query.data && <ContractExtensionReview contractId={contractId} />}
-        {query.data && (
-          <ContractChangesPanel portal="admin" contractId={contractId} />
-        )}
-        {query.data && (
-          <CheckoutSettlementPanel portal="admin" contractId={contractId} />
-        )}
-        {query.data && <MonthlyBillingPanel contractId={contractId} />}
+        <ContractDeliveryStatus contractId={contractId} />
+        <nav
+          aria-label="Hồ sơ hợp đồng"
+          className="flex gap-2 overflow-x-auto rounded-xl border border-border bg-card p-2"
+        >
+          {[
+            "Tiếp nhận & xác nhận",
+            "Nội dung hợp đồng",
+            "Gia hạn & thay đổi",
+            "Trả phòng",
+            "Hóa đơn",
+          ].map((item) => (
+            <button
+              key={item}
+              onClick={() => setTab(item)}
+              className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === item ? "bg-primary hover:bg-primary-hover text-white" : "text-secondary-foreground"}`}
+            >
+              {item}
+            </button>
+          ))}
+        </nav>
+        <div hidden={tab !== "Tiếp nhận & xác nhận"}>
+          {query.data && (
+            <ContractOnboardingPanel portal="admin" contractId={contractId} />
+          )}
+        </div>
+        <div hidden={tab !== "Nội dung hợp đồng"}>
+          {query.data && <ContractContent contract={query.data} />}
+        </div>
+        <div hidden={tab !== "Gia hạn & thay đổi"}>
+          {query.data?.status === "DRAFT" && (
+            <DirectContractDraftPanel
+              contractId={contractId}
+              tenantId={query.data.tenantId}
+            />
+          )}
+          {query.data && <ContractExtensionReview contractId={contractId} />}
+          {query.data && (
+            <ContractChangesPanel portal="admin" contractId={contractId} />
+          )}
+        </div>
+        <div hidden={tab !== "Trả phòng"}>
+          {query.data && (
+            <CheckoutSettlementPanel portal="admin" contractId={contractId} />
+          )}
+        </div>
+        <div hidden={tab !== "Hóa đơn"}>
+          {query.data && <MonthlyBillingPanel contractId={contractId} />}
+        </div>
       </div>
     </AdminShell>
   );
@@ -89,7 +122,7 @@ function ContractContent({
 }) {
   return (
     <>
-      <section className="overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-600 p-5 text-white shadow-lg shadow-blue-100 sm:p-7">
+      <section className="overflow-hidden rounded-3xl border border-accent-border bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-600 p-5 text-white shadow-lg shadow-blue-100 sm:p-7">
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">
@@ -169,32 +202,32 @@ function ContractContent({
           </InfoCard>
 
           <InfoCard title="Khách thuê đại diện" icon={UserRound}>
-            <div className="flex flex-col justify-between gap-4 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col justify-between gap-4 rounded-2xl bg-muted p-4 sm:flex-row sm:items-center">
               <div>
-                <p className="font-bold text-slate-950">
+                <p className="font-bold text-foreground">
                   {contract.tenantName}
                 </p>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {contract.tenantCode}
                 </p>
               </div>
-              <div className="space-y-2 text-sm text-slate-600">
+              <div className="space-y-2 text-sm text-secondary-foreground">
                 <p className="flex items-center gap-2">
-                  <Phone className="size-4 text-slate-400" />
+                  <Phone className="size-4 text-muted-foreground" />
                   {contract.tenantPhone || "Chưa cập nhật"}
                 </p>
                 <p className="flex items-center gap-2">
-                  <Mail className="size-4 text-slate-400" />
+                  <Mail className="size-4 text-muted-foreground" />
                   {contract.tenantEmail || "Chưa cập nhật"}
                 </p>
                 <p className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-slate-400" />
+                  <ShieldCheck className="size-4 text-muted-foreground" />
                   {contract.maskedIdentityNumber || "Chưa cập nhật giấy tờ"}
                 </p>
               </div>
               <Link
                 href={`/admin/tenants/${contract.tenantId}`}
-                className="inline-flex min-h-10 items-center justify-center rounded-xl border border-blue-200 bg-white px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                className="inline-flex min-h-10 items-center justify-center rounded-xl border border-accent-border bg-card px-3 text-sm font-semibold text-link hover:bg-accent"
               >
                 Xem hồ sơ
               </Link>
@@ -204,7 +237,7 @@ function ContractContent({
 
         <aside className="space-y-6">
           <InfoCard title="Giá trị hợp đồng" icon={Banknote}>
-            <dl className="divide-y divide-slate-100">
+            <dl className="divide-y divide-divider">
               <MoneyRow
                 label="Tiền thuê / tháng"
                 value={contract.monthlyRent}
@@ -237,7 +270,7 @@ function ContractContent({
           </section>
           {contract.note && (
             <InfoCard title="Ghi chú nội bộ" icon={CalendarDays}>
-              <p className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-600">
+              <p className="whitespace-pre-wrap break-words text-sm leading-6 text-secondary-foreground">
                 {contract.note}
               </p>
             </InfoCard>
@@ -250,7 +283,7 @@ function ContractContent({
 
 function HeroItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
+    <div className="rounded-2xl border border-white/20 bg-card/10 p-4 backdrop-blur">
       <p className="text-xs text-blue-100">{label}</p>
       <p className="mt-1 font-bold">{value}</p>
     </div>
@@ -266,9 +299,9 @@ function InfoCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="flex items-center gap-2 font-bold text-slate-950">
-        <span className="grid size-9 place-items-center rounded-xl bg-blue-50 text-blue-700">
+    <section className="surface-card p-5 sm:p-6 ">
+      <h2 className="flex items-center gap-2 font-bold text-foreground">
+        <span className="grid size-9 place-items-center rounded-xl bg-accent text-link">
           <Icon className="size-4" />
         </span>
         {title}
@@ -282,8 +315,8 @@ function InfoGrid({ items }: { items: [string, string][] }) {
     <dl className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
       {items.map(([label, value]) => (
         <div key={label}>
-          <dt className="text-xs font-medium text-slate-500">{label}</dt>
-          <dd className="mt-1 break-words text-sm font-semibold text-slate-900">
+          <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+          <dd className="mt-1 break-words text-sm font-semibold text-foreground">
             {value}
           </dd>
         </div>
@@ -302,12 +335,10 @@ function MoneyRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
-      <dt className="text-sm text-slate-500">{label}</dt>
+      <dt className="text-sm text-muted-foreground">{label}</dt>
       <dd
         className={
-          strong
-            ? "font-extrabold text-blue-700"
-            : "font-semibold text-slate-900"
+          strong ? "font-extrabold text-link" : "font-semibold text-foreground"
         }
       >
         {formatCurrency(value)}
@@ -325,10 +356,10 @@ function MiniCard({
   value: number;
 }) {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <Icon className="size-5 text-blue-600" />
-      <p className="mt-3 text-2xl font-extrabold text-slate-950">{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{label}</p>
+    <article className="surface-card p-4 ">
+      <Icon className="size-5 text-link" />
+      <p className="mt-3 text-2xl font-extrabold text-foreground">{value}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{label}</p>
     </article>
   );
 }

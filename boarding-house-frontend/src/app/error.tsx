@@ -18,7 +18,7 @@ export default function ErrorPage({
     <main className="grid min-h-screen place-items-center bg-slate-950 px-6 text-center text-white">
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold">Đã xảy ra lỗi</h1>
-        <p className="text-slate-400">Vui lòng thử tải lại nội dung.</p>
+        <p className="text-muted-foreground">Vui lòng thử tải lại nội dung.</p>
         <Button type="button" onClick={unstable_retry}>
           Thử lại
         </Button>

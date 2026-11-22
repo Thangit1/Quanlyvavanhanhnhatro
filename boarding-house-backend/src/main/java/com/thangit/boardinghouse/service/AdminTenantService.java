@@ -11,8 +11,11 @@ public interface AdminTenantService {
                     String temporaryStatus, String accountStatus, String keyword,
                     String debtStatus, String contractStatus, String sort, String direction, int page, int size);
     TenantDetail detail(AuthenticatedUser principal, long tenantId);
+    TenantList list(AuthenticatedUser principal,Long propertyId,Long roomId,String status,String temporaryStatus,String accountStatus,String keyword,String debtStatus,String contractStatus,String sort,String direction,int page,int size,Long organizationId,Long areaId,java.time.LocalDate moveInFrom,java.time.LocalDate moveInTo);
     CreatedTenant create(AuthenticatedUser principal, SaveTenant request);
+    void attachResidence(AuthenticatedUser principal,long tenantId,AttachResidence request);
     TenantDetail update(AuthenticatedUser principal, long tenantId, SaveTenant request);
+    TenantDetail updateOnboardingIdentity(AuthenticatedUser principal, long tenantId, SaveTenant request);
     void transfer(AuthenticatedUser principal, long tenantId, TransferRoom request);
     void moveOut(AuthenticatedUser principal, long tenantId, MoveOut request);
     void saveTemporaryResidence(AuthenticatedUser principal, long tenantId, TemporaryResidence request);

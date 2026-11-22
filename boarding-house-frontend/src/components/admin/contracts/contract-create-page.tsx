@@ -7,10 +7,11 @@ import {
 } from "@/lib/numeric-input";
 
 import Link from "next/link";
+import { adminTenantService } from "@/services/admin-tenant.service";
 import { ContractMeterReadiness } from "@/components/shared/contract-meter-readiness";
 import { ContractServicesEditor } from "./contract-services-editor";
 import { serviceTotals, serviceMethods } from "@/lib/contract-services";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Check, Plus, Save } from "lucide-react";
@@ -30,16 +31,16 @@ import {
 } from "@/services/direct-contract.service";
 
 const input =
-  "mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "mt-1 min-h-11 w-full rounded-xl border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
 const steps = [
   "Phòng và người thuê",
-  "Điều khoản thuê",
-  "Dịch vụ và thanh toán",
-  "Xem lại và xác nhận",
+  "Điều khoản hợp đồng",
+  "Xem trước hợp đồng",
+  "Tạo và gửi hợp đồng",
 ];
 function Field({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <label className="block text-sm font-medium text-slate-700">
+    <label className="block text-sm font-medium text-secondary-foreground">
       {title}
       {children}
     </label>
@@ -47,9 +48,14 @@ function Field({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function AdminContractCreatePage({ draftId }: { draftId?: number }) {
+  const params = useSearchParams();
+  const agreement = params.get("mode") === "agreement";
   const draft = useQuery({
-    queryKey: ["direct-contract-draft", draftId],
-    queryFn: ({ signal }) => directContractService.draft(draftId!, signal),
+    queryKey: ["direct-contract-draft", draftId, agreement],
+    queryFn: ({ signal }) =>
+      agreement
+        ? directContractService.agreement(draftId!, signal)
+        : directContractService.draft(draftId!, signal),
     enabled: !!draftId,
   });
   if (draftId && draft.isLoading) return <PageLoading />;
@@ -72,22 +78,48 @@ function ContractForm({
   initial?: DirectDraft;
 }) {
   const router = useRouter();
+  const routeParams = useSearchParams();
   const client = useQueryClient();
   const form = useRef<HTMLFormElement>(null);
   const requestKey = useRef("");
   const lastPayload = useRef("");
   const leaving = useRef(false);
+  const saving = useRef(false);
   const [step, setStep] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [propertyId, setPropertyId] = useState<number | undefined>(
-    initial?.propertyId,
+    initial?.propertyId ?? (Number(routeParams.get("propertyId")) || undefined),
   );
-  const [roomId, setRoomId] = useState(initial?.request.roomId ?? 0);
+  const [roomId, setRoomId] = useState(
+    initial?.request.roomId ?? (Number(routeParams.get("roomId")) || 0),
+  );
   const [person, setPerson] = useState<TenantChoice | undefined>(
     initial?.tenant,
   );
+  const selectedProfileId = Number(routeParams.get("tenantProfileId"));
+  const selectedProfile = useQuery({
+    queryKey: ["admin-tenant", selectedProfileId],
+    queryFn: ({ signal }) =>
+      adminTenantService.detail(selectedProfileId, signal),
+    enabled: !!selectedProfileId && !draftId,
+  });
+  const profileHydrated = useRef(false);
+  useEffect(() => {
+    if (!profileHydrated.current && selectedProfile.data) {
+      const p = selectedProfile.data;
+      setPerson({
+        id: p.id,
+        full_name: p.fullName,
+        tenant_code: p.tenantCode,
+        phone: p.phone,
+        email: p.email ?? undefined,
+        has_account: p.hasAccount,
+      });
+      profileHydrated.current = true;
+    }
+  }, [selectedProfile.data]);
   const [newPerson, setNewPerson] = useState(false);
   const [personForm, setPersonForm] = useState<NewTenant>({
     fullName: "",
@@ -115,7 +147,11 @@ function ContractForm({
   const [initialRequired, setInitialRequired] = useState(
     initial?.request.terms.initialPaymentRequired ?? false,
   );
-  const [note, setNote] = useState(initial?.request.note ?? "");
+  const [note, setNote] = useState(
+    initial?.status === "PENDING_CONFIRMATION"
+      ? ""
+      : (initial?.request.note ?? ""),
+  );
   const [clauses, setClauses] = useState(
     initial?.request.terms.terms
       .filter((t) => t.title !== "Phương thức thanh toán")
@@ -261,14 +297,22 @@ function ContractForm({
     }
     if (services.length && servicesScope !== currentServicesScope) {
       setError("Kiểm tra và xác nhận lại dịch vụ cho nhà trọ/phòng đã chọn.");
-      setStep(2);
+      setStep(1);
       return;
     }
     if (busy || !valid(2) || !form.current?.reportValidity()) return;
-    if (submit && (newPerson || !person?.has_account)) {
+    if (saving.current) return;
+    if (
+      submit &&
+      (newPerson || !person?.has_account) &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        newPerson ? personForm.email || "" : person?.email || "",
+      )
+    ) {
       setError(
-        "Người thuê chưa có tài khoản. Lưu nháp trước, tạo tài khoản trong hồ sơ người thuê, sau đó gửi xác nhận.",
+        "Email người thuê: cần địa chỉ hợp lệ để cấp tài khoản và gửi liên kết đặt mật khẩu. Bạn vẫn có thể lưu nháp.",
       );
+      setStep(0);
       return;
     }
     const request: DirectContractRequest = {
@@ -305,6 +349,7 @@ function ContractForm({
       requestKey.current = crypto.randomUUID();
       lastPayload.current = serialized;
     }
+    saving.current = true;
     setBusy(true);
     setError("");
     try {
@@ -313,6 +358,8 @@ function ContractForm({
         requestKey.current,
         draftId,
         initial?.version,
+        initial?.contentHash,
+        initial?.status === "PENDING_CONFIRMATION",
       );
       leaving.current = true;
       setDirty(false);
@@ -323,6 +370,7 @@ function ContractForm({
     } catch (e) {
       setError(apiErrorMessage(e));
     } finally {
+      saving.current = false;
       setBusy(false);
     }
   }
@@ -334,7 +382,7 @@ function ContractForm({
       <div className="mx-auto max-w-7xl space-y-6">
         <nav
           aria-label="Breadcrumb"
-          className="flex flex-wrap gap-2 text-sm text-slate-500"
+          className="flex flex-wrap gap-2 text-sm text-muted-foreground"
         >
           <Link href="/admin/contracts">Hợp đồng</Link>
           <span>/</span>
@@ -345,15 +393,15 @@ function ContractForm({
         <div>
           <Link
             href="/admin/contracts"
-            className="inline-flex items-center gap-2 text-sm text-blue-700"
+            className="inline-flex items-center gap-2 text-sm text-link"
           >
             <ArrowLeft className="size-4" />
             Quay lại danh sách
           </Link>
-          <h1 className="mt-3 text-2xl font-bold text-slate-950">
+          <h1 className="mt-3 text-2xl font-bold text-foreground">
             Tạo hợp đồng thuê phòng
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Mã hợp đồng được sinh khi lưu. Tạo hợp đồng chưa phải ký kết hoặc
             nhận phòng.
           </p>
@@ -366,9 +414,9 @@ function ContractForm({
             <li
               key={title}
               aria-current={step === index ? "step" : undefined}
-              className={`flex items-center gap-2 rounded-xl border p-3 text-sm ${step === index ? "border-blue-500 bg-blue-50 text-blue-800" : "border-slate-200 bg-white text-slate-500"}`}
+              className={`flex items-center gap-2 rounded-xl border p-3 text-sm ${step === index ? "border-ring bg-accent text-link" : "border-border bg-card text-muted-foreground"}`}
             >
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-slate-100">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
                 {index < step ? <Check className="size-4" /> : index + 1}
               </span>
               {title}
@@ -384,7 +432,7 @@ function ContractForm({
         {error && (
           <p
             role="alert"
-            className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+            className="rounded-xl border border-danger-border bg-danger-muted p-4 text-sm text-danger"
           >
             {error}
           </p>
@@ -404,7 +452,7 @@ function ContractForm({
               else void save(true);
             }}
             onChange={() => setDirty(true)}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 [&_button]:min-h-11"
+            className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-7 [&_button]:min-h-11"
           >
             <h2 className="mb-6 text-lg font-semibold">{steps[step]}</h2>
             <fieldset disabled={busy} className="space-y-5">
@@ -413,7 +461,7 @@ function ContractForm({
                   {options.isLoading && (
                     <div
                       aria-label="Đang tải dữ liệu"
-                      className="h-12 animate-pulse rounded-xl bg-slate-100"
+                      className="h-12 animate-pulse rounded-xl bg-muted"
                     />
                   )}
                   <Field title="Nhà trọ *">
@@ -470,12 +518,12 @@ function ContractForm({
                       ))}
                     </select>
                   </Field>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Hệ thống kiểm tra lại lịch thuê, giữ phòng, bảo trì và tình
                     trạng phòng khi lưu hoặc gửi xác nhận.
                   </p>
                   {room?.status === "OCCUPIED" && (
-                    <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
+                    <p className="rounded-xl bg-warning-muted p-3 text-sm text-amber-900">
                       Số hóa hợp đồng cho người đang ở: chọn đúng hồ sơ đang cư
                       trú tại phòng. Chỉ chấp nhận phòng có một cư trú chưa gắn
                       hợp đồng; dữ liệu nhiều người ở hoặc đã có hợp đồng cần
@@ -641,9 +689,10 @@ function ContractForm({
                         </select>
                       </Field>
                       {person && !person.has_account && (
-                        <p className="text-sm text-amber-800">
-                          Hồ sơ chưa có tài khoản. Bạn có thể lưu nháp và tạo
-                          tài khoản trước khi gửi xác nhận.
+                        <p className="text-sm text-warning">
+                          Hệ thống sẽ cấp tài khoản TENANT và gửi liên kết đặt
+                          mật khẩu khi gửi hợp đồng. Email hợp lệ là bắt buộc
+                          cho tài khoản mới.
                         </p>
                       )}
                     </>
@@ -682,6 +731,7 @@ function ContractForm({
                       min={start}
                       max={end}
                       value={checkin}
+                      disabled={initial?.status === "PENDING_CONFIRMATION"}
                       onChange={(e) => setCheckin(e.target.value)}
                     />
                   </Field>
@@ -706,6 +756,7 @@ function ContractForm({
                       step="0.01"
                       className={input}
                       value={deposit}
+                      disabled={initial?.status === "PENDING_CONFIRMATION"}
                       onChange={(e) => setDeposit(e.target.value)}
                     />
                   </Field>
@@ -731,14 +782,25 @@ function ContractForm({
                       onChange={(e) => setNotice(e.target.value)}
                     />
                   </Field>
-                  <p className="self-center text-sm text-slate-500">
+                  <p className="self-center text-sm text-muted-foreground">
                     Hợp đồng có thời hạn, thanh toán hàng tháng; giá thuê được
                     lưu riêng trong hợp đồng.
                   </p>
                   <div className="sm:col-span-2">
-                    <Field title="Ghi chú">
+                    <Field
+                      title={
+                        initial?.status === "PENDING_CONFIRMATION"
+                          ? "Lý do cập nhật phiên bản *"
+                          : "Ghi chú"
+                      }
+                    >
                       <textarea
-                        maxLength={2000}
+                        maxLength={
+                          initial?.status === "PENDING_CONFIRMATION"
+                            ? 1000
+                            : 2000
+                        }
+                        required={initial?.status === "PENDING_CONFIRMATION"}
                         className={input}
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
@@ -758,12 +820,12 @@ function ContractForm({
                   </div>
                 </div>
               )}
-              {step === 2 && (
+              {step === 1 && (
                 <>
                   {rates.map((rate, index) => (
                     <div
                       key={rate.code}
-                      className="grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2"
+                      className="grid gap-3 rounded-xl bg-muted p-4 sm:grid-cols-2"
                     >
                       <Field title={`${rate.name}: phương pháp tính`}>
                         <select
@@ -814,7 +876,7 @@ function ContractForm({
                       </Field>
                     </div>
                   ))}
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Chỉ số đầu kỳ và chứng cứ bàn giao được ghi tại phiếu nhận
                     phòng, không xác nhận bàn giao ở bước tạo hợp đồng.
                   </p>
@@ -861,17 +923,17 @@ function ContractForm({
                     Yêu cầu thanh toán hóa đơn kỳ đầu trước khi hoàn tất nhận
                     phòng
                   </label>
-                  <p className="rounded-xl bg-blue-50 p-4 text-sm text-blue-900">
+                  <p className="rounded-xl bg-accent p-4 text-sm text-link">
                     Đã thanh toán: 0 đ. Hợp đồng trực tiếp không có tiền giữ chỗ
                     chuyển sang. Mọi khoản thực thu cần chứng từ riêng; biểu mẫu
                     không tạo giao dịch hoặc hóa đơn.
                   </p>
                 </>
               )}
-              {step === 3 && (
+              {(step === 2 || step === 3) && (
                 <div className="space-y-5 text-sm">
                   <div className="flex flex-wrap gap-2">
-                    {steps.slice(0, 3).map((s, i) => (
+                    {steps.slice(0, 2).map((s, i) => (
                       <Button
                         key={s}
                         type="button"
@@ -907,7 +969,7 @@ function ContractForm({
                       ["Báo trước chấm dứt", `${notice} ngày`],
                     ].map(([label, value]) => (
                       <div key={label}>
-                        <dt className="text-slate-500">{label}</dt>
+                        <dt className="text-muted-foreground">{label}</dt>
                         <dd className="mt-1 font-medium">
                           {value || "Chưa cung cấp"}
                         </dd>
@@ -941,11 +1003,11 @@ function ContractForm({
                       {clauses ||
                         "Chưa bổ sung điều khoản. Có thể quay lại bước 2 để nhập trước khi gửi xác nhận."}
                     </p>
-                    <p className="mt-2 whitespace-pre-wrap text-slate-500">
+                    <p className="mt-2 whitespace-pre-wrap text-muted-foreground">
                       {note}
                     </p>
                   </div>
-                  <p className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <p className="rounded-xl border border-warning-border bg-warning-muted p-4">
                     Sau khi tạo: hai bên xác nhận nội dung, xác minh danh tính,
                     thu cọc theo chứng từ và hoàn tất biên bản nhận phòng. Chỉ
                     sau đó hợp đồng và cư trú được kích hoạt.
@@ -970,19 +1032,27 @@ function ContractForm({
                   onClick={() => void save(false)}
                 >
                   <Save />
-                  {busy ? "Đang lưu..." : "Lưu nháp"}
+                  {busy
+                    ? "Đang lưu..."
+                    : initial?.status === "PENDING_CONFIRMATION"
+                      ? "Lưu phiên bản mới"
+                      : "Lưu nháp"}
                 </Button>
                 <Button
                   type="submit"
                   disabled={busy}
                   className="bg-blue-700 text-white hover:bg-blue-800"
                 >
-                  {step < 3 ? "Tiếp tục" : "Xác nhận tạo hợp đồng"}
+                  {step < 3
+                    ? "Tiếp tục"
+                    : initial?.status === "PENDING_CONFIRMATION"
+                      ? "Lưu & yêu cầu xác nhận lại"
+                      : "Tạo & gửi hợp đồng"}
                 </Button>
               </div>
             </div>
           </form>
-          <aside className="rounded-2xl border border-blue-100 bg-blue-50 p-5 lg:sticky lg:top-6">
+          <aside className="rounded-2xl border border-accent-border bg-accent p-5 lg:sticky lg:top-6">
             <h2 className="font-semibold text-blue-950">Tóm tắt hợp đồng</h2>
             <dl className="mt-4 space-y-3 text-sm">
               {[
@@ -1012,14 +1082,14 @@ function ContractForm({
                 ["Tạm tính cần thu ban đầu", formatCurrency(total)],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between gap-4">
-                  <dt className="text-slate-600">{label}</dt>
-                  <dd className="text-right font-medium text-slate-950">
+                  <dt className="text-secondary-foreground">{label}</dt>
+                  <dd className="text-right font-medium text-foreground">
                     {value}
                   </dd>
                 </div>
               ))}
             </dl>
-            <p className="mt-5 text-xs leading-relaxed text-slate-600">
+            <p className="mt-5 text-xs leading-relaxed text-secondary-foreground">
               Tạm tính kỳ đầu theo số lượng đã khai, chưa phân bổ ngày lẻ, chưa
               gồm tiêu thụ công tơ và lượt sử dụng. Phí theo người dùng lịch sử
               cư trú thực tế khi lập hóa đơn. Số phải thu chính thức theo hóa

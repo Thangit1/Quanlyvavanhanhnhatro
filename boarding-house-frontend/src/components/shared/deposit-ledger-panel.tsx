@@ -1,5 +1,6 @@
 "use client";
 import { CurrencyInput } from "@/components/ui/number-input";
+import { DepositTransferPanel } from "./deposit-transfer-panel";
 
 import { useRef, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,9 +9,9 @@ import { useAuth } from "@/providers/auth-provider";
 import { apiErrorMessage } from "@/lib/api-error";
 import { formatCurrency } from "@/lib/format";
 
-type Row = Record<string, string | number | null>;
+type Row = Record<string, string | number | boolean | null>;
 type Detail = Row & { transactions: Row[]; refunds: Row[] };
-const input = "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm";
+const input = "rounded-xl border border-border bg-card px-3 py-2 text-sm";
 const labels: Record<string, string> = {
   COLLECT: "Thực thu",
   TRANSFER_IN: "Nhận điều chuyển",
@@ -30,6 +31,7 @@ export function DepositLedgerPanel({
   portal,
   contractId,
   propertyId,
+  propertyIds,
   depositId,
   writeAllowed,
   approvalAllowed,
@@ -37,6 +39,7 @@ export function DepositLedgerPanel({
   portal: "admin" | "accountant" | "tenant";
   contractId?: number;
   propertyId?: number;
+  propertyIds?: number[];
   depositId?: number;
   writeAllowed?: boolean;
   approvalAllowed?: boolean;
@@ -45,6 +48,9 @@ export function DepositLedgerPanel({
   const { user } = useAuth();
   const client = useQueryClient();
   const [selected, setSelected] = useState<number>();
+  const [view, setView] = useState("all");
+  const [search, setSearch] = useState("");
+  const inFlight = useRef(false);
   const [action, setAction] = useState<{
     kind: "collect" | "refund" | "pay" | "amend" | "transfer";
     refundId?: number;
@@ -60,7 +66,21 @@ export function DepositLedgerPanel({
   const rows = (list.data ?? []).filter(
     (r) =>
       (!contractId || Number(r.contract_id) === contractId) &&
-      (!propertyId || Number(r.property_id) === propertyId),
+      (!propertyId || Number(r.property_id) === propertyId) &&
+      (!propertyIds || propertyIds.includes(Number(r.property_id))) &&
+      (view === "all" ||
+        view === "history" ||
+        (view === "booking" && !r.contract_id && !!r.booking_id) ||
+        (view === "contract" && !!r.contract_id) ||
+        (view === "supplement" && Number(r.remaining_deposit_due) > 0) ||
+        (view === "refund" && Number(r.refund_due) > 0) ||
+        (view === "refunded" && Number(r.refunded_amount) > 0)) &&
+      (!search.trim() ||
+        Object.values(r).some((value) =>
+          String(value ?? "")
+            .toLocaleLowerCase("vi")
+            .includes(search.trim().toLocaleLowerCase("vi")),
+        )),
   );
   const id = rows.some((r) => Number(r.id) === selected)
     ? selected
@@ -76,15 +96,21 @@ export function DepositLedgerPanel({
     queryFn: async () =>
       (await apiClient.get<ApiEnvelope<Detail>>(`${base}/${id}`)).data.data,
   });
-  const canWrite = portal !== "tenant" && writeAllowed !== false;
+  const canWrite =
+    portal !== "tenant" &&
+    writeAllowed !== false &&
+    detail.data?.can_write !== false;
   const canApprove =
     approvalAllowed !== false &&
     (user?.activeRole === "OWNER" || user?.activeRole === "MANAGER");
   const canApproveRefund =
-    canApprove ||
-    (user?.activeRole === "ACCOUNTANT" &&
-      Number(detail.data?.can_approve_refund) === 1);
+    approvalAllowed !== false &&
+    (detail.data?.can_approve_refund != null
+      ? Number(detail.data.can_approve_refund) === 1
+      : canApprove);
   async function perform(path: string, payload?: unknown, idempotent = false) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setError("");
     try {
@@ -101,6 +127,7 @@ export function DepositLedgerPanel({
     } catch (e) {
       setError(apiErrorMessage(e));
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }
@@ -151,7 +178,7 @@ export function DepositLedgerPanel({
   return (
     <section
       id={`deposit-ledger-${contractId}`}
-      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+      className="space-y-4 surface-card p-5 sm:p-6 "
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-bold">Sổ tiền giữ chỗ và tiền cọc</h2>
@@ -164,15 +191,46 @@ export function DepositLedgerPanel({
           Tải lại
         </button>
       </div>
+      <div className="flex flex-wrap gap-2" aria-label="Loại sổ cọc">
+        {[
+          ["all", "Tất cả"],
+          ["booking", "Tiền giữ phòng"],
+          ["contract", "Cọc hợp đồng"],
+          ["supplement", "Chờ bổ sung"],
+          ["refund", "Chờ hoàn"],
+          ["refunded", "Đã hoàn"],
+          ["history", "Lịch sử giao dịch"],
+        ].map(([key, label]) => (
+          <button
+            key={key}
+            aria-pressed={view === key}
+            className={`${input} ${view === key ? "bg-accent text-link" : ""}`}
+            onClick={() => {
+              setView(key);
+              setSelected(undefined);
+              setAction(undefined);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <input
+        aria-label="Tìm sổ cọc"
+        placeholder="Tìm mã hợp đồng, khách thuê hoặc phiếu giữ phòng"
+        className={`${input} w-full`}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
       {(list.isError || detail.isError || error) && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {error || apiErrorMessage(list.error || detail.error)}
         </p>
       )}
       {list.isLoading ? (
         <p>Đang tải sổ cọc...</p>
       ) : !rows.length ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Chưa có sổ cọc trong phạm vi này.
         </p>
       ) : (
@@ -188,7 +246,7 @@ export function DepositLedgerPanel({
             }}
           >
             {rows.map((r) => (
-              <option key={r.id} value={Number(r.id)}>
+              <option key={String(r.id)} value={Number(r.id)}>
                 {r.booking_code
                   ? `Giữ chỗ ${r.booking_code}`
                   : `Hợp đồng ${r.contract_code}`}{" "}
@@ -211,7 +269,7 @@ export function DepositLedgerPanel({
                 ["Đã hoàn thực tế", current.refunded_amount],
                 ["Đã khấu trừ / giữ lại", current.deducted_amount],
               ].map(([label, amount]) => (
-                <p key={String(label)} className="rounded-xl bg-slate-50 p-3">
+                <p key={String(label)} className="rounded-xl bg-muted p-3">
                   {label}
                   <strong className="mt-1 block">
                     {formatCurrency(Number(amount))}
@@ -221,15 +279,25 @@ export function DepositLedgerPanel({
             </div>
           )}
           {current?.reconciliation_status !== "VERIFIED" && (
-            <p className="text-sm text-amber-700">
+            <p className="text-sm text-warning">
               Dữ liệu lịch sử cần đối soát chứng từ; số dư chưa được xác nhận.
               Hệ thống chặn ghi sổ mới trên hồ sơ này.
             </p>
           )}
+          {detail.data && id && Number(detail.data.contract_id) > 0 && (
+            <DepositTransferPanel
+              key={id}
+              portal={portal}
+              id={id}
+              canReview={canWrite}
+              ready={detail.data.collection_ready !== false}
+              remaining={Number(current?.remaining_deposit_due || 0)}
+            />
+          )}
           {canWrite && current?.reconciliation_status === "VERIFIED" && (
             <div className="flex flex-wrap gap-2">
               <button
-                disabled={busy}
+                disabled={busy || detail.data?.collection_ready === false}
                 className={input}
                 onClick={() => {
                   key.current = "";
@@ -281,7 +349,7 @@ export function DepositLedgerPanel({
               onChange={() => {
                 key.current = "";
               }}
-              className="grid gap-3 rounded-xl border border-slate-200 p-4 sm:grid-cols-2"
+              className="grid gap-3 rounded-xl border border-border p-4 sm:grid-cols-2"
             >
               <label className="text-sm">
                 Số tiền
@@ -328,7 +396,7 @@ export function DepositLedgerPanel({
                           Number(r.tenant_id) === Number(current?.tenant_id),
                       )
                       .map((r) => (
-                        <option key={r.id} value={Number(r.id)}>
+                        <option key={String(r.id)} value={Number(r.id)}>
                           {r.contract_code}
                         </option>
                       ))}
@@ -404,8 +472,8 @@ export function DepositLedgerPanel({
           )}
           {detail.data?.refunds.map((r) => (
             <div
-              key={r.id}
-              className="flex flex-wrap items-center gap-3 rounded-xl bg-amber-50 p-3 text-sm"
+              key={String(r.id)}
+              className="flex flex-wrap items-center gap-3 rounded-xl bg-warning-muted p-3 text-sm"
             >
               <span>
                 Đề nghị #{r.id}: {formatCurrency(Number(r.amount))} · Đã chi{" "}
@@ -456,7 +524,7 @@ export function DepositLedgerPanel({
                 </thead>
                 <tbody>
                   {detail.data?.transactions.map((t) => (
-                    <tr key={t.id} className="border-t">
+                    <tr key={String(t.id)} className="border-t">
                       <td className="p-2">{t.transaction_code}</td>
                       <td>
                         {labels[String(t.transaction_type)] ??

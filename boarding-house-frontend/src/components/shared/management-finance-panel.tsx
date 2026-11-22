@@ -24,7 +24,7 @@ export function FinancialSummary({
   };
   return (
     <section className="my-5 space-y-3">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted-foreground">
         Quản trị nội bộ: dòng tiền gồm cọc và mua tài sản, không phải lợi nhuận
         kế toán. Số dư hiện tại khác phát sinh trong kỳ; chưa hỗ trợ doanh thu
         dồn tích.
@@ -33,10 +33,10 @@ export function FinancialSummary({
         {Object.entries(labels).map(([key, label]) => (
           <div
             key={key}
-            className="rounded-2xl border border-slate-200 bg-white p-4"
+            className="surface-card p-4"
           >
-            <p className="text-xs text-slate-500">{label}</p>
-            <p className="mt-2 font-semibold text-slate-900">
+            <p className="text-xs text-muted-foreground">{label}</p>
+            <p className="mt-2 font-semibold text-foreground">
               {summary[key] == null ? "—" : formatCurrency(summary[key])}
             </p>
           </div>
@@ -57,7 +57,7 @@ type Voucher = {
   expense_category: string;
 };
 
-function VoucherEvidence({ base, id }: { base: string; id: number }) {
+export function VoucherEvidence({ base, id }: { base: string; id: number }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const query = useQuery({
@@ -104,7 +104,7 @@ function VoucherEvidence({ base, id }: { base: string; id: number }) {
     <div>
       <button onClick={() => setOpen(!open)}>Chứng từ</button>
       {open && (
-        <div className="mt-2 space-y-2 rounded-xl bg-slate-50 p-3">
+        <div className="mt-2 space-y-2 rounded-xl bg-muted p-3">
           <label className="block text-xs">
             Đính kèm PDF/PNG/JPEG, tối đa 5 MB
             <input
@@ -134,7 +134,7 @@ function VoucherEvidence({ base, id }: { base: string; id: number }) {
             ))
           )}
           {error && (
-            <p role="alert" className="text-red-600">
+            <p role="alert" className="text-danger">
               {error}
             </p>
           )}
@@ -214,11 +214,11 @@ export function FinanceVoucherPanel({
     }
   }
   return (
-    <section className="my-5 rounded-2xl border border-slate-200 bg-white p-5">
-      <h2 className="font-semibold text-slate-900">
+    <section className="my-5 surface-card p-5 sm:p-6">
+      <h2 className="font-semibold text-foreground">
         Phiếu chi và xác nhận thực chi
       </h2>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-muted-foreground">
         Chủ trọ duyệt độc lập; phiếu đã duyệt vẫn chưa tính tiền ra. Chỉ xác
         nhận khi đã trả tiền thực tế. Danh sách theo phạm vi khu đã chọn, không
         giới hạn kỳ lập phiếu.
@@ -228,13 +228,13 @@ export function FinanceVoucherPanel({
       ) : query.isError ? (
         <p role="alert">{apiErrorMessage(query.error)}</p>
       ) : !rows.length ? (
-        <p className="mt-3 text-sm text-slate-500">Chưa có phiếu chi.</p>
+        <p className="mt-3 text-sm text-muted-foreground">Chưa có phiếu chi.</p>
       ) : (
         <div className="mt-3 space-y-3">
           {rows.map((v) => (
             <div
               key={v.id}
-              className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 p-3 text-sm"
+              className="flex flex-wrap items-center gap-3 rounded-xl border border-border p-3 text-sm"
             >
               <span className="flex-1">
                 {v.voucher_code} · {formatCurrency(v.amount)} · {v.status}
@@ -284,7 +284,7 @@ export function FinanceVoucherPanel({
         </div>
       )}
       {error && (
-        <p role="alert" className="mt-3 text-sm text-red-600">
+        <p role="alert" className="mt-3 text-sm text-danger">
           {error}
         </p>
       )}

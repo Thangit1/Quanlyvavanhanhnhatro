@@ -1,4 +1,9 @@
-import { AccountantResourcePage } from "@/components/accountant/accountant-pages";
+import { Suspense } from "react";
+import { ManagementReportWorkspace } from "@/components/admin/reports/management-report-workspace";
 export default function Page() {
-  return <AccountantResourcePage resource="reports" />;
+  return (
+    <Suspense fallback={<p>Đang tải báo cáo...</p>}>
+      <ManagementReportWorkspace portal="accountant" initialType="overview" />
+    </Suspense>
+  );
 }

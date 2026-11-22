@@ -1,0 +1,135 @@
+{
+  "date": "2026-11-17",
+  "branch": "feature/improve-business-logic",
+  "backend": {
+    "tests": 195,
+    "passed": 195,
+    "failed": 0,
+    "suites": {
+      "FinanceWorkspaceMysqlTest": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:44:48.377Z"
+      },
+      "FinanceWorkspaceControllerTest": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:51:03.825Z"
+      },
+      "ManagementFinanceMysqlTest": {
+        "tests": 47,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:45:56.724Z"
+      },
+      "DepositLedgerMysqlTest": {
+        "tests": 35,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:44:16.896Z"
+      },
+      "DepositLedgerControllerTest": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:51:03.685Z"
+      },
+      "AccountantPortalServiceImplTest": {
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:51:04.047Z"
+      },
+      "CheckoutSettlementControllerTest": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:51:03.412Z"
+      },
+      "CheckoutSettlementMysqlTest": {
+        "tests": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:48:22.629Z"
+      },
+      "InvoiceFinanceWorkspaceMysqlTest": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:48:43.870Z"
+      },
+      "InvoicePaymentRulesTest": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportModifiedAt": "2026-11-17T15:48:43.880Z"
+      }
+    }
+  },
+  "frontend": {
+    "lint": "PASS (0 warnings)",
+    "typescript": "PASS",
+    "productionBuild": "PASS",
+    "node": {
+      "passed": 26,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 14,
+      "cases": [
+        "admin-period-mode-resolves-to-real-calendar-dates",
+        "dashboard-real-source-summary-and-charts",
+        "company-filter-sent-with-role-scope",
+        "cashbook-opening-closing-are-explicitly-unverified",
+        "empty-filter-keeps-ledger-context",
+        "bankbook-does-not-claim-live-bank-reconciliation",
+        "export-keeps-company-dates-and-book",
+        "mobile-workspace-no-page-overflow",
+        "approval-does-not-confirm-cash-out",
+        "actual-pay-requires-confirmation-and-refreshes-summary",
+        "double-click-and-network-retry-keep-same-income-request",
+        "reservation-deposit-tab-and-legacy-warning",
+        "single-accountant-shell-and-closing-blocks-unreconciled-period",
+        "accountant-header-and-workspace-share-property-scope"
+      ],
+      "liveApiWrites": 0
+    }
+  },
+  "migration": {
+    "version": 38,
+    "testSchemas": "APPLIED",
+    "applicationDatabase": "NOT_APPLIED",
+    "historicalBalanceRewrite": false
+  },
+  "notRun": [
+    "Live bank API and real bank/physical cash opening balance reconciliation",
+    "Physical printer / actual PDF save dialog / Microsoft Excel desktop",
+    "Multi-browser live API synchronization",
+    "Statutory accrual/tax/depreciation profit reporting"
+  ],
+  "logs": [
+    "D:/DATN/finance-workspace-tests.log",
+    "D:/DATN/finance-regression.log",
+    "D:/DATN/finance-workspace-verified.log",
+    "D:/DATN/finance-final-verified.log",
+    "D:/DATN/finance-cross-module.log",
+    "D:/DATN/finance-validation-tests.log",
+    "D:/DATN/finance-lint.log",
+    "D:/DATN/finance-tsc.log",
+    "D:/DATN/finance-build-final.log",
+    "D:/DATN/finance-node.log",
+    "D:/DATN/finance-browser.log"
+  ]
+}

@@ -33,17 +33,17 @@ export default function ForgotPasswordPage() {
     }
   }
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-50 px-4 py-8">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-7 shadow-xl sm:p-9">
+    <main className="grid min-h-screen place-items-center bg-muted px-4 py-8">
+      <div className="w-full max-w-md rounded-3xl border border-border bg-card p-7 shadow-xl sm:p-9">
         <Brand />
         <div className="mt-8 text-center">
-          <span className="mx-auto grid size-12 place-items-center rounded-full bg-blue-100 text-blue-700">
+          <span className="mx-auto grid size-12 place-items-center rounded-full bg-accent text-link">
             <Mail className="size-6" />
           </span>
-          <h1 className="mt-4 text-2xl font-bold text-slate-900">
+          <h1 className="mt-4 text-2xl font-bold text-foreground">
             Quên mật khẩu?
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Nhập email để nhận hướng dẫn đặt lại mật khẩu.
           </p>
         </div>
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
           {error && (
             <div
               role="alert"
-              className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+              className="rounded-xl border border-danger-border bg-danger-muted p-3 text-sm text-danger"
             >
               {error}
             </div>
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
           <div>
             <label
               htmlFor="email"
-              className="mb-2 block font-semibold text-slate-700"
+              className="mb-2 block font-semibold text-secondary-foreground"
             >
               Email đăng nhập
             </label>
@@ -78,12 +78,12 @@ export default function ForgotPasswordPage() {
               disabled={loading}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
+              className="h-12 w-full rounded-xl border border-input bg-muted px-4 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-blue-600 focus:ring-4 focus:ring-ring"
             />
           </div>
           <button
             disabled={loading}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 font-bold text-white disabled:opacity-60"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover font-bold text-white disabled:opacity-60"
           >
             {loading && <LoaderCircle className="size-5 animate-spin" />}Gửi yêu
             cầu
@@ -91,12 +91,12 @@ export default function ForgotPasswordPage() {
         </form>
         <Link
           href="/login"
-          className="mt-6 flex items-center justify-center gap-2 font-semibold text-blue-700"
+          className="mt-6 flex items-center justify-center gap-2 font-semibold text-link"
         >
           <ArrowLeft className="size-4" />
           Quay lại đăng nhập
         </Link>
-        <p className="mt-5 text-center text-xs text-amber-700">
+        <p className="mt-5 text-center text-xs text-warning">
           Môi trường hiện tại chưa tích hợp dịch vụ gửi email.
         </p>
       </div>

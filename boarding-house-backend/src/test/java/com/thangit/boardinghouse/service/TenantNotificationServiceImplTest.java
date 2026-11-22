@@ -17,6 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class TenantNotificationServiceImplTest {
+    @Test void stalePreferencesCannotOverwriteChangesFromNewCenter(){
+        org.mockito.Mockito.when(repository.preference(5)).thenReturn(java.util.Optional.of(new TenantNotificationRepository.PreferenceRow(true,false,null,"IMMEDIATE",false,null,null,2)));
+        var p=new AuthenticatedUser(5L,"tenant@test.invalid",RoleCode.TENANT);
+        var r=new com.thangit.boardinghouse.dto.request.notification.TenantNotificationRequests.Preferences(true,false,java.util.Map.of(),"IMMEDIATE",new com.thangit.boardinghouse.dto.request.notification.TenantNotificationRequests.QuietHours(false,null,null),1L);
+        assertThrows(AuthException.class,()->service.preferences(p,r));
+        org.mockito.Mockito.verify(repository,org.mockito.Mockito.never()).savePreference(org.mockito.ArgumentMatchers.anyLong(),org.mockito.ArgumentMatchers.anyBoolean(),org.mockito.ArgumentMatchers.anyBoolean(),org.mockito.ArgumentMatchers.anyString(),org.mockito.ArgumentMatchers.anyString(),org.mockito.ArgumentMatchers.anyBoolean(),org.mockito.ArgumentMatchers.any(),org.mockito.ArgumentMatchers.any(),org.mockito.ArgumentMatchers.anyLong());
+    }
     @Mock TenantNotificationRepository repository;
     private TenantNotificationServiceImpl service;
 

@@ -35,16 +35,21 @@ public class AdminTenantServiceImpl implements AdminTenantService {
     public TenantList list(AuthenticatedUser principal, Long propertyId, Long roomId, String status,
                            String temporaryStatus, String accountStatus, String keyword,
                            String debtStatus, String contractStatus, String sort, String direction, int page, int size) {
+        return list(principal,propertyId,roomId,status,temporaryStatus,accountStatus,keyword,debtStatus,contractStatus,sort,direction,page,size,null,null,null,null);
+    }
+    @Override @Transactional(readOnly=true)
+    public TenantList list(AuthenticatedUser principal,Long propertyId,Long roomId,String status,String temporaryStatus,String accountStatus,String keyword,String debtStatus,String contractStatus,String sort,String direction,int page,int size,Long organizationId,Long areaId,LocalDate moveInFrom,LocalDate moveInTo){
         requireReadRole(principal);
+        if(moveInFrom!=null&&moveInTo!=null&&moveInTo.isBefore(moveInFrom))throw badRequest("RESIDENCE_DATE_RANGE_INVALID","Khoảng ngày nhận phòng không hợp lệ.");
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 10), 100);
         if (propertyId != null) requireProperty(principal, propertyId);
         return new TenantList(repository.properties(principal.id(), principal.activeRole()),
                 repository.rooms(principal.id(), principal.activeRole(), propertyId),
-                repository.summary(principal.id(), principal.activeRole(), propertyId),
+                repository.summary(principal.id(), principal.activeRole(), propertyId,organizationId,areaId,moveInFrom,moveInTo),
                 repository.list(principal.id(), principal.activeRole(), propertyId, roomId, status,
                         temporaryStatus, accountStatus, keyword, debtStatus, contractStatus,
-                        sort, direction, safePage, safeSize));
+                        sort, direction, safePage, safeSize,organizationId,areaId,moveInFrom,moveInTo));
     }
 
     @Override @Transactional(readOnly = true)
@@ -66,28 +71,39 @@ public class AdminTenantServiceImpl implements AdminTenantService {
                 repository.utilityReadings(tenantId,principal.id(),principal.activeRole()), principal.activeRole()==RoleCode.ACCOUNTANT?List.of():repository.coResidents(tenantId,principal.id(),principal.activeRole()),
                 repository.maintenanceRequests(tenantId,principal.id(),principal.activeRole()),
                 repository.temporaryResidences(tenantId,principal.id(),principal.activeRole()), principal.activeRole()==RoleCode.ACCOUNTANT?List.of():repository.documents(tenantId,principal.id(),principal.activeRole()),
-                repository.activities(tenantId,principal.id(),principal.activeRole()));
+                repository.activities(tenantId,principal.id(),principal.activeRole()), nullableNumber(p,"management_property_id"),number(p,"version"),string(p,"status"),repository.identityVerified(tenantId),repository.canReadTenantFinance(principal,tenantId));
     }
 
     @Override @Transactional
     public CreatedTenant create(AuthenticatedUser principal, SaveTenant request) {
         requireWriteRole(principal);
-        if (request.propertyId() == null) throw badRequest("PROPERTY_REQUIRED", "Vui lòng chọn nhà trọ.");
-        requireProperty(principal, request.propertyId());
-        validateRoom(request.propertyId(), request.roomId());
+        if (request.propertyId() == null && principal.activeRole()!=RoleCode.OWNER) throw badRequest("PROPERTY_REQUIRED", "Quản lý cần chọn nhà trọ được phân công để quản lý hồ sơ.");
+        if(request.propertyId()!=null){ requireProperty(principal, request.propertyId()); validateRoom(request.propertyId(), request.roomId()); }
+        else if(request.roomId()!=null)throw badRequest("PROPERTY_REQUIRED","Cần chọn nhà trọ cho phòng.");
+        repository.lockProfileRegistry();
         validateProfile(request, null);
-        if (request.identityNumber() == null || request.identityNumber().isBlank())
-            throw badRequest("IDENTITY_REQUIRED", "Vui lòng nhập số CCCD/CMND hoặc hộ chiếu.");
         long id = repository.createProfile(request, principal.id());
-        repository.createResidence(id, request.propertyId(), request.roomId(), request.contractId(),
-                request.moveInDate(), normalizeResidenceRole(request.residenceRole()), principal.id());
+        repository.setManagementProperty(id,request.propertyId());
+        if(request.roomId()!=null)repository.createResidence(id, request.propertyId(), request.roomId(), request.contractId(), request.moveInDate(), normalizeResidenceRole(request.residenceRole()), principal.id());
         repository.addActivity(id, principal.id(), "CREATED", "Đã tạo hồ sơ người thuê.");
         return new CreatedTenant(id, "NT%06d".formatted(id));
     }
 
     @Override @Transactional
     public TenantDetail update(AuthenticatedUser principal, long tenantId, SaveTenant request) {
+        return updateProfile(principal,tenantId,request,false);
+    }
+    /** Called only after ContractOnboardingService has checked contract access, status and identity data hash. */
+    @Override @Transactional
+    public TenantDetail updateOnboardingIdentity(AuthenticatedUser principal,long tenantId,SaveTenant request){
+        return updateProfile(principal,tenantId,request,true);
+    }
+    private TenantDetail updateProfile(AuthenticatedUser principal,long tenantId,SaveTenant request,boolean onboardingReview){
         requireTenant(principal, tenantId, true);
+        Map<String,Object> before=repository.lockProfile(tenantId);
+        if(request.version()!=null&&request.version()!=number(before,"version"))throw new AuthException(HttpStatus.CONFLICT,"TENANT_VERSION_CONFLICT","Hồ sơ đã thay đổi. Tải lại trước khi lưu để tránh ghi đè.");
+        if(!onboardingReview&&repository.identityVerified(tenantId)&&identityChanged(before,request))throw badRequest("IDENTITY_REVIEW_REQUIRED","Hồ sơ đã được đối soát. Sửa thông tin định danh qua quy trình hồ sơ hợp đồng để xác nhận lại.");
+        repository.lockProfileRegistry();
         validateProfile(request, tenantId);
         repository.updateProfile(tenantId, request);
         repository.addActivity(tenantId, principal.id(), "UPDATED", "Đã cập nhật thông tin hồ sơ.");
@@ -113,6 +129,19 @@ public class AdminTenantServiceImpl implements AdminTenantService {
                 request.transferDate(), request.reason(), principal.id());
         repository.addActivity(tenantId, principal.id(), "ROOM_TRANSFERRED",
                 "Đã chuyển phòng vào ngày " + request.transferDate() + ".");
+    }
+
+    @Override @Transactional
+    public void attachResidence(AuthenticatedUser p,long tenantId,AttachResidence r){
+        if(!List.of("OCCUPANT","DEPENDENT").contains(r.residenceRole()))throw badRequest("RESIDENT_ROLE_INVALID","Vai trò thành viên không hợp lệ.");
+        requireTenant(p,tenantId,true);repository.lockProfile(tenantId);requireProperty(p,r.propertyId());validateRoom(r.propertyId(),r.roomId());
+        repository.createResidence(tenantId,r.propertyId(),r.roomId(),r.contractId(),r.moveInDate(),r.residenceRole(),p.id());
+        repository.addActivity(tenantId,p.id(),"RESIDENCE_ADDED","Đã ghi nhận người ở cùng qua kiểm tra hợp đồng và sức chứa.");
+    }
+
+    private String normalized(String value){return value==null||value.isBlank()?null:value.trim();}
+    private boolean identityChanged(Map<String,Object> current,SaveTenant r){
+        return !java.util.Objects.equals(string(current,"full_name"),r.fullName().trim())||!java.util.Objects.equals(date(current,"date_of_birth"),r.dateOfBirth())||!java.util.Objects.equals(string(current,"phone"),r.phone().trim())||!java.util.Objects.equals(normalized(string(current,"identity_type")),normalized(r.identityType()))||!java.util.Objects.equals(normalized(string(current,"permanent_address")),normalized(r.permanentAddress()))||(r.identityNumber()!=null&&!r.identityNumber().isBlank()&&!java.util.Objects.equals(string(current,"identity_number"),r.identityNumber().trim()));
     }
 
     @Override @Transactional
@@ -222,15 +251,19 @@ public class AdminTenantServiceImpl implements AdminTenantService {
             throw forbidden("Bạn không có quyền truy cập nhà trọ đã chọn.");
     }
     private void validateProfile(SaveTenant request, Long excludedId) {
+        if(request.identityNumber()!=null&&!request.identityNumber().isBlank()){
+            String number=request.identityNumber().trim();String type=request.identityType()==null?"":request.identityType();
+            if(("CCCD".equals(type)&&!number.matches("[0-9]{12}"))||("CMND".equals(type)&&!number.matches("[0-9]{9}"))||("PASSPORT".equals(type)&&!number.matches("[A-Za-z0-9]{6,20}")))throw badRequest("IDENTITY_INVALID","Giấy tờ không đúng định dạng hoặc độ dài.");
+        }
         if (request.email() != null && !request.email().isBlank()
                 && repository.profileEmailExists(request.email().trim(), excludedId))
             throw badRequest("TENANT_EMAIL_EXISTS", "Email đã tồn tại trong hồ sơ người thuê.");
         if (request.identityNumber() != null && !request.identityNumber().isBlank()
                 && repository.profileIdentityExists(request.identityNumber().trim(), excludedId))
             throw badRequest("IDENTITY_EXISTS", "Số giấy tờ đã tồn tại trong hồ sơ người thuê.");
-        if (repository.profilePhoneExists(request.phone().trim(), excludedId))
+        if (com.thangit.boardinghouse.common.validation.VietnamPhones.aliases(request.phone()).stream().anyMatch(phone->repository.profilePhoneExists(phone, excludedId)))
             throw badRequest("PHONE_EXISTS", "Số điện thoại đã tồn tại trong hồ sơ người thuê.");
-        if (request.dateOfBirth() != null && request.dateOfBirth().isAfter(LocalDate.now()))
+        if (request.dateOfBirth() != null && request.dateOfBirth().isAfter(com.thangit.boardinghouse.service.BusinessTime.today()))
             throw badRequest("DATE_OF_BIRTH_INVALID", "Ngày sinh không được ở tương lai.");
     }
     private void validateRoom(long propertyId, Long roomId) {

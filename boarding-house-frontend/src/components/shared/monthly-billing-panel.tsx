@@ -20,7 +20,7 @@ type Detail = {
   automation: Row[];
 };
 const input =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm";
+  "w-full rounded-xl border border-border bg-card px-3 py-2 text-sm";
 const button =
   "rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40";
 const labels: Record<string, string> = {
@@ -33,20 +33,43 @@ const labels: Record<string, string> = {
   USAGE: "Theo sử dụng",
   ONCE: "Một lần",
 };
-export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
+export function MonthlyBillingPanel({
+  contractId,
+  initialPeriod,
+  writeAllowed,
+}: {
+  contractId: number;
+  initialPeriod?: string;
+  writeAllowed?: boolean;
+}) {
   const { user } = useAuth(),
     client = useQueryClient();
-  const [period, setPeriod] = useState(() =>
-    new Intl.DateTimeFormat("sv-SE", {
-      timeZone: "Asia/Ho_Chi_Minh",
-      year: "numeric",
-      month: "2-digit",
-    }).format(new Date()),
+  const [period, setPeriod] = useState(
+    () =>
+      initialPeriod ??
+      new Intl.DateTimeFormat("sv-SE", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        year: "numeric",
+        month: "2-digit",
+      }).format(new Date()),
   );
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  const staff = ["OWNER", "MANAGER"].includes(user?.activeRole ?? "");
-  const base = `/admin/monthly-billing/${contractId}`;
+  const [preview, setPreview] = useState<{
+    hash: string;
+    items: {
+      name: string;
+      description: string;
+      quantity: number;
+      unit: string;
+      price: number;
+      amount: number;
+    }[];
+  } | null>(null);
+  const staff =
+    ["OWNER", "MANAGER"].includes(user?.activeRole ?? "") &&
+    writeAllowed !== false;
+  const base = `/${user?.activeRole === "ACCOUNTANT" ? "accountant" : "admin"}/monthly-billing/${contractId}`;
   const query = useQuery({
     queryKey: [
       "monthly-billing",
@@ -63,6 +86,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
       ).data.data,
   });
   async function act(path: string, payload: unknown) {
+    setPreview(null);
     setBusy(true);
     setError("");
     try {
@@ -80,7 +104,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
   }
   const d = query.data;
   return (
-    <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
+    <section className="space-y-4 surface-card p-5 sm:p-6">
       <h2 className="text-lg font-bold">Điện nước và tính tiền hằng tháng</h2>
       <label className="block max-w-xs text-sm">
         Kỳ sử dụng
@@ -90,23 +114,80 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
           value={period}
           onChange={(e) => {
             if (e.target.value) setPeriod(e.target.value);
+            setPreview(null);
           }}
           className={input}
         />
       </label>
       {query.isPending && <p>Đang tải dữ liệu…</p>}
       {query.isError && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="text-danger">
           {apiErrorMessage(query.error)}
         </p>
       )}
       {error && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="text-danger">
           {error}
         </p>
       )}
       {d && (
         <>
+          <div className="space-y-3 rounded-xl border border-accent-border bg-accent p-4">
+            <button
+              className={button}
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                setError("");
+                setPreview(null);
+                try {
+                  setPreview(
+                    (
+                      await apiClient.get<
+                        ApiEnvelope<NonNullable<typeof preview>>
+                      >(`${base}/preview`, {
+                        params: { period: `${period}-01` },
+                      })
+                    ).data.data,
+                  );
+                } catch (e) {
+                  setError(apiErrorMessage(e));
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              Xem trước công thức tính phí
+            </button>
+            <p className="text-xs text-secondary-foreground">
+              Backend dùng cùng bộ tính với hóa đơn; chưa tạo khoản phải thu
+              hoặc ghi nhận thanh toán. Tải lại xem trước sau khi đổi kỳ hoặc
+              cập nhật dữ liệu.
+            </p>
+            {preview && (
+              <div className="space-y-2">
+                {preview.items.map((item, index) => (
+                  <article
+                    key={index}
+                    className="rounded-lg bg-card p-3 text-sm"
+                  >
+                    <strong>
+                      {item.name} · {formatCurrency(item.amount)}
+                    </strong>
+                    <p>
+                      {item.quantity} {item.unit} × {formatCurrency(item.price)}
+                    </p>
+                    <p className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
+                      {item.description}
+                    </p>
+                  </article>
+                ))}
+                <p className="break-all text-xs text-muted-foreground">
+                  Hash bản tính: {preview.hash}
+                </p>
+              </div>
+            )}
+          </div>
           <p className="text-sm">
             Giá thuê đã chốt:{" "}
             {formatCurrency(
@@ -119,7 +200,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
               ? "Tính theo ngày thực tế của tháng"
               : "Thu đủ tháng theo hợp đồng"}
           </p>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-secondary-foreground">
             Đơn giá phải có căn cứ và thỏa thuận phù hợp quy định áp dụng. Phần
             mềm không chứng nhận một đơn giá nhập vào là hợp pháp. Kỳ đã phát
             hành được giữ nguyên; chứng từ ở đây là hóa đơn thu tiền nội bộ.
@@ -135,7 +216,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
             </p>
           ))}
           {d.reading && (
-            <p className="rounded-xl bg-slate-50 p-3 text-sm">
+            <p className="rounded-xl bg-muted p-3 text-sm">
               Chỉ số kỳ này: {String(d.reading.reading_status)} · Điện{" "}
               {String(d.reading.electricity_previous ?? "—")} →{" "}
               {String(d.reading.electricity_current ?? "—")} · Tiêu thụ{" "}
@@ -425,7 +506,7 @@ export function MonthlyBillingPanel({ contractId }: { contractId: number }) {
               {d.services.map((s) => (
                 <div
                   key={String(s.id)}
-                  className="rounded-xl bg-slate-50 p-3 text-sm"
+                  className="rounded-xl bg-muted p-3 text-sm"
                 >
                   <p>
                     {String(s.name)} ·{" "}

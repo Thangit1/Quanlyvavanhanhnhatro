@@ -27,15 +27,15 @@ export function TechnicianTaskList() {
       title="Công việc của tôi"
       description="Chỉ hiển thị công việc bạn được phân công chính hoặc hỗ trợ."
     >
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="surface-card p-4 ">
         <div className="grid gap-3 lg:grid-cols-[2fr_repeat(3,1fr)]">
           <label className="relative">
-            <Search className="absolute left-3 top-3 size-5 text-slate-400" />
+            <Search className="absolute left-3 top-3 size-5 text-muted-foreground" />
             <input
               value={filters.keyword ?? ""}
               onChange={(e) => set("keyword", e.target.value)}
               placeholder="Mã, tiêu đề, khu trọ, phòng…"
-              className="min-h-11 w-full rounded-xl border border-slate-200 pl-10 pr-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="min-h-11 w-full rounded-xl border border-input pl-10 pr-3 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring focus:ring-4 focus:ring-ring"
             />
           </label>
           <Select
@@ -69,12 +69,12 @@ export function TechnicianTaskList() {
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             onClick={() => setFilters({ page: 0, size: 20, sort: "schedule" })}
-            className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+            className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-link hover:bg-accent"
           >
             <X className="size-4" />
             Xóa bộ lọc
           </button>
-          <label className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600">
+          <label className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-secondary-foreground">
             <input
               type="checkbox"
               checked={filters.overdue ?? false}
@@ -95,7 +95,7 @@ export function TechnicianTaskList() {
               <TaskCard key={x.id} task={x} />
             ))}
           </div>
-          <div className="flex items-center justify-between text-sm text-slate-500">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>{q.data.totalElements} công việc</span>
             <div className="flex gap-2">
               <button
@@ -149,7 +149,7 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 outline-none focus:border-blue-500"
+      className="min-h-11 rounded-xl border border-input bg-card px-3 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring"
     >
       <option value="">{label}</option>
       {options.map(([v, l]) => (

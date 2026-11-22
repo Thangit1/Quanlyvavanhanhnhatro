@@ -17,12 +17,12 @@ export function NotificationIcon({
   const Icon = categoryIcon(category) as LucideIcon;
   const tone =
     severity === "URGENT"
-      ? "bg-red-100 text-red-700"
+      ? "bg-danger-muted text-danger"
       : severity === "WARNING"
-        ? "bg-amber-100 text-amber-700"
+        ? "bg-warning-muted text-warning"
         : severity === "SUCCESS"
-          ? "bg-emerald-100 text-emerald-700"
-          : "bg-blue-100 text-blue-700";
+          ? "bg-success-muted text-success"
+          : "bg-accent text-link";
   return (
     <span
       className={`grid size-11 shrink-0 place-items-center rounded-xl ${tone} ${className}`}
@@ -34,12 +34,12 @@ export function NotificationIcon({
 export function SeverityBadge({ severity }: { severity: string }) {
   const tone =
     severity === "URGENT"
-      ? "bg-red-100 text-red-700"
+      ? "bg-danger-muted text-danger"
       : severity === "WARNING"
-        ? "bg-amber-100 text-amber-800"
+        ? "bg-warning-muted text-warning"
         : severity === "SUCCESS"
-          ? "bg-emerald-100 text-emerald-700"
-          : "bg-blue-100 text-blue-700";
+          ? "bg-success-muted text-success"
+          : "bg-accent text-link";
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${tone}`}>
       {notificationSeverities[

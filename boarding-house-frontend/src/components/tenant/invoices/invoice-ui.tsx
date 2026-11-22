@@ -29,12 +29,12 @@ export const label = (v: string) => labels[v] ?? v;
 export function InvoiceBadge({ status }: { status: InvoiceStatus | string }) {
   const tone =
     status === "PAID" || status === "CONFIRMED"
-      ? "bg-emerald-100 text-emerald-700"
+      ? "bg-success-muted text-success"
       : status === "OVERDUE" || status === "REJECTED" || status === "REVERSED"
-        ? "bg-red-100 text-red-700"
+        ? "bg-danger-muted text-danger"
         : status === "PARTIALLY_PAID" || status === "PENDING"
-          ? "bg-amber-100 text-amber-700"
-          : "bg-slate-100 text-slate-700";
+          ? "bg-warning-muted text-warning"
+          : "bg-muted text-secondary-foreground";
   return (
     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>
       {label(status)}

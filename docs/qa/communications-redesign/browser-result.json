@@ -1,0 +1,19 @@
+{
+  "passed": 13,
+  "cases": [
+    "inbox-source-and-real-unread-api",
+    "bell-dropdown-uses-backend-recent",
+    "read-action-refreshes-unread-without-marking-delivery-read",
+    "preview-recipients-before-send",
+    "confirmation-queues-with-idempotency-key",
+    "queued-is-not-fake-delivered-or-read",
+    "email-sms-zalo-unconfigured-no-test-send",
+    "template-persists-through-api",
+    "new-rule-is-opt-in-not-default-enabled",
+    "source-events-and-manual-work-are-separated",
+    "mobile-no-page-overflow",
+    "read-error-hides-old-inbox",
+    "role-switch-hides-previous-inbox-and-management-actions"
+  ],
+  "liveApiWrites": 0
+}

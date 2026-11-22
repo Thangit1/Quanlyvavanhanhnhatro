@@ -61,12 +61,12 @@ export function SecurityPage() {
           value={x.account.phoneVerified ? "Đã xác minh" : "Chưa xác minh"}
         />
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <div className="flex items-start gap-3">
-          <ShieldAlert className="mt-1 size-6 text-amber-600" />
+          <ShieldAlert className="mt-1 size-6 text-warning" />
           <div>
             <h2 className="font-black">Xác thực hai bước</h2>
-            <p className="mt-1 text-sm leading-6 text-slate-600">
+            <p className="mt-1 text-sm leading-6 text-secondary-foreground">
               Backend hiện chưa hỗ trợ thiết lập và xác minh 2FA, vì vậy chức
               năng này chưa được bật để tránh tạo cảm giác bảo mật giả.
             </p>
@@ -74,12 +74,12 @@ export function SecurityPage() {
           </div>
         </div>
       </section>
-      <section className="rounded-2xl border bg-white p-5 shadow-sm">
+      <section className="surface-card p-5 sm:p-6 ">
         <h2 className="font-black">Thiết bị hiện tại</h2>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-secondary-foreground">
           {x.security.currentDevice}
         </p>
-        <p className="mt-4 flex items-center gap-2 text-sm text-emerald-700">
+        <p className="mt-4 flex items-center gap-2 text-sm text-success">
           <ShieldCheck className="size-4" />
           Nếu thấy hoạt động lạ, hãy đổi mật khẩu và thu hồi các phiên khác.
         </p>
@@ -101,12 +101,12 @@ function Card({
   href?: string;
 }) {
   return (
-    <article className="rounded-2xl border bg-white p-5 shadow-sm">
-      <Icon className="size-6 text-blue-600" />
+    <article className="surface-card p-5 sm:p-6 ">
+      <Icon className="size-6 text-link" />
       <h2 className="mt-3 font-black">{title}</h2>
-      <p className="mt-1 text-sm text-slate-500">{value}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{value}</p>
       {href && (
-        <Link href={href} className="mt-4 inline-block font-bold text-blue-700">
+        <Link href={href} className="mt-4 inline-block font-bold text-link">
           {action} →
         </Link>
       )}

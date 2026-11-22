@@ -34,13 +34,13 @@ export function OnboardingProcedures({
   return (
     <>
       {d.procedureSteps && (
-        <section className="space-y-3 rounded-xl border bg-slate-50 p-4">
+        <section className="space-y-3 rounded-xl border bg-muted p-4">
           <h3 className="font-semibold">Hoàn tất thủ tục thuê phòng</h3>
           <ol className="grid gap-3 md:grid-cols-2">
             {d.procedureSteps.map((s, i) => (
               <li
                 key={s.key}
-                className="rounded-xl border bg-white p-3 text-sm"
+                className="rounded-xl border bg-card p-3 text-sm"
               >
                 <p className="font-semibold">
                   {i + 1}. {s.label}
@@ -48,17 +48,17 @@ export function OnboardingProcedures({
                 <p
                   className={
                     s.status === "COMPLETED"
-                      ? "text-emerald-700"
-                      : "text-amber-800"
+                      ? "text-success"
+                      : "text-warning"
                   }
                 >
                   {states[s.status] ?? s.status}
                 </p>
-                <p className="mt-1 text-slate-600">{s.description}</p>
+                <p className="mt-1 text-secondary-foreground">{s.description}</p>
                 {s.completedAt && <p>{formatDate(s.completedAt, true)}</p>}
                 {s.status !== "COMPLETED" && s.status !== "NOT_APPLICABLE" && (
                   <a
-                    className="mt-2 inline-block text-blue-700 underline"
+                    className="mt-2 inline-block text-link underline"
                     href={`#${s.anchor}`}
                   >
                     Xem và xử lý bước này
@@ -71,12 +71,12 @@ export function OnboardingProcedures({
       )}
       {action && (
         <section
-          className="rounded-xl border border-blue-200 bg-blue-50 p-4"
+          className="rounded-xl border border-accent-border bg-accent p-4"
           aria-label="Việc cần thực hiện tiếp theo"
         >
           <h3 className="font-semibold">Việc cần thực hiện tiếp theo</h3>
           <a
-            className="mt-2 inline-block font-semibold text-blue-800 underline"
+            className="mt-2 inline-block font-semibold text-link underline"
             href={`#${action[1] === "deposit-ledger" ? `deposit-ledger-${contractId}` : action[1]}`}
           >
             {d.nextAction === "CONFIRM_HANDOVER" &&
@@ -84,7 +84,7 @@ export function OnboardingProcedures({
               ? "Chờ người thuê xác nhận biên bản bàn giao"
               : action[0]}
           </a>
-          <p className="mt-1 text-xs text-slate-600">
+          <p className="mt-1 text-xs text-secondary-foreground">
             Mỗi bên thao tác theo quyền của mình. Chỉ hoàn tất check-in mới kích
             hoạt hợp đồng.
           </p>
@@ -178,7 +178,7 @@ export function OnboardingProcedures({
               </details>
             </div>
           )}
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-secondary-foreground">
             Dự kiến chưa phân bổ ngày lẻ, lượt sử dụng hoặc chiết khấu trên hóa
             đơn. Không cộng tiền cọc vào doanh thu thuê và không coi chính sách
             miễn thanh toán trước là đã thu tiền.

@@ -8,15 +8,17 @@ import { DecimalInput, CurrencyInput } from "@/components/ui/number-input";
 
 import Link from "next/link";
 import { MonthlyBillingPanel } from "@/components/shared/monthly-billing-panel";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/admin-shell";
-import { PageLoading } from "@/components/shared/dashboard-ui";
+import { ErrorState, PageLoading } from "@/components/shared/dashboard-ui";
 import {
   useInvoiceData,
   useInvoiceMutations,
 } from "@/hooks/use-admin-invoices";
 import { apiErrorMessage } from "@/lib/api-error";
+import { adminInvoiceService } from "@/services/admin-invoice.service";
+import type { InvoicePlan } from "@/types/admin-invoice";
 import { formatCurrency } from "@/lib/format";
 import type {
   AdditionalItem,
@@ -24,7 +26,7 @@ import type {
   InvoicePayload,
 } from "@/types/admin-invoice";
 const input =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500";
+  "w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring";
 function today() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -57,6 +59,7 @@ export function InvoiceFormPage() {
     periodStartDate: ds.start,
     periodEndDate: ds.end,
     issueDate: now,
+    paymentAvailableFrom: undefined,
     dueDate: now,
     additionalItems: [],
     discountAmount: 0,
@@ -73,14 +76,32 @@ export function InvoiceFormPage() {
     reason: "",
   });
   const [error, setError] = useState("");
+  const [plan, setPlan] = useState<{
+    data: InvoicePlan;
+    signature: string;
+  } | null>(null);
+  const [reviewed, setReviewed] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   if (options.isLoading) return <PageLoading />;
-  const o = options.data!;
+  if (options.isError || !options.data)
+    return (
+      <AdminShell title="Tạo hóa đơn">
+        <ErrorState onRetry={() => void options.refetch()} />
+      </AdminShell>
+    );
+  const o = options.data;
   const buildings = o.buildings.filter((x) => x.parentId === property),
     floors = o.floors.filter((x) => x.parentId === building),
-    rooms = o.rooms.filter((x) => x.parentId === floor),
+    rooms = o.rooms.filter(
+      (x) => x.propertyId === property && (!floor || x.parentId === floor),
+    ),
     contracts = o.contracts.filter((x) => x.parentId === form.roomId);
   const submit = async (action: "SAVE_DRAFT" | "ISSUE") => {
     setError("");
+    if (!plan || plan.signature !== JSON.stringify(form) || !reviewed) {
+      setError("Xem trước và xác nhận dữ liệu tính tiền trước khi lưu.");
+      return;
+    }
     try {
       const result = await m.create.mutateAsync({
         ...parseNumericFields<InvoicePayload>(form, ["discountAmount"], [], {
@@ -134,13 +155,13 @@ export function InvoiceFormPage() {
             <button
               key={x}
               onClick={() => setStep(i + 1)}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold ${step === i + 1 ? "bg-blue-600 text-white" : "bg-white text-slate-600"}`}
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold ${step === i + 1 ? "bg-primary hover:bg-primary-hover text-white" : "bg-card text-secondary-foreground"}`}
             >
               {i + 1}. {x}
             </button>
           ))}
         </div>
-        <section className="rounded-2xl border bg-white p-6 shadow-sm">
+        <section className="surface-card p-6 ">
           {step === 1 && (
             <div>
               <Title title="Chọn phòng và kỳ hóa đơn" />
@@ -235,6 +256,19 @@ export function InvoiceFormPage() {
                     }
                   />
                 </Field>
+                <Field label="Bắt đầu thanh toán">
+                  <input
+                    type="date"
+                    className={input}
+                    value={form.paymentAvailableFrom ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        paymentAvailableFrom: e.target.value || undefined,
+                      })
+                    }
+                  />
+                </Field>
                 <Field label="Hạn thanh toán">
                   <input
                     type="date"
@@ -251,7 +285,7 @@ export function InvoiceFormPage() {
           {step === 2 && (
             <div>
               <Title title="Điện nước và dịch vụ" />
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-5 text-sm text-blue-800">
+              <div className="rounded-xl border border-accent-border bg-accent p-5 text-sm text-link">
                 <strong>Dữ liệu được lấy tự động từ backend</strong>
                 <p className="mt-2">
                   Hệ thống dùng chỉ số điện nước đúng kỳ, đơn giá đã lưu và các
@@ -308,7 +342,7 @@ export function InvoiceFormPage() {
                 {form.additionalItems.map((x, i) => (
                   <div
                     key={`${x.name}-${i}`}
-                    className="flex justify-between rounded-xl bg-slate-50 p-3 text-sm"
+                    className="flex justify-between rounded-xl bg-muted p-3 text-sm"
                   >
                     <span>
                       {x.name} · {x.quantity} {x.unit}
@@ -384,14 +418,68 @@ export function InvoiceFormPage() {
                   value={formatCurrency(numericPreview(form.discountAmount))}
                 />
               </div>
-              <p className="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
-                Số tiền xem trước chỉ là phần nhập tay. Backend sẽ lấy tiền
-                phòng, điện, nước, dịch vụ và tính lại tổng chính thức khi lưu.
+              <button
+                disabled={previewing}
+                className="mt-4 rounded-xl border px-4 py-2 text-sm font-semibold"
+                onClick={async () => {
+                  setPreviewing(true);
+                  setError("");
+                  setReviewed(false);
+                  try {
+                    const payload = {
+                      ...parseNumericFields<InvoicePayload>(
+                        form,
+                        ["discountAmount"],
+                        [],
+                        { discountAmount: 0 },
+                      ),
+                      action: "SAVE_DRAFT" as const,
+                    };
+                    setPlan({
+                      data: await adminInvoiceService.preview(payload),
+                      signature: JSON.stringify(form),
+                    });
+                  } catch (error) {
+                    setError(apiErrorMessage(error));
+                  } finally {
+                    setPreviewing(false);
+                  }
+                }}
+              >
+                Xem trước tiền chính thức
+              </button>
+              {plan && plan.signature === JSON.stringify(form) && (
+                <div className="mt-4 space-y-2">
+                  {plan.data.items.map((item, index) => (
+                    <p key={index} className="rounded-xl border p-3 text-sm">
+                      <strong>
+                        {item.name} · {formatCurrency(item.amount)}
+                      </strong>
+                      <span className="mt-1 block text-xs text-muted-foreground">
+                        {item.quantity} {item.unit} ×{" "}
+                        {formatCurrency(item.price)} · {item.description}
+                      </span>
+                    </p>
+                  ))}
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={reviewed}
+                      onChange={(e) => setReviewed(e.target.checked)}
+                    />
+                    Đã kiểm tra dữ liệu, kỳ sử dụng và khoảng thanh toán
+                  </label>
+                </div>
+              )}
+              <p className="mt-4 rounded-xl bg-warning-muted p-3 text-sm text-warning">
+                Bản xem trước không tạo hóa đơn hay công nợ. Khi lưu, backend
+                kiểm tra lại nguồn và lưu snapshot; hóa đơn đã phát hành được
+                điều chỉnh bằng chứng từ riêng.
               </p>
             </div>
           )}
           {error && (
-            <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            <p className="mt-4 rounded-xl bg-danger-muted p-3 text-sm text-danger">
               {error}
             </p>
           )}
@@ -400,7 +488,7 @@ export function InvoiceFormPage() {
           <button
             disabled={step === 1}
             onClick={() => setStep(step - 1)}
-            className="rounded-xl border bg-white px-4 py-2 disabled:opacity-40"
+            className="rounded-xl border bg-card px-4 py-2 disabled:opacity-40"
           >
             Quay lại
           </button>
@@ -408,7 +496,7 @@ export function InvoiceFormPage() {
             <button
               onClick={() => setStep(step + 1)}
               disabled={step === 1 && (!form.roomId || !form.contractId)}
-              className="rounded-xl bg-blue-600 px-5 py-2 font-semibold text-white disabled:opacity-40"
+              className="rounded-xl bg-primary hover:bg-primary-hover px-5 py-2 font-semibold text-white disabled:opacity-40"
             >
               Tiếp tục
             </button>
@@ -416,15 +504,25 @@ export function InvoiceFormPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => void submit("SAVE_DRAFT")}
-                disabled={m.create.isPending}
-                className="rounded-xl border bg-white px-4 py-2 font-semibold"
+                disabled={
+                  m.create.isPending ||
+                  !plan ||
+                  plan.signature !== JSON.stringify(form) ||
+                  !reviewed
+                }
+                className="rounded-xl border bg-card px-4 py-2 font-semibold"
               >
                 Lưu nháp
               </button>
               <button
                 onClick={() => void submit("ISSUE")}
-                disabled={m.create.isPending}
-                className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white"
+                disabled={
+                  m.create.isPending ||
+                  !plan ||
+                  plan.signature !== JSON.stringify(form) ||
+                  !reviewed
+                }
+                className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-semibold text-white"
               >
                 Phát hành
               </button>
@@ -451,25 +549,61 @@ export function BulkInvoicePage() {
   >([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [message, setMessage] = useState("");
+  const batchLock = useRef(false);
+  const [previewSignature, setPreviewSignature] = useState("");
+  const [reviewed, setReviewed] = useState(false);
+  const [result, setResult] = useState<Awaited<
+    ReturnType<typeof m.bulk.mutateAsync>
+  > | null>(null);
   if (options.isLoading) return <PageLoading />;
   const preview = async () => {
     setMessage("");
     try {
       const x = await m.preview.mutateAsync(form);
       setRows(x);
-      setSelected(x.filter((r) => r.status === "READY").map((r) => r.roomId));
+      setPreviewSignature(JSON.stringify(form));
+      setReviewed(false);
+      setResult(null);
+      setSelected(
+        x
+          .filter((r) => r.status === "READY")
+          .map((r) => r.contractId ?? r.roomId),
+      );
     } catch (e) {
       setMessage(apiErrorMessage(e));
     }
   };
   const generate = async () => {
+    if (batchLock.current) return;
+    if (!reviewed || previewSignature !== JSON.stringify(form)) {
+      setMessage("Kiểm tra lại bản xem trước sau khi thay bộ lọc hoặc kỳ.");
+      return;
+    }
+    batchLock.current = true;
     try {
-      const x = await m.bulk.mutateAsync({ ...form, roomIds: selected });
+      const chosen = rows.filter((r) =>
+        selected.includes(r.contractId ?? r.roomId),
+      );
+      const expectedHashes = Object.fromEntries(
+        chosen
+          .filter((r) => r.contractId && r.calculationHash)
+          .map((r) => [r.contractId!, r.calculationHash!]),
+      );
+      const x = await m.bulk.mutateAsync({
+        ...form,
+        action: "SAVE_DRAFT",
+        roomIds: [...new Set(chosen.map((r) => r.roomId))],
+        expectedHashes,
+      });
+      setResult(x);
+      setReviewed(false);
       setMessage(
         `Đã tạo ${x.created.length} hóa đơn, bỏ qua ${x.skipped.length}.`,
       );
     } catch (e) {
       setMessage(apiErrorMessage(e));
+    } finally {
+      batchLock.current = false;
     }
   };
   return (
@@ -478,7 +612,7 @@ export function BulkInvoicePage() {
       subtitle="Xem trước và kiểm tra trùng trước khi tạo"
     >
       <div className="mx-auto max-w-5xl space-y-5">
-        <section className="rounded-2xl border bg-white p-6 shadow-sm">
+        <section className="surface-card p-6 ">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Khu trọ">
               <Select
@@ -508,6 +642,23 @@ export function BulkInvoicePage() {
                 }
               />
             </Field>
+            <Field label="Mở thanh toán (tùy chọn)">
+              <input
+                type="date"
+                className={input}
+                value={form.paymentAvailableFrom ?? ""}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    paymentAvailableFrom: e.target.value || undefined,
+                  })
+                }
+              />
+              <small className="mt-1 block text-muted-foreground">
+                Để trống: dùng chính sách nhà trọ hoặc ngày lập. Quá hạn vẫn
+                được thanh toán.
+              </small>
+            </Field>
             <Field label="Hạn thanh toán">
               <input
                 type="date"
@@ -520,40 +671,62 @@ export function BulkInvoicePage() {
           <button
             onClick={() => void preview()}
             disabled={!form.propertyId || m.preview.isPending}
-            className="mt-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40"
+            className="mt-4 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-semibold text-white disabled:opacity-40"
           >
             Kiểm tra và xem trước
           </button>
         </section>
         {rows.length > 0 && (
-          <section className="rounded-2xl border bg-white p-5 shadow-sm">
+          <section className="surface-card p-5 sm:p-6 ">
             <h2 className="font-bold">Danh sách phòng</h2>
             <div className="mt-3 space-y-2">
               {rows.map((r) => (
                 <label
-                  key={r.roomId}
+                  key={`${r.roomId}:${r.contractId ?? ""}`}
                   className="flex items-center gap-3 rounded-xl border p-3"
                 >
                   <input
                     type="checkbox"
                     disabled={r.status !== "READY"}
-                    checked={selected.includes(r.roomId)}
+                    checked={selected.includes(r.contractId ?? r.roomId)}
                     onChange={(e) =>
                       setSelected(
                         e.target.checked
-                          ? [...selected, r.roomId]
-                          : selected.filter((x) => x !== r.roomId),
+                          ? [...selected, r.contractId ?? r.roomId]
+                          : selected.filter(
+                              (x) => x !== (r.contractId ?? r.roomId),
+                            ),
                       )
                     }
                   />
                   <span className="flex-1">
-                    <strong>{r.roomCode}</strong> · {r.tenantName}
-                    <small className="block text-red-600">{r.warning}</small>
+                    <strong>{r.roomCode}</strong> · {r.tenantName} ·{" "}
+                    {r.contractCode}
+                    {r.items?.map((item, index) => (
+                      <span
+                        className="mt-1 block text-xs text-muted-foreground"
+                        key={index}
+                      >
+                        {item.name}: {item.quantity} {item.unit} ×{" "}
+                        {formatCurrency(item.price)} ={" "}
+                        {formatCurrency(item.amount)}
+                      </span>
+                    ))}
+                    <small className="block text-danger">{r.warning}</small>
                   </span>
                   <strong>{formatCurrency(r.estimatedAmount)}</strong>
                 </label>
               ))}
             </div>
+            <label className="mt-4 flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={reviewed}
+                onChange={(e) => setReviewed(e.target.checked)}
+              />
+              Đã kiểm tra dữ liệu và cửa sổ thanh toán; chỉ tạo nháp, chưa phát
+              hành
+            </label>
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setForm({ ...form, action: "SAVE_DRAFT" })}
@@ -563,22 +736,46 @@ export function BulkInvoicePage() {
               </button>
               <button
                 onClick={() => void generate()}
-                disabled={!selected.length || m.bulk.isPending}
-                className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40"
+                disabled={
+                  !selected.length ||
+                  m.bulk.isPending ||
+                  !reviewed ||
+                  previewSignature !== JSON.stringify(form)
+                }
+                className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-semibold text-white disabled:opacity-40"
               >
-                Tạo {selected.length} hóa đơn
+                Tạo {selected.length} hóa đơn nháp
               </button>
             </div>
           </section>
         )}
+        {result && (
+          <section className="space-y-3 rounded-xl border bg-card p-4">
+            <h2 className="font-bold">Kết quả theo hợp đồng</h2>
+            {result.created.map((r) => (
+              <Link
+                key={r.id}
+                className="block text-sm text-link"
+                href={`/admin/invoices/${r.id}`}
+              >
+                {r.invoiceCode} · {r.status} · Kiểm duyệt và phát hành
+              </Link>
+            ))}
+            {result.skipped.map((r, i) => (
+              <p role="alert" key={i} className="text-sm text-danger">
+                {r.roomCode} · {r.contractCode} · {r.warning}
+              </p>
+            ))}
+          </section>
+        )}
         {message && (
-          <p className="rounded-xl bg-blue-50 p-3 text-sm text-blue-800">
+          <p className="rounded-xl bg-accent p-3 text-sm text-link">
             {message}
           </p>
         )}
         <Link
           href="/admin/invoices"
-          className="text-sm font-semibold text-blue-600"
+          className="text-sm font-semibold text-link"
         >
           ← Quay lại danh sách
         </Link>
@@ -631,8 +828,8 @@ function Select({
 }
 function Review({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-3">
-      <p className="text-xs text-slate-500">{label}</p>
+    <div className="rounded-xl bg-muted p-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 font-semibold">{value}</p>
     </div>
   );

@@ -25,6 +25,10 @@ export interface TenantSummary {
   pendingCheckin: number;
 }
 export interface TenantRow {
+  propertyId: number | null;
+  roomId: number | null;
+  contractId: number | null;
+  profileStatus: string;
   id: number;
   tenantCode: string;
   fullName: string;
@@ -171,6 +175,11 @@ export interface ActivityItem {
   createdAt: string;
 }
 export interface TenantDetail {
+  managementPropertyId: number | null;
+  version: number;
+  profileStatus: string;
+  identityVerified: boolean;
+  canReadFinance: boolean;
   id: number;
   tenantCode: string;
   userId: number | null;
@@ -207,6 +216,7 @@ export interface TenantDetail {
   activities: ActivityItem[];
 }
 export interface SaveTenantPayload {
+  version?: number;
   fullName: string;
   dateOfBirth?: string;
   gender?: string;
@@ -230,6 +240,10 @@ export interface SaveTenantPayload {
   residenceRole?: string;
 }
 export interface TenantFilters {
+  organizationId?: number;
+  areaId?: number;
+  moveInFrom?: string;
+  moveInTo?: string;
   propertyId?: number;
   roomId?: number;
   status?: string;

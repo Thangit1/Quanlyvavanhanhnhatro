@@ -1,0 +1,84 @@
+{
+  "task": "Local profile configuration audit",
+  "date": "2026-11-20",
+  "checkedProfiles": [
+    "application.yml",
+    "application-dev.yml",
+    "application-local.yml",
+    "application-prod.yml"
+  ],
+  "binding": {
+    "configurationProperties": {
+      "app.security": "AuthProperties: jwt, cookie, login"
+    },
+    "valueAndEnvironment": {
+      "app.mail.from": "MAIL_FROM with MAIL_USERNAME fallback",
+      "app.mail.from-name": "MAIL_FROM_NAME with SmartHome AI fallback",
+      "app.mail.business-delivery-enabled": "MAIL_BUSINESS_DELIVERY_ENABLED; false by default",
+      "app.payments.simulation-enabled": "PAYMENT_SIMULATION_ENABLED; local false fallback; production profile always rejected by Java guard",
+      "app.payments.vietqr-template": "VIETQR_TEMPLATE; compact2 local fallback; explicit template required for production",
+      "app.payments.expiry-delay-ms": "PaymentExpiryScheduler; existing 60000ms code fallback",
+      "app.scheduling.enabled": "existing scheduler activation condition",
+      "app.communications.delay-ms": "existing 60000ms code fallback",
+      "app.billing.cron": "existing 02:15 Asia/Ho_Chi_Minh code fallback",
+      "app.booking.expiration-delay-ms": "existing 60000ms code fallback",
+      "app.media.property-root": "PROPERTY_IMAGE_ROOT",
+      "app.cors.allowed-origins": "FRONTEND_URL",
+      "app.security.login.rate-limit-max": "LOGIN_RATE_LIMIT_MAX",
+      "app.security.login.rate-limit-window": "LOGIN_RATE_LIMIT_WINDOW"
+    },
+    "gateway": "IntegrationCenter owner metadata plus INTEGRATION_<ownerId>_PAYMENT_* environment credentials; no app.payments.vnpay/momo binding"
+  },
+  "changes": [
+    "Removed unused app.payments.vnpay.* and app.payments.momo.* groups from local YAML",
+    "Preserved Gmail SMTP host, port, STARTTLS, authentication and timeout settings",
+    "Production explicitly disables simulation and supports the same environment business-email switch",
+    "Gateway availability now requires VNPAY Return URL and MoMo IPN/redirect URLs as well as enabled metadata and credentials",
+    "Updated .env.example and README to document the actually consumed keys",
+    "Added YAML duplicate-key, production guard, email switch and gateway readiness tests",
+    "Return URL test proves no financial service calls; forged or mismatched IPN cannot call the ledger"
+  ],
+  "privateEnvironment": {
+    "valuesPrinted": false,
+    "fileModified": false,
+    "gitIgnored": true,
+    "mailUsernamePresent": true,
+    "mailPasswordPresent": true,
+    "mailTestRecipientPresent": true,
+    "businessEmailEnabled": false,
+    "localSimulationEnabled": true,
+    "backendDotenvExists": false,
+    "legacyGlobalGatewayEntries": "Retained without exposing values; VNPAY_*/MOMO_* entries are not consumed by the owner-scoped gateway"
+  },
+  "verification": {
+    "tests": 45,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "package": "BUILD SUCCESS",
+    "actualEmailSent": false,
+    "actualPaymentCreated": false,
+    "databaseModified": false,
+    "runningBackendRestarted": false,
+    "log": "boarding-house-backend/local-config-final.log",
+    "execution": "MAVEN_OPTS=-Xms32m -Xmx384m -XX:MaxMetaspaceSize=256m -XX:ReservedCodeCacheSize=64m; Maven -DforkCount=0",
+    "environmentNote": "Initial forked test JVM hit Windows pagefile limits; bounded single-JVM verification passed without OS changes"
+  },
+  "remaining": [
+    "Merchant credentials must use the actual owner ID and matching Integration Center metadata",
+    "VNPAY IPN must be registered with the merchant; MoMo needs its Test account, keys, IPN and redirect metadata",
+    "No real merchant/Sandbox provider transaction or new SMTP delivery was attempted",
+    "Restart the existing local backend process to load the changed configuration and readiness checks"
+  ],
+  "modifiedFiles": [
+    ".env.example",
+    "README.md",
+    "boarding-house-backend/src/main/resources/application-local.yml",
+    "boarding-house-backend/src/main/resources/application-prod.yml",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/GatewayPayments.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/EmailDotenvConfigurationTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/LocalProfileConfigurationTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/GatewayConfigurationReadinessTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/BusinessMailEnvironmentConfigurationTest.java"
+  ]
+}

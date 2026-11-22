@@ -1,5 +1,8 @@
 "use client";
+import { maintenanceStyles } from "./maintenance-styles";
+import { useManagementProperty } from "@/providers/management-scope";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   CalendarDays,
@@ -54,7 +57,24 @@ const tabNames = [
   "Đã hủy",
 ];
 export function MaintenanceListPage() {
-  const [filters, setFilters] = useState(initial);
+  const params = useSearchParams();
+  const [propertyId, setPropertyId] = useManagementProperty(
+    Number(params.get("propertyId")) || undefined,
+  );
+  const [localFilters, setFilters] = useState(initial);
+  const filters = {
+    ...localFilters,
+    propertyId,
+    roomId:
+      propertyId === Number(params.get("propertyId"))
+        ? Number(params.get("roomId")) || undefined
+        : undefined,
+  };
+  const [previousProperty, setPreviousProperty] = useState(propertyId);
+  if (previousProperty !== propertyId) {
+    setPreviousProperty(propertyId);
+    setFilters((f) => ({ ...f, page: 0 }));
+  }
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"table" | "kanban">("table");
   const { summary, list, options } = useMaintenanceData(filters);
@@ -93,31 +113,43 @@ export function MaintenanceListPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm text-slate-500">Tổng quan / Bảo trì</p>
-            <h1 className="mt-1 text-3xl font-black text-slate-950">
+            <p className="text-sm text-muted-foreground">Tổng quan / Bảo trì</p>
+            <h1 className="mt-1 text-3xl font-black text-foreground">
               Quản lý bảo trì và sửa chữa
             </h1>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => adminMaintenanceService.export(filters)}
-              className="btn-secondary"
+              className={maintenanceStyles.secondary}
             >
               <Download className="size-4" />
               Xuất dữ liệu
             </button>
-            <Link href="/admin/maintenance/calendar" className="btn-secondary">
+            <Link
+              href="/admin/maintenance/assets"
+              className={maintenanceStyles.secondary}
+            >
+              Tài sản & vật tư
+            </Link>
+            <Link
+              href="/admin/maintenance/calendar"
+              className={maintenanceStyles.secondary}
+            >
               <CalendarDays className="size-4" />
               Lịch bảo trì
             </Link>
-            <Link href="/admin/maintenance/new" className="btn-primary">
+            <Link
+              href="/admin/maintenance/new"
+              className={maintenanceStyles.primary}
+            >
               <Plus className="size-4" />
               Tạo yêu cầu
             </Link>
           </div>
         </div>
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
+          <div className="rounded-2xl border border-danger-border bg-danger-muted p-5 text-danger">
             <p className="font-semibold">
               {apiErrorMessage(error, "Không thể tải dữ liệu bảo trì.")}
             </p>
@@ -139,41 +171,37 @@ export function MaintenanceListPage() {
             {summaryCards.map(([label, value, Icon]) => (
               <div
                 key={String(label)}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                className="surface-card p-4 "
               >
-                <Icon className="mb-3 size-5 text-blue-600" />
-                <p className="text-sm text-slate-500">{String(label)}</p>
-                <p className="mt-1 text-2xl font-black text-slate-900">
+                <Icon className="mb-3 size-5 text-link" />
+                <p className="text-sm text-muted-foreground">{String(label)}</p>
+                <p className="mt-1 text-2xl font-black text-foreground">
                   {String(value)}
                 </p>
               </div>
             ))}
           </div>
         )}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="surface-card p-4 ">
           <div className="grid gap-3 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
             <label className="relative">
-              <Search className="absolute left-3 top-3 size-5 text-slate-400" />
+              <Search className="absolute left-3 top-3 size-5 text-muted-foreground" />
               <input
                 aria-label="Tìm kiếm yêu cầu"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Mã yêu cầu, sự cố, phòng, người báo..."
-                className="input pl-10"
+                className={`${maintenanceStyles.input} pl-10`}
               />
             </label>
             <select
               aria-label="Khu trọ"
-              className="input"
+              className={maintenanceStyles.input}
               value={filters.propertyId ?? ""}
               onChange={(e) =>
-                setFilters((f) => ({
-                  ...f,
-                  propertyId: e.target.value
-                    ? Number(e.target.value)
-                    : undefined,
-                  page: 0,
-                }))
+                setPropertyId(
+                  e.target.value ? Number(e.target.value) : undefined,
+                )
               }
             >
               <option value="">Tất cả khu trọ</option>
@@ -185,7 +213,7 @@ export function MaintenanceListPage() {
             </select>
             <select
               aria-label="Mức độ"
-              className="input"
+              className={maintenanceStyles.input}
               value={filters.priority ?? ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -203,7 +231,7 @@ export function MaintenanceListPage() {
             </select>
             <select
               aria-label="Loại sự cố"
-              className="input"
+              className={maintenanceStyles.input}
               value={filters.category ?? ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -220,18 +248,18 @@ export function MaintenanceListPage() {
                 </option>
               ))}
             </select>
-            <div className="flex rounded-xl bg-slate-100 p-1">
+            <div className="flex rounded-xl bg-muted p-1">
               <button
                 aria-label="Dạng bảng"
                 onClick={() => setView("table")}
-                className={`rounded-lg p-2 ${view === "table" ? "bg-white text-blue-600 shadow" : "text-slate-500"}`}
+                className={`rounded-lg p-2 ${view === "table" ? "bg-card text-link shadow" : "text-muted-foreground"}`}
               >
                 <LayoutList className="size-5" />
               </button>
               <button
                 aria-label="Dạng Kanban"
                 onClick={() => setView("kanban")}
-                className={`rounded-lg p-2 ${view === "kanban" ? "bg-white text-blue-600 shadow" : "text-slate-500"}`}
+                className={`rounded-lg p-2 ${view === "kanban" ? "bg-card text-link shadow" : "text-muted-foreground"}`}
               >
                 <KanbanSquare className="size-5" />
               </button>
@@ -242,7 +270,7 @@ export function MaintenanceListPage() {
               <button
                 key={tabNames[i]}
                 onClick={() => applyTab(t)}
-                className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-semibold ${(t === "OVERDUE" ? filters.overdue : t ? filters.status === t : !filters.status && !filters.overdue) ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}
+                className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-semibold ${(t === "OVERDUE" ? filters.overdue : t ? filters.status === t : !filters.status && !filters.overdue) ? "bg-primary hover:bg-primary-hover text-white" : "bg-muted text-secondary-foreground"}`}
               >
                 {tabNames[i]}
               </button>
@@ -259,13 +287,13 @@ export function MaintenanceListPage() {
           <Kanban rows={list.data.content} />
         )}{" "}
         {list.data && list.data.totalPages > 1 && (
-          <div className="flex items-center justify-between text-sm text-slate-600">
+          <div className="flex items-center justify-between text-sm text-secondary-foreground">
             <span>{list.data.totalElements} yêu cầu</span>
             <div className="flex gap-2">
               <button
                 disabled={filters.page === 0}
                 onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
-                className="btn-secondary"
+                className={maintenanceStyles.secondary}
               >
                 Trước
               </button>
@@ -275,7 +303,7 @@ export function MaintenanceListPage() {
               <button
                 disabled={filters.page + 1 >= list.data.totalPages}
                 onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
-                className="btn-secondary"
+                className={maintenanceStyles.secondary}
               >
                 Sau
               </button>
@@ -289,9 +317,9 @@ export function MaintenanceListPage() {
 function Table({ rows }: { rows: MaintenanceRow[] }) {
   return (
     <>
-      <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm md:block">
+      <div className="hidden overflow-x-auto surface-card md:block">
         <table className="w-full min-w-[1100px] text-sm">
-          <thead className="bg-slate-50 text-left text-slate-500">
+          <thead className="bg-muted text-left text-muted-foreground">
             <tr>
               {[
                 "Mã yêu cầu",
@@ -314,27 +342,27 @@ function Table({ rows }: { rows: MaintenanceRow[] }) {
             {rows.map((r) => (
               <tr
                 key={r.id}
-                className="border-t border-slate-100 hover:bg-slate-50"
+                className="border-t border-border hover:bg-muted"
               >
                 <td className="px-4 py-4">
                   <Link
                     href={`/admin/maintenance/${r.id}`}
-                    className="font-bold text-blue-600"
+                    className="font-bold text-link"
                   >
                     {r.requestCode}
                   </Link>
                 </td>
                 <td className="px-4 py-4">
-                  <p className="max-w-64 font-semibold text-slate-800">
+                  <p className="max-w-64 font-semibold text-foreground">
                     {r.title}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {categoryLabel(r.category)}
                   </p>
                 </td>
                 <td className="px-4 py-4">
                   <p>{r.property.name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {r.room?.name ?? "Khu vực chung"}
                   </p>
                 </td>
@@ -350,7 +378,7 @@ function Table({ rows }: { rows: MaintenanceRow[] }) {
                     : "Chưa lên lịch"}
                 </td>
                 <td
-                  className={`px-4 py-4 font-semibold ${r.overdue ? "text-red-600" : "text-slate-600"}`}
+                  className={`px-4 py-4 font-semibold ${r.overdue ? "text-danger" : "text-secondary-foreground"}`}
                 >
                   {r.overdue
                     ? `Quá hạn · ${r.waitingHours} giờ`
@@ -374,20 +402,20 @@ function Table({ rows }: { rows: MaintenanceRow[] }) {
           <Link
             href={`/admin/maintenance/${r.id}`}
             key={r.id}
-            className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="block rounded-2xl border border-border bg-card p-4 shadow-card"
           >
             <div className="flex justify-between gap-2">
-              <p className="font-bold text-blue-600">{r.requestCode}</p>
+              <p className="font-bold text-link">{r.requestCode}</p>
               <PriorityBadge priority={r.priority} />
             </div>
-            <h3 className="mt-2 font-bold text-slate-900">{r.title}</h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <h3 className="mt-2 font-bold text-foreground">{r.title}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               {r.property.name} · {r.room?.name ?? "Khu vực chung"}
             </p>
             <div className="mt-3 flex items-center justify-between">
               <StatusBadge status={r.status} />
               {r.overdue && (
-                <span className="text-xs font-bold text-red-600">
+                <span className="text-xs font-bold text-danger">
                   Đã quá SLA
                 </span>
               )}
@@ -411,11 +439,11 @@ function Kanban({ rows }: { rows: MaintenanceRow[] }) {
       {statuses.map((status) => (
         <section
           key={status}
-          className="min-w-72 flex-1 rounded-2xl bg-slate-100 p-3"
+          className="min-w-72 flex-1 rounded-2xl bg-muted p-3"
         >
           <div className="mb-3 flex items-center justify-between">
             <StatusBadge status={status} />
-            <span className="text-xs font-bold text-slate-500">
+            <span className="text-xs font-bold text-muted-foreground">
               {rows.filter((x) => x.status === status).length}
             </span>
           </div>
@@ -426,15 +454,15 @@ function Kanban({ rows }: { rows: MaintenanceRow[] }) {
                 <Link
                   key={r.id}
                   href={`/admin/maintenance/${r.id}`}
-                  className="block rounded-xl bg-white p-3 shadow-sm"
+                  className="block rounded-xl bg-card p-3 shadow-card"
                 >
-                  <p className="text-xs font-bold text-blue-600">
+                  <p className="text-xs font-bold text-link">
                     {r.requestCode}
                   </p>
-                  <p className="mt-1 font-semibold text-slate-800">{r.title}</p>
+                  <p className="mt-1 font-semibold text-foreground">{r.title}</p>
                   <div className="mt-3 flex justify-between">
                     <PriorityBadge priority={r.priority} />
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted-foreground">
                       {r.room?.name ?? "Chung"}
                     </span>
                   </div>

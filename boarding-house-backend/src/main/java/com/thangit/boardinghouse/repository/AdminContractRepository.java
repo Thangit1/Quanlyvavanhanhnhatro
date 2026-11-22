@@ -42,7 +42,8 @@ public class AdminContractRepository {
                 .query((rs, row) -> new PropertyOption(rs.getLong("id"), rs.getString("name"))).list();
     }
 
-    public Summary summary(long userId, RoleCode role) {
+    public Summary summary(long userId, RoleCode role) {return summary(userId,role,null);}
+    public Summary summary(long userId, RoleCode role,Long propertyId) {
         String status = effectiveStatus("c");
         return jdbc.sql("""
                 SELECT COUNT(*) total,
@@ -52,9 +53,9 @@ public class AdminContractRepository {
                   SUM(CASE WHEN %s='TERMINATION_REQUESTED' THEN 1 ELSE 0 END) termination_count,
                   SUM(CASE WHEN %s IN ('EXPIRED','TERMINATED','CANCELLED') THEN 1 ELSE 0 END) ended_count
                 FROM contracts c JOIN rooms r ON r.id=c.room_id JOIN properties p ON p.id=r.property_id
-                WHERE %s
+                WHERE %s AND (:summaryProperty IS NULL OR p.id=:summaryProperty)
                 """.formatted(status, status, status, status, status, propertyScope(role, "p")))
-                .param("userId", userId).query((rs, row) -> new Summary(
+                .param("userId", userId).param("summaryProperty",propertyId).query((rs, row) -> new Summary(
                         rs.getLong("total"), rs.getLong("active_count"), rs.getLong("expiring_count"),
                         rs.getLong("pending_count"), rs.getLong("termination_count"),
                         rs.getLong("ended_count"))).single();
@@ -89,7 +90,12 @@ public class AdminContractRepository {
 
     public Page<ContractRow> list(long userId, RoleCode role, Long propertyId, String status,
                                   String keyword, String sort, String direction, int page, int size) {
-        QueryParts parts = filters(userId, role, propertyId, status, keyword);
+        return list(userId,role,propertyId,status,keyword,sort,direction,page,size,null,null,null);
+    }
+    public Page<ContractRow> list(long userId,RoleCode role,Long propertyId,String status,String keyword,String sort,String direction,int page,int size,Long roomId,LocalDate startDateFrom,LocalDate endDateTo){
+        QueryParts base = filters(userId, role, propertyId, status, keyword);
+        Map<String,Object> extra=new HashMap<>(base.params());extra.put("roomFilter",roomId);extra.put("fromDate",startDateFrom);extra.put("toDate",endDateTo);
+        QueryParts parts=new QueryParts(base.where()+" AND (:roomFilter IS NULL OR r.id=:roomFilter) AND (:fromDate IS NULL OR c.start_date>=:fromDate) AND (:toDate IS NULL OR c.end_date<=:toDate)",extra);
         String sortColumn = switch (sort == null ? "" : sort) {
             case "startDate" -> "c.start_date";
             case "contractCode" -> "c.code";
@@ -115,7 +121,10 @@ public class AdminContractRepository {
                   COALESCE(tp.full_name,u.full_name) tenant_name,COALESCE(tp.phone,u.phone) tenant_phone,
                   p.id property_id,p.name property_name,r.id room_id,r.code room_code,c.start_date,c.end_date,
                   COALESCE((SELECT rv.unit_price FROM billing_rate_versions rv WHERE rv.contract_id=c.id AND rv.code='RENT' AND rv.effective_date<=CURRENT_DATE ORDER BY rv.effective_date DESC LIMIT 1),c.agreed_monthly_rent) monthly_rent,c.deposit_amount,%s effective_status,c.updated_at,
-                  EXISTS(SELECT 1 FROM contract_documents d WHERE d.contract_id=c.id) has_document
+                  EXISTS(SELECT 1 FROM contract_documents d WHERE d.contract_id=c.id) has_document,
+                  c.payment_cycle,c.onboarding_version,
+                  EXISTS(SELECT 1 FROM contract_versions cv JOIN rental_confirmations rc ON rc.contract_version_id=cv.id AND rc.content_hash=cv.content_hash WHERE cv.contract_id=c.id AND cv.version=c.onboarding_version AND rc.party='LANDLORD') landlord_confirmed,
+                  EXISTS(SELECT 1 FROM contract_versions cv JOIN rental_confirmations rc ON rc.contract_version_id=cv.id AND rc.content_hash=cv.content_hash WHERE cv.contract_id=c.id AND cv.version=c.onboarding_version AND rc.party='TENANT') tenant_confirmed
                 %s WHERE %s ORDER BY %s %s LIMIT :limit OFFSET :offset
                 """.formatted(effectiveStatus("c"), joins, parts.where(), sortColumn, sortDirection))
                 .params(params).query((rs, row) -> mapRow(rs)).list();
@@ -168,12 +177,12 @@ public class AdminContractRepository {
                 rs.getString("room_code"), rs.getObject("start_date", LocalDate.class),
                 rs.getObject("end_date", LocalDate.class), rs.getBigDecimal("monthly_rent"),
                 rs.getBigDecimal("deposit_amount"), remaining(rs), rs.getString("effective_status"),
-                rs.getBoolean("has_document"), rs.getTimestamp("updated_at").toLocalDateTime());
+                rs.getBoolean("has_document"), rs.getTimestamp("updated_at").toLocalDateTime(),rs.getString("payment_cycle"),rs.getLong("onboarding_version"),rs.getBoolean("landlord_confirmed"),rs.getBoolean("tenant_confirmed"));
     }
 
     private long remaining(ResultSet rs) throws SQLException {
         return java.time.temporal.ChronoUnit.DAYS.between(
-                LocalDate.now(), rs.getObject("end_date", LocalDate.class));
+                com.thangit.boardinghouse.service.BusinessTime.today(), rs.getObject("end_date", LocalDate.class));
     }
 
     private String mask(String value) {

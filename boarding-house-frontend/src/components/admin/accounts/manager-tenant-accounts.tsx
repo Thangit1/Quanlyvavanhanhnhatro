@@ -81,22 +81,22 @@ export function ManagerTenantAccounts() {
   );
   return (
     <div className="space-y-5">
-      <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+      <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5">
         <div>
           <h1 className="text-2xl font-extrabold">Tài khoản người thuê</h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Tạo và hỗ trợ tài khoản trong các cơ sở được phân công.
           </p>
         </div>
         <div className="flex gap-3">
           <Link
-            className="rounded-xl border border-slate-200 p-3 text-sm font-semibold"
+            className="rounded-xl border border-border p-3 text-sm font-semibold"
             href="/admin/tenants"
           >
             Hồ sơ & lịch sử thuê
           </Link>
           <button
-            className="rounded-xl bg-blue-600 p-3 text-sm font-bold text-white"
+            className="rounded-xl bg-primary hover:bg-primary-hover p-3 text-sm font-bold text-white"
             onClick={() => setCreate(true)}
           >
             + Tạo tài khoản
@@ -106,7 +106,7 @@ export function ManagerTenantAccounts() {
       {error && (
         <p
           role="alert"
-          className="rounded-xl bg-red-50 p-4 text-sm text-red-700"
+          className="rounded-xl bg-danger-muted p-4 text-sm text-danger"
         >
           {error}
         </p>
@@ -115,7 +115,7 @@ export function ManagerTenantAccounts() {
         <label className="space-y-1 text-sm font-semibold">
           Tìm người thuê
           <input
-            className="w-full rounded-xl border border-slate-200 bg-white p-3"
+            className="w-full rounded-xl border border-input bg-card p-3"
             value={keyword}
             onChange={(e) => {
               setKeyword(e.target.value);
@@ -126,7 +126,7 @@ export function ManagerTenantAccounts() {
         <label className="space-y-1 text-sm font-semibold">
           Nhà trọ
           <select
-            className="w-full rounded-xl border border-slate-200 bg-white p-3"
+            className="w-full rounded-xl border border-input bg-card p-3"
             value={property}
             onChange={(e) => {
               setProperty(Number(e.target.value));
@@ -149,10 +149,10 @@ export function ManagerTenantAccounts() {
           onRetry={() => void data.refetch()}
         />
       )}
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <section className="overflow-hidden surface-card">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-slate-500">
+            <thead className="bg-muted text-muted-foreground">
               <tr>
                 {["Người thuê", "Cơ sở / Phòng", "Tài khoản", "Thao tác"].map(
                   (label) => (
@@ -165,10 +165,10 @@ export function ManagerTenantAccounts() {
             </thead>
             <tbody>
               {rows.slice(page * 20, (page + 1) * 20).map((p) => (
-                <tr className="border-t border-slate-100" key={p.id}>
+                <tr className="border-t border-border" key={p.id}>
                   <td className="p-4">
                     <p className="font-semibold">{p.full_name}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       {p.phone} · {p.email}
                     </p>
                   </td>
@@ -181,7 +181,7 @@ export function ManagerTenantAccounts() {
                       <>
                         <StatusBadge status={p.account_status ?? "ACTIVE"} />
                         {p.must_change_password && (
-                          <p className="mt-1 text-xs text-amber-700">
+                          <p className="mt-1 text-xs text-warning">
                             Chờ đổi mật khẩu lần đầu
                           </p>
                         )}
@@ -193,7 +193,7 @@ export function ManagerTenantAccounts() {
                   <td className="p-4">
                     <div className="flex flex-wrap gap-3">
                       <Link
-                        className="font-bold text-blue-600"
+                        className="font-bold text-link"
                         href={`/admin/tenants/${p.id}`}
                       >
                         Hồ sơ
@@ -202,14 +202,14 @@ export function ManagerTenantAccounts() {
                         <>
                           <button
                             disabled={busy}
-                            className="font-semibold text-blue-600"
+                            className="font-semibold text-link"
                             onClick={() => void reset(p.user_id!)}
                           >
                             Đặt lại mật khẩu
                           </button>
                           <button
                             disabled={busy}
-                            className="font-semibold text-red-600"
+                            className="font-semibold text-danger"
                             onClick={() =>
                               void status(
                                 p.user_id!,
@@ -233,7 +233,7 @@ export function ManagerTenantAccounts() {
         {!rows.length && data.isSuccess && (
           <EmptyState text="Chưa có hồ sơ trong phạm vi." />
         )}
-        <div className="flex justify-end gap-4 border-t border-slate-100 p-4 text-sm">
+        <div className="flex justify-end gap-4 border-t border-border p-4 text-sm">
           <button disabled={!page} onClick={() => setPage(page - 1)}>
             Trước
           </button>

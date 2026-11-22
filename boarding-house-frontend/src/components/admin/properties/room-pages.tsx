@@ -7,46 +7,33 @@ import {
 } from "@/lib/numeric-input";
 import { NumberInput, CurrencyInput } from "@/components/ui/number-input";
 import Link from "next/link";
+import {
+  RoomImages,
+  type RoomImageDraft,
+} from "@/components/shared/room-images";
 import { RoomMeterManagement } from "@/components/shared/room-meter-management";
 import { RoomAssetsEditor } from "./room-assets-editor";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  createElement,
-  FormEvent,
-  type ElementType,
-  useEffect,
-  useState,
-} from "react";
-import {
-  BedDouble,
-  Building2,
-  CalendarClock,
-  DoorOpen,
-  Plus,
-  Search,
-  Users,
-  Wrench,
-} from "lucide-react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import {
-  EmptyState,
   ErrorState,
   PageLoading,
   StatusBadge,
 } from "@/components/shared/dashboard-ui";
 import {
   useAdminRoom,
-  useAdminRooms,
   usePropertyOptions,
   useRoomMutations,
 } from "@/hooks/use-admin-properties";
-import { formatCurrency, formatDate, statusLabel } from "@/lib/format";
+import { formatCurrency, statusLabel } from "@/lib/format";
 import { apiErrorMessage, normalizeAdminCode } from "@/lib/api-error";
-import { useAuth } from "@/providers/auth-provider";
+import { useManagementScope } from "@/providers/management-scope";
+import { RoomDetailSections } from "./property-room-details";
 import type { RoomPayload } from "@/types/admin-property";
 
 const input =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+  "w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 focus:border-ring focus:ring-2 focus:ring-ring";
 function localToday() {
   const date = new Date();
   const year = date.getFullYear();
@@ -54,295 +41,7 @@ function localToday() {
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
-export function RoomListPage() {
-  const searchParams = useSearchParams();
-  const { user } = useAuth();
-  const preset = Number(searchParams.get("propertyId")) || undefined;
-  const [typed, setTyped] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [propertyId, setPropertyId] = useState<number | undefined>(preset);
-  const [buildingId, setBuildingId] = useState<number>();
-  const [floorId, setFloorId] = useState<number>();
-  const [status, setStatus] = useState("");
-  const [page, setPage] = useState(0);
-  const options = usePropertyOptions();
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setKeyword(typed.trim());
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [typed]);
-  const query = useAdminRooms({
-    propertyId,
-    buildingId,
-    floorId,
-    status: status || undefined,
-    keyword: keyword || undefined,
-    page,
-    size: 20,
-  });
-  if (query.isLoading || options.isLoading) return <PageLoading />;
-  const data = query.data;
-  const buildings =
-    options.data?.buildings.filter(
-      (b) => !propertyId || b.parentId === propertyId,
-    ) || [];
-  const floors =
-    options.data?.floors.filter(
-      (f) => !buildingId || f.parentId === buildingId,
-    ) || [];
-  return (
-    <AdminShell
-      title="Danh sách phòng"
-      subtitle="Theo dõi công suất, giá thuê và trạng thái phòng"
-      readOnly
-    >
-      <div className="mx-auto max-w-[1600px] space-y-5">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <div className="inline-flex rounded-xl border bg-white p-1">
-            <Link
-              href="/admin/properties"
-              className="px-4 py-2 text-sm font-semibold text-slate-600"
-            >
-              Nhà trọ
-            </Link>
-            <span className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
-              Phòng
-            </span>
-          </div>
-          {user?.activeRole !== "ACCOUNTANT" && (
-            <div className="flex gap-2">
-              <Link
-                href="/admin/rooms/new"
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white"
-              >
-                <Plus className="size-4" />
-                Thêm phòng
-              </Link>
-            </div>
-          )}
-        </div>
-        {query.isError && (
-          <ErrorState onRetry={() => void query.refetch()} />
-        )}{" "}
-        {data && (
-          <>
-            <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-              {[
-                ["Tổng phòng", data.summary.totalRooms, DoorOpen],
-                ["Đang thuê", data.summary.occupiedRooms, Users],
-                ["Còn trống", data.summary.vacantRooms, BedDouble],
-                ["Giữ chỗ", data.summary.reservedRooms, CalendarClock],
-                ["Bảo trì", data.summary.maintenanceRooms, Wrench],
-                ["Ngừng dùng", data.summary.inactiveRooms, Building2],
-              ].map(([label, value, Icon]) => (
-                <article
-                  key={String(label)}
-                  className="rounded-2xl border bg-white p-4 shadow-sm"
-                >
-                  {createElement(Icon as ElementType, {
-                    className: "size-5 text-blue-600",
-                  })}
-                  <p className="mt-3 text-xs text-slate-500">
-                    {label as string}
-                  </p>
-                  <p className="text-2xl font-extrabold">{value as number}</p>
-                </article>
-              ))}
-            </section>
-            <section className="rounded-2xl border bg-white p-4 shadow-sm">
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-                <label className="relative">
-                  <Search className="absolute left-3 top-3 size-4 text-slate-400" />
-                  <input
-                    className={`${input} pl-9`}
-                    value={typed}
-                    onChange={(e) => setTyped(e.target.value)}
-                    placeholder="Tìm mã hoặc tên phòng..."
-                  />
-                </label>
-                <Select
-                  value={propertyId}
-                  placeholder="Tất cả nhà trọ"
-                  items={options.data?.properties || []}
-                  onChange={(v) => {
-                    setPropertyId(v);
-                    setBuildingId(undefined);
-                    setFloorId(undefined);
-                    setPage(0);
-                  }}
-                />
-                <Select
-                  value={buildingId}
-                  placeholder="Tất cả tòa"
-                  items={buildings}
-                  onChange={(v) => {
-                    setBuildingId(v);
-                    setFloorId(undefined);
-                    setPage(0);
-                  }}
-                />
-                <Select
-                  value={floorId}
-                  placeholder="Tất cả tầng"
-                  items={floors}
-                  onChange={(v) => {
-                    setFloorId(v);
-                    setPage(0);
-                  }}
-                />
-                <select
-                  className={input}
-                  value={status}
-                  onChange={(e) => {
-                    setStatus(e.target.value);
-                    setPage(0);
-                  }}
-                >
-                  <option value="">Tất cả trạng thái</option>
-                  {[
-                    "VACANT",
-                    "READY",
-                    "RESERVED",
-                    "OCCUPIED",
-                    "NOTICE",
-                    "CLEANING",
-                    "MAINTENANCE",
-                    "INACTIVE",
-                  ].map((s) => (
-                    <option key={s} value={s}>
-                      {statusLabel(s)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </section>
-            {data.page.items.length === 0 ? (
-              <EmptyState text="Chưa có phòng phù hợp." />
-            ) : (
-              <section className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-                <div className="hidden overflow-x-auto md:block">
-                  <table className="w-full min-w-[1100px] text-left text-sm">
-                    <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-                      <tr>
-                        <Th>Phòng</Th>
-                        <Th>Vị trí</Th>
-                        <Th>Giá thuê</Th>
-                        <Th>Sức chứa</Th>
-                        <Th>Người đại diện</Th>
-                        <Th>Công nợ</Th>
-                        <Th>Trạng thái</Th>
-                        <Th />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.page.items.map((r) => (
-                        <tr key={r.id} className="border-t hover:bg-blue-50/30">
-                          <Td>
-                            <strong>{r.roomCode}</strong>
-                            <p className="text-xs text-slate-500">{r.name}</p>
-                          </Td>
-                          <Td>
-                            {r.propertyName}
-                            <p className="text-xs text-slate-500">
-                              {r.buildingName} · {r.floorName}
-                            </p>
-                          </Td>
-                          <Td>
-                            <strong>{formatCurrency(r.monthlyRent)}</strong>
-                            <p className="text-xs text-slate-500">
-                              Cọc {formatCurrency(r.depositAmount)}
-                            </p>
-                          </Td>
-                          <Td>
-                            {r.currentOccupants}/{r.maxOccupants}
-                          </Td>
-                          <Td>{r.representativeTenant?.fullName || "—"}</Td>
-                          <Td>
-                            <span
-                              className={
-                                r.outstandingDebt > 0
-                                  ? "font-bold text-red-600"
-                                  : "text-slate-500"
-                              }
-                            >
-                              {formatCurrency(r.outstandingDebt)}
-                            </span>
-                          </Td>
-                          <Td>
-                            <StatusBadge status={r.status} />
-                            {r.openMaintenanceCount > 0 && (
-                              <p className="mt-1 text-xs text-orange-600">
-                                {r.openMaintenanceCount} bảo trì
-                              </p>
-                            )}
-                          </Td>
-                          <Td>
-                            <Link
-                              className="font-semibold text-blue-600"
-                              href={`/admin/rooms/${r.id}`}
-                            >
-                              Chi tiết →
-                            </Link>
-                          </Td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="grid gap-3 p-3 md:hidden">
-                  {data.page.items.map((r) => (
-                    <Link
-                      href={`/admin/rooms/${r.id}`}
-                      key={r.id}
-                      className="rounded-xl border p-4"
-                    >
-                      <div className="flex justify-between">
-                        <strong>
-                          {r.roomCode} · {r.name}
-                        </strong>
-                        <StatusBadge status={r.status} />
-                      </div>
-                      <p className="mt-2 text-sm text-slate-500">
-                        {r.propertyName} · {r.buildingName} · {r.floorName}
-                      </p>
-                      <div className="mt-3 flex justify-between text-sm">
-                        <strong>{formatCurrency(r.monthlyRent)}</strong>
-                        <span>
-                          {r.currentOccupants}/{r.maxOccupants} người
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-            <div className="flex justify-end gap-2">
-              <button
-                disabled={page === 0}
-                onClick={() => setPage(page - 1)}
-                className="rounded-lg border bg-white px-3 py-2 disabled:opacity-40"
-              >
-                Trước
-              </button>
-              <span className="px-3 py-2 text-sm">
-                {page + 1}/{Math.max(data.page.totalPages, 1)}
-              </span>
-              <button
-                disabled={page + 1 >= data.page.totalPages}
-                onClick={() => setPage(page + 1)}
-                className="rounded-lg border bg-white px-3 py-2 disabled:opacity-40"
-              >
-                Sau
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </AdminShell>
-  );
-}
+export { RoomListPage } from "./room-list-workspace";
 function Select({
   value,
   placeholder,
@@ -371,12 +70,6 @@ function Select({
     </select>
   );
 }
-function Th({ children }: { children?: React.ReactNode }) {
-  return <th className="px-4 py-3">{children}</th>;
-}
-function Td({ children }: { children: React.ReactNode }) {
-  return <td className="px-4 py-3">{children}</td>;
-}
 
 const blank: RoomPayload = {
   propertyId: 0,
@@ -392,16 +85,24 @@ const blank: RoomPayload = {
 };
 export function RoomFormPage({ id }: { id?: number }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedProperty = Number(searchParams.get("propertyId")) || undefined;
   const options = usePropertyOptions();
   const detail = useAdminRoom(id || 0);
   const mutations = useRoomMutations(id);
-  const [form, setForm] =
-    useState<
-      NumericDraftFields<
-        RoomPayload,
-        "area" | "monthlyRent" | "depositAmount" | "capacity" | "assets"
-      >
-    >(blank);
+  const [form, setForm] = useState<
+    NumericDraftFields<
+      RoomPayload,
+      "area" | "monthlyRent" | "depositAmount" | "capacity" | "assets"
+    >
+  >({ ...blank, propertyId: selectedProperty ?? 0 });
+  const [images, setImages] = useState<RoomImageDraft[]>([]);
+  const [cover, setCover] = useState("");
+  const [validating, setValidating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [progress, setProgress] = useState<number>();
+  const saveLock = useRef(false);
+  const retry = useRef({ fingerprint: "", key: "" });
   const [hydratedId, setHydratedId] = useState<number>();
   const [error, setError] = useState("");
   useEffect(() => {
@@ -424,6 +125,13 @@ export function RoomFormPage({ id }: { id?: number }) {
         assets: d.assets,
         version: d.room.version,
       });
+      const urls = [
+        ...new Set(
+          [...d.images, d.room.thumbnailUrl].filter((x): x is string => !!x),
+        ),
+      ];
+      setImages(urls.map((url) => ({ id: url, url })));
+      setCover(d.room.thumbnailUrl || urls[0] || "");
       setHydratedId(id);
     }
   }, [detail.data, hydratedId, id]);
@@ -444,16 +152,49 @@ export function RoomFormPage({ id }: { id?: number }) {
   const mutation = id ? mutations.update : mutations.create;
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (saveLock.current || validating) return;
+    saveLock.current = true;
+    setSaving(true);
     setError("");
+    setProgress(0);
     try {
-      const result = await mutation.mutateAsync(
-        parseNumericFields<RoomPayload>(
+      const files: File[] = [];
+      const items = images.map((item) => {
+        if (!item.file) return item.url;
+        files.push(item.file);
+        return `upload:${files.length - 1}`;
+      });
+      const gallery = {
+        items,
+        cover: Math.max(
+          0,
+          images.findIndex((item) => item.id === cover),
+        ),
+      };
+      const fingerprint = JSON.stringify([
+        form,
+        gallery,
+        images.map((item) => [
+          item.id,
+          item.file?.name,
+          item.file?.size,
+          item.file?.lastModified,
+        ]),
+      ]);
+      if (retry.current.fingerprint !== fingerprint)
+        retry.current = { fingerprint, key: crypto.randomUUID() };
+      const result = await mutation.mutateAsync({
+        ...parseNumericFields<RoomPayload>(
           form,
           ["area", "monthlyRent", "depositAmount", "capacity", "quantity"],
           ["area"],
           { depositAmount: 0 },
         ),
-      );
+        gallery,
+        imageFiles: files,
+        requestKey: retry.current.key,
+        onImageProgress: setProgress,
+      });
       router.push(
         id
           ? `/admin/rooms/${id}`
@@ -466,6 +207,10 @@ export function RoomFormPage({ id }: { id?: number }) {
           "Không thể lưu phòng. Hãy kiểm tra vị trí và các trường bắt buộc.",
         ),
       );
+    } finally {
+      saveLock.current = false;
+      setSaving(false);
+      setProgress(undefined);
     }
   };
   return (
@@ -475,7 +220,7 @@ export function RoomFormPage({ id }: { id?: number }) {
     >
       <div className="mx-auto max-w-5xl space-y-5">
         <form onSubmit={submit} className="space-y-5">
-          <section className="rounded-2xl border bg-white p-6 shadow-sm">
+          <section className="surface-card p-6 ">
             <h2 className="text-lg font-bold">Thông tin phòng</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Field label="Nhà trọ *">
@@ -493,20 +238,20 @@ export function RoomFormPage({ id }: { id?: number }) {
                   }
                 />
               </Field>
-              <Field label="Tòa *">
+              <Field label="Dãy / tòa (tùy chọn)">
                 <Select
                   value={form.buildingId || undefined}
-                  placeholder="Chọn tòa"
+                  placeholder="Không có dãy / tòa"
                   items={buildings}
                   onChange={(v) =>
                     setForm({ ...form, buildingId: v || 0, floorId: 0 })
                   }
                 />
               </Field>
-              <Field label="Tầng *">
+              <Field label="Tầng (tùy chọn)">
                 <Select
                   value={form.floorId || undefined}
-                  placeholder="Chọn tầng"
+                  placeholder="Không có tầng"
                   items={floors}
                   onChange={(v) => setForm({ ...form, floorId: v || 0 })}
                 />
@@ -593,16 +338,6 @@ export function RoomFormPage({ id }: { id?: number }) {
                   }
                 />
               </Field>
-              <Field label="URL ảnh đại diện" wide>
-                <input
-                  className={input}
-                  value={form.imageUrl || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, imageUrl: e.target.value })
-                  }
-                  placeholder="https://..."
-                />
-              </Field>
               <Field label="Mô tả" wide>
                 <textarea
                   className={`${input} min-h-24`}
@@ -614,8 +349,22 @@ export function RoomFormPage({ id }: { id?: number }) {
               </Field>
             </div>
           </section>
+          <RoomImages
+            value={images}
+            cover={cover}
+            onChange={setImages}
+            onCover={setCover}
+            disabled={saving}
+            progress={progress}
+            onValidating={setValidating}
+          />
+          <p className="rounded-xl bg-accent p-4 text-sm text-link">
+            Phòng mới được tạo ở trạng thái còn trống. Đồng hồ điện nước và điều
+            kiện bàn giao phải được khai báo, kiểm tra riêng trên trang chi tiết
+            trước khi nhận phòng.
+          </p>
           <section className="grid gap-5 lg:grid-cols-2">
-            <div className="rounded-2xl border bg-white p-6 shadow-sm">
+            <div className="surface-card p-6 ">
               <h2 className="font-bold">Tiện nghi</h2>
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {options.data?.amenities.map((a) => (
@@ -646,7 +395,7 @@ export function RoomFormPage({ id }: { id?: number }) {
             />
           </section>
           {error && (
-            <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            <p className="rounded-xl bg-danger-muted p-3 text-sm text-danger">
               {error}
             </p>
           )}
@@ -654,15 +403,15 @@ export function RoomFormPage({ id }: { id?: number }) {
             <button
               type="button"
               onClick={() => router.back()}
-              className="rounded-xl border bg-white px-5 py-2.5 font-semibold"
+              className="rounded-xl border bg-card px-5 py-2.5 font-semibold"
             >
               Hủy
             </button>
             <button
-              disabled={mutation.isPending}
-              className="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white disabled:opacity-50"
+              disabled={saving || validating || mutation.isPending}
+              className="rounded-xl bg-primary hover:bg-primary-hover px-5 py-2.5 font-semibold text-white disabled:opacity-50"
             >
-              {mutation.isPending ? "Đang lưu..." : "Lưu phòng"}
+              {saving ? "Đang lưu..." : "Lưu phòng"}
             </button>
           </div>
         </form>
@@ -682,7 +431,7 @@ function Field({
 }) {
   return (
     <label className={wide ? "sm:col-span-2 lg:col-span-3" : ""}>
-      <span className="mb-1.5 block text-sm font-semibold text-slate-700">
+      <span className="mb-1.5 block text-sm font-semibold text-secondary-foreground">
         {label}
       </span>
       {children}
@@ -691,6 +440,7 @@ function Field({
 }
 
 export function RoomDetailPage({ id }: { id: number }) {
+  const scope = useManagementScope();
   const query = useAdminRoom(id);
   const mutations = useRoomMutations(id);
   const [dialog, setDialog] = useState<"price" | "status" | null>(null);
@@ -737,15 +487,14 @@ export function RoomDetailPage({ id }: { id: number }) {
   return (
     <AdminShell
       title={`${r.roomCode} · ${r.name}`}
-      subtitle={`${r.propertyName} · ${r.buildingName} · ${r.floorName}`}
+      subtitle={[r.propertyName, r.buildingName, r.floorName]
+        .filter(Boolean)
+        .join(" / ")}
       readOnly
     >
       <div className="mx-auto max-w-6xl space-y-5">
         <div className="flex flex-wrap justify-between gap-3">
-          <Link
-            href="/admin/rooms"
-            className="text-sm font-semibold text-blue-600"
-          >
+          <Link href="/admin/rooms" className="text-sm font-semibold text-link">
             ← Danh sách phòng
           </Link>
           {d.canEdit && (
@@ -756,38 +505,47 @@ export function RoomDetailPage({ id }: { id: number }) {
                   setPrice(r.monthlyRent);
                   setDialog("price");
                 }}
-                className="rounded-xl border bg-white px-4 py-2 text-sm font-semibold"
+                className="rounded-xl border bg-card px-4 py-2 text-sm font-semibold"
               >
                 Đổi giá
               </button>
-              <button
-                onClick={() => {
-                  setActionError("");
-                  setStatus("");
-                  setReadinessConfirmed(false);
-                  setDialog("status");
-                }}
-                className="rounded-xl border bg-white px-4 py-2 text-sm font-semibold"
-              >
-                Đổi trạng thái
-              </button>
+              {d.canChangeStatus &&
+                [
+                  "VACANT",
+                  "READY",
+                  "CLEANING",
+                  "MAINTENANCE",
+                  "INACTIVE",
+                ].includes(r.status) && (
+                  <button
+                    onClick={() => {
+                      setActionError("");
+                      setStatus("");
+                      setReadinessConfirmed(false);
+                      setDialog("status");
+                    }}
+                    className="rounded-xl border bg-card px-4 py-2 text-sm font-semibold"
+                  >
+                    Đổi trạng thái
+                  </button>
+                )}
               <Link
                 href={`/admin/rooms/${id}/edit`}
-                className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+                className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white"
               >
                 Chỉnh sửa
               </Link>
             </div>
           )}
         </div>
-        <section className="rounded-2xl border bg-white p-6 shadow-sm">
+        <section className="surface-card p-6 ">
           <div className="flex flex-col justify-between gap-5 sm:flex-row">
             <div>
               <StatusBadge status={r.status} />
               {(!["VACANT", "READY"].includes(r.status) ||
                 r.currentContract ||
                 r.openMaintenanceCount > 0) && (
-                <p className="mt-2 text-sm text-amber-700">
+                <p className="mt-2 text-sm text-warning">
                   Chưa nhận giữ chỗ:{" "}
                   {r.currentContract
                     ? "còn hợp đồng cam kết"
@@ -798,17 +556,17 @@ export function RoomDetailPage({ id }: { id: number }) {
                 </p>
               )}
               <h1 className="mt-3 text-3xl font-extrabold">{r.name}</h1>
-              <p className="mt-2 text-slate-500">
+              <p className="mt-2 text-muted-foreground">
                 {r.roomType || "Chưa phân loại"} · {r.area || "—"} m² · tối đa{" "}
                 {r.maxOccupants} người
               </p>
             </div>
             <div className="sm:text-right">
-              <p className="text-sm text-slate-500">Giá thuê hiện tại</p>
-              <p className="text-3xl font-extrabold text-blue-700">
+              <p className="text-sm text-muted-foreground">Giá thuê hiện tại</p>
+              <p className="text-3xl font-extrabold text-link">
                 {formatCurrency(r.monthlyRent)}
               </p>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Cọc {formatCurrency(r.depositAmount)}
               </p>
             </div>
@@ -820,110 +578,19 @@ export function RoomDetailPage({ id }: { id: number }) {
             value={`${r.currentOccupants}/${r.maxOccupants}`}
           />
           <Info label="Hợp đồng" value={r.currentContract?.code || "Chưa có"} />
-          <Info label="Công nợ" value={formatCurrency(r.outstandingDebt)} />
+          {scope.canReadFinanceFor(r.propertyId) && (
+            <Info label="Công nợ" value={formatCurrency(r.outstandingDebt)} />
+          )}
           <Info
             label="Yêu cầu bảo trì"
             value={String(r.openMaintenanceCount)}
           />
         </section>
-        <section className="grid gap-5 lg:grid-cols-2">
-          <Card title="Người đang ở">
-            {d.occupants.length ? (
-              d.occupants.map((x, i) => (
-                <div
-                  key={`${x.fullName}-${i}`}
-                  className="flex justify-between border-b py-3 text-sm"
-                >
-                  <span>
-                    <strong>{x.fullName}</strong>
-                    <small className="ml-2 text-slate-400">
-                      {x.representative ? "Đại diện" : "Ở cùng"}
-                    </small>
-                  </span>
-                  <span className="text-slate-500">{x.phone}</span>
-                </div>
-              ))
-            ) : (
-              <EmptyState text="Chưa có người ở." />
-            )}
-          </Card>
-          <Card title="Tiện nghi & tài sản">
-            <div className="flex flex-wrap gap-2">
-              {d.amenities.map((a) => (
-                <span
-                  key={a.id}
-                  className="rounded-full bg-blue-50 px-3 py-1.5 text-sm text-blue-700"
-                >
-                  {a.name}
-                </span>
-              ))}
-            </div>
-            <div className="mt-4 space-y-2">
-              {d.assets.map((a, i) => (
-                <div
-                  key={`${a.name}-${i}`}
-                  className="flex justify-between rounded-lg bg-slate-50 p-2 text-sm"
-                >
-                  <span>{a.name}</span>
-                  <span>
-                    x{a.quantity} · {a.conditionStatus}
-                  </span>
-                </div>
-              ))}
-            </div>
-            {!d.amenities.length && !d.assets.length && (
-              <EmptyState text="Chưa khai báo tiện nghi hoặc tài sản." />
-            )}
-          </Card>
-          <RoomMeterManagement detail={d} />
-
-          <Card title="Lịch sử giá">
-            <div className="space-y-3">
-              {d.priceHistory.map((h) => (
-                <div key={h.id} className="border-b pb-3 text-sm">
-                  <strong>
-                    {formatCurrency(Number(h.fromValue))} →{" "}
-                    {formatCurrency(Number(h.toValue))}
-                  </strong>
-                  <p className="text-slate-500">
-                    Áp dụng {formatDate(h.effectiveDate)} ·{" "}
-                    {h.reason || "Không có ghi chú"}
-                  </p>
-                </div>
-              ))}
-              {!d.priceHistory.length && (
-                <EmptyState text="Chưa có thay đổi giá." />
-              )}
-            </div>
-          </Card>
-        </section>
-        <Card title="Lịch sử trạng thái & hoạt động">
-          <div className="grid gap-3 md:grid-cols-2">
-            {d.statusHistory.map((h) => (
-              <div key={`s-${h.id}`} className="rounded-xl border p-3 text-sm">
-                <strong>
-                  {statusLabel(h.fromValue)} → {statusLabel(h.toValue)}
-                </strong>
-                <p className="mt-1 text-slate-500">
-                  {h.reason || "Không có ghi chú"} ·{" "}
-                  {formatDate(h.createdAt, true)}
-                </p>
-              </div>
-            ))}
-            {d.activities.slice(0, 8).map((a) => (
-              <div key={`a-${a.id}`} className="rounded-xl border p-3 text-sm">
-                <strong>{a.description}</strong>
-                <p className="mt-1 text-slate-500">
-                  {a.actorName} · {formatDate(a.createdAt, true)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <RoomDetailSections detail={d} />
       </div>
       {dialog && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6">
+          <div className="w-full max-w-md rounded-2xl bg-card p-6">
             <h3 className="text-lg font-bold">
               {dialog === "price"
                 ? "Thay đổi giá phòng"
@@ -976,7 +643,7 @@ export function RoomDetailPage({ id }: { id: number }) {
               placeholder="Lý do / ghi chú"
             />
             {actionError && (
-              <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              <p className="mt-3 rounded-xl bg-danger-muted p-3 text-sm text-danger">
                 {actionError}
               </p>
             )}
@@ -1002,7 +669,7 @@ export function RoomDetailPage({ id }: { id: number }) {
                   mutations.price.isPending ||
                   mutations.status.isPending
                 }
-                className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40"
+                className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 font-semibold text-white disabled:opacity-40"
               >
                 Xác nhận
               </button>
@@ -1015,23 +682,9 @@ export function RoomDetailPage({ id }: { id: number }) {
 }
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <article className="rounded-2xl border bg-white p-4 shadow-sm">
-      <p className="text-xs text-slate-500">{label}</p>
+    <article className="surface-card p-4 ">
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 text-lg font-bold">{value}</p>
     </article>
-  );
-}
-function Card({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border bg-white p-5 shadow-sm">
-      <h2 className="font-bold">{title}</h2>
-      <div className="mt-3">{children}</div>
-    </section>
   );
 }

@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "name": "Owner integration center renders five real API cards",
+      "status": "PASS"
+    },
+    {
+      "name": "SMTP form keeps secret write-only",
+      "status": "PASS"
+    },
+    {
+      "name": "Mobile integration layout has no horizontal overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "Service worker registers without notification permission prompt",
+      "status": "PASS"
+    },
+    {
+      "name": "Guide is available without a broken link",
+      "status": "PASS"
+    },
+    {
+      "name": "User-triggered push permission and real subscription attempt",
+      "status": "PASS"
+    },
+    {
+      "name": "Real Web Push is accepted and displayed by the service worker",
+      "status": "PASS"
+    }
+  ],
+  "exceptions": []
+}

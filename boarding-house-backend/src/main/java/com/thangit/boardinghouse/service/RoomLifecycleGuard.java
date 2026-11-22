@@ -74,13 +74,13 @@ public class RoomLifecycleGuard {
         if(!jdbc.sql("SELECT c.id FROM contracts c WHERE c.room_id=:room AND (:excluded IS NULL OR c.id<>:excluded) AND c.status IN ("+LIVE+") AND NOT "+HANDOVER+" FOR UPDATE").param("room",room).param("excluded",excluded).query(Long.class).list().isEmpty())throw error("ROOM_OCCUPANCY_CONFLICT","Phòng đã có hợp đồng vận hành; dùng quy trình thay đổi hợp đồng.");
         var residents=jdbc.sql("SELECT id,tenant_profile_id,property_id,contract_id,move_in_date,move_out_date FROM tenant_residences WHERE room_id=:room AND status='ACTIVE' FOR UPDATE").param("room",room).query(RoomLifecycleGuard::row).list();
         if(residents.stream().anyMatch(resident->num(resident,"property_id")!=num(r,"property_id")))throw error("LEGACY_RESIDENCE_REQUIRES_RECONCILIATION","Cư trú và phòng không cùng nhà trọ; cần đối soát.");
-        if(residents.size()!=1||num(residents.getFirst(),"tenant_profile_id")!=profile||residents.getFirst().get("contract_id")!=null||date(residents.getFirst().get("move_in_date")).isAfter(LocalDate.now())||(residents.getFirst().get("move_out_date")!=null&&!date(residents.getFirst().get("move_out_date")).isAfter(LocalDate.now())))throw error("LEGACY_RESIDENCE_REQUIRES_RECONCILIATION","Chỉ số hóa đúng người đang ở khi chưa có hợp đồng; dữ liệu nhiều người ở cần đối soát riêng.");
+        if(residents.size()!=1||num(residents.getFirst(),"tenant_profile_id")!=profile||residents.getFirst().get("contract_id")!=null||date(residents.getFirst().get("move_in_date")).isAfter(com.thangit.boardinghouse.service.BusinessTime.today())||(residents.getFirst().get("move_out_date")!=null&&!date(residents.getFirst().get("move_out_date")).isAfter(com.thangit.boardinghouse.service.BusinessTime.today())))throw error("LEGACY_RESIDENCE_REQUIRES_RECONCILIATION","Chỉ số hóa đúng người đang ở khi chưa có hợp đồng; dữ liệu nhiều người ở cần đối soát riêng.");
         return num(residents.getFirst(),"id");
     }
     public void checkout(long contract,LocalDate actual){lockContract(contract);
         var c=jdbc.sql("SELECT * FROM contracts WHERE id=:id FOR UPDATE").param("id",contract).query(RoomLifecycleGuard::row).single();var r=lockRoom(num(c,"room_id"));
         if(!Set.of("ACTIVE","EXPIRING","EXPIRED","TERMINATION_REQUESTED").contains(c.get("status"))||!Set.of("OCCUPIED","NOTICE").contains(r.get("status")))throw error("CHECKOUT_OCCUPANCY_INVALID","Phòng/hợp đồng không còn trong lượt cư trú cần bàn giao.");
-        if(actual!=null&&(actual.isAfter(LocalDate.now())||actual.isBefore(date(c.get("start_date")))))throw error("CHECKOUT_DATE_INVALID","Ngày bàn giao thực tế không hợp lệ.");
+        if(actual!=null&&(actual.isAfter(com.thangit.boardinghouse.service.BusinessTime.today())||actual.isBefore(date(c.get("start_date")))))throw error("CHECKOUT_DATE_INVALID","Ngày bàn giao thực tế không hợp lệ.");
         if(physicalOccupancy(num(c,"room_id"),contract))throw error("ROOM_OCCUPANCY_CONFLICT","Phòng có dữ liệu chiếm dụng xung đột; cần đối soát trước khi trả phòng.");
     }
     public void contractDates(long room,LocalDate start,LocalDate end,Long excludedContract,Long excludedBooking){

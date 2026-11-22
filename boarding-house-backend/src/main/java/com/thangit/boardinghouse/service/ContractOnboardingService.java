@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 /** Versioned internal confirmations; no claim of a legally qualified electronic signature. */
 @Service
 public class ContractOnboardingService {
+    private ContractDeliveryService delivery;
+    @org.springframework.beans.factory.annotation.Autowired public void delivery(ContractDeliveryService delivery){this.delivery=delivery;}
     public record Evidence(@NotBlank @Size(max=500) String reference) {}
     public record IdentityReview(@NotBlank @Size(max=500) String reference,
             @AssertTrue(message="Cần xác nhận đã đối chiếu chứng từ thực tế") boolean documentsReviewed,
@@ -33,6 +35,7 @@ public class ContractOnboardingService {
     static {var fields=new LinkedHashMap<String,String>();fields.put("full_name","Họ tên");fields.put("date_of_birth","Ngày sinh");fields.put("phone","Số điện thoại");fields.put("identity_type","Loại giấy tờ");fields.put("identity_number","Số giấy tờ tùy thân");fields.put("permanent_address","Địa chỉ thường trú");IDENTITY_FIELDS=Collections.unmodifiableMap(fields);}
     public record Confirmation(@Positive long version,@NotBlank @Size(min=64,max=64) String contentHash) {}
     public record Revision(@NotBlank @Size(max=1000) String reason) {}
+    public record ReviewRequest(@NotBlank @Pattern(regexp="REQUEST_CHANGES|DECLINE") String decision,@NotBlank @Size(max=1000) String reason,@Positive long version,@NotBlank @Pattern(regexp="[a-f0-9]{64}") String contentHash) {}
     public record InitialInvoice(@Positive long invoiceId) {}
     public record Handover(@NotNull Long version,@NotNull LocalDate scheduledDate,
             @DecimalMin("0") BigDecimal electricityReading,@DecimalMin("0") BigDecimal waterReading,
@@ -44,6 +47,8 @@ public class ContractOnboardingService {
         public Handover(Long version,LocalDate date,BigDecimal electricity,BigDecimal water,int keys,String reference,List<AssetSnapshot> assets){this(version,date,electricity,water,keys,reference,assets,null,null,true,null);}
     }
     public record TermsChange(@NotNull @Valid CreateContract terms,@NotBlank @Size(max=1000) String reason) {}
+    public record VersionedTermsChange(@NotNull @Valid CreateContract terms,@NotBlank @Size(max=1000) String reason,
+            @Positive long version,@NotBlank @Pattern(regexp="[a-f0-9]{64}") String contentHash) {}
     public record MeterReplacement(@Positive long meterId,@NotBlank @Size(max=50) String newCode,
             @NotNull @DecimalMin("0") BigDecimal newReading,@NotBlank @Size(max=1000) String reason,
             @NotBlank @Size(max=500) String reference) {}
@@ -96,7 +101,7 @@ public class ContractOnboardingService {
         if(actor.activeRole()==RoleCode.ACCOUNTANT){out.put("identityProfile",null);return;}
         var data=c.get("tenant_profile_id")==null?new LinkedHashMap<String,Object>():profile(c);
         var visible=new LinkedHashMap<String,Object>();visible.put("fields",identityFields(data));
-        visible.put("complete",identityFields(data).stream().allMatch(f->Boolean.TRUE.equals(f.get("present")))&&data.get("date_of_birth")!=null&&!RoomLifecycleGuard.date(data.get("date_of_birth")).isAfter(LocalDate.now()));
+        visible.put("complete",identityFields(data).stream().allMatch(f->Boolean.TRUE.equals(f.get("present")))&&data.get("date_of_birth")!=null&&!RoomLifecycleGuard.date(data.get("date_of_birth")).isAfter(com.thangit.boardinghouse.service.BusinessTime.today()));
         visible.put("dataHash",identityHash(data));visible.put("canEdit", c.get("tenant_profile_id")!=null&&"PENDING_CONFIRMATION".equals(c.get("status"))&&capability(actor,c,"CONTRACT_APPROVE"));
         for(String key:IDENTITY_FIELDS.keySet())if(!"identity_number".equals(key))visible.put(key,data.get(key));
         String number=Objects.toString(data.get("identity_number"),"");visible.put("identity_number",number.isBlank()?null:"•".repeat(Math.max(0,number.length()-4))+number.substring(Math.max(0,number.length()-4)));
@@ -110,8 +115,8 @@ public class ContractOnboardingService {
         var current=profile(c);if(!identityHash(current).equals(r.dataHash()))throw fail("PROFILE_VERSION_CONFLICT","Hồ sơ đã thay đổi. Vui lòng tải lại trước khi lưu.");
         String identity=r.identityNumber()==null||r.identityNumber().isBlank()?Objects.toString(current.get("identity_number"),null):r.identityNumber().trim();
         if(identity==null||identity.isBlank()||identity.contains("•"))throw fail("TENANT_PROFILE_INCOMPLETE","Vui lòng nhập số giấy tờ tùy thân hợp lệ.");
-        tenants.update(actor,num(c,"tenant_profile_id"),new com.thangit.boardinghouse.dto.request.tenant.AdminTenantRequests.SaveTenant(
-            r.fullName(),r.dateOfBirth(),text(current,"gender"),r.phone(),text(current,"email"),r.permanentAddress(),text(current,"hometown"),text(current,"occupation"),text(current,"workplace"),text(current,"emergency_contact_name"),text(current,"emergency_contact_phone"),r.identityType(),identity,current.get("identity_issued_date")==null?null:RoomLifecycleGuard.date(current.get("identity_issued_date")),text(current,"identity_issued_place"),text(current,"note"),null,null,null,null,null));
+        tenants.updateOnboardingIdentity(actor,num(c,"tenant_profile_id"),new com.thangit.boardinghouse.dto.request.tenant.AdminTenantRequests.SaveTenant(
+            r.fullName(),r.dateOfBirth(),text(current,"gender"),r.phone(),text(current,"email"),r.permanentAddress(),text(current,"hometown"),text(current,"occupation"),text(current,"workplace"),text(current,"emergency_contact_name"),text(current,"emergency_contact_phone"),r.identityType(),r.identityNumber(),current.get("identity_issued_date")==null?null:RoomLifecycleGuard.date(current.get("identity_issued_date")),text(current,"identity_issued_place"),text(current,"note"),null,null,null,null,null));
         audit(contract,actor.id(),"IDENTITY_PROFILE_UPDATED","Cập nhật hồ sơ định danh; cần đối chiếu lại nếu dữ liệu thay đổi.");
     }
     private static String text(Map<String,Object> row,String key){return row.get(key)==null?null:row.get(key).toString();}
@@ -153,7 +158,7 @@ public class ContractOnboardingService {
         progress.put("confirmedByCurrentActor",ownParty!=null&&cs.stream().anyMatch(x->ownParty.equals(x.get("party"))&&num(x,"actor_id")==p.id()));
         progress.put("tenant",partyProgress(cs,"TENANT"));progress.put("landlord",partyProgress(cs,"LANDLORD"));
         progress.put("bothConfirmed",tenant&&landlord);progress.put("handoverConfirmed",handover);progress.put("checkinCompleted",completed);
-        progress.put("canConfirm",pending&&current&&ownParty!=null&&!ownConfirmed&&!oppositeActor);
+        progress.put("canConfirm",pending&&current&&ownParty!=null&&!ownConfirmed&&!oppositeActor&&!reviewOpen(num(v.get(),"id")));
         progress.put("canRevise",pending&&approve&&!current);progress.put("canVerifyIdentity",pending&&approve&&!identity);
         progress.put("canManageHandover",pending&&approve);progress.put("canReadFinance",readFinance);progress.put("canWriteFinance",pending&&writeFinance);progress.put("canApproveDeposit",pending&&capability(p,c,"DEPOSIT_APPROVE"));
         progress.put("canCreateInitialInvoice",pending&&writeFinance&&p.activeRole()!=RoleCode.ACCOUNTANT || pending&&p.activeRole()==RoleCode.ACCOUNTANT&&accounting.permission(p.id(),"can_issue_invoice"));
@@ -161,7 +166,7 @@ public class ContractOnboardingService {
         progress.put("checklist",checks);progress.put("completedCount",checks.stream().filter(x->Boolean.TRUE.equals(x.get("completed"))).count());
         String stage=completed&&Set.of("ACTIVE","EXPIRING").contains(c.get("status"))?"ACTIVE":!pending?c.get("status").toString():!current?"CONTENT_REVIEW_REQUIRED":!tenant?"WAITING_TENANT":!landlord?"WAITING_LANDLORD":!identity?"WAITING_IDENTITY":!funded||!initial?"WAITING_FINANCE":!handover?"WAITING_HANDOVER":"READY_FOR_CHECKIN";
         progress.put("stage",stage);
-        boolean dates=!LocalDate.now().isBefore(RoomLifecycleGuard.date(c.get("start_date")))&&LocalDate.now().isBefore(RoomLifecycleGuard.date(c.get("end_date")));
+        boolean dates=!com.thangit.boardinghouse.service.BusinessTime.today().isBefore(RoomLifecycleGuard.date(c.get("start_date")))&&com.thangit.boardinghouse.service.BusinessTime.today().isBefore(RoomLifecycleGuard.date(c.get("end_date")));
         if("READY_FOR_CHECKIN".equals(stage)&&!dates)progress.put("stage","WAITING_CHECKIN_DATE");
         progress.put("canCompleteCheckin",pending&&approve&&tenant&&landlord&&identity&&funded&&initial&&handover&&dates&&ci.isPresent()&&"READY".equals(ci.get().get("status")));
         out.put("progress",progress);
@@ -215,6 +220,37 @@ public class ContractOnboardingService {
     }
     @Transactional
     public void revise(AuthenticatedUser p,long contract,Revision r){var c=access(p,contract,true);staff(p,c);recordVersion(contract,p.id(),r.reason());}
+    @Transactional(readOnly=true)
+    public List<Map<String,Object>> reviews(AuthenticatedUser actor,long contract){access(actor,contract,false);return jdbc.sql("SELECT q.id,q.decision,q.reason,q.status,q.response,q.created_at,q.responded_at,cv.version,u.full_name responder FROM contract_review_requests q JOIN contract_versions cv ON cv.id=q.contract_version_id LEFT JOIN users u ON u.id=q.responded_by WHERE q.contract_id=:id ORDER BY q.id DESC").param("id",contract).query().listOfRows();}
+    @Transactional
+    public List<Map<String,Object>> requestReview(AuthenticatedUser actor,long contract,String key,ReviewRequest request){
+        var c=access(actor,contract,true);if(actor.activeRole()!=RoleCode.TENANT||num(c,"tenant_id")!=actor.id())throw denied();
+        if(key==null||!key.matches("[a-zA-Z0-9:_-]{8,100}"))throw fail("IDEMPOTENCY_REQUIRED","Thiếu mã yêu cầu xem lại.");
+        String requestHash=hash(contract+"|"+request);var previous=jdbc.sql("SELECT request_hash FROM contract_review_requests WHERE tenant_id=:id AND request_key=:key FOR UPDATE").param("id",actor.id()).param("key",key).query(String.class).optional();
+        if(previous.isPresent()){if(!previous.get().equals(requestHash))throw fail("IDEMPOTENCY_CONFLICT","Mã yêu cầu đã dùng với nội dung khác.");return reviews(actor,contract);}
+        var v=version(contract).orElseThrow(()->fail("CONTRACT_SNAPSHOT_REQUIRED","Chưa có nội dung hợp đồng."));
+        if(!"PENDING_CONFIRMATION".equals(c.get("status"))||num(v,"version")!=request.version()||!Objects.equals(v.get("content_hash"),request.contentHash())||!Objects.equals(hash(content(c)),request.contentHash()))throw fail("CONTRACT_VERSION_CONFLICT","Cần xem lại đúng phiên bản hợp đồng hiện tại.");
+        if(jdbc.sql("SELECT COUNT(*) FROM rental_confirmations WHERE contract_version_id=:id AND party='TENANT'").param("id",v.get("id")).query(Long.class).single()>0)throw fail("CONTRACT_ALREADY_CONFIRMED","Bạn đã xác nhận phiên bản này; cần quy trình điều chỉnh có lịch sử.");
+        if(reviewOpen(num(v,"id")))throw fail("CONTRACT_REVIEW_PENDING","Đã có yêu cầu chờ bên cho thuê phản hồi.");
+        var generated=new GeneratedKeyHolder();jdbc.sql("INSERT INTO contract_review_requests(contract_id,contract_version_id,tenant_id,decision,reason,request_key,request_hash) VALUES(:id,:v,:tenant,:decision,:reason,:key,:hash)").param("id",contract).param("v",v.get("id")).param("tenant",actor.id()).param("decision",request.decision()).param("reason",request.reason()).param("key",key).param("hash",requestHash).update(generated,"id");
+        audit(contract,actor.id(),"TENANT_CONTRACT_REVIEW_REQUESTED",request.decision()+"; version="+request.version()+"; "+request.reason());
+        if(delivery!=null)delivery.enqueue(contract,"REVIEW-"+generated.getKey(),"initial");return reviews(actor,contract);
+    }
+    @Transactional
+    public List<Map<String,Object>> respondReview(AuthenticatedUser actor,long contract,long request,Revision response){
+        var c=access(actor,contract,true);staff(actor,c);var row=jdbc.sql("SELECT * FROM contract_review_requests WHERE id=:request AND contract_id=:id FOR UPDATE").param("request",request).param("id",contract).query().singleRow();
+        if(!"OPEN".equals(row.get("status")))return reviews(actor,contract);
+        jdbc.sql("UPDATE contract_review_requests SET status='RESPONDED',response=:text,responded_by=:actor,responded_at=UTC_TIMESTAMP(6) WHERE id=:id").param("text",response.reason()).param("actor",actor.id()).param("id",request).update();
+        audit(contract,actor.id(),"CONTRACT_REVIEW_RESPONDED",response.reason());if(delivery!=null)delivery.enqueue(contract,"REVIEW_RESPONSE-"+request,"initial");return reviews(actor,contract);
+    }
+    private boolean reviewOpen(long version){return jdbc.sql("SELECT COUNT(*) FROM contract_review_requests WHERE contract_version_id=:id AND status='OPEN'").param("id",version).query(Long.class).single()>0;}
+    @Transactional
+    public void changeTermsVersioned(AuthenticatedUser actor,long contract,VersionedTermsChange request){
+        var c=access(actor,contract,true);staff(actor,c);var v=version(contract).orElseThrow(()->fail("CONTRACT_SNAPSHOT_REQUIRED","Chưa chốt nội dung hợp đồng."));
+        if(num(v,"version")!=request.version()||!Objects.equals(v.get("content_hash"),request.contentHash())||!Objects.equals(request.contentHash(),hash(content(c))))throw fail("CONTRACT_VERSION_CONFLICT","Nội dung đã thay đổi; tải lại trước khi sửa.");
+        if(c.get("expected_checkin_date")!=null){var checkin=RoomLifecycleGuard.date(c.get("expected_checkin_date"));if(checkin.isBefore(request.terms().startDate())||!checkin.isBefore(request.terms().endDate()))throw fail("CHECKIN_DATE_INVALID","Ngày nhận phòng đã thỏa thuận phải nằm trong thời hạn mới.");}
+        changeTerms(actor,contract,new TermsChange(request.terms(),request.reason()));
+    }
     @Transactional
     public void changeTerms(AuthenticatedUser p,long contract,TermsChange r){var c=access(p,contract,true);staff(p,c);
         if(!"PENDING_CONFIRMATION".equals(c.get("status"))||c.get("initial_invoice_id")!=null)throw fail("CONTRACT_AMENDMENT_REQUIRED","Chỉ sửa nội dung trước nhận phòng và trước khi gắn hóa đơn đầu kỳ; thay đổi sau đó phải có phụ lục/quyết toán.");
@@ -233,24 +269,24 @@ public class ContractOnboardingService {
         if(prior.isPresent())jdbc.sql("UPDATE contracts SET onboarding_version=onboarding_version+1,signed_at=NULL WHERE id=:id").param("id",contract).update();
         c=raw(contract);content=content(c);hash=hash(content);
         jdbc.sql("INSERT INTO contract_versions(contract_id,version,content,content_hash,reason,created_by) VALUES(:id,:version,:content,:hash,:reason,:actor)").param("id",contract).param("version",c.get("onboarding_version")).param("content",content).param("hash",hash).param("reason",reason).param("actor",actor).update();
-        audit(contract,actor,"CONTENT_VERSION_CREATED",reason);
+        jdbc.sql("UPDATE contract_review_requests SET status='SUPERSEDED',response='Đã có phiên bản mới; cần đọc và xác nhận lại.',responded_by=:actor,responded_at=UTC_TIMESTAMP(6) WHERE contract_id=:id AND status='OPEN' AND contract_version_id<>(SELECT id FROM contract_versions WHERE contract_id=:id AND version=:v)").param("actor",actor).param("id",contract).param("v",c.get("onboarding_version")).update();audit(contract,actor,"CONTENT_VERSION_CREATED",reason);if(delivery!=null&&prior.isPresent()&&"PENDING_CONFIRMATION".equals(c.get("status")))delivery.submitted(contract);
     }
     @Transactional
     public void verifyIdentity(AuthenticatedUser p,long contract,Evidence r){var c=access(p,contract,true);staff(p,c);var profile=one("SELECT * FROM tenant_profiles WHERE id=:id FOR UPDATE",num(c,"tenant_profile_id")).orElseThrow(()->fail("TENANT_PROFILE_REQUIRED","Missing tenant profile"));
         if(identityValid(c))return;
         var missing=identityFields(profile).stream().filter(field->!Boolean.TRUE.equals(field.get("present"))).map(field->field.get("label").toString()).toList();
         if(!missing.isEmpty())throw fail("TENANT_PROFILE_INCOMPLETE","Thiếu thông tin hồ sơ: "+String.join(", ",missing)+". Cập nhật hồ sơ trước khi xác minh.");
-        if(RoomLifecycleGuard.date(profile.get("date_of_birth")).isAfter(LocalDate.now()))throw fail("TENANT_PROFILE_INCOMPLETE","Ngày sinh không hợp lệ.");
+        if(RoomLifecycleGuard.date(profile.get("date_of_birth")).isAfter(com.thangit.boardinghouse.service.BusinessTime.today()))throw fail("TENANT_PROFILE_INCOMPLETE","Ngày sinh không hợp lệ.");
         jdbc.sql("INSERT INTO tenant_identity_verifications(tenant_profile_id,data_hash,evidence_reference,verified_by) VALUES(:id,:hash,:evidence,:actor)").param("id",c.get("tenant_profile_id")).param("hash",identityHash(profile)).param("evidence",r.reference()).param("actor",p.id()).update();audit(contract,p.id(),"IDENTITY_VERIFIED",r.reference());
     }
     @Transactional
-    public void confirmContract(AuthenticatedUser p,long contract,Confirmation r){var c=access(p,contract,true);
+    public void confirmContract(AuthenticatedUser p,long contract,Confirmation r){var c=access(p,contract,true);if(jdbc.sql("SELECT COUNT(*) FROM users WHERE id=:id AND status='ACTIVE' AND (locked_until IS NULL OR locked_until<=UTC_TIMESTAMP(6))").param("id",p.id()).query(Long.class).single()!=1)throw denied();
         if(!"PENDING_CONFIRMATION".equals(c.get("status"))&&!Set.of("ACTIVE","EXPIRING").contains(c.get("status")))throw fail("CONTRACT_NOT_CONFIRMABLE","Hợp đồng không còn chờ xác nhận nội dung.");
         validateTerms(c);var v=version(contract).orElseThrow(()->fail("CONTRACT_SNAPSHOT_REQUIRED","Chưa chốt nội dung hợp đồng."));
         if(num(v,"version")!=r.version()||!Objects.equals(v.get("content_hash"),r.contentHash())||!r.contentHash().equals(hash(content(c))))throw fail("CONTRACT_VERSION_CONFLICT","Nội dung đã thay đổi; phải đọc và xác nhận phiên bản mới.");
-        String party=party(p,c);boolean inserted=confirm("contract_version_id",num(v,"id"),party,p.id(),r.contentHash());
+        if(reviewOpen(num(v,"id")))throw fail("CONTRACT_REVIEW_PENDING","Cần xử lý yêu cầu xem lại trước khi xác nhận phiên bản này.");String party=party(p,c);boolean inserted=confirm("contract_version_id",num(v,"id"),party,p.id(),r.contentHash());
         if(confirmed("contract_version_id",num(v,"id")))jdbc.sql("UPDATE contracts SET signed_at=COALESCE(signed_at,NOW()) WHERE id=:id").param("id",contract).update();
-        if(inserted){audit(contract,p.id(),"CONTRACT_CONFIRMED",party+"; phiên bản "+r.version());notifyConfirmation(c,party,r.version());}
+        if(inserted){audit(contract,p.id(),"CONTRACT_CONFIRMED",party+"; phiên bản "+r.version());notifyConfirmation(c,party,r.version());if(delivery!=null)delivery.enqueue(contract,"SIGNED","initial");}
     }
     @Transactional
     public void linkInvoice(AuthenticatedUser p,long contract,InitialInvoice r){var c=access(p,contract,true);
@@ -277,7 +313,7 @@ public class ContractOnboardingService {
         var prior=jdbc.sql("SELECT id,code,status FROM invoices WHERE contract_id=:id AND billing_period=:period AND invoice_kind='RENTAL' AND status<>'CANCELLED' FOR UPDATE").param("id",contract).param("period",period).query().listOfRows();
         if(!prior.isEmpty())return prior.getFirst();
         var agreedDue=period.withDayOfMonth(((Number)c.get("payment_due_day")).intValue());
-        var result=invoices.create(p,new com.thangit.boardinghouse.dto.request.invoice.AdminInvoiceRequests.SaveInvoice(num(c,"room_id"),contract,period.toString().substring(0,7),period,period.plusMonths(1).minusDays(1),LocalDate.now(),agreedDue.isBefore(LocalDate.now())?LocalDate.now():agreedDue,List.of(),BigDecimal.ZERO,false,"Hóa đơn đầu kỳ từ tiến độ nhận phòng","SAVE_DRAFT",null));
+        var result=invoices.create(p,new com.thangit.boardinghouse.dto.request.invoice.AdminInvoiceRequests.SaveInvoice(num(c,"room_id"),contract,period.toString().substring(0,7),period,period.plusMonths(1).minusDays(1),com.thangit.boardinghouse.service.BusinessTime.today(),agreedDue.isBefore(com.thangit.boardinghouse.service.BusinessTime.today())?com.thangit.boardinghouse.service.BusinessTime.today():agreedDue,List.of(),BigDecimal.ZERO,false,"Hóa đơn đầu kỳ từ tiến độ nhận phòng","SAVE_DRAFT",null));
         audit(contract,p.id(),"INITIAL_INVOICE_DRAFT_CREATED","Hóa đơn nháp #"+result.id());
         return Map.of("id",result.id(),"code",result.invoiceCode(),"status","DRAFT");
     }
@@ -374,7 +410,8 @@ public class ContractOnboardingService {
     private boolean identityValid(Map<String,Object> c){if(c.get("tenant_profile_id")==null)return false;var p=profile(c);String hash=identityHash(p);return jdbc.sql("SELECT COUNT(*) FROM tenant_identity_verifications WHERE tenant_profile_id=:id AND data_hash=:hash").param("id",c.get("tenant_profile_id")).param("hash",hash).query(Long.class).single()>0;}
     private String identityHash(Map<String,Object> p){StringBuilder b=new StringBuilder();for(String k:List.of("full_name","date_of_birth","phone","identity_type","identity_number","permanent_address"))field(b,k,p.get(k));return hash(b.toString());}
     private void validateTerms(Map<String,Object> c){if(c.get("agreed_monthly_rent")==null)throw fail("CONTRACT_RENT_RECONCILIATION_REQUIRED","Thiếu giá thuê theo thỏa thuận; không lấy giá niêm yết hiện tại để đoán hợp đồng cũ.");for(String type:List.of("ELECTRICITY","WATER"))rate(num(c,"id"),type);}
-    private boolean contractConfirmed(Map<String,Object> c){var v=version(num(c,"id"));return v.isPresent()&&Objects.equals(v.get().get("content_hash"),hash(content(c)))&&confirmed("contract_version_id",num(v.get(),"id"));}
+    private boolean contractConfirmed(Map<String,Object> c){var v=version(num(c,"id"));return v.isPresent()&&Objects.equals(v.get().get("content_hash"),hash(content(c)))&&confirmed("contract_version_id",num(v.get(),"id"))&&!reviewOpen(num(v.get(),"id"));}
+    public boolean directDepositReady(long contract){var c=raw(contract);return !"DIRECT".equals(c.get("creation_source"))||!"PENDING_CONFIRMATION".equals(c.get("status"))||contractConfirmed(c);}
     private boolean initialPaid(Map<String,Object> c){if(!Boolean.TRUE.equals(c.get("initial_payment_required")))return true;if(c.get("initial_invoice_id")==null)return false;return one("SELECT status,remaining_amount FROM invoices WHERE id=:id",num(c,"initial_invoice_id")).map(i->!Set.of("DRAFT","CANCELLED","PENDING_REVIEW").contains(i.get("status"))&&money(i.get("remaining_amount")).signum()==0).orElse(false);}
     private Optional<Map<String,Object>> version(long id){return one("SELECT * FROM contract_versions WHERE contract_id=:id ORDER BY version DESC LIMIT 1",id);}
     private Optional<Map<String,Object>> handoverVersion(long id){return one("SELECT * FROM handover_versions WHERE checkin_id=:id ORDER BY version DESC LIMIT 1",id);}

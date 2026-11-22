@@ -83,7 +83,7 @@ apiClient.interceptors.request.use(async (config) => {
   )
     throw new CanceledError("Session changed");
   scoped._sessionEpoch = sessionEpoch;
-  if (!config.url?.startsWith("/auth/")) {
+  if (!config.url?.startsWith("/auth/") && config.url !== "/v1/health") {
     // Bootstrap/rotation may still be restoring the in-memory token.
     if (!accessToken && refreshPromise) await refreshPromise;
     if (scoped._sessionEpoch !== sessionEpoch)
@@ -124,7 +124,7 @@ apiClient.interceptors.response.use(
       config._sessionEpoch !== sessionEpoch
     )
       return Promise.reject(new CanceledError("Session changed"));
-    const isAuthEndpoint = config?.url?.startsWith("/auth/");
+    const isAuthEndpoint = config?.url?.startsWith("/auth/") || config?.url === "/v1/health";
     if (
       error.response?.status === 403 &&
       (error.response.data as { errorCode?: string } | undefined)?.errorCode ===
