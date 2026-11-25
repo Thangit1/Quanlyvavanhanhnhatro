@@ -1,0 +1,50 @@
+package com.thangit.boardinghouse.service;
+
+import static com.thangit.boardinghouse.dto.response.maintenance.TechnicianResponses.*;
+import com.thangit.boardinghouse.dto.request.maintenance.TechnicianRequests.*;
+import com.thangit.boardinghouse.dto.request.maintenance.TechnicianRequests.Checklist;
+import com.thangit.boardinghouse.dto.request.maintenance.TechnicianRequests.Diagnosis;
+import com.thangit.boardinghouse.dto.request.maintenance.TechnicianRequests.WorkLog;
+import com.thangit.boardinghouse.security.AuthenticatedUser;
+import java.time.LocalDate;
+import java.util.List;
+
+public interface TechnicianPortalService {
+    Dashboard dashboard(AuthenticatedUser user);
+    Page<TaskRow> tasks(AuthenticatedUser user,String keyword,String status,String priority,String category,Long propertyId,LocalDate from,LocalDate to,Boolean overdue,String taskType,int page,int size,String sort);
+    TaskDetail detail(AuthenticatedUser user,long taskId);
+    ActionResult accept(AuthenticatedUser user,long taskId,Versioned request);
+    ActionResult decline(AuthenticatedUser user,long taskId,Reason request);
+    ActionResult startTravel(AuthenticatedUser user,long taskId,Versioned request);
+    ActionResult checkIn(AuthenticatedUser user,long taskId,CheckIn request);
+    ActionResult start(AuthenticatedUser user,long taskId,Versioned request);
+    ActionResult pause(AuthenticatedUser user,long taskId,Reason request);
+    ActionResult resume(AuthenticatedUser user,long taskId,Versioned request);
+    ActionResult workLog(AuthenticatedUser user,long taskId,WorkLog request);
+    ActionResult diagnosis(AuthenticatedUser user,long taskId,Diagnosis request);
+    ActionResult checklist(AuthenticatedUser user,long taskId,Checklist request);
+    ActionResult materialRequest(AuthenticatedUser user,long taskId,MaterialRequest request);
+    ActionResult materialUsage(AuthenticatedUser user,long taskId,MaterialUsage request);
+    ActionResult cost(AuthenticatedUser user,long taskId,CostProposal request);
+    ActionResult complete(AuthenticatedUser user,long taskId,Complete request);
+    ActionResult reschedule(AuthenticatedUser user,long taskId,Reschedule request);
+    ActionResult transfer(AuthenticatedUser user,long taskId,Reason request);
+    ActionResult message(AuthenticatedUser user,long taskId,Message request);
+    Attachment upload(AuthenticatedUser user,long taskId,long version,String type,String caption,String name,String declaredMime,byte[] content);
+    FileData attachment(AuthenticatedUser user,long taskId,long attachmentId);
+    List<CalendarItem> calendar(AuthenticatedUser user,LocalDate from,LocalDate to);
+    List<PreventivePlan> plans(AuthenticatedUser user);
+    List<Asset> assets(AuthenticatedUser user);
+    Asset asset(AuthenticatedUser user,long assetId);
+    List<MaterialCatalog> materials(AuthenticatedUser user);
+    List<MaterialRequestRow> materialRequests(AuthenticatedUser user);
+    void receiveMaterial(AuthenticatedUser user,long requestId,long version);
+    List<Notification> notifications(AuthenticatedUser user);
+    void markRead(AuthenticatedUser user,long notificationId);
+    Performance performance(AuthenticatedUser user);
+    Account account(AuthenticatedUser user);
+    Account profile(AuthenticatedUser user,ProfileUpdate request);
+    Account preferences(AuthenticatedUser user,PreferenceUpdate request);
+    void password(AuthenticatedUser user,PasswordChange request);
+    void revokeSession(AuthenticatedUser user,long sessionId);
+}

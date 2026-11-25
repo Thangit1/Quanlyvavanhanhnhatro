@@ -1,0 +1,111 @@
+{
+  "task": "Prompt 11 invoice and payment audit",
+  "date": "2026-11-20",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "result": "Verified within the tested scope; business email remains disabled",
+  "preserved": [
+    "One active main invoice per contract, period and invoice kind",
+    "Contract, utility and service calculation snapshots",
+    "Agreed mid-period proration and meter replacement accounting",
+    "Authorized invoice adjustment history",
+    "Full tenant checkout; documented staff reconciliation of short bank receipts",
+    "Late payment eligibility and confirmed-payment-only revenue"
+  ],
+  "fixes": [
+    "Shared positive amount, precision, range and receipt-time validation",
+    "Bank reference required for bank receipts and transfer proof",
+    "Failed callback replay preserves completion time",
+    "REVIEW_REQUIRED cannot automatically settle on callback replay",
+    "PAYMENT_FAILED source for committed gateway failures, with environment label and deduplication",
+    "Refund rows excluded from PAYMENT_CONFIRMED notifications",
+    "INVOICE_DUE_SOON alias reuses INVOICE_BEFORE_DUE rule identity",
+    "Business email switch enforced by owner integration worker",
+    "Accountant receipt confirmation UI and bank-reference validation",
+    "Gateway failed/review feedback, stale checkout hiding and failed-attempt retry key",
+    "Proof unit fixtures aligned with full-payment policy; independent partial-proof rejection test",
+    "Monthly payment UI harness accounts for existing gateway component"
+  ],
+  "events": {
+    "INVOICE_ISSUED": "existing invoice source",
+    "INVOICE_DUE_SOON": "accepted alias stored as INVOICE_BEFORE_DUE to avoid duplicate rules; offsetDays=3 supported",
+    "INVOICE_OVERDUE": "existing invoice source, deadline inclusive",
+    "PAYMENT_CONFIRMED": "confirmed PAYMENT transaction source only",
+    "PAYMENT_FAILED": "committed FAILED gateway session source"
+  },
+  "verification": {
+    "backend": {
+      "tests": 325,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "package": "BUILD SUCCESS",
+      "log": "boarding-house-backend/prompt11-final-regression.log"
+    },
+    "frontend": {
+      "tests": 9,
+      "failures": 0,
+      "typecheck": "passed with --noEmit --incremental false",
+      "productionBuild": "passed",
+      "lint": {
+        "errors": 0,
+        "warnings": 2,
+        "warningFiles": [
+          "scripts/checkouts-browser.test.cjs",
+          "scripts/integrations-browser.cjs"
+        ]
+      },
+      "logs": [
+        "boarding-house-frontend/prompt11-ui-tests.log",
+        "boarding-house-frontend/prompt11-typecheck.log",
+        "boarding-house-frontend/prompt11-lint.log",
+        "boarding-house-frontend/prompt11-build.log"
+      ]
+    },
+    "database": {
+      "engine": "MySQL 8.0.46",
+      "host": "127.0.0.1",
+      "port": 13319,
+      "isolation": "Dedicated new data directory and generated test schemas; application database on 3306 not used",
+      "migrationsVerified": 42,
+      "newMigrationRequired": false
+    },
+    "gateway": {
+      "signedVnpayAndMomoCallbacks": "generated locally, verified against real MySQL",
+      "actualProviderApiCalls": false,
+      "realFundsTransferred": false
+    },
+    "email": {
+      "actualEmailSent": false,
+      "businessDeliveryEnabled": false
+    }
+  },
+  "limits": [
+    "Production VNPay/MoMo credentials, merchant configuration and real provider IPN delivery remain to be verified before production activation.",
+    "Bank receipts are confirmed by authorized staff; this audit does not add a bank account API feed.",
+    "No mass email delivery was enabled. Existing SMTP smoke success is separate from this business audit."
+  ],
+  "modifiedFiles": [
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/InvoicePaymentRules.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/AdminInvoiceServiceImpl.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/AccountantPortalServiceImpl.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/TenantInvoiceServiceImpl.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CommunicationService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/CommunicationJobs.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/IntegrationChannelRouter.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/GatewayPayments.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/dto/request/invoice/AdminInvoiceRequests.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/dto/request/accountant/AccountantRequests.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/dto/request/invoice/TenantInvoiceRequests.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/InvoicePaymentRulesTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/TenantInvoicePaymentServiceImplTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/integration/IntegrationEmailPolicyTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/InvoicePaymentAuditMysqlTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/IntegrationMysqlTest.java",
+    "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "boarding-house-frontend/src/components/tenant/invoices/gateway-payment-panel.tsx",
+    "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "boarding-house-frontend/scripts/monthly-payment-ui.test.cjs",
+    "boarding-house-frontend/scripts/gateway-payment-ui.test.cjs"
+  ]
+}

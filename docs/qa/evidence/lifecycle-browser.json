@@ -1,0 +1,22 @@
+{
+  "steps": [
+    "01 Owner creates property",
+    "02 Room READY with handover asset and explicitly installed meters",
+    "03 Manager assigned; accountant scope is explicit test setup",
+    "04 Tenant profile and account created",
+    "05-06 Staff records tenant request and real hold receipt",
+    "07-09 Contract, internal hold transfer, deposit top-up",
+    "10-14 Signed handover, opening meters, check-in, coherent ACTIVE/OCCUPIED",
+    "15-19 Actual utility/services, draft, issue, tenant invoice view",
+    "20-23 Partial + full receipts, allocation and debt zero",
+    "24-26 Tenant maintenance through technician result and independent inspection; no automatic expense duplication",
+    "28-32 Tenant return, final meters/assets, signed settlement and noncash deduction",
+    "33-37 Real refund, financial closure, CLEANING and accepted READY",
+    "38-40 Reports agree, persisted reconciliation clean, source allocations/ledger retained"
+  ],
+  "propertyId": 2,
+  "contractId": 3,
+  "invoiceId": 1,
+  "schema": "jdbc:mysql://127.0.0.1:33307/prompt11_acceptance_d7236073655444138d5a4b321de4c4e4",
+  "browserRun": true
+}

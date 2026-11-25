@@ -1,0 +1,53 @@
+import type { TaskStatus } from "@/types/technician";
+export const STATUS_LABEL: Record<string, string> = {
+  NEW_ASSIGNMENT: "Phân công mới",
+  ASSIGNED: "Chờ tiếp nhận",
+  ACCEPTED: "Đã tiếp nhận",
+  DECLINED: "Đã từ chối",
+  SCHEDULED: "Đã lên lịch",
+  TRAVELING: "Đang di chuyển",
+  ARRIVED: "Đã có mặt",
+  IN_PROGRESS: "Đang xử lý",
+  PAUSED: "Tạm dừng",
+  WAITING_TENANT: "Chờ người thuê",
+  WAITING_PARTS: "Chờ vật tư",
+  WAITING_APPROVAL: "Chờ phê duyệt",
+  COMPLETED: "Đã hoàn thành",
+  INSPECTION_PENDING: "Chờ nghiệm thu",
+  RESOLVED: "Đã xử lý",
+  REOPENED: "Mở lại",
+  CANCELLED: "Đã hủy",
+};
+export const STATUS_TONE: Record<string, string> = {
+  NEW_ASSIGNMENT: "bg-violet-50 text-violet-700",
+  ASSIGNED: "bg-violet-50 text-violet-700",
+  ACCEPTED: "bg-blue-50 text-blue-700",
+  SCHEDULED: "bg-cyan-50 text-cyan-700",
+  TRAVELING: "bg-indigo-50 text-indigo-700",
+  ARRIVED: "bg-sky-50 text-sky-700",
+  IN_PROGRESS: "bg-blue-600 text-white",
+  PAUSED: "bg-slate-100 text-slate-700",
+  WAITING_TENANT: "bg-amber-50 text-amber-700",
+  WAITING_PARTS: "bg-amber-50 text-amber-700",
+  WAITING_APPROVAL: "bg-orange-50 text-orange-700",
+  INSPECTION_PENDING: "bg-purple-50 text-purple-700",
+  RESOLVED: "bg-emerald-50 text-emerald-700",
+  REOPENED: "bg-rose-50 text-rose-700",
+  DECLINED: "bg-slate-100 text-slate-500",
+  CANCELLED: "bg-slate-100 text-slate-500",
+};
+export const PRIORITY_LABEL: Record<string, string> = {
+  LOW: "Thấp",
+  MEDIUM: "Trung bình",
+  HIGH: "Cao",
+  URGENT: "Khẩn cấp",
+};
+export const WORKFLOW: TaskStatus[] = [
+  "ASSIGNED",
+  "ACCEPTED",
+  "TRAVELING",
+  "ARRIVED",
+  "IN_PROGRESS",
+  "INSPECTION_PENDING",
+  "RESOLVED",
+];

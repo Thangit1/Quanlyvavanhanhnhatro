@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "newJvm": true,
+  "packagedJar": true,
+  "imageHttpStatus": 200,
+  "contentType": "image/png",
+  "bytesUnchanged": true,
+  "productionDatabaseAccessed": false,
+  "businessEmailEnabled": false
+}

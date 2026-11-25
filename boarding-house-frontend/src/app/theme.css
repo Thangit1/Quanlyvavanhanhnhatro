@@ -1,0 +1,196 @@
+/* SmartHome AI surfaces. Shared by all portals; status colors remain semantic. */
+:root {
+  color-scheme: light;
+  --background: #e2eaf3;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --link: #1d4ed8;
+  --secondary: #dce5ef;
+  --secondary-foreground: #334155;
+  --muted: #edf2f8;
+  --muted-foreground: #52637b;
+  --page-secondary: #334155;
+  --accent: #dbe8ff;
+  --accent-foreground: #1d4ed8;
+  --accent-border: #98b7eb;
+  --destructive: #b91c1c;
+  --danger-muted: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-solid: #dc2626;
+  --success: #047857;
+  --success-solid: #047857;
+  --success-muted: #ecfdf5;
+  --success-border: #a7f3d0;
+  --warning: #92400e;
+  --warning-muted: #fffbeb;
+  --warning-border: #fde68a;
+  --border: #c0cddd;
+  --divider: #ccd7e4;
+  --input: #71839c;
+  --ring: #2563eb;
+  --radius: 0.75rem;
+  --surface-radius: 1rem;
+  --surface-shadow: 0 3px 12px rgb(15 23 42 / 8%);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #334155;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dbe8ff;
+  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-border: #c0cddd;
+  --sidebar-ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #047857;
+  --chart-3: #92400e;
+  --chart-4: #7c3aed;
+  --chart-5: #475569;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0b1220;
+  --foreground: #f1f5f9;
+  --card: #142033;
+  --card-foreground: #f1f5f9;
+  --popover: #142033;
+  --popover-foreground: #f1f5f9;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --link: #93c5fd;
+  --secondary: #263449;
+  --secondary-foreground: #d4deed;
+  --muted: #1c2b40;
+  --muted-foreground: #a9b8ce;
+  --page-secondary: #b8c7dd;
+  --accent: #203957;
+  --accent-foreground: #93c5fd;
+  --accent-border: #3a5b82;
+  --destructive: #fca5a5;
+  --danger-muted: #3b202c;
+  --danger-border: #874253;
+  --success: #6ee7b7;
+  --success-muted: #123c34;
+  --success-border: #2d705e;
+  --warning: #fde68a;
+  --warning-muted: #3b301b;
+  --warning-border: #82662b;
+  --border: #3a4b63;
+  --divider: #2d3d54;
+  --input: #71849f;
+  --ring: #93c5fd;
+  --surface-shadow: 0 2px 8px rgb(0 0 0 / 14%);
+  --sidebar: #142033;
+  --sidebar-foreground: #d4deed;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #203957;
+  --sidebar-accent-foreground: #93c5fd;
+  --sidebar-border: #3a4b63;
+  --sidebar-ring: #93c5fd;
+  --chart-1: #93c5fd;
+  --chart-2: #6ee7b7;
+  --chart-3: #fde68a;
+  --chart-4: #c4b5fd;
+  --chart-5: #b8c7dd;
+}
+
+@theme inline {
+  --color-link: var(--link);
+  --color-primary-hover: var(--primary-hover);
+  --color-page-secondary: var(--page-secondary);
+  --color-divider: var(--divider);
+  --color-accent-border: var(--accent-border);
+  --color-danger: var(--destructive);
+  --color-danger-muted: var(--danger-muted);
+  --color-danger-border: var(--danger-border);
+  --color-danger-solid: var(--danger-solid);
+  --color-success: var(--success);
+  --color-success-solid: var(--success-solid);
+  --color-success-muted: var(--success-muted);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-warning-border: var(--warning-border);
+  --shadow-card: var(--surface-shadow);
+  --shadow-sm: var(--surface-shadow);
+}
+
+@utility surface-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--surface-radius);
+  box-shadow: var(--surface-shadow);
+}
+
+@layer base {
+  body {
+    min-height: 100dvh;
+  }
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    textarea,
+    select
+  ) {
+    background-color: var(--card);
+    color: var(--foreground);
+    border-color: var(--input);
+    caret-color: var(--primary);
+  }
+  :where(input, textarea)::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+  :is(
+    a[href],
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]
+  ):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+}
+
+/* Paper remains light even when the user prints from dark mode. */
+@media print {
+  :root,
+  .dark {
+    color-scheme: light;
+    --background: #ffffff;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --popover: #ffffff;
+    --popover-foreground: #0f172a;
+    --secondary-foreground: #334155;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --page-secondary: #475569;
+    --link: #2563eb;
+    --accent: #e8f0ff;
+    --accent-foreground: #2563eb;
+    --border: #d9e2ec;
+    --divider: #e2e8f0;
+    --destructive: #b91c1c;
+    --danger-muted: #fef2f2;
+    --danger-border: #fecaca;
+    --success: #047857;
+    --success-muted: #ecfdf5;
+    --success-border: #a7f3d0;
+    --warning: #92400e;
+    --warning-muted: #fffbeb;
+    --warning-border: #fde68a;
+    --surface-shadow: none;
+  }
+}

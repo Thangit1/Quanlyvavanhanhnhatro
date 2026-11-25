@@ -1,0 +1,742 @@
+[
+  {
+    "file": "boarding-house-frontend/src/app/403/page.tsx",
+    "path": "/403",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accept-invitation/page.tsx",
+    "path": "/accept-invitation",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/account/page.tsx",
+    "path": "/accountant/account",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/bankbook/page.tsx",
+    "path": "/accountant/bankbook",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/cash-flow/page.tsx",
+    "path": "/accountant/cash-flow",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/cashbook/page.tsx",
+    "path": "/accountant/cashbook",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/checkouts/page.tsx",
+    "path": "/accountant/checkouts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/dashboard/page.tsx",
+    "path": "/accountant/dashboard",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/debts/page.tsx",
+    "path": "/accountant/debts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/debts/tenants/[id]/page.tsx",
+    "path": "/accountant/debts/tenants/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/deposits/page.tsx",
+    "path": "/accountant/deposits",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/deposits/[id]/page.tsx",
+    "path": "/accountant/deposits/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/expenses/page.tsx",
+    "path": "/accountant/expenses",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/expenses/[id]/page.tsx",
+    "path": "/accountant/expenses/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/exports/page.tsx",
+    "path": "/accountant/exports",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/finance/page.tsx",
+    "path": "/accountant/finance",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/invoices/generate/page.tsx",
+    "path": "/accountant/invoices/generate",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/invoices/page.tsx",
+    "path": "/accountant/invoices",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/invoices/review/page.tsx",
+    "path": "/accountant/invoices/review",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/invoices/[id]/page.tsx",
+    "path": "/accountant/invoices/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/notifications/page.tsx",
+    "path": "/accountant/notifications",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/other-income/page.tsx",
+    "path": "/accountant/other-income",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/page.tsx",
+    "path": "/accountant",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/payment-proofs/page.tsx",
+    "path": "/accountant/payment-proofs",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/payment-proofs/[id]/page.tsx",
+    "path": "/accountant/payment-proofs/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/payment-vouchers/page.tsx",
+    "path": "/accountant/payment-vouchers",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/payment-vouchers/[id]/page.tsx",
+    "path": "/accountant/payment-vouchers/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/payments/page.tsx",
+    "path": "/accountant/payments",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/payments/[id]/page.tsx",
+    "path": "/accountant/payments/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/periods/page.tsx",
+    "path": "/accountant/periods",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/receipts/page.tsx",
+    "path": "/accountant/receipts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/receipts/[id]/page.tsx",
+    "path": "/accountant/receipts/{id}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/reconciliation/bank/page.tsx",
+    "path": "/accountant/reconciliation/bank",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/reconciliation/page.tsx",
+    "path": "/accountant/reconciliation",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/reconciliation/payment-gateways/page.tsx",
+    "path": "/accountant/reconciliation/payment-gateways",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/reports/page.tsx",
+    "path": "/accountant/reports",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/accounts/page.tsx",
+    "path": "/admin/accounts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/areas/page.tsx",
+    "path": "/admin/areas",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/checkouts/page.tsx",
+    "path": "/admin/checkouts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/communications/page.tsx",
+    "path": "/admin/communications",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/contracts/new/page.tsx",
+    "path": "/admin/contracts/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/contracts/page.tsx",
+    "path": "/admin/contracts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/contracts/[contractId]/edit/page.tsx",
+    "path": "/admin/contracts/{contractId}/edit",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/contracts/[contractId]/page.tsx",
+    "path": "/admin/contracts/{contractId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/finance/page.tsx",
+    "path": "/admin/finance",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/finance/vouchers/page.tsx",
+    "path": "/admin/finance/vouchers",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/invoices/debt/page.tsx",
+    "path": "/admin/invoices/debt",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/invoices/generate/page.tsx",
+    "path": "/admin/invoices/generate",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/invoices/new/page.tsx",
+    "path": "/admin/invoices/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/invoices/page.tsx",
+    "path": "/admin/invoices",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/invoices/[invoiceId]/page.tsx",
+    "path": "/admin/invoices/{invoiceId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/assets/page.tsx",
+    "path": "/admin/maintenance/assets",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/calendar/page.tsx",
+    "path": "/admin/maintenance/calendar",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/materials/page.tsx",
+    "path": "/admin/maintenance/materials",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/new/page.tsx",
+    "path": "/admin/maintenance/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/page.tsx",
+    "path": "/admin/maintenance",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/preventive/page.tsx",
+    "path": "/admin/maintenance/preventive",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/reports/page.tsx",
+    "path": "/admin/maintenance/reports",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/[requestId]/page.tsx",
+    "path": "/admin/maintenance/{requestId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/organizations/page.tsx",
+    "path": "/admin/organizations",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/properties/new/page.tsx",
+    "path": "/admin/properties/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/properties/page.tsx",
+    "path": "/admin/properties",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/properties/[propertyId]/edit/page.tsx",
+    "path": "/admin/properties/{propertyId}/edit",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/properties/[propertyId]/page.tsx",
+    "path": "/admin/properties/{propertyId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/rental-lifecycle/page.tsx",
+    "path": "/admin/rental-lifecycle",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/assets/page.tsx",
+    "path": "/admin/reports/assets",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/bookings/page.tsx",
+    "path": "/admin/reports/bookings",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/contracts/page.tsx",
+    "path": "/admin/reports/contracts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/debt/page.tsx",
+    "path": "/admin/reports/debt",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/deposits/page.tsx",
+    "path": "/admin/reports/deposits",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/expenses/page.tsx",
+    "path": "/admin/reports/expenses",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/export-history/page.tsx",
+    "path": "/admin/reports/export-history",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/invoices/page.tsx",
+    "path": "/admin/reports/invoices",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/maintenance/page.tsx",
+    "path": "/admin/reports/maintenance",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/occupancy/page.tsx",
+    "path": "/admin/reports/occupancy",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/operations/page.tsx",
+    "path": "/admin/reports/operations",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/page.tsx",
+    "path": "/admin/reports",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/payments/page.tsx",
+    "path": "/admin/reports/payments",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/profit/page.tsx",
+    "path": "/admin/reports/profit",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/residences/page.tsx",
+    "path": "/admin/reports/residences",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/revenue/page.tsx",
+    "path": "/admin/reports/revenue",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/services/page.tsx",
+    "path": "/admin/reports/services",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/tenants/page.tsx",
+    "path": "/admin/reports/tenants",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/reports/utilities/page.tsx",
+    "path": "/admin/reports/utilities",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/rooms/new/page.tsx",
+    "path": "/admin/rooms/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/rooms/page.tsx",
+    "path": "/admin/rooms",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/rooms/[roomId]/edit/page.tsx",
+    "path": "/admin/rooms/{roomId}/edit",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/rooms/[roomId]/page.tsx",
+    "path": "/admin/rooms/{roomId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/settings/page.tsx",
+    "path": "/admin/settings",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/settings/[section]/page.tsx",
+    "path": "/admin/settings/{section}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/tenants/intake/page.tsx",
+    "path": "/admin/tenants/intake",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/tenants/new/page.tsx",
+    "path": "/admin/tenants/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/tenants/page.tsx",
+    "path": "/admin/tenants",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/tenants/[tenantId]/edit/page.tsx",
+    "path": "/admin/tenants/{tenantId}/edit",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/tenants/[tenantId]/page.tsx",
+    "path": "/admin/tenants/{tenantId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/change-password/page.tsx",
+    "path": "/change-password",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/forgot-password/page.tsx",
+    "path": "/forgot-password",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/login/page.tsx",
+    "path": "/login",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/manager/dashboard/page.tsx",
+    "path": "/manager/dashboard",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/owner/dashboard/page.tsx",
+    "path": "/owner/dashboard",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/page.tsx",
+    "path": "/",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/register/page.tsx",
+    "path": "/register",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/account/page.tsx",
+    "path": "/technician/account",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/assets/page.tsx",
+    "path": "/technician/assets",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/assets/[assetId]/page.tsx",
+    "path": "/technician/assets/{assetId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/calendar/page.tsx",
+    "path": "/technician/calendar",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/dashboard/page.tsx",
+    "path": "/technician/dashboard",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/emergency/page.tsx",
+    "path": "/technician/emergency",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/material-requests/page.tsx",
+    "path": "/technician/material-requests",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/materials/page.tsx",
+    "path": "/technician/materials",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/notifications/page.tsx",
+    "path": "/technician/notifications",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/page.tsx",
+    "path": "/technician",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/performance/page.tsx",
+    "path": "/technician/performance",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/preventive-maintenance/page.tsx",
+    "path": "/technician/preventive-maintenance",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/tasks/page.tsx",
+    "path": "/technician/tasks",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/technician/tasks/[taskId]/page.tsx",
+    "path": "/technician/tasks/{taskId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/activity/page.tsx",
+    "path": "/tenant/account/activity",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/change-password/page.tsx",
+    "path": "/tenant/account/change-password",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/documents/page.tsx",
+    "path": "/tenant/account/documents",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/page.tsx",
+    "path": "/tenant/account",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/preferences/page.tsx",
+    "path": "/tenant/account/preferences",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/profile/page.tsx",
+    "path": "/tenant/account/profile",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/security/page.tsx",
+    "path": "/tenant/account/security",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/sessions/page.tsx",
+    "path": "/tenant/account/sessions",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/account/support/page.tsx",
+    "path": "/tenant/account/support",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/co-occupants/history/page.tsx",
+    "path": "/tenant/co-occupants/history",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/co-occupants/new/page.tsx",
+    "path": "/tenant/co-occupants/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/co-occupants/page.tsx",
+    "path": "/tenant/co-occupants",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/co-occupants/requests/[requestId]/page.tsx",
+    "path": "/tenant/co-occupants/requests/{requestId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/co-occupants/[occupantId]/page.tsx",
+    "path": "/tenant/co-occupants/{occupantId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/contracts/page.tsx",
+    "path": "/tenant/contracts",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/contracts/[contractId]/page.tsx",
+    "path": "/tenant/contracts/{contractId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/home/page.tsx",
+    "path": "/tenant/home",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/invoices/page.tsx",
+    "path": "/tenant/invoices",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/invoices/[invoiceId]/page.tsx",
+    "path": "/tenant/invoices/{invoiceId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/invoices/[invoiceId]/payment/page.tsx",
+    "path": "/tenant/invoices/{invoiceId}/payment",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/maintenance/new/page.tsx",
+    "path": "/tenant/maintenance/new",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/maintenance/page.tsx",
+    "path": "/tenant/maintenance",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/maintenance/[requestId]/feedback/page.tsx",
+    "path": "/tenant/maintenance/{requestId}/feedback",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/maintenance/[requestId]/page.tsx",
+    "path": "/tenant/maintenance/{requestId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/notifications/archive/page.tsx",
+    "path": "/tenant/notifications/archive",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/notifications/page.tsx",
+    "path": "/tenant/notifications",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/notifications/settings/page.tsx",
+    "path": "/tenant/notifications/settings",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/notifications/[notificationId]/page.tsx",
+    "path": "/tenant/notifications/{notificationId}",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/occupants/page.tsx",
+    "path": "/tenant/occupants",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/occupants/request/page.tsx",
+    "path": "/tenant/occupants/request",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/payments/page.tsx",
+    "path": "/tenant/payments",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/tenant/utilities/page.tsx",
+    "path": "/tenant/utilities",
+    "status": "SOURCE_EXISTS_NOT_EXECUTED"
+  }
+]

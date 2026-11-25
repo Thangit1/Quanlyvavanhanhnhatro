@@ -1,0 +1,25 @@
+-- Tenant declarations are evidence awaiting review, never collected money.
+CREATE TABLE deposit_transfer_requests (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    deposit_id BIGINT UNSIGNED NOT NULL,
+    tenant_id BIGINT UNSIGNED NOT NULL,
+    request_key VARCHAR(100) NOT NULL,
+    request_hash CHAR(64) NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    bank_reference VARCHAR(100) NOT NULL,
+    evidence VARCHAR(500) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    reviewed_by BIGINT UNSIGNED NULL,
+    reviewed_at DATETIME(6) NULL,
+    review_reason VARCHAR(1000) NULL,
+    ledger_transaction_id BIGINT UNSIGNED NULL,
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    UNIQUE KEY uq_deposit_transfer_request(tenant_id,request_key),
+    UNIQUE KEY uq_deposit_transfer_ledger(ledger_transaction_id),
+    INDEX idx_deposit_transfer_review(deposit_id,status),
+    FOREIGN KEY(deposit_id) REFERENCES tenant_deposits(id),
+    FOREIGN KEY(tenant_id) REFERENCES users(id),
+    FOREIGN KEY(reviewed_by) REFERENCES users(id),
+    FOREIGN KEY(ledger_transaction_id) REFERENCES deposit_transactions(id),
+    CHECK(amount>0),CHECK(status IN ('PENDING','CONFIRMED','REJECTED'))
+) ENGINE=InnoDB;

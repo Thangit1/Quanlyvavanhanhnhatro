@@ -1,0 +1,2 @@
+npm --prefix boarding-house-frontend run lint
+npm --prefix boarding-house-frontend run format:check

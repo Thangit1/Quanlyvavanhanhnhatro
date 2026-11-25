@@ -1,0 +1,121 @@
+"use client";
+
+import { useState } from "react";
+import { PaymentTransactionsPanel } from "@/components/shared/payment-transactions-panel";
+import { Download, ReceiptText } from "lucide-react";
+import { useAuth } from "@/providers/auth-provider";
+import { useTenantPayments } from "@/hooks/use-tenant-invoices";
+import { tenantInvoiceService } from "@/services/tenant-invoice.service";
+import {
+  EmptyState,
+  ErrorState,
+  PageLoading,
+} from "@/components/shared/dashboard-ui";
+import { date, InvoiceBadge, label, money, openBlob } from "./invoice-ui";
+
+export function PaymentHistoryPage() {
+  const { user } = useAuth();
+  const [page, setPage] = useState(0);
+  const [error, setError] = useState("");
+  const query = useTenantPayments(user?.activeRole === "TENANT", page);
+  if (query.isLoading) return <PageLoading />;
+  async function receipt(id: number) {
+    setError("");
+    try {
+      openBlob((await tenantInvoiceService.receipt(id)).data);
+    } catch {
+      setError("Không thể mở biên nhận giao dịch.");
+    }
+  }
+  return (
+    <main className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+      <div>
+        <p className="text-sm font-medium text-link">Tài chính / Thanh toán</p>
+        <h1 className="mt-1 text-3xl font-black">Lịch sử thanh toán</h1>
+        <p className="mt-1 text-muted-foreground">
+          Các khoản tiền đã được quản lý xác nhận.
+        </p>
+      </div>
+      {error && (
+        <p className="rounded-xl bg-danger-muted p-3 text-danger">{error}</p>
+      )}
+      <PaymentTransactionsPanel />
+      {query.isError ? (
+        <ErrorState onRetry={() => void query.refetch()} />
+      ) : !query.data?.content.length ? (
+        <EmptyState text="Chưa có giao dịch thanh toán." />
+      ) : (
+        <section className="overflow-hidden surface-card ">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted text-left text-muted-foreground">
+                <tr>
+                  <th className="p-4">Biên nhận</th>
+                  <th className="p-4">Hóa đơn</th>
+                  <th className="p-4">Thời gian</th>
+                  <th className="p-4">Phương thức</th>
+                  <th className="p-4">Trạng thái</th>
+                  <th className="p-4 text-right">Số tiền</th>
+                  <th className="p-4" />
+                </tr>
+              </thead>
+              <tbody>
+                {query.data.content.map((x) => (
+                  <tr key={x.id} className="border-t">
+                    <td className="p-4 font-semibold">
+                      <ReceiptText className="mr-2 inline size-4 text-link" />
+                      {x.receiptCode}
+                    </td>
+                    <td className="p-4 text-link">{x.invoiceCode}</td>
+                    <td className="p-4">{date(x.paidAt)}</td>
+                    <td className="p-4">{label(x.paymentMethod)}</td>
+                    <td className="p-4">
+                      <InvoiceBadge status={x.status} />
+                    </td>
+                    <td
+                      className={`p-4 text-right font-bold ${x.status === "CONFIRMED" ? "text-success" : "text-muted-foreground"}`}
+                    >
+                      {money(x.amount)}
+                    </td>
+                    <td className="p-4">
+                      {x.status === "CONFIRMED" && (
+                        <button
+                          onClick={() => receipt(x.id)}
+                          className="inline-flex items-center gap-1 text-link"
+                        >
+                          <Download className="size-4" />
+                          Biên nhận
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+      {(query.data?.totalPages ?? 0) > 1 && (
+        <div className="flex justify-center gap-3">
+          <button
+            disabled={page === 0}
+            onClick={() => setPage((v) => v - 1)}
+            className="rounded-lg border px-4 py-2 disabled:opacity-40"
+          >
+            Trang trước
+          </button>
+          <span className="py-2">
+            {page + 1}/{query.data?.totalPages}
+          </span>
+          <button
+            disabled={page + 1 === query.data?.totalPages}
+            onClick={() => setPage((v) => v + 1)}
+            className="rounded-lg border px-4 py-2 disabled:opacity-40"
+          >
+            Trang sau
+          </button>
+        </div>
+      )}
+    </main>
+  );
+}

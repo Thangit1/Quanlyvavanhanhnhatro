@@ -1,0 +1,776 @@
+"use client";
+import { FormEvent, useState } from "react";
+import Link from "next/link";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  Bell,
+  CalendarDays,
+  KeyRound,
+  PackageCheck,
+  ShieldAlert,
+  UserRound,
+  Wrench,
+} from "lucide-react";
+import {
+  useEmergencyTasks,
+  useMaterialRequests,
+  usePreventivePlans,
+  useTechnicianAccount,
+  useTechnicianAsset,
+  useTechnicianAssets,
+  useTechnicianCalendar,
+  useTechnicianMaterials,
+  useTechnicianNotifications,
+  useTechnicianPerformance,
+  useAccountMutations,
+} from "@/hooks/use-technician";
+import { technicianService } from "@/services/technician.service";
+import { validateVietnamPhone } from "@/lib/phone-validation";
+import { apiErrorMessage } from "@/lib/api-error";
+import {
+  Empty,
+  ErrorState,
+  formatDate,
+  formatMoney,
+  Loading,
+  Page,
+  StatusBadge,
+  TaskCard,
+} from "@/components/technician/technician-ui";
+
+export function CalendarPage() {
+  const now = new Date();
+  const [month, setMonth] = useState(
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`,
+  );
+  const [year, m] = month.split("-").map(Number),
+    from = `${month}-01`,
+    to = new Date(year, m, 0).toISOString().slice(0, 10);
+  const q = useTechnicianCalendar(from, to);
+  return (
+    <Page
+      title="Lịch làm việc"
+      description="Lịch tháng của các công việc được giao."
+      actions={
+        <input
+          type="month"
+          value={month}
+          onChange={(e) => setMonth(e.target.value)}
+          className="min-h-11 rounded-xl border border-input bg-card px-3"
+        />
+      }
+    >
+      {q.isLoading ? (
+        <Loading />
+      ) : q.isError || !q.data ? (
+        <ErrorState retry={() => void q.refetch()} />
+      ) : q.data.length ? (
+        <div className="grid gap-3">
+          {q.data.map((x) => (
+            <Link
+              key={x.id}
+              href={`/technician/tasks/${x.id}`}
+              className="grid gap-3 rounded-2xl border border-border bg-card p-4 shadow-card sm:grid-cols-[160px_1fr_auto]"
+            >
+              <p className="text-sm font-semibold text-link">
+                {formatDate(x.start)}
+              </p>
+              <div>
+                <p className="font-bold">{x.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  {x.propertyName}
+                  {x.roomCode ? ` · ${x.roomCode}` : ""}
+                </p>
+              </div>
+              <StatusBadge status={x.status} />
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <Empty title="Tháng này chưa có lịch" />
+      )}
+    </Page>
+  );
+}
+
+export function EmergencyPage() {
+  const q = useEmergencyTasks();
+  return (
+    <Page
+      title="Điều phối khẩn cấp"
+      description="Ưu tiên an toàn, đánh giá rủi ro và liên hệ quản lý theo quy trình."
+    >
+      <div className="rounded-2xl border border-danger-border bg-danger-muted p-4 text-sm text-danger">
+        <p className="flex items-center gap-2 font-bold">
+          <ShieldAlert className="size-5" />
+          Quy trình an toàn
+        </p>
+        <p className="mt-1">
+          Với điện, cháy nổ hoặc rò rỉ nguy hiểm: ngắt nguồn nếu an toàn, cảnh
+          báo người xung quanh và liên hệ quản lý. Không thao tác vượt phạm vi
+          chuyên môn.
+        </p>
+      </div>
+      {q.isLoading ? (
+        <Loading />
+      ) : q.isError || !q.data ? (
+        <ErrorState retry={() => void q.refetch()} />
+      ) : q.data.length ? (
+        <div className="grid gap-4 xl:grid-cols-2">
+          {q.data.map((x) => (
+            <TaskCard key={x.id} task={x} />
+          ))}
+        </div>
+      ) : (
+        <Empty title="Không có công việc khẩn cấp" />
+      )}
+    </Page>
+  );
+}
+
+export function PreventivePage() {
+  const q = usePreventivePlans();
+  return (
+    <Page
+      title="Bảo trì định kỳ"
+      description="Kế hoạch được phân công; kỹ thuật viên không tự thay đổi chu kỳ."
+    >
+      {q.isLoading ? (
+        <Loading />
+      ) : q.isError || !q.data ? (
+        <ErrorState retry={() => void q.refetch()} />
+      ) : q.data.length ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {q.data.map((x) => (
+            <article
+              key={x.id}
+              className="surface-card p-5 sm:p-6"
+            >
+              <div className="flex justify-between">
+                <span className="rounded-lg bg-accent p-2 text-link">
+                  <CalendarDays />
+                </span>
+                <StatusBadge status={x.status} />
+              </div>
+              <h2 className="mt-4 font-bold">{x.name}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {x.propertyName} · {x.assetCategory}
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <p>
+                  <span className="block text-xs text-muted-foreground">
+                    Lần tiếp theo
+                  </span>
+                  {new Date(x.nextRunDate).toLocaleDateString("vi-VN")}
+                </p>
+                <p>
+                  <span className="block text-xs text-muted-foreground">Chu kỳ</span>
+                  {x.frequencyInterval} {x.frequencyType}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <Empty title="Chưa có kế hoạch được giao" />
+      )}
+    </Page>
+  );
+}
+
+export function AssetsPage() {
+  const q = useTechnicianAssets();
+  return (
+    <Page
+      title="Thiết bị phụ trách"
+      description="Chỉ hiển thị thiết bị gắn với phạm vi công việc đã được giao."
+    >
+      {q.isLoading ? (
+        <Loading />
+      ) : q.isError || !q.data ? (
+        <ErrorState retry={() => void q.refetch()} />
+      ) : q.data.length ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {q.data.map((x) => (
+            <Link
+              href={`/technician/assets/${x.id}`}
+              key={x.id}
+              className="rounded-2xl border border-border bg-card p-5 shadow-card hover:border-blue-300"
+            >
+              <Wrench className="size-6 text-link" />
+              <h2 className="mt-4 font-bold">{x.name}</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {x.assetCode ?? `TB-${x.id}`} · {x.brand ?? "Chưa rõ hãng"}{" "}
+                {x.model ?? ""}
+              </p>
+              <p className="mt-3 text-sm">
+                {x.propertyName} · {x.roomCode}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {x.maintenanceCount} lần bảo trì · {x.condition}
+              </p>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <Empty title="Chưa có thiết bị trong phạm vi" />
+      )}
+    </Page>
+  );
+}
+export function AssetDetailPage({ id }: { id: number }) {
+  const q = useTechnicianAsset(id);
+  if (q.isLoading) return <Loading />;
+  if (q.isError || !q.data)
+    return (
+      <Page title="Thiết bị">
+        <ErrorState retry={() => void q.refetch()} />
+      </Page>
+    );
+  const x = q.data;
+  return (
+    <Page
+      title={x.name}
+      description={x.assetCode ?? `TB-${x.id}`}
+      actions={
+        <Link
+          href="/technician/assets"
+          className="rounded-xl border bg-card px-4 py-2 text-sm font-semibold"
+        >
+          Danh sách thiết bị
+        </Link>
+      }
+    >
+      <section className="grid gap-4 surface-card p-6 sm:grid-cols-2 lg:grid-cols-3">
+        {[
+          ["Hãng", x.brand],
+          ["Model", x.model],
+          ["Số sê-ri", x.serialNumber],
+          ["Tình trạng", x.condition],
+          ["Vị trí", `${x.propertyName} · ${x.roomCode}`],
+          [
+            "Hết bảo hành",
+            x.warrantyExpiry
+              ? new Date(x.warrantyExpiry).toLocaleDateString("vi-VN")
+              : null,
+          ],
+          [
+            "Bảo trì gần nhất",
+            x.lastMaintainedAt
+              ? new Date(x.lastMaintainedAt).toLocaleDateString("vi-VN")
+              : null,
+          ],
+          ["Số lần bảo trì", String(x.maintenanceCount)],
+        ].map(([k, v]) => (
+          <div key={k}>
+            <p className="text-xs text-muted-foreground">{k}</p>
+            <p className="mt-1 font-semibold">{v || "Chưa cập nhật"}</p>
+          </div>
+        ))}
+      </section>
+      <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-800">
+        Tra cứu QR chỉ khả dụng khi hệ thống có mã QR được phát hành và xác
+        thực. Portal không sinh mã QR giả.
+      </div>
+    </Page>
+  );
+}
+
+export function MaterialsPage() {
+  const q = useTechnicianMaterials();
+  return (
+    <Page
+      title="Danh mục vật tư"
+      description="Tồn kho chỉ để tham khảo; kỹ thuật viên không tự điều chỉnh tồn tổng."
+    >
+      {q.isLoading ? (
+        <Loading />
+      ) : q.isError || !q.data ? (
+        <ErrorState retry={() => void q.refetch()} />
+      ) : q.data.length ? (
+        <div className="overflow-x-auto surface-card">
+          <table className="w-full min-w-[850px] text-left text-sm">
+            <thead className="bg-muted text-muted-foreground">
+              <tr>
+                {[
+                  "Mã",
+                  "Vật tư",
+                  "Khu trọ",
+                  "Đơn vị",
+                  "Tồn",
+                  "Tối thiểu",
+                  "Đơn giá",
+                  "Trạng thái",
+                ].map((x) => (
+                  <th key={x} className="px-4 py-3">
+                    {x}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {q.data.map((x) => (
+                <tr key={x.id} className="border-t">
+                  <td className="px-4 py-3 font-mono text-xs">{x.code}</td>
+                  <td className="px-4 py-3 font-semibold">{x.name}</td>
+                  <td className="px-4 py-3">{x.propertyName}</td>
+                  <td className="px-4 py-3">{x.unit}</td>
+                  <td
+                    className={`px-4 py-3 font-semibold ${x.stockQuantity <= x.minimumQuantity ? "text-danger" : ""}`}
+                  >
+                    {x.stockQuantity}
+                  </td>
+                  <td className="px-4 py-3">{x.minimumQuantity}</td>
+                  <td className="px-4 py-3">{formatMoney(x.unitPrice)}</td>
+                  <td className="px-4 py-3">{x.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <Empty title="Chưa có danh mục vật tư" />
+      )}
+    </Page>
+  );
+}
+
+export function MaterialRequestsPage() {
+  const q = useMaterialRequests();
+  const [busy, setBusy] = useState<number>();
+  const receive = async (id: number, version: number) => {
+    setBusy(id);
+    try {
+      await technicianService.receiveMaterial(id, version);
+      await q.refetch();
+    } finally {
+      setBusy(undefined);
+    }
+  };
+  return (
+    <Page
+      title="Yêu cầu vật tư"
+      description="Theo dõi phê duyệt, nhận, sử dụng và hoàn trả vật tư."
+    >
+      {q.isLoading ? (
+        <Loading />
+      ) : q.isError || !q.data ? (
+        <ErrorState retry={() => void q.refetch()} />
+      ) : q.data.length ? (
+        <div className="grid gap-4">
+          {q.data.map((x) => (
+            <article
+              key={x.id}
+              className="surface-card p-5 sm:p-6"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-link">
+                    {x.taskCode} · {x.urgency}
+                  </p>
+                  <h2 className="mt-1 font-bold">{x.taskTitle}</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {formatDate(x.createdAt)}
+                  </p>
+                </div>
+                <span className="rounded-full bg-warning-muted px-3 py-1 text-xs font-semibold text-warning">
+                  {x.status}
+                </span>
+              </div>
+              <div className="mt-4 space-y-2">
+                {x.items.map((i) => (
+                  <p
+                    key={i.id}
+                    className="flex justify-between rounded-lg bg-muted p-3 text-sm"
+                  >
+                    <span>
+                      {i.name} · {i.quantity} {i.unit}
+                    </span>
+                    <span>Đã dùng {i.usedQuantity}</span>
+                  </p>
+                ))}
+              </div>
+              {x.status === "APPROVED" && (
+                <button
+                  disabled={busy === x.id}
+                  onClick={() => void receive(x.id, x.version)}
+                  className="mt-4 flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  <PackageCheck className="size-4" />
+                  Xác nhận đã nhận
+                </button>
+              )}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <Empty title="Chưa có yêu cầu vật tư" />
+      )}
+    </Page>
+  );
+}
+
+export function NotificationsPage() {
+  const q = useTechnicianNotifications();
+  const read = async (id: number) => {
+    await technicianService.markRead(id);
+    await q.refetch();
+  };
+  return (
+    <Page title="Thông báo" description="Tự động làm mới mỗi 30 giây.">
+      {q.isLoading ? (
+        <Loading />
+      ) : q.isError || !q.data ? (
+        <ErrorState retry={() => void q.refetch()} />
+      ) : q.data.length ? (
+        <div className="space-y-3">
+          {q.data.map((x) => (
+            <button
+              key={x.id}
+              onClick={() => !x.read && void read(x.id)}
+              className={`flex w-full gap-3 rounded-2xl border p-4 text-left ${x.read ? "border-border bg-card" : "border-accent-border bg-accent"}`}
+            >
+              <Bell
+                className={`mt-1 size-5 shrink-0 ${x.read ? "text-muted-foreground" : "text-link"}`}
+              />
+              <span className="flex-1">
+                <span className="block font-semibold">{x.title}</span>
+                <span className="mt-1 block text-sm text-secondary-foreground">
+                  {x.content}
+                </span>
+                <span className="mt-2 block text-xs text-muted-foreground">
+                  {formatDate(x.createdAt)}
+                </span>
+              </span>
+              {!x.read && (
+                <span className="mt-2 size-2 rounded-full bg-primary hover:bg-primary-hover" />
+              )}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <Empty title="Chưa có thông báo" />
+      )}
+    </Page>
+  );
+}
+
+export function PerformancePage() {
+  const q = useTechnicianPerformance();
+  if (q.isLoading) return <Loading />;
+  if (q.isError || !q.data)
+    return (
+      <Page title="Hiệu suất cá nhân">
+        <ErrorState retry={() => void q.refetch()} />
+      </Page>
+    );
+  const d = q.data,
+    metrics = [
+      ["Được giao", d.assignedTasks],
+      ["Hoàn thành", d.completedTasks],
+      ["Đúng hạn", d.onTimeTasks],
+      ["Quá hạn", d.overdueTasks],
+      ["Nghiệm thu lần đầu", d.firstPassTasks],
+      ["Mở lại", d.reopenedTasks],
+      ["Giờ xử lý TB", Number(d.averageResolutionHours).toFixed(1)],
+      ["Điểm đánh giá", Number(d.averageRating).toFixed(1)],
+    ];
+  return (
+    <Page
+      title="Hiệu suất cá nhân"
+      description="Đánh giá có xét SLA, chờ vật tư, độ khẩn cấp và kết quả nghiệm thu."
+    >
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map(([k, v]) => (
+          <article
+            key={k}
+            className="surface-card p-4"
+          >
+            <p className="text-sm text-muted-foreground">{k}</p>
+            <p className="mt-2 text-2xl font-black">{v}</p>
+          </article>
+        ))}
+      </section>
+      <div className="grid gap-5 xl:grid-cols-2">
+        <Chart title="Công việc theo tháng" data={d.trend} />
+        <Chart title="Phân bố loại sự cố" data={d.categories} />
+      </div>
+      <p className="rounded-2xl border border-border bg-card p-4 text-sm text-secondary-foreground">
+        Số liệu không dùng riêng số lượng công việc để kết luận hiệu suất; thời
+        gian chờ vật tư hiện ghi nhận: {Number(d.waitingPartsHours).toFixed(1)}{" "}
+        giờ, số việc khẩn cấp: {d.urgentTasks}.
+      </p>
+    </Page>
+  );
+}
+function Chart({
+  title,
+  data,
+}: {
+  title: string;
+  data: { label: string; value: number }[];
+}) {
+  return (
+    <section className="surface-card p-5 sm:p-6">
+      <h2 className="font-bold">{title}</h2>
+      <div className="mt-4 h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="label" fontSize={11} />
+            <YAxis fontSize={11} />
+            <Tooltip />
+            <Bar dataKey="value" fill="#2563eb" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </section>
+  );
+}
+
+export function AccountPage() {
+  const q = useTechnicianAccount(),
+    m = useAccountMutations();
+  const [notice, setNotice] = useState(""),
+    [error, setError] = useState(""),
+    [phoneError, setPhoneError] = useState("");
+  const act = async (fn: () => Promise<unknown>, text: string) => {
+    setError("");
+    try {
+      await fn();
+      setNotice(text);
+    } catch (e) {
+      setError(apiErrorMessage(e));
+    }
+  };
+  if (q.isLoading) return <Loading />;
+  if (q.isError || !q.data)
+    return (
+      <Page title="Tài khoản">
+        <ErrorState retry={() => void q.refetch()} />
+      </Page>
+    );
+  const a = q.data,
+    t = a.technician;
+  const profile = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const phone = String(f.get("phone") ?? "");
+    const validation = validateVietnamPhone(phone, false);
+    if (!validation.valid) {
+      setPhoneError(validation.message);
+      return;
+    }
+    setPhoneError("");
+    void act(
+      () =>
+        m.profile.mutateAsync({
+          email: f.get("email"),
+          phone,
+          version: t.version,
+        }),
+      "Đã cập nhật thông tin liên hệ.",
+    );
+  };
+  const password = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    void act(
+      () =>
+        m.password.mutateAsync({
+          currentPassword: f.get("currentPassword"),
+          newPassword: f.get("newPassword"),
+        }),
+      "Đã đổi mật khẩu.",
+    );
+    e.currentTarget.reset();
+  };
+  return (
+    <Page
+      title="Tài khoản kỹ thuật viên"
+      description="Vai trò, nhóm, khu vực và hạn mức do quản lý cấu hình."
+    >
+      {error && (
+        <p className="rounded-xl bg-danger-muted p-3 text-sm text-danger">{error}</p>
+      )}
+      {notice && (
+        <p className="rounded-xl bg-success-muted p-3 text-sm text-success">
+          {notice}
+        </p>
+      )}
+      <div className="grid gap-5 xl:grid-cols-2">
+        <section className="surface-card p-5 sm:p-6">
+          <div className="flex gap-4">
+            <span className="grid size-14 place-items-center rounded-2xl bg-accent text-xl font-black text-link">
+              {t.fullName[0]}
+            </span>
+            <div>
+              <h2 className="font-bold">{t.fullName}</h2>
+              <p className="text-sm text-muted-foreground">
+                {t.employeeCode} · {t.workingStatus}
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 space-y-3 text-sm">
+            <Info k="Chuyên môn" v={t.expertise} />
+            <Info k="Khu vực" v={t.workingArea} />
+            <Info k="Lịch làm việc" v={t.workSchedule} />
+            <Info k="Hạn mức đề xuất" v={formatMoney(a.costLimit)} />
+          </div>
+        </section>
+        <form
+          onSubmit={profile}
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
+        >
+          <h2 className="flex items-center gap-2 font-bold">
+            <UserRound className="size-5 text-link" />
+            Thông tin liên hệ
+          </h2>
+          <label className="block text-sm font-medium">
+            Email
+            <input
+              name="email"
+              type="email"
+              defaultValue={t.email}
+              required
+              className="mt-1 min-h-11 w-full rounded-xl border px-3"
+            />
+          </label>
+          <label className="block text-sm font-medium">
+            Số điện thoại
+            <input
+              name="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              defaultValue={t.phone ?? ""}
+              aria-invalid={Boolean(phoneError)}
+              onChange={() => phoneError && setPhoneError("")}
+              className={`mt-1 min-h-11 w-full rounded-xl border px-3 ${phoneError ? "border-danger" : ""}`}
+            />
+            {phoneError && (
+              <span className="mt-1 block text-xs text-danger">
+                {phoneError}
+              </span>
+            )}
+          </label>
+          <button className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white">
+            Lưu liên hệ
+          </button>
+        </form>
+        <section className="surface-card p-5 sm:p-6">
+          <h2 className="font-bold">Cấu hình thông báo</h2>
+          {[
+            ["notifyAssignment", "Phân công mới", a.notifyAssignment],
+            ["notifySchedule", "Thay đổi lịch", a.notifySchedule],
+            ["notifyUrgent", "Công việc khẩn cấp", a.notifyUrgent],
+            ["notifyMaterial", "Vật tư", a.notifyMaterial],
+          ].map(([key, label, value]) => (
+            <label
+              key={String(key)}
+              className="mt-3 flex items-center justify-between text-sm"
+            >
+              <span>{String(label)}</span>
+              <input
+                type="checkbox"
+                defaultChecked={Boolean(value)}
+                onChange={(e) => {
+                  const next = {
+                    notifyAssignment: a.notifyAssignment,
+                    notifySchedule: a.notifySchedule,
+                    notifyUrgent: a.notifyUrgent,
+                    notifyMaterial: a.notifyMaterial,
+                    version: t.version,
+                    [String(key)]: e.target.checked,
+                  };
+                  void act(
+                    () => m.preferences.mutateAsync(next),
+                    "Đã cập nhật cấu hình thông báo.",
+                  );
+                }}
+              />
+            </label>
+          ))}
+        </section>
+        <form
+          onSubmit={password}
+          className="space-y-3 rounded-2xl border border-border bg-card p-5"
+        >
+          <h2 className="flex items-center gap-2 font-bold">
+            <KeyRound className="size-5 text-link" />
+            Đổi mật khẩu
+          </h2>
+          <input
+            name="currentPassword"
+            type="password"
+            required
+            placeholder="Mật khẩu hiện tại"
+            className="min-h-11 w-full rounded-xl border px-3"
+          />
+          <input
+            name="newPassword"
+            type="password"
+            minLength={10}
+            required
+            placeholder="Mật khẩu mới (tối thiểu 10 ký tự)"
+            className="min-h-11 w-full rounded-xl border px-3"
+          />
+          <button className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2.5 text-sm font-semibold text-white">
+            Đổi mật khẩu
+          </button>
+        </form>
+      </div>
+      <section className="surface-card p-5 sm:p-6">
+        <h2 className="font-bold">Phiên đăng nhập</h2>
+        <div className="mt-3 divide-y">
+          {a.sessions.map((x) => (
+            <div key={x.id} className="flex items-center gap-3 py-3">
+              <div className="flex-1">
+                <p className="truncate text-sm font-medium">
+                  {x.userAgent ?? "Thiết bị không xác định"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {x.ipAddress ?? "Không có IP"} · {formatDate(x.lastActiveAt)}
+                </p>
+              </div>
+              <span
+                className={`text-xs font-semibold ${x.active ? "text-success" : "text-muted-foreground"}`}
+              >
+                {x.active ? "Đang hoạt động" : "Đã hết"}
+              </span>
+              {x.active && (
+                <button
+                  onClick={() =>
+                    void act(
+                      () => m.revoke.mutateAsync(x.id),
+                      "Đã thu hồi phiên.",
+                    )
+                  }
+                  className="text-xs font-semibold text-danger"
+                >
+                  Thu hồi
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    </Page>
+  );
+}
+function Info({ k, v }: { k: string; v?: string | null }) {
+  return (
+    <p>
+      <span className="block text-xs text-muted-foreground">{k}</span>
+      <span className="font-medium">{v || "Chưa cập nhật"}</span>
+    </p>
+  );
+}

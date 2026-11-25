@@ -1,0 +1,14 @@
+﻿{
+    "tests":  483,
+    "failures":  0,
+    "errors":  0,
+    "skipped":  0,
+    "classes":  38,
+    "passed":  483,
+    "date":  "2026-11-01",
+    "branch":  "feature/admin-fix",
+    "head":  "4e4543f",
+    "workingTree":  "uncommitted changes included",
+    "log":  "D:/DATN/prompt11-final-tests.log",
+    "note":  "Counts are unique JUnit test cases; browser and frontend protocol checks are reported separately."
+}

@@ -1,0 +1,918 @@
+{
+  "runId": "9d4f2e9b-d244-4783-a284-00afc72cbc7b",
+  "status": "PASS",
+  "cases": [
+    {
+      "name": "Login real owner",
+      "status": "PASS"
+    },
+    {
+      "name": "TC01 native file chooser",
+      "status": "PASS"
+    },
+    {
+      "name": "TC03 TC05 PNG preview before upload",
+      "status": "PASS"
+    },
+    {
+      "name": "View large and cancel selection",
+      "status": "PASS"
+    },
+    {
+      "name": "TC08 fake JPG rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "TC06 oversize rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "TC07 SVG rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "TC09 TC10 save actual multipart PNG",
+      "status": "PASS"
+    },
+    {
+      "name": "TC11 TC13 reload detail persists image",
+      "status": "PASS"
+    },
+    {
+      "name": "TC12 list displays stored thumbnail",
+      "status": "PASS"
+    },
+    {
+      "name": "TC04 drag and drop WEBP",
+      "status": "PASS"
+    },
+    {
+      "name": "TC15 TC22 stale save fails and keeps old image",
+      "status": "PASS"
+    },
+    {
+      "name": "TC02 TC14 replace JPEG successfully",
+      "status": "PASS"
+    },
+    {
+      "name": "TC29 mobile form fits viewport",
+      "status": "PASS"
+    },
+    {
+      "name": "TC16 remove only on save",
+      "status": "PASS"
+    },
+    {
+      "name": "Create house with image in one save",
+      "status": "PASS"
+    },
+    {
+      "name": "TC23 fresh login still displays image",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "responses": [
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:62973/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/bc8ee4e6-bafc-4d6f-ab0f-de9988841e23.png",
+      "status": 200
+    },
+    {
+      "case": "TC01 native file chooser",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/bc8ee4e6-bafc-4d6f-ab0f-de9988841e23.png",
+      "status": 200
+    },
+    {
+      "case": "View large and cancel selection",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/bc8ee4e6-bafc-4d6f-ab0f-de9988841e23.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/8fe7233f-bd43-4ec9-a18c-c45039c33b7f.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/8fe7233f-bd43-4ec9-a18c-c45039c33b7f.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 save actual multipart PNG",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/8fe7233f-bd43-4ec9-a18c-c45039c33b7f.png",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 reload detail persists image",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties?page=0&size=100",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties?page=0&size=100",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties/3/images/0529e5ae-048e-4c8c-b428-4a5f8471d3ab.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties/2/images/f179b6f9-1093-4b83-a95d-929f4a616020.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/8fe7233f-bd43-4ec9-a18c-c45039c33b7f.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties/3/images/0529e5ae-048e-4c8c-b428-4a5f8471d3ab.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 list displays stored thumbnail",
+      "url": "http://127.0.0.1:62973/api/admin/properties/2/images/f179b6f9-1093-4b83-a95d-929f4a616020.png",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/8fe7233f-bd43-4ec9-a18c-c45039c33b7f.png",
+      "status": 200
+    },
+    {
+      "case": "TC04 drag and drop WEBP",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/8fe7233f-bd43-4ec9-a18c-c45039c33b7f.png",
+      "status": 200
+    },
+    {
+      "case": "TC15 TC22 stale save fails and keeps old image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC15 TC22 stale save fails and keeps old image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 409
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/8fe7233f-bd43-4ec9-a18c-c45039c33b7f.png",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/df77fe54-762a-40d9-9acd-12b23acbcfb0.png",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/df77fe54-762a-40d9-9acd-12b23acbcfb0.png",
+      "status": 200
+    },
+    {
+      "case": "TC02 TC14 replace JPEG successfully",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC29 mobile form fits viewport",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/df77fe54-762a-40d9-9acd-12b23acbcfb0.png",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4/images/df77fe54-762a-40d9-9acd-12b23acbcfb0.png",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC16 remove only on save",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/4",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties",
+      "status": 201
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/5",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/5",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/5/images/a1e6065e-db87-4d61-9495-084d3bc56504.png",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/5",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/admin/properties/5/images/a1e6065e-db87-4d61-9495-084d3bc56504.png",
+      "status": 200
+    },
+    {
+      "case": "Create house with image in one save",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/5",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/auth/logout",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/5",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/admin/properties/5/images/a1e6065e-db87-4d61-9495-084d3bc56504.png",
+      "status": 200
+    },
+    {
+      "case": "TC23 fresh login still displays image",
+      "url": "http://127.0.0.1:62973/api/owner/access/properties/5",
+      "status": 200
+    }
+  ],
+  "apiInterception": false
+}

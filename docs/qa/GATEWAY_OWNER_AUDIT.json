@@ -1,0 +1,30 @@
+﻿{
+    "scope":  "Owner-scoped gateway audit, VNPay Sandbox priority",
+    "build":  "SUCCESS",
+    "tests":  {
+                  "run":  46,
+                  "errors":  0,
+                  "skipped":  0,
+                  "failures":  0
+              },
+    "changed":  [
+                    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/integration/GatewayPayments.java",
+                    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/integration/VnpaySessionExpiryTest.java"
+                ],
+    "fix":  "VNPay URL uses persisted session expiry and rejects expired checkout creation",
+    "businessEmailEnabled":  false,
+    "liveGatewayRequestsSent":  0,
+    "liveEmailSent":  0,
+    "ownerScopedPaymentCredentialsInRootDotenv":  0,
+    "limitations":  [
+                        "No live Sandbox merchant round trip or real database concurrency retest in this run",
+                        "IntegrationCenter pending configuration guard still uses database CURRENT_TIMESTAMP rather than BusinessTime; review timezone consistency before production",
+                        "Gateway callbacks validate against current owner merchant metadata; credential rotation and delayed callbacks need an explicit operational policy"
+                    ],
+    "required":  [
+                     "Owner Integration Center PAYMENT TEST enabled with vnpayEnabled, tmnCode and return URL",
+                     "Register publicly reachable backend /api/gateways/vnpay/ipn with VNPay",
+                     "INTEGRATION_\u003cownerId\u003e_PAYMENT_VNPAY_HASH_KEY in server environment",
+                     "MoMo partnerCode, redirect URL, IPN URL and owner-scoped access/secret keys"
+                 ]
+}

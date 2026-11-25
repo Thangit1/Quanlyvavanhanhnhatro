@@ -1,0 +1,266 @@
+{
+  "task": "Prompt 16: room image upload",
+  "date": "2026-11-21",
+  "status": "Local implementation and verification complete; deployment storage not verified",
+  "branch": "feature/improve-business-logic (existing branch retained; no checkout/commit/push)",
+  "analysis": {
+    "existingArchitecture": "Rooms use JDBC DTOs/repositories; room_images already exists from V7. Reused property storage, sanitizer, authenticated blob image component and reference-aware cleanup.",
+    "issuesFixed": [
+      "Room form required manually entered URL; no multipart room gallery workflow",
+      "Tenant contract background image could not send authentication for managed photos",
+      "Concurrent idempotent saves under REPEATABLE READ could miss a committed request; user lock now precedes consistent reads and request lookup uses FOR UPDATE"
+    ]
+  },
+  "filesChanged": [
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/RoomImageService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/RoomImageController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/TenantRoomImageController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/AdminPropertyController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/impl/AdminPropertyServiceImpl.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/repository/AdminPropertyRepository.java",
+    "boarding-house-backend/src/main/resources/application.yml",
+    "boarding-house-backend/src/main/resources/db/migration/V44__Room_gallery_save_requests.sql",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/RoomImagesMysqlTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/RoomGalleryMigrationMysqlTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/RoomGalleryValidationTest.java",
+    "boarding-house-backend/src/test/java/com/thangit/boardinghouse/service/RoomImageHttpTest.java",
+    "boarding-house-frontend/src/components/shared/room-images.tsx",
+    "boarding-house-frontend/src/components/shared/image-upload.tsx",
+    "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "boarding-house-frontend/src/components/admin/properties/property-room-details.tsx",
+    "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "boarding-house-frontend/src/components/tenant/contracts/contract-detail-sections.tsx",
+    "boarding-house-frontend/src/services/admin-property.service.ts",
+    "boarding-house-frontend/src/hooks/use-admin-properties.ts",
+    "boarding-house-frontend/scripts/room-images.test.cjs",
+    "boarding-house-frontend/scripts/room-images-browser.cjs",
+    "boarding-house-frontend/scripts/room-images-restart.cjs",
+    "README.md"
+  ],
+  "filesReviewedInAddition": [
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/PropertyImageService.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/service/PropertyImageStorage.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/controller/PropertyImageController.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/config/PropertyImageCleanup.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/config/SecurityConfig.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/common/exception/GlobalExceptionHandler.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/dto/request/property/AdminPropertyRequests.java",
+    "boarding-house-backend/src/main/java/com/thangit/boardinghouse/dto/response/property/AdminPropertyResponses.java",
+    "boarding-house-backend/src/main/resources/db/migration/V7__Create_property_room_management.sql",
+    "boarding-house-frontend/src/types/admin-property.ts",
+    "boarding-house-frontend/src/types/tenant-contract.ts",
+    "boarding-house-frontend/src/hooks/use-scoped-query.ts",
+    "boarding-house-frontend/next.config.ts",
+    "boarding-house-frontend/AGENTS.md",
+    "boarding-house-frontend/node_modules/next/dist/docs/01-app/03-api-reference/01-directives/use-client.md"
+  ],
+  "components": {
+    "uploader": "RoomImages",
+    "gallery": "RoomGallery",
+    "authenticatedImage": "PropertyImage (existing)",
+    "limits": {
+      "imagesPerRoom": 10,
+      "inputBytesPerImage": 5242880,
+      "accepted": [
+        "JPEG",
+        "PNG",
+        "WEBP"
+      ]
+    }
+  },
+  "apis": [
+    {
+      "method": "POST",
+      "path": "/api/admin/rooms",
+      "type": "multipart/form-data",
+      "parts": [
+        "room (JSON)",
+        "gallery (JSON: ordered items, zero-based cover)",
+        "images (repeated files)"
+      ],
+      "headers": [
+        "Idempotency-Key"
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/rooms/{id}",
+      "purpose": "Atomic room/gallery update: add, retain, remove, reorder, change cover; room.version required"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/rooms/{id}",
+      "purpose": "Existing images[] and room.thumbnailUrl"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/properties/{propertyId}/images/{key}",
+      "purpose": "Existing authenticated staff image read within property scope"
+    },
+    {
+      "method": "GET",
+      "path": "/api/tenant/contracts/{id}/room-images/{key}",
+      "purpose": "Tenant-only read; verifies own contract and room reference"
+    }
+  ],
+  "storage": {
+    "implementation": "Existing PropertyImageStorage; actual decode, pixel limit, metadata stripping and PNG re-encode; UUID filenames; no original path persisted",
+    "configuration": "PROPERTY_IMAGE_ROOT -> app.media.property-root",
+    "default": "${user.home}/.smarthome/property-images",
+    "windowsExample": "D:/SmartHomeData/property-images",
+    "removedFiles": "Reference-aware cleanup after 24h, retaining shared references",
+    "rollback": "Discard files written by rolled-back transaction",
+    "deployment": "Persistent shared mounted volume required for replicas. Object-storage adapter not implemented."
+  },
+  "migration": {
+    "version": 44,
+    "oldMigrationsChanged": false,
+    "behavior": [
+      "Backfill legacy rooms.image_url without deleting photos",
+      "Reconcile cover deterministically and enforce at most one through generated-column unique key",
+      "Create actor-scoped idempotency request table"
+    ]
+  },
+  "verification": {
+    "backend": {
+      "status": "PASS",
+      "command": "mvnw.cmd -DforkCount=0 -DroomImages.mysql=true -DpropertyImages.mysql=true -Drooms.mysql=true -DroomImages.http=true -DroomImages.browser=true -Dprompt03.mysql.port=13319 -Dprompt03.mysql.user=root -Dprompt03.mysql.password= -Dtest=RoomImagesMysqlTest,RoomGalleryMigrationMysqlTest,RoomGalleryValidationTest,PropertyImageMysqlTest,PropertyImageStorageTest,RoomImageHttpTest,RoomLifecycleControllerTest,RoomListMysqlTest,PropertyWorkspaceMysqlTest package",
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log": "boarding-house-backend/room-images-verified-package.log"
+    },
+    "frontendUnit": {
+      "status": "PASS",
+      "tests": 10,
+      "command": "node --test scripts/room-images.test.cjs scripts/property-images.test.cjs scripts/room-presentation.test.cjs"
+    },
+    "lint": {
+      "status": "PASS",
+      "errors": 0,
+      "existingWarnings": 2,
+      "notes": [
+        "checkouts-browser.test.cjs unused fill",
+        "integrations-browser.cjs unused expression"
+      ],
+      "newScriptsLint": "PASS"
+    },
+    "typescript": {
+      "status": "PASS",
+      "command": "tsc --noEmit --incremental false",
+      "log": "boarding-house-frontend/room-images-types-final.log"
+    },
+    "productionBuild": {
+      "status": "PASS",
+      "pages": 123,
+      "dist": ".next-audit16-images",
+      "log": "boarding-house-frontend/room-images-build-final.log"
+    },
+    "browser": {
+      "status": "PASS",
+      "groups": 9,
+      "realChrome": true,
+      "apiInterception": false,
+      "desktop": [
+        1440,
+        1000
+      ],
+      "mobile": [
+        390,
+        844
+      ],
+      "evidence": "docs/qa/room-images/browser.json"
+    },
+    "coldRestart": {
+      "status": "PASS",
+      "freshJvm": true,
+      "packagedJar": true,
+      "imageHttp": 200,
+      "storedBytesUnchanged": true,
+      "evidence": "docs/qa/room-images/restart.json"
+    }
+  },
+  "testCaseCoverage": [
+    [
+      "TC01-TC04",
+      "PASS",
+      "Chrome native picker, multiple real previews and image viewing"
+    ],
+    [
+      "TC05-TC08",
+      "PASS",
+      "Frontend/real storage size, count, format and fake-image rejection"
+    ],
+    [
+      "TC09-TC17",
+      "PASS",
+      "HTTP/MySQL/Chrome create, refresh, list/detail, one cover, ordering and removal"
+    ],
+    [
+      "TC18",
+      "PASS",
+      "Storage failure and rollback preserve prior gallery; API failure stays rejected. Actual socket-drop scenario not injected"
+    ],
+    [
+      "TC19-TC21",
+      "PASS",
+      "Foreign room links, owner/manager/tenant scope, unauthenticated access and path traversal"
+    ],
+    [
+      "TC22-TC23",
+      "PASS",
+      "Idempotent retry and concurrent same-key create produce one room"
+    ],
+    [
+      "TC24-TC26",
+      "PASS_SCOPED_REGRESSION",
+      "Room metadata, manager scope, property workspace and lifecycle controller tests. Full financial regression not rerun"
+    ],
+    [
+      "TC27",
+      "PASS",
+      "Chrome mobile horizontal overflow check and screenshot"
+    ],
+    [
+      "TC28",
+      "PASS",
+      "Fresh packaged backend process reads persisted photo unchanged"
+    ],
+    [
+      "TC29",
+      "LOCAL_PASS_DEPLOYMENT_NOT_RUN",
+      "Persistent local storage tested; no cloud environment supplied"
+    ],
+    [
+      "TC30",
+      "PASS",
+      "Actual HTTP photo response 200 after upload and cold restart"
+    ]
+  ],
+  "evidenceFiles": [
+    "docs/qa/room-images/browser.json",
+    "docs/qa/room-images/http.json",
+    "docs/qa/room-images/restart.json",
+    "docs/qa/room-images/preview-desktop.png",
+    "docs/qa/room-images/detail-desktop.png",
+    "docs/qa/room-images/detail-mobile.png",
+    "docs/qa/room-images/room-list.png"
+  ],
+  "limits": [
+    "No deployment/cloud-volume persistence test or object-storage integration",
+    "No actual connection-drop injection; rollback and rejected upload paths were tested",
+    "Existing external legacy image URLs still depend on external hosts; placeholder handles failures",
+    "Application runtime on 8080 was not restarted or migrated; restart backend normally to apply V44 and new endpoints"
+  ],
+  "safety": {
+    "realDataDeleted": false,
+    "productionDatabaseTouched": false,
+    "businessEmailsSent": 0,
+    "businessEmailEnabled": false,
+    "secretValuesPrinted": false,
+    "committed": false,
+    "pushed": false
+  }
+}

@@ -1,0 +1,3128 @@
+[
+  {
+    "file": "boarding-house-frontend/src/app/accept-invitation/page.tsx",
+    "line": 54,
+    "attributes": "className=\"inline-block font-bold text-blue-600\" onClick={() => { if (user) void logout(); else window.location.assign(\"/login\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accept-invitation/page.tsx",
+    "line": 120,
+    "attributes": "disabled={busy} className=\"w-full rounded-xl bg-blue-600 p-3 font-bold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accept-invitation/page.tsx",
+    "line": 127,
+    "attributes": "type=\"button\" className=\"text-sm font-bold text-blue-600\" onClick={() => void logout().then(() => window.location.assign(`/login#invitation=${token}`), ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/accountant/error.tsx",
+    "line": 14,
+    "attributes": "onClick={reset} className=\"mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/admin/maintenance/error.tsx",
+    "line": 7,
+    "attributes": "onClick={reset} className=\"mt-4 rounded-xl bg-red-600 px-4 py-2 font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/change-password/page.tsx",
+    "line": 101,
+    "attributes": "className=\"w-full rounded-xl bg-blue-600 p-3 text-sm font-bold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/change-password/page.tsx",
+    "line": 106,
+    "attributes": "type=\"button\" className=\"w-full text-sm font-semibold text-slate-500\" onClick={() => void logout()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/app/forgot-password/page.tsx",
+    "line": 84,
+    "attributes": "disabled={loading} className=\"flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 font-bold text-white disabled:opacity-60\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 359,
+    "attributes": "onClick={() => void query.refetch()} className=\"rounded-xl border border-slate-200 px-3 hover:bg-slate-50\" aria-label=\"Tải lại\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 384,
+    "attributes": "disabled={page === 0} onClick={() => setPage((p) => p - 1)} className=\"rounded-lg border px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 391,
+    "attributes": "disabled={(page + 1) * 20 >= total} onClick={() => setPage((p) => p + 1)} className=\"rounded-lg border px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 495,
+    "attributes": "onClick={() => { const reason = prompt(\"Lý do từ chối\"); if (reason) run(\"reject\", { version: 0, reason }); }} className=\"rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 686,
+    "attributes": "className=\"font-semibold text-emerald-700 underline\" onClick={()=>setDetail(row)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 776,
+    "attributes": "type=\"button\" onClick={close} aria-label=\"Đóng\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 932,
+    "attributes": "{...props} className=\"inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-pages.tsx",
+    "line": 1042,
+    "attributes": "onClick={retry} className=\"mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-shell.tsx",
+    "line": 129,
+    "attributes": "onClick={() => window.confirm(\"Bạn có chắc muốn đăng xuất?\") && void logout() } className=\"fixed bottom-4 left-5 flex min-h-11 w-62 items-center gap-3 rounded-xl bg-white px-3 text-sm text-slate-600 hover:bg-red-50 hover:text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-shell.tsx",
+    "line": 141,
+    "attributes": "className=\"absolute inset-0 bg-slate-950/40\" aria-label=\"Đóng menu\" onClick={() => setOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-shell.tsx",
+    "line": 149,
+    "attributes": "aria-label=\"Đóng menu\" className=\"rounded-xl p-2 hover:bg-slate-100\" onClick={() => setOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/accountant/accountant-shell.tsx",
+    "line": 191,
+    "attributes": "className=\"rounded-xl p-2 hover:bg-slate-100 lg:hidden\" aria-label=\"Mở menu\" onClick={open}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/account-ui.tsx",
+    "line": 52,
+    "attributes": "type=\"button\" className={secondary} aria-label=\"Đóng\" onClick={onClose}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 231,
+    "attributes": "className={primary} onClick={() => { setCreatingProfile(null); setCreating(true); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 282,
+    "attributes": "key={key} aria-pressed={tab === key} className={tab === key ? primary : secondary} onClick={() => { setTab(key); setPage(0); setSelected(null); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 523,
+    "attributes": "className=\"font-semibold text-blue-600\" onClick={() => setSelected(row)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 530,
+    "attributes": "className={secondary} onClick={() => setAssigning(row)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 538,
+    "attributes": "className=\"font-semibold text-blue-600\" onClick={() => setEditingAccount(row)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 546,
+    "attributes": "className={secondary} onClick={() => { setCreatingProfile(row); setCreating(true); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 571,
+    "attributes": "className={secondary} disabled={!page} onClick={() => setPage(page - 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 578,
+    "attributes": "className={secondary} disabled={(page + 1) * 20 >= accounts.data.total} onClick={() => setPage(page + 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 598,
+    "attributes": "className={`${secondary} mt-4`} onClick={() => { setTab(\"invitations\"); setPage(0); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 612,
+    "attributes": "className={secondary} onClick={() => { setTenantInvite(null); setInvite(true); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 652,
+    "attributes": "disabled={busy} className={secondary} onClick={() => { const reason = window.prompt(\"Lý do gửi lại lời mời:\"); if (reason?.trim()) void run(async () => { setLink(await service.resend(i.id, reason)); }, \"Đã tạo liên kết mới.\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 665,
+    "attributes": "disabled={busy} className={secondary} onClick={() => { const reason = window.prompt(\"Lý do thu hồi lời mời:\"); if (reason?.trim()) void run( () => service.revokeInvitation(i.id, reason), \"Đã thu hồi lời mời.\", ); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 688,
+    "attributes": "className={secondary} disabled={!page} onClick={() => setPage(page - 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 695,
+    "attributes": "className={secondary} disabled={(page + 1) * 20 >= (invitations.data?.length ?? 0)} onClick={() => setPage(page + 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 733,
+    "attributes": "disabled={!historyPage} className={secondary} onClick={() => setHistoryPage(historyPage - 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 740,
+    "attributes": "className={secondary} disabled={history.data?.length !== 50} onClick={() => setHistoryPage(historyPage + 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 798,
+    "attributes": "disabled={busy} className={secondary} onClick={() => void statusAccount(selected)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 810,
+    "attributes": "className={secondary} disabled={busy} onClick={() => { setEditingAccount(selected); setSelected(null); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 820,
+    "attributes": "className={secondary} disabled={busy} onClick={() => void resetAccount(selected)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 830,
+    "attributes": "className={primary} onClick={() => { setAssigning(selected); setSelected(null); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 939,
+    "attributes": "className={`${primary} mt-4`} onClick={() => { void navigator.clipboard .writeText( `${window.location.origin}/accept-invitation#token=${link.token}`, ) .then(() => setNotice(\"Đã sao chép liên kết.\")) .catch(() => setError( \"Không thể sao chép tự độn",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 1044,
+    "attributes": "className=\"mt-3 text-sm font-semibold text-red-600\" onClick={() => onRevoke(a.property_id)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 1212,
+    "attributes": "type=\"button\" className={secondary} key={a.property_id} onClick={() => loadAssignment(a.property_id)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 1340,
+    "attributes": "className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/accounts-page.tsx",
+    "line": 1443,
+    "attributes": "className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/create-account-wizard.tsx",
+    "line": 80,
+    "attributes": "className={secondary} onClick={() => void navigator.clipboard .writeText(result.initialPassword!) .then(() => setNotice(\"Đã sao chép. Chuyển riêng cho người nhận.\"), ) .catch(() => setNotice(\"Chọn và sao chép mật khẩu trong ô phía trên.\"), ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/create-account-wizard.tsx",
+    "line": 107,
+    "attributes": "className={primary} onClick={onClose}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/create-account-wizard.tsx",
+    "line": 705,
+    "attributes": "type=\"button\" className={secondary} onClick={() => { setStep(step - 1); setError(\"\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/create-account-wizard.tsx",
+    "line": 718,
+    "attributes": "type=\"submit\" className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/create-account-wizard.tsx",
+    "line": 820,
+    "attributes": "className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/manager-tenant-accounts.tsx",
+    "line": 98,
+    "attributes": "className=\"rounded-xl bg-blue-600 p-3 text-sm font-bold text-white\" onClick={() => setCreate(true)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/manager-tenant-accounts.tsx",
+    "line": 203,
+    "attributes": "disabled={busy} className=\"font-semibold text-blue-600\" onClick={() => void reset(p.user_id!)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/manager-tenant-accounts.tsx",
+    "line": 210,
+    "attributes": "disabled={busy} className=\"font-semibold text-red-600\" onClick={() => void status( p.user_id!, p.account_status ?? \"ACTIVE\", ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/manager-tenant-accounts.tsx",
+    "line": 237,
+    "attributes": "disabled={!page} onClick={() => setPage(page - 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/accounts/manager-tenant-accounts.tsx",
+    "line": 241,
+    "attributes": "disabled={(page + 1) * 20 >= rows.length} onClick={() => setPage(page + 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-dashboard.tsx",
+    "line": 233,
+    "attributes": "aria-label=\"Làm mới dữ liệu\" onClick={refresh} className=\"rounded-lg border bg-white p-2.5 text-slate-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-shell.tsx",
+    "line": 212,
+    "attributes": "aria-label={collapsed ? \"Mở rộng sidebar\" : \"Thu gọn sidebar\"} aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)} className=\"m-3 flex min-h-10 items-center justify-center gap-2 rounded-lg border text-sm text-slate-500\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-shell.tsx",
+    "line": 240,
+    "attributes": "autoFocus aria-label=\"Đóng menu\" onClick={() => setMenu(false)} className=\"rounded-lg p-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-shell.tsx",
+    "line": 256,
+    "attributes": "aria-label=\"Mở menu\" aria-expanded={menu} onClick={() => setMenu(true)} className=\"grid size-10 shrink-0 place-items-center rounded-lg hover:bg-slate-100 lg:hidden\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-user-menu.tsx",
+    "line": 52,
+    "attributes": "type=\"button\" aria-label=\"Mở menu tài khoản\" aria-haspopup=\"menu\" aria-expanded={open} aria-controls=\"admin-user-menu\" onClick={() => setOpen((value) => !value)} className=\"grid size-10 cursor-pointer place-items-center rounded-full bg-blue-100 font-",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/admin-user-menu.tsx",
+    "line": 108,
+    "attributes": "type=\"button\" role=\"menuitem\" onClick={() => { setOpen(false); setConfirmingLogout(true); }} className=\"flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 focus-visible:b",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-detail-page.tsx",
+    "line": 74,
+    "attributes": "key={item} onClick={() => setTab(item)} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === item ? \"bg-blue-600 text-white\" : \"text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-extension-review.tsx",
+    "line": 91,
+    "attributes": "disabled={busy !== undefined || !reason.trim()} onClick={() => void approve(x.id)} className=\"rounded-xl bg-blue-600 px-3 py-2 font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 168,
+    "attributes": "type=\"button\" disabled={exporting || !data} onClick={() => void handleExport()} className=\"inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 339,
+    "attributes": "type=\"button\" onClick={resetFilters} className=\"inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 646,
+    "attributes": "type=\"button\" aria-label=\"Trang trước\" disabled={page <= 0} onClick={() => onChange(page - 1)} className=\"grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-list-page.tsx",
+    "line": 655,
+    "attributes": "type=\"button\" aria-label=\"Trang sau\" disabled={page >= totalPages - 1} onClick={() => onChange(page + 1)} className=\"grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disab",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-services-editor.tsx",
+    "line": 319,
+    "attributes": "type=\"button\" className=\"underline\" onClick={() => void query.refetch()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-services-editor.tsx",
+    "line": 424,
+    "attributes": "type=\"button\" className=\"mt-2 text-xs text-blue-700 underline\" onClick={() => open(undefined, undefined, c)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-services-editor.tsx",
+    "line": 557,
+    "attributes": "type=\"button\" className=\"mr-3 text-blue-700 underline\" onClick={() => open(s, index)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-services-editor.tsx",
+    "line": 564,
+    "attributes": "type=\"button\" className=\"text-red-700 underline\" onClick={() => onChange(value.filter((_, i) => i !== index)) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-services-editor.tsx",
+    "line": 574,
+    "attributes": "type=\"button\" aria-label={`Đưa ${s.name} lên`} disabled={!index} onClick={() => { const next = [...value]; [next[index - 1], next[index]] = [ next[index], next[index - 1], ]; onChange(next); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/contracts/contract-services-editor.tsx",
+    "line": 589,
+    "attributes": "type=\"button\" aria-label={`Đưa ${s.name} xuống`} disabled={index === value.length - 1} onClick={() => { const next = [...value]; [next[index + 1], next[index]] = [ next[index], next[index + 1], ]; onChange(next); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 207,
+    "attributes": "disabled={recalculating} className=\"rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 226,
+    "attributes": "disabled={m.issue.isPending} onClick={async () => { if ( actionInFlight.current || !window.confirm( `Phát hành ${d.invoiceCode} với tổng tiền ${formatCurrency(d.totalAmount)}? Hãy kiểm tra kỳ sử dụng và khoảng thanh toán.`, ) ) return; actionInFlight",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 252,
+    "attributes": "onClick={() => { setAmount(d.remainingAmount); setReceived(false); setReference(\"\"); setPaidAt(localDateTime()); setDialog(\"payment\"); }} className=\"rounded-xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 267,
+    "attributes": "onClick={() => { setType(\"IN_APP\"); setDialog(\"remind\"); }} className=\"rounded-xl border bg-white px-3 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 278,
+    "attributes": "onClick={() => void adminInvoiceService .print(id) .catch((e) => setError(apiErrorMessage(e))) } className=\"rounded-xl border bg-white px-3 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 289,
+    "attributes": "onClick={() => void adminInvoiceService .print(id) .catch((e) => setError(apiErrorMessage(e))) } className=\"rounded-xl border bg-white px-3 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 422,
+    "attributes": "onClick={() => { setAmount(0); setType(\"DECREASE\"); setDialog(\"adjust\"); }} className=\"rounded-xl border bg-white px-4 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 434,
+    "attributes": "onClick={() => setDialog(\"cancel\")} className=\"rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 554,
+    "attributes": "onClick={() => { setDialog(null); setError(\"\"); }} className=\"rounded-xl border px-4 py-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-detail-page.tsx",
+    "line": 563,
+    "attributes": "onClick={() => void action()} disabled={ m.payment.isPending || m.adjust.isPending || m.cancel.isPending || m.remind.isPending || (dialog === \"payment\" && (!received || !paidAt || (method === \"BANK_TRANSFER\" && !reference.trim()))) || (dialog !== \"re",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 155,
+    "attributes": "key={x} onClick={() => setStep(i + 1)} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold ${step === i + 1 ? \"bg-blue-600 text-white\" : \"bg-white text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 326,
+    "attributes": "onClick={add} className=\"rounded-xl bg-slate-900 px-3 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 421,
+    "attributes": "disabled={previewing} className=\"mt-4 rounded-xl border px-4 py-2 text-sm font-semibold\" onClick={async () => { setPreviewing(true); setError(\"\"); setReviewed(false); try { const payload = { ...parseNumericFields<InvoicePayload>( form, [\"discountAmou",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 488,
+    "attributes": "disabled={step === 1} onClick={() => setStep(step - 1)} className=\"rounded-xl border bg-white px-4 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 496,
+    "attributes": "onClick={() => setStep(step + 1)} disabled={step === 1 && (!form.roomId || !form.contractId)} className=\"rounded-xl bg-blue-600 px-5 py-2 font-semibold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 505,
+    "attributes": "onClick={() => void submit(\"SAVE_DRAFT\")} disabled={ m.create.isPending || !plan || plan.signature !== JSON.stringify(form) || !reviewed } className=\"rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 517,
+    "attributes": "onClick={() => void submit(\"ISSUE\")} disabled={ m.create.isPending || !plan || plan.signature !== JSON.stringify(form) || !reviewed } className=\"rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 671,
+    "attributes": "onClick={() => void preview()} disabled={!form.propertyId || m.preview.isPending} className=\"mt-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 731,
+    "attributes": "onClick={() => setForm({ ...form, action: \"SAVE_DRAFT\" })} className=\"rounded-xl border px-4 py-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-form-pages.tsx",
+    "line": 737,
+    "attributes": "onClick={() => void generate()} disabled={ !selected.length || m.bulk.isPending || !reviewed || previewSignature !== JSON.stringify(form) } className=\"rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 130,
+    "attributes": "disabled={exporting} onClick={() => void exportData(\"xlsx\")} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-3 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 171,
+    "attributes": "disabled={exporting} onClick={() => void exportData(\"csv\")} className=\"text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 359,
+    "attributes": "key={v} onClick={() => { setStatus(v); setPage(0); }} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${status === v ? \"bg-blue-600 text-white\" : \"bg-slate-100 text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 370,
+    "attributes": "onClick={() => { setTyped(\"\"); setKeyword(\"\"); setPropertyId(undefined); setPeriod(\"\"); setStatus(\"\"); setPage(0); }} className=\"ml-auto inline-flex items-center gap-1 text-xs font-semibold text-blue-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 548,
+    "attributes": "disabled={page === 0} onClick={() => setPage(page - 1)} className=\"rounded-lg border bg-white px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-list-page.tsx",
+    "line": 558,
+    "attributes": "disabled={page + 1 >= p.totalPages} onClick={() => setPage(page + 1)} className=\"rounded-lg border bg-white px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/invoices/invoice-policy-panel.tsx",
+    "line": 127,
+    "attributes": "disabled={busy} className=\"rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 237,
+    "attributes": "className={primary} onClick={() => setCreating(true)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 439,
+    "attributes": "key={s.stage} className=\"text-left\" onClick={() => { setStage(s.stage); setPage(0); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 490,
+    "attributes": "type=\"button\" className=\"text-xs text-blue-700 underline\" onClick={() => setContract(r.contract_id)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 548,
+    "attributes": "className={button} disabled={!r.can_open} title={ !r.can_open ? \"Cần quyền FINANCE_READ để mở hồ sơ có số liệu quyết toán\" : undefined } onClick={() => setContract(r.contract_id)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 563,
+    "attributes": "className={button} onClick={() => { setError(\"\"); setAssignment(r); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 646,
+    "attributes": "className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/checkout-workspace.tsx",
+    "line": 714,
+    "attributes": "disabled={busy} className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 238,
+    "attributes": "key={x} onClick={() => setTab(x)} className={`rounded-xl px-4 py-2 text-sm font-semibold ${tab === x ? \"bg-blue-600 text-white\" : \"text-slate-600 hover:bg-slate-50\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 251,
+    "attributes": "onClick={() => setDialog({ kind: tab === \"booking\" ? \"booking\" : tab === \"checkin\" ? \"prepare-checkin\" : \"request-checkout\", }) } className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 407,
+    "attributes": "className={linkButton} onClick={() => setDialog({ kind: \"contract\", row: r })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 416,
+    "attributes": "className={linkButton} onClick={() => setDialog({ kind: \"extend-booking\", row: r }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 426,
+    "attributes": "className=\"text-xs font-semibold text-red-600\" disabled={mutation.isPending} onClick={() => { const reason = window.prompt( \"Lý do hủy phiếu giữ phòng (tiền đã thu được xử lý riêng trong sổ cọc):\", ); if (!reason?.trim()) return; mutation.mutate({ id",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 503,
+    "attributes": "className={linkButton} onClick={() => setDialog({ kind: \"complete-checkin\", row: r }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 574,
+    "attributes": "className={linkButton} onClick={() => setDialog({ kind: \"complete-checkout\", row: r }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 727,
+    "attributes": "className=\"mb-4 text-blue-700\" onClick={close}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 741,
+    "attributes": "className=\"mb-4 text-blue-700\" onClick={close}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 767,
+    "attributes": "onClick={close} aria-label=\"Đóng\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 1021,
+    "attributes": "type=\"button\" onClick={close} className=\"rounded-xl border px-4 py-2.5 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+    "line": 1028,
+    "attributes": "disabled={busy} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 47,
+    "attributes": "onClick={() => query.refetch()} className=\"ml-3 font-bold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 245,
+    "attributes": "onClick={() => setAction(\"inspect-pass\")} className={maintenanceStyles.primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 251,
+    "attributes": "onClick={() => setAction(\"inspect-fail\")} className={maintenanceStyles.secondary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 573,
+    "attributes": "type=\"button\" onClick={close} className={maintenanceStyles.secondary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 580,
+    "attributes": "type=\"submit\" className={maintenanceStyles.primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-detail-page.tsx",
+    "line": 631,
+    "attributes": "onClick={onClick} className={ primary ? maintenanceStyles.primary : maintenanceStyles.secondary }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-evidence.tsx",
+    "line": 56,
+    "attributes": "className=\"mt-3 text-sm text-red-700\" onClick={() => void query.refetch()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-evidence.tsx",
+    "line": 65,
+    "attributes": "key={file.id} disabled={busy} onClick={() => void download(file)} className=\"block w-full rounded-xl border p-3 text-left text-sm text-blue-700 disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-form-page.tsx",
+    "line": 311,
+    "attributes": "disabled={mutations.create.isPending} className={maintenanceStyles.primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 122,
+    "attributes": "onClick={() => adminMaintenanceService.export(filters)} className={maintenanceStyles.secondary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 156,
+    "attributes": "onClick={() => { summary.refetch(); list.refetch(); options.refetch(); }} className=\"mt-3 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 252,
+    "attributes": "aria-label=\"Dạng bảng\" onClick={() => setView(\"table\")} className={`rounded-lg p-2 ${view === \"table\" ? \"bg-white text-blue-600 shadow\" : \"text-slate-500\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 259,
+    "attributes": "aria-label=\"Dạng Kanban\" onClick={() => setView(\"kanban\")} className={`rounded-lg p-2 ${view === \"kanban\" ? \"bg-white text-blue-600 shadow\" : \"text-slate-500\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 270,
+    "attributes": "key={tabNames[i]} onClick={() => applyTab(t)} className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-semibold ${(t === \"OVERDUE\" ? filters.overdue : t ? filters.status === t : !filters.status && !filters.overdue) ? \"bg-blue-600 text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 293,
+    "attributes": "disabled={filters.page === 0} onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))} className={maintenanceStyles.secondary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-list-page.tsx",
+    "line": 303,
+    "attributes": "disabled={filters.page + 1 >= list.data.totalPages} onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))} className={maintenanceStyles.secondary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-resource-pages.tsx",
+    "line": 103,
+    "attributes": "className={maintenanceStyles.primary} onClick={() => setShow(!show)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/maintenance-resource-pages.tsx",
+    "line": 385,
+    "attributes": "type=\"submit\" className={`${maintenanceStyles.primary} mt-4`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 308,
+    "attributes": "className={maintenanceStyles.primary} onClick={() => { setError(\"\"); setEditing(\"new\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 320,
+    "attributes": "className={maintenanceStyles.primary} onClick={() => { setError(\"\"); setNewMaterial(true); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 335,
+    "attributes": "key={key} aria-pressed={tab === key} className={tab === key ? maintenanceStyles.primary : button} onClick={() => changeTab(key)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 600,
+    "attributes": "className={button} onClick={() => setHistory(r)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 608,
+    "attributes": "className={button} onClick={() => { setError(\"\"); setEditing(r); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 621,
+    "attributes": "className={button} onClick={() => { setError(\"\"); setReceiving(r); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 636,
+    "attributes": "className={button} onClick={() => { setError(\"\"); setDecision({ row: r, approve: true }); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 645,
+    "attributes": "className={button} onClick={() => { setError(\"\"); setDecision({ row: r, approve: false }); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 833,
+    "attributes": "type=\"button\" className={button} disabled={busy} onClick={onClose}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/maintenance/operations-workspace.tsx",
+    "line": 841,
+    "attributes": "className={maintenanceStyles.primary} disabled={busy}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 247,
+    "attributes": "className={button} disabled={busy} onClick={() => void run(async () => { setSelected(await organizationService.setup()); }, \"Đã thiết lập không gian quản lý.\") }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 305,
+    "attributes": "key={key} onClick={() => setTab(key)} aria-pressed={tab === key} className={ tab === key ? button : \"rounded-xl border border-slate-300 px-4 py-2 text-sm\" }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 415,
+    "attributes": "className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 474,
+    "attributes": "className=\"font-semibold text-blue-600\" onClick={() => setTab(\"assignments\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 505,
+    "attributes": "className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 506,
+    "attributes": "type=\"submit\" value=\"end\" className=\"rounded-xl border border-red-200 px-4 py-2 text-sm text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 581,
+    "attributes": "className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 583,
+    "attributes": "type=\"button\" onClick={() => setEditing(null)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 625,
+    "attributes": "disabled={busy} className=\"text-sm font-semibold text-blue-700\" onClick={() => setEditing(a)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 666,
+    "attributes": "disabled={!page || history.isFetching} onClick={() => setPage(page - 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/organizations/organization-management-page.tsx",
+    "line": 673,
+    "attributes": "disabled={ history.isFetching || history.data?.length !== 50 } onClick={() => setPage(page + 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 160,
+    "attributes": "onClick={() => { setError(\"\"); setSelected(p); }} className=\"block w-full rounded-lg p-2 text-left text-sm text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 213,
+    "attributes": "aria-pressed={view === \"cards\"} onClick={() => setView(\"cards\")} className=\"rounded-lg border bg-white px-3 py-2 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-list-workspace.tsx",
+    "line": 220,
+    "attributes": "aria-pressed={view === \"table\"} onClick={() => setView(\"table\")} className=\"rounded-lg border bg-white px-3 py-2 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-managers-panel.tsx",
+    "line": 110,
+    "attributes": "type=\"button\" className=\"underline\" onClick={() => void query.refetch()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-managers-panel.tsx",
+    "line": 175,
+    "attributes": "type=\"button\" disabled={ busy || a.status !== \"ACTIVE\" || !a.has_manager_role } className=\"text-sm text-blue-700 underline disabled:opacity-40\" onClick={() => { setManager(a.manager_id); setProperties([propertyId]); setCapabilities( query .data!.capa",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-managers-panel.tsx",
+    "line": 196,
+    "attributes": "type=\"button\" disabled={busy} className=\"text-sm text-red-700 underline\" onClick={() => void revoke(a.manager_id)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-managers-panel.tsx",
+    "line": 305,
+    "attributes": "disabled={ busy || !manager || !properties.length || !reason.trim() } className=\"rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 203,
+    "attributes": "type=\"button\" onClick={() => router.back()} className=\"rounded-xl border bg-white px-5 py-2.5 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 210,
+    "attributes": "disabled={mutation.isPending} className=\"rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 399,
+    "attributes": "onClick={() => { setStructureError(\"\"); setModal(\"building\"); }} className=\"rounded-xl border px-3 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 408,
+    "attributes": "onClick={() => { setStructureError(\"\"); setBuildingId(p.buildings[0]?.id || 0); setModal(\"floor\"); }} disabled={!p.buildings.length} className=\"rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 520,
+    "attributes": "onClick={() => { setStructureError(\"\"); setModal(null); }} className=\"rounded-xl border px-4 py-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/property-pages.tsx",
+    "line": 529,
+    "attributes": "onClick={() => void saveStructure()} disabled={ !code || !name || (modal === \"floor\" && !buildingId) || mutations.building.isPending || mutations.floor.isPending } className=\"rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-assets-editor.tsx",
+    "line": 91,
+    "attributes": "type=\"button\" className=\"justify-self-start text-sm text-red-700 underline\" aria-label={`Xóa tài sản ${index + 1}: ${a.name}`} onClick={() => onChange(assets.filter((_, i) => i !== index))}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-assets-editor.tsx",
+    "line": 102,
+    "attributes": "type=\"button\" className=\"mt-3 rounded-xl bg-slate-900 px-4 py-2 text-sm text-white\" onClick={() => onChange([ ...assets, { name: \"\", quantity: 1, conditionStatus: \"GOOD\", note: \"\" }, ]) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 128,
+    "attributes": "aria-pressed={view === \"cards\"} onClick={() => setView(\"cards\")} className={`rounded-lg border px-3 py-2 text-sm ${view === \"cards\" ? \"bg-blue-600 text-white\" : \"bg-white\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 135,
+    "attributes": "aria-pressed={view === \"table\"} onClick={() => setView(\"table\")} className={`rounded-lg border px-3 py-2 text-sm ${view === \"table\" ? \"bg-blue-600 text-white\" : \"bg-white\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 147,
+    "attributes": "onClick={() => setBulk(true)} className=\"rounded-lg border bg-white px-3 py-2 text-sm font-medium\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 304,
+    "attributes": "onClick={() => { setTyped(\"\"); setStatus(\"\"); setBuildingId(undefined); setFloorId(undefined); setMinimumRent(\"\"); setMaximumRent(\"\"); setPage(0); }} className=\"min-h-11 rounded-lg border px-3 py-2 text-sm text-slate-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 333,
+    "attributes": "aria-pressed={!floorId} onClick={() => { setFloorId(undefined); setPage(0); }} className=\"shrink-0 rounded-lg border bg-white px-3 py-2 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-list-workspace.tsx",
+    "line": 344,
+    "attributes": "key={f.id} aria-pressed={floorId === f.id} onClick={() => { setFloorId(f.id); setPage(0); }} className={`shrink-0 rounded-lg border px-3 py-2 text-sm ${floorId === f.id ? \"bg-blue-600 text-white\" : \"bg-white\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 349,
+    "attributes": "type=\"button\" onClick={() => router.back()} className=\"rounded-xl border bg-white px-5 py-2.5 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 356,
+    "attributes": "disabled={mutation.isPending} className=\"rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 451,
+    "attributes": "onClick={() => { setActionError(\"\"); setPrice(r.monthlyRent); setDialog(\"price\"); }} className=\"rounded-xl border bg-white px-4 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 469,
+    "attributes": "onClick={() => { setActionError(\"\"); setStatus(\"\"); setReadinessConfirmed(false); setDialog(\"status\"); }} className=\"rounded-xl border bg-white px-4 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 600,
+    "attributes": "onClick={() => { setActionError(\"\"); setDialog(null); }} className=\"rounded-xl border px-4 py-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-pages.tsx",
+    "line": 609,
+    "attributes": "onClick={() => void submit()} disabled={ (dialog === \"price\" ? price === \"\" || Number(price) < 0 : !status) || (dialog === \"status\" && (!reason.trim() || (status === \"READY\" && !readinessConfirmed))) || mutations.price.isPending || mutations.status.i",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 52,
+    "attributes": "key={tab.id} aria-current={value === tab.id ? \"page\" : undefined} onClick={() => onChange(tab.id)} className={`shrink-0 rounded-lg px-4 py-2.5 text-sm font-medium ${value === tab.id ? \"bg-blue-600 text-white\" : \"bg-white text-slate-600 hover:bg-slate",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 372,
+    "attributes": "disabled={busy} onClick={() => void download()} className=\"inline-flex min-h-10 items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm font-medium disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 477,
+    "attributes": "disabled={mutations.bulk.isPending} onClick={onClose} aria-label=\"Đóng tạo nhiều phòng\" className=\"rounded-lg p-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 634,
+    "attributes": "type=\"button\" disabled={mutations.bulk.isPending} onClick={onClose} className=\"rounded-lg border px-4 py-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/properties/room-workspace-ui.tsx",
+    "line": 642,
+    "attributes": "disabled={ !confirmed || !preview.length || mutations.bulk.isPending || options.isError } className=\"rounded-lg bg-blue-600 px-4 py-2 text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 618,
+    "attributes": "disabled={busy || query.isError || !data} className=\"rounded-xl border bg-white px-4 py-2 text-sm disabled:opacity-40\" onClick={() => void exportReport(\"XLSX\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 625,
+    "attributes": "disabled={busy || query.isError || !data} className=\"rounded-xl border bg-white px-4 py-2 text-sm disabled:opacity-40\" onClick={() => void exportReport(\"CSV\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 632,
+    "attributes": "className=\"rounded-xl border bg-white px-4 py-2 text-sm\" onClick={() => window.print()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 652,
+    "attributes": "key={id} aria-current={id === type ? \"page\" : undefined} className={`rounded-lg px-2.5 py-2 text-left text-sm ${id === type ? \"bg-blue-600 font-semibold text-white\" : \"text-slate-600 hover:bg-slate-100\"}`} onClick={() => choose(id)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 817,
+    "attributes": "className=\"self-end rounded-xl border px-3 py-2.5 text-sm\" onClick={() => void query.refetch()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 853,
+    "attributes": "className=\"rounded-lg border px-3 py-2\" disabled={job.status !== \"COMPLETED\"} onClick={() => void adminReportService .download(job) .catch((e) => setError(apiErrorMessage(e))) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 940,
+    "attributes": "key={key} className=\"rounded-2xl border bg-white p-4 text-left\" onClick={() => { choose(target); if (key === \"expiringContracts\") setStatus(\"EXPIRING_WINDOW\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 965,
+    "attributes": "key={key} className=\"rounded-2xl border bg-white p-4 text-left\" onClick={() => choose( key === \"outstandingDebt\" ? \"debt\" : key === \"heldDeposits\" ? \"deposits\" : key === \"confirmedCosts\" ? \"expenses\" : key === \"periodInvoiceObligations\" ? \"revenue\" :",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 1003,
+    "attributes": "key={String(r.period)} className=\"mt-3 block w-full rounded-lg bg-slate-50 p-3 text-left text-sm\" onClick={() => choose(\"payments\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 1038,
+    "attributes": "key={r.label} className=\"mt-2 flex w-full justify-between rounded-lg bg-slate-50 p-2 text-sm\" onClick={() => { choose(\"occupancy\"); setStatus(r.label); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 1058,
+    "attributes": "className=\"mt-2 flex w-full justify-between gap-3 rounded-lg bg-slate-50 p-2 text-sm\" key={String(r.category)} onClick={() => { choose(\"expenses\"); setCategory(String(r.category)); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 1268,
+    "attributes": "className=\"block text-blue-700\" onClick={() => { setPropertyId(Number(row.property_id)); choose(\"revenue\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 1278,
+    "attributes": "className=\"block text-blue-700\" onClick={() => setExpanded(expanded === i ? undefined : i) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 1319,
+    "attributes": "className=\"rounded-lg border bg-white px-3 py-2 disabled:opacity-40\" disabled={!page} onClick={() => setPage(page - 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/management-report-workspace.tsx",
+    "line": 1326,
+    "attributes": "className=\"rounded-lg border bg-white px-3 py-2 disabled:opacity-40\" disabled={page + 1 >= data.totalPages} onClick={() => setPage(page + 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-detail-page.tsx",
+    "line": 214,
+    "attributes": "onClick={() => { void query.refetch(); void options.refetch(); }} className=\"btn-secondary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-detail-page.tsx",
+    "line": 226,
+    "attributes": "onClick={() => void exportReport()} disabled={!data || exporter.isPending} className=\"btn-primary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-export-history-page.tsx",
+    "line": 22,
+    "attributes": "onClick={() => void query.refetch()} className=\"btn-secondary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-export-history-page.tsx",
+    "line": 75,
+    "attributes": "disabled={job.status !== \"COMPLETED\"} onClick={() => void adminReportService.download(job)} className=\"btn-secondary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-overview-page.tsx",
+    "line": 164,
+    "attributes": "onClick={() => query.refetch()} className=\"btn-secondary\" aria-label=\"Làm mới dữ liệu\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-overview-page.tsx",
+    "line": 174,
+    "attributes": "onClick={() => void exportReport()} disabled={exporter.isPending || !data} className=\"btn-primary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 197,
+    "attributes": "onClick={() => setOpen(!open)} className=\"btn-secondary lg:hidden\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 209,
+    "attributes": "onClick={state.reset} className=\"btn-secondary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 213,
+    "attributes": "onClick={() => { state.apply(); setOpen(false); }} className=\"btn-primary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/reports/report-shared.tsx",
+    "line": 297,
+    "attributes": "onClick={retry} className=\"mt-3 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/organization-settings-panel.tsx",
+    "line": 122,
+    "attributes": "className=\"rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-form.tsx",
+    "line": 83,
+    "attributes": "type=\"button\" disabled={!dirty || saving} onClick={onReset} className=\"inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 sm",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-form.tsx",
+    "line": 92,
+    "attributes": "type=\"submit\" disabled={!dirty || saving || !editable} className=\"inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disab",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-page.tsx",
+    "line": 440,
+    "attributes": "disabled={page === 0} onClick={() => setPage((value) => value - 1)} className=\"rounded-lg border px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-page.tsx",
+    "line": 447,
+    "attributes": "disabled={page >= data.totalPages - 1} onClick={() => setPage((value) => value + 1)} className=\"rounded-lg border px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/settings/settings-page.tsx",
+    "line": 477,
+    "attributes": "type=\"button\" onClick={onTest} className=\"min-h-10 rounded-xl border border-blue-200 bg-white px-4 text-sm font-semibold text-blue-700 hover:bg-blue-100\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 97,
+    "attributes": "onClick={() => setAction(\"transfer\")} className={outlineButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 114,
+    "attributes": "onClick={() => setAction(\"moveout\")} className={outlineButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 121,
+    "attributes": "onClick={() => setAction(\"temporary\")} className={outlineButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 193,
+    "attributes": "onClick={() => setAction(\"account\")} className=\"font-semibold text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 218,
+    "attributes": "key={item} onClick={() => setTab(item)} className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${tab === item ? \"bg-blue-600 text-white\" : \"text-slate-600 hover:bg-slate-50\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 776,
+    "attributes": "onClick={onClose} aria-label=\"Đóng\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 910,
+    "attributes": "type=\"button\" onClick={onClose} className={outlineButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 913,
+    "attributes": "disabled={busy} className=\"rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-detail-page.tsx",
+    "line": 984,
+    "attributes": "aria-label=\"Tải xuống\" onClick={() => void adminTenantService.downloadDocument( tenantId, item.id, item.originalName, ) } className=\"grid size-9 place-items-center rounded-lg border\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 256,
+    "attributes": "type=\"button\" disabled={checking || !valuesPreview.phone} className=\"text-sm font-semibold text-blue-700 disabled:opacity-40\" onClick={async () => { setChecking(true); setDuplicates([]); setDuplicateNotice(\"\"); try { const result = await adminTenantS",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 553,
+    "attributes": "type=\"button\" disabled={step === 0} onClick={() => setStep((v) => v - 1)} className=\"inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 563,
+    "attributes": "type=\"button\" onClick={() => void next()} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-form-page.tsx",
+    "line": 572,
+    "attributes": "type=\"submit\" disabled={busy} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white disabled:opacity-60\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-intake-page.tsx",
+    "line": 56,
+    "attributes": "key={p.id} className={`block w-full rounded-xl border p-3 text-left text-sm ${profile?.id === p.id ? \"border-blue-600 bg-blue-50\" : \"border-slate-200\"}`} onClick={() => setProfile(p)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-intake-page.tsx",
+    "line": 148,
+    "attributes": "disabled={step === 0} onClick={() => setStep(step - 1)} className=\"rounded-xl border px-4 py-2 text-sm disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-intake-page.tsx",
+    "line": 156,
+    "attributes": "disabled={step === 0 ? !profile : !roomId || !propertyId} onClick={() => setStep(step + 1)} className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 171,
+    "attributes": "onClick={() => void adminTenantService.exportCsv({ propertyId, keyword }) } className={outlineButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 273,
+    "attributes": "className={outlineButton} onClick={() => setView(view === \"table\" ? \"cards\" : \"table\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 391,
+    "attributes": "onClick={resetFilters} className={outlineButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 406,
+    "attributes": "onClick={() => setDirection((value) => value === \"asc\" ? \"desc\" : \"asc\", ) } className=\"rounded-lg border border-slate-200 px-3 py-1.5 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 533,
+    "attributes": "className=\"mt-2 block text-xs font-semibold text-blue-700\" onClick={() => setAccountProfile(row)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 701,
+    "attributes": "disabled={page <= 0} onClick={() => onChange(page - 1)} className={pageButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-list-page.tsx",
+    "line": 708,
+    "attributes": "disabled={page + 1 >= totalPages} onClick={() => onChange(page + 1)} className={pageButton}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/tenants/tenant-members-panel.tsx",
+    "line": 128,
+    "attributes": "disabled={busy || !selected} className=\"rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 219,
+    "attributes": "key={item} onClick={() => setTab(item)} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${item === tab ? \"bg-blue-600 text-white\" : \"text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 580,
+    "attributes": "className={secondary} onClick={() => { if ( !dirty || window.confirm( \"Tải lại dữ liệu nguồn? Dữ liệu đang nhập vẫn được giữ theo version cũ.\", ) ) void query.refetch(); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 769,
+    "attributes": "className={secondary} onClick={() => { try { localStorage.setItem(storageKey, JSON.stringify(drafts)); setNotice(\"Đã lưu nháp trên thiết bị, chưa chốt lên hệ thống.\"); } catch { setError(\"Không thể lưu nháp trên thiết bị này.\"); } }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 782,
+    "attributes": "className={secondary} onClick={() => { try { const saved = localStorage.getItem(storageKey); if (!saved) throw Error(); const value: unknown = JSON.parse(saved); if (!validUtilityDrafts(value)) throw Error(); setDrafts(value as Record<number, Utility",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 801,
+    "attributes": "className={secondary} onClick={() => setNotice( edited .map( (r) => `${r.room_code}: ${issues(r).join(\"; \") || \"Dữ liệu đầu vào hợp lệ; backend sẽ kiểm tra khi chốt\"}`, ) .join(\" · \") || \"Chưa có dòng nhập.\", ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 817,
+    "attributes": "disabled={busy || !dirty} className={primary} onClick={() => { if ( window.confirm( \"Chốt các dòng hợp lệ lên hệ thống? Dòng lỗi được giữ để xử lý riêng.\", ) ) void save(); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 835,
+    "attributes": "disabled={busy || dirty || user?.activeRole === \"ACCOUNTANT\"} className={secondary} onClick={async () => { setBusy(true); setError(\"\"); try { setPreview( await adminInvoiceService.bulkPreview({ propertyId, billingPeriod: period, issueDate: new Date()",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 918,
+    "attributes": "className=\"ml-3 text-sm text-blue-700\" onClick={() => { setContract(row.id); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/admin/utilities/utility-workspace-page.tsx",
+    "line": 1025,
+    "attributes": "disabled={busy} className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/login-form.tsx",
+    "line": 230,
+    "attributes": "type=\"submit\" disabled={isSubmitting || isBootstrapping} className=\"flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:cursor-not-allo",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/password-input.tsx",
+    "line": 18,
+    "attributes": "type=\"button\" disabled={props.disabled} onClick={() => setVisible((value) => !value)} aria-label={visible ? \"Ẩn mật khẩu\" : \"Hiện mật khẩu\"} className=\"absolute inset-y-0 right-0 grid w-12 place-items-center text-slate-500 hover:text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/protected-page.tsx",
+    "line": 50,
+    "attributes": "onClick={() => router.push(roleHome[user.activeRole])} className=\"flex items-center gap-2 font-bold text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/protected-page.tsx",
+    "line": 71,
+    "attributes": "type=\"button\" onClick={() => { if (window.confirm(\"Bạn có chắc chắn muốn đăng xuất không?\")) void logout(); }} className=\"flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:border-red-200 h",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/register-form.tsx",
+    "line": 275,
+    "attributes": "type=\"submit\" disabled={isSubmitting || !isValid} className=\"flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:cursor-not-allowed dis",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/role-selector.tsx",
+    "line": 60,
+    "attributes": "type=\"button\" aria-label=\"Chọn vai trò truy cập\" aria-haspopup=\"listbox\" aria-expanded={open} aria-controls=\"login-role-menu\" disabled={disabled} onClick={() => setOpen((current) => !current)} className=\"flex min-h-10 cursor-pointer items-center gap-",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/auth/role-selector.tsx",
+    "line": 89,
+    "attributes": "key={role} type=\"button\" role=\"option\" aria-selected={selected} onClick={() => { onChange(role); setOpen(false); }} className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition ${selected",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/accounting-period-panel.tsx",
+    "line": 98,
+    "attributes": "className=\"btn-primary\" disabled={mutate.isPending} onClick={() => mutate.mutate({ action: \"create\" })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/accounting-period-panel.tsx",
+    "line": 123,
+    "attributes": "disabled={mutate.isPending} onClick={() => mutate.mutate({ id: p.id, action: \"check\" })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/accounting-period-panel.tsx",
+    "line": 129,
+    "attributes": "disabled={mutate.isPending} onClick={() => mutate.mutate({ id: p.id, action: p.status === \"OPEN\" ? \"close\" : \"reopen\", version: p.version, }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-evidence-panel.tsx",
+    "line": 89,
+    "attributes": "onClick={() => void query.refetch()} className=\"text-sm text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-evidence-panel.tsx",
+    "line": 99,
+    "attributes": "type=\"button\" onClick={() => void download(file)} className=\"w-full rounded-lg bg-slate-50 p-3 text-left text-sm text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-evidence-panel.tsx",
+    "line": 157,
+    "attributes": "disabled={busy} className=\"self-end rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 276,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 355,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 376,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 419,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 635,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 664,
+    "attributes": "disabled={busy} className={button} onClick={() => void act(`${current}/inspection-confirmation`, { version: Number(d.inspectionVersion!.version), contentHash: d.inspectionVersion!.content_hash, }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 695,
+    "attributes": "disabled={ busy || (!d.inspectionConfirmations.some( (x) => x.party === \"TENANT\", ) && !co.absence_reference) } className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 768,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 845,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 946,
+    "attributes": "disabled={busy || blocked} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 953,
+    "attributes": "disabled={busy} className={button} onClick={async () => { setBusy(true); setError(\"\"); try { const { data } = await apiClient.get<string>( `${base}/contracts/${contractId}/document`, { responseType: \"text\" }, ); const url = URL.createObjectURL( new B",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 998,
+    "attributes": "disabled={busy || blocked} className={button} onClick={() => void act(`${current}/confirmation`, { version: Number(d.approved!.version), contentHash: d.approved!.content_hash, }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 1013,
+    "attributes": "disabled={ busy || blocked || (!tenantConfirmed && !co.absence_reference) } className={button} onClick={() => void act( `/admin/rental-lifecycle/checkouts/${co.id}/complete`, { actualDate: String(co.inspection_at).slice(0, 10), finalElectricityReadin",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 1080,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 1122,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 1219,
+    "attributes": "key={name} type=\"button\" aria-current={step === i + 1 ? \"step\" : undefined} onClick={() => onChange(i + 1)} className={ step === i + 1 ? \"rounded-xl border border-blue-600 bg-blue-50 p-3 text-left text-blue-800\" : \"rounded-xl border border-slate-200 ",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/checkout-settlement-panel.tsx",
+    "line": 1252,
+    "attributes": "type=\"button\" onClick={print} className=\"rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 64,
+    "attributes": "aria-label=\"Thông báo\" aria-expanded={open} onClick={() => setOpen(!open)} className=\"relative grid size-10 place-items-center rounded-full border border-slate-200 bg-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 85,
+    "attributes": "aria-label=\"Đóng thông báo\" onClick={() => setOpen(false)} className=\"fixed inset-0 z-30\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-bell.tsx",
+    "line": 106,
+    "attributes": "onClick={() => void recent.refetch()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 516,
+    "attributes": "key={t.key} onClick={() => changeTab(t.key)} aria-current={tab === t.key ? \"page\" : undefined} className={`${button} ${tab === t.key ? \"border-blue-600 bg-blue-50 text-blue-700\" : \"\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 734,
+    "attributes": "disabled={busy || !query.data?.unreadCount} className={button} onClick={() => void action( () => apiClient.post(\"/communications/inbox/read-all\"), \"Đã đánh dấu các thông báo của bạn là đã đọc.\", false, ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 768,
+    "attributes": "className={button} onClick={() => { setDetail(r); if (!r.read_at) void action( () => apiClient.post( `/communications/inbox/${r.id}/read`, ), \"Đã đọc thông báo.\", false, ); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 817,
+    "attributes": "disabled={busy} className={button} onClick={() => { if ( window.confirm( \"Kiểm tra lại người nhận và đưa bản nháp này vào hàng đợi?\", ) ) void action( () => apiClient.post( `/communications/campaigns/${c.id}/queue`, { version: c.version }, ), \"Đã xếp",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 840,
+    "attributes": "disabled={busy} className={button} onClick={() => { if ( window.confirm( \"Hủy các lượt gửi chưa thực hiện? Lịch sử đã phát được giữ nguyên.\", ) ) void action( () => apiClient.post( `/communications/campaigns/${c.id}/cancel`, { version: c.version }, )",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 911,
+    "attributes": "className={button} onClick={() => void action( async () => setAttempts( ( await apiClient.get< ApiEnvelope<Row[]> >( `/communications/deliveries/${r.id}/attempts`, ) ).data.data, ), \"Đã tải lịch sử lần gửi.\", false, ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 935,
+    "attributes": "disabled={busy} className={button} onClick={() => void action( () => apiClient.post( `/communications/deliveries/${r.id}/retry`, ), \"Đã yêu cầu thử lại cùng mã gửi.\", false, ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 976,
+    "attributes": "key={k} className={`${button} ${mode === k ? \"bg-blue-50 text-blue-700\" : \"\"}`} onClick={() => setMode(k)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 985,
+    "attributes": "className={primary} disabled={!property} onClick={() => { setEdit({ kind: \"task\" }); requestKey.current = \"\"; }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1064,
+    "attributes": "className={button} onClick={() => { changeProperty(Number(r.property_id)); setEdit({ kind: \"task\", row: r }); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1075,
+    "attributes": "className={button} onClick={() => void action( async () => setAttempts( ( await apiClient.get< ApiEnvelope<Row[]> >( `/communications/tasks/${r.id}/history`, ) ).data.data, ), \"Đã tải lịch sử công việc.\", false, ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1277,
+    "attributes": "disabled={busy || audience.isLoading} className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1305,
+    "attributes": "type=\"button\" disabled={busy} className={button} onClick={() => void submitMessage(true)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1313,
+    "attributes": "type=\"button\" disabled={busy} className={primary} onClick={() => void submitMessage(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1330,
+    "attributes": "className={primary} disabled={!property} onClick={() => setEdit({ kind: \"template\" })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1363,
+    "attributes": "className={button} onClick={() => setEdit({ kind: \"template\", row: t })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1376,
+    "attributes": "className={primary} disabled={!property} onClick={() => setEdit({ kind: \"rule\" })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1407,
+    "attributes": "className={button} onClick={() => setEdit({ kind: \"rule\", row: r })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1491,
+    "attributes": "disabled={busy} className={primary}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/communication-workspace.tsx",
+    "line": 1876,
+    "attributes": "className={primary} disabled={busy}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 264,
+    "attributes": "className={button} disabled={busy}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 305,
+    "attributes": "disabled={busy} className={button} onClick={() => void post(`${base}/${q.id}/offer`, { version: q.version, reason: \"Đã kiểm tra phạm vi, giá, thời hạn và chứng cứ thỏa thuận\", }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 320,
+    "attributes": "disabled={busy} className={button} onClick={() => void post(`${base}/${q.id}/confirm`, { version: q.version, hash: q.content_hash, }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 334,
+    "attributes": "disabled={busy} className={button} onClick={() => void post( `${base}/${q.id}/${q.change_type === \"EXTENSION\" ? \"extension\" : \"prepare\"}`, { version: q.version, reason: \"Thực hiện thỏa thuận đã được các bên xác nhận\", }, ) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 354,
+    "attributes": "disabled={busy} className={button} onClick={() => void post(`${base}/${q.id}/complete`, { version: q.version, reason: \"Đã kiểm tra hai bàn giao và đóng tài chính hợp đồng nguồn\", }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 389,
+    "attributes": "className={button} disabled={busy}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 455,
+    "attributes": "className={button} disabled={busy}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-changes-panel.tsx",
+    "line": 606,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-confirmation-progress.tsx",
+    "line": 223,
+    "attributes": "type=\"button\" disabled={!opened || !read || busy} className=\"min-h-11 rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40\" onClick={() => { if ( window.confirm( `Xác nhận ${p.ownParty === \"TENANT\" ? \"bên thuê\" : \"bên",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 176,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 229,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 248,
+    "attributes": "disabled={busy} className={button} type=\"button\" onClick={() => void act(\"initial-invoice/draft\", {})}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 308,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 510,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 586,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/contract-onboarding-panel.tsx",
+    "line": 603,
+    "attributes": "id=\"complete-checkin\" className={button} disabled={busy || !d.progress.canCompleteCheckin} onClick={async () => { if ( !window.confirm( \"Xác nhận đã bàn giao phòng thực tế và hoàn tất nhận phòng? Hợp đồng sẽ chuyển sang hiệu lực.\", ) ) return; setBus",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/dashboard-ui.tsx",
+    "line": 31,
+    "attributes": "onClick={onRetry} className=\"mt-4 inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 184,
+    "attributes": "className={input} onClick={() => void client.invalidateQueries({ queryKey: [\"deposit-ledger\"] }) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 203,
+    "attributes": "key={key} aria-pressed={view === key} className={`${input} ${view === key ? \"bg-blue-50 text-blue-700\" : \"\"}`} onClick={() => { setView(key); setSelected(undefined); setAction(undefined); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 288,
+    "attributes": "disabled={busy} className={input} onClick={() => { key.current = \"\"; setAction({ kind: \"collect\" }); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 298,
+    "attributes": "disabled={busy} className={input} onClick={() => setAction({ kind: \"refund\" })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 307,
+    "attributes": "disabled={busy} className={input} onClick={() => setAction({ kind: \"amend\" })}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 314,
+    "attributes": "disabled={busy} className={input} onClick={() => { key.current = \"\"; setAction({ kind: \"transfer\" }); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 324,
+    "attributes": "disabled={busy} className={input} onClick={() => void perform(\"close-checkout\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 448,
+    "attributes": "disabled={busy} className={input}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 451,
+    "attributes": "type=\"button\" disabled={busy} className={input} onClick={() => setAction(undefined)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 475,
+    "attributes": "disabled={busy} className={input} onClick={() => void perform(`refunds/${r.id}/approve`)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/deposit-ledger-panel.tsx",
+    "line": 485,
+    "attributes": "disabled={busy} className={input} onClick={() => { key.current = \"\"; setAction({ kind: \"pay\", refundId: Number(r.id) }); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 388,
+    "attributes": "className={field} disabled={busy} onClick={() => void download()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 397,
+    "attributes": "className={field} onClick={() => window.print()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 407,
+    "attributes": "key={id} aria-current={tab === id ? \"page\" : undefined} className={`rounded-xl px-3 py-2 text-sm font-semibold ${tab === id ? \"bg-blue-600 text-white\" : \"border bg-white\"}`} onClick={() => changeTab(id)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 641,
+    "attributes": "className=\"rounded-lg border p-3 text-sm\" onClick={() => changeTab(\"vouchers\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 647,
+    "attributes": "className=\"rounded-lg border p-3 text-sm\" onClick={() => changeTab(\"deposits\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 654,
+    "attributes": "className=\"rounded-lg border p-3 text-sm\" onClick={() => changeTab(\"reconciliation\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 757,
+    "attributes": "className=\"rounded-xl border px-3\" onClick={() => void query.refetch()}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 764,
+    "attributes": "className=\"rounded-xl bg-blue-600 px-4 py-2 text-white\" onClick={() => open(\"voucher\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 772,
+    "attributes": "className=\"rounded-xl bg-blue-600 px-4 py-2 text-white\" onClick={() => open(\"income\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 780,
+    "attributes": "disabled={!propertyId} className=\"rounded-xl bg-blue-600 px-4 py-2 text-white disabled:opacity-40\" onClick={() => open(\"reconcile\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 789,
+    "attributes": "className=\"rounded-xl border px-4 py-2\" onClick={() => open(\"period\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 842,
+    "attributes": "className=\"mt-2 text-blue-700 print:hidden\" onClick={() => setExpanded(expanded === id ? undefined : id) }",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 1008,
+    "attributes": "className=\"text-blue-700\" onClick={() => changeTab(\"deposits\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 1035,
+    "attributes": "className=\"rounded-lg border px-3 py-2 disabled:opacity-40\" disabled={!page} onClick={() => setPage(page - 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 1045,
+    "attributes": "className=\"rounded-lg border px-3 py-2 disabled:opacity-40\" disabled={page + 1 >= data.totalPages} onClick={() => setPage(page + 1)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 1281,
+    "attributes": "type=\"button\" className=\"rounded-xl border px-4 py-2\" disabled={busy} onClick={() => setDialog(undefined)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 1289,
+    "attributes": "disabled={ busy || (dialog.kind === \"closePeriod\" && (!closingCheck.data || closingCheck.data.blockingCount > 0)) || ([\"pay\", \"income\"].includes(dialog.kind) && !received) } className=\"rounded-xl bg-blue-600 px-4 py-2 text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/finance-workspace.tsx",
+    "line": 1310,
+    "attributes": "className=\"block rounded-lg border px-3 py-2 text-blue-700\" onClick={run}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/handover-document.tsx",
+    "line": 334,
+    "attributes": "type=\"button\" onClick={() => setHistoryOpen(!historyOpen)} className=\"text-sm text-blue-700 underline\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/handover-document.tsx",
+    "line": 344,
+    "attributes": "type=\"button\" className=\"text-blue-700 underline\" onClick={() => { setSelected(null); setReviewedHash(\"\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/handover-document.tsx",
+    "line": 360,
+    "attributes": "type=\"button\" key={String(v.id)} className=\"block text-sm text-blue-700 underline\" onClick={() => { setSelected(Number(v.version)); setReviewedHash(\"\"); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/handover-document.tsx",
+    "line": 433,
+    "attributes": "type=\"button\" disabled={!document.integrityValid} onClick={printDocument} className=\"rounded-xl border px-4 py-2 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/handover-document.tsx",
+    "line": 462,
+    "attributes": "type=\"button\" disabled={ busy || reviewedHash !== `${document.id}:${document.version}:${document.contentHash}:${document.liveHash}` } className=\"rounded-xl bg-blue-700 px-4 py-2 text-sm text-white disabled:opacity-40\" onClick={() => { if ( window.con",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/initial-room-meter-form.tsx",
+    "line": 55,
+    "attributes": "type=\"button\" className=\"btn-primary\" onClick={() => setOpen(!open)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/initial-room-meter-form.tsx",
+    "line": 100,
+    "attributes": "disabled={busy} className=\"btn-primary\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-finance-panel.tsx",
+    "line": 105,
+    "attributes": "onClick={() => setOpen(!open)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-finance-panel.tsx",
+    "line": 127,
+    "attributes": "key={document.id} className=\"block underline\" onClick={() => void download(document)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-finance-panel.tsx",
+    "line": 248,
+    "attributes": "className=\"btn-primary\" disabled={mutation.isPending} onClick={() => action(v, \"approve\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-finance-panel.tsx",
+    "line": 255,
+    "attributes": "disabled={mutation.isPending} onClick={() => action(v, \"reject\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-finance-panel.tsx",
+    "line": 264,
+    "attributes": "className=\"btn-primary\" disabled={mutation.isPending} onClick={() => action(v, \"pay\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-finance-panel.tsx",
+    "line": 275,
+    "attributes": "disabled={mutation.isPending} onClick={() => action(v, \"reverse\")}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-ui.tsx",
+    "line": 74,
+    "attributes": "type=\"button\" onClick={scope.retry} className=\"mt-1 text-red-700 underline\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-ui.tsx",
+    "line": 154,
+    "attributes": "disabled={page <= 0} onClick={() => onChange(page - 1)} className=\"rounded-lg border bg-white px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/management-ui.tsx",
+    "line": 164,
+    "attributes": "disabled={page + 1 >= totalPages} onClick={() => onChange(page + 1)} className=\"rounded-lg border bg-white px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 136,
+    "attributes": "className={button} disabled={busy} onClick={async () => { setBusy(true); setError(\"\"); setPreview(null); try { setPreview( ( await apiClient.get< ApiEnvelope<NonNullable<typeof preview>> >(`${base}/preview`, { params: { period: `${period}-01` }, }) )",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 310,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 386,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 449,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 497,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 549,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 582,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 683,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/monthly-billing-panel.tsx",
+    "line": 785,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-handover-editor.tsx",
+    "line": 172,
+    "attributes": "type=\"button\" disabled={busy} className=\"text-sm text-blue-700 underline\" onClick={async () => { if ( window.confirm( \"Nạp danh mục phòng hiện tại? Các tình trạng và ghi chú chưa lưu sẽ được thay thế.\", ) ) await act(\"inventory\", {}); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-handover-editor.tsx",
+    "line": 332,
+    "attributes": "type=\"button\" disabled={busy} className=\"rounded-xl border px-4 py-2 text-sm\" onClick={() => { setStep(step - 1); setReviewed(false); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-handover-editor.tsx",
+    "line": 344,
+    "attributes": "disabled={busy || (step === 3 && !reviewed)} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-identity-profile.tsx",
+    "line": 62,
+    "attributes": "type=\"button\" disabled={busy} className={button} onClick={() => setEditing(true)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-identity-profile.tsx",
+    "line": 188,
+    "attributes": "disabled={busy} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-identity-profile.tsx",
+    "line": 191,
+    "attributes": "type=\"button\" disabled={busy} onClick={() => setEditing(false)} className=\"px-3 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-identity-profile.tsx",
+    "line": 204,
+    "attributes": "type=\"button\" disabled={busy} className={button} onClick={() => { setReviewing(true); setReviewed(false); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/shared/onboarding-identity-profile.tsx",
+    "line": 276,
+    "attributes": "disabled={busy || !reviewed} className={button}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 402,
+    "attributes": "disabled={busy === x.id} onClick={() => void receive(x.id, x.version)} className=\"mt-4 flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 436,
+    "attributes": "key={x.id} onClick={() => !x.read && void read(x.id)} className={`flex w-full gap-3 rounded-2xl border p-4 text-left ${x.read ? \"border-slate-200 bg-white\" : \"border-blue-200 bg-blue-50\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 665,
+    "attributes": "className=\"rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 726,
+    "attributes": "className=\"rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-resource-pages.tsx",
+    "line": 750,
+    "attributes": "onClick={() => void act( () => m.revoke.mutateAsync(x.id), \"Đã thu hồi phiên.\", ) } className=\"text-xs font-semibold text-red-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 95,
+    "attributes": "onClick={() => window.confirm(\"Bạn có chắc muốn đăng xuất?\") && void logout() } className=\"absolute bottom-5 left-5 right-5 flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-slate-600 hover:bg-red-50 hover:text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 107,
+    "attributes": "className=\"absolute inset-0 bg-slate-950/40\" aria-label=\"Đóng menu\" onClick={() => setOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 115,
+    "attributes": "className=\"rounded-xl p-2 hover:bg-slate-100\" aria-label=\"Đóng menu\" onClick={() => setOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-shell.tsx",
+    "line": 129,
+    "attributes": "className=\"rounded-xl p-2 hover:bg-slate-100 lg:hidden\" aria-label=\"Mở menu\" onClick={() => setOpen(true)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-task-detail.tsx",
+    "line": 124,
+    "attributes": "key={x} onClick={() => setTab(x)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === x ? \"bg-white text-blue-700 shadow-sm\" : \"text-slate-500\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-task-detail.tsx",
+    "line": 275,
+    "attributes": "disabled={disabled} onClick={onClick} className={`flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold disabled:opacity-50 ${secondary ? \"border border-slate-200 bg-white text-slate-700\" : \"bg-blue-600 text-white\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-task-detail.tsx",
+    "line": 1044,
+    "attributes": "className=\"flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-task-list.tsx",
+    "line": 70,
+    "attributes": "onClick={() => setFilters({ page: 0, size: 20, sort: \"schedule\" })} className=\"flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-task-list.tsx",
+    "line": 101,
+    "attributes": "disabled={q.data.page === 0} onClick={() => setFilters((x) => ({ ...x, page: Math.max(0, (x.page ?? 0) - 1), })) } className=\"rounded-lg border px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-task-list.tsx",
+    "line": 116,
+    "attributes": "disabled={q.data.page + 1 >= q.data.totalPages} onClick={() => setFilters((x) => ({ ...x, page: (x.page ?? 0) + 1 })) } className=\"rounded-lg border px-3 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/technician/technician-ui.tsx",
+    "line": 145,
+    "attributes": "onClick={retry} className=\"mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 236,
+    "attributes": "autoFocus onClick={onClose} className=\"rounded-xl border px-4 py-3 font-bold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/account-ui.tsx",
+    "line": 243,
+    "attributes": "disabled={busy} onClick={onConfirm} className={`rounded-xl px-4 py-3 font-bold text-white disabled:opacity-50 ${danger ? \"bg-red-600\" : \"bg-blue-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/activity-page.tsx",
+    "line": 54,
+    "attributes": "disabled={page === 0} onClick={() => setPage((v) => v - 1)} className=\"rounded-xl border p-2 disabled:opacity-40\" aria-label=\"Trang trước\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/activity-page.tsx",
+    "line": 65,
+    "attributes": "disabled={page + 1 === (query.data?.totalPages ?? 0)} onClick={() => setPage((v) => v + 1)} className=\"rounded-xl border p-2 disabled:opacity-40\" aria-label=\"Trang sau\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/change-password-page.tsx",
+    "line": 77,
+    "attributes": "type=\"button\" onClick={() => setShow((v) => !v)} className=\"inline-flex items-center gap-2 text-sm font-bold text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/change-password-page.tsx",
+    "line": 109,
+    "attributes": "disabled={!current || !valid || actions.changePassword.isPending} onClick={submit} className=\"w-full rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/documents-page.tsx",
+    "line": 170,
+    "attributes": "disabled={!file || actions.uploadDocument.isPending} onClick={upload} className=\"mt-4 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/documents-page.tsx",
+    "line": 231,
+    "attributes": "onClick={() => void download(d.id, d.originalName)} className=\"mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/preferences-page.tsx",
+    "line": 74,
+    "attributes": "key={theme} onClick={() => setTheme(theme)} aria-pressed={value.theme === theme} className={`rounded-xl border p-4 font-bold ${value.theme === theme ? \"border-blue-600 bg-blue-50 text-blue-700\" : \"\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/preferences-page.tsx",
+    "line": 141,
+    "attributes": "onClick={save} disabled={actions.updatePreferences.isPending} className=\"mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/profile-page.tsx",
+    "line": 164,
+    "attributes": "onClick={() => fileRef.current?.click()} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/profile-page.tsx",
+    "line": 172,
+    "attributes": "onClick={() => actions.deleteAvatar.mutate(undefined, { onSuccess: async () => { setMessage(\"Ảnh đại diện đã được xóa.\"); await refreshUser(); }, }) } className=\"inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/profile-page.tsx",
+    "line": 208,
+    "attributes": "onClick={() => setRequestOpen(true)} className=\"inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/profile-page.tsx",
+    "line": 345,
+    "attributes": "onClick={() => { setValue(payload(initial)); setPhoneTouched(false); setEmergencyPhoneTouched(false); }} className=\"rounded-xl bg-white/10 px-4 py-2 font-bold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/profile-page.tsx",
+    "line": 355,
+    "attributes": "disabled={actions.updateProfile.isPending || hasPhoneError} onClick={save} className=\"rounded-xl bg-blue-500 px-5 py-2 font-bold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/profile-page.tsx",
+    "line": 413,
+    "attributes": "onClick={() => setRequestOpen(false)} className=\"rounded-xl border p-3 font-bold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/profile-page.tsx",
+    "line": 419,
+    "attributes": "disabled={ !legalName.trim() || !reason.trim() || actions.requestUpdate.isPending } onClick={() => actions.requestUpdate.mutate( { fieldChanges: { fullName: { oldValue: initial.profile.fullName, newValue: legalName.trim(), }, }, reason, }, { onSucces",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/sessions-page.tsx",
+    "line": 36,
+    "attributes": "onClick={() => setTarget(\"all\")} className=\"rounded-xl border border-red-200 bg-red-50 px-4 py-2 font-bold text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/sessions-page.tsx",
+    "line": 82,
+    "attributes": "onClick={() => setTarget(s.id)} className=\"inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-bold text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/account/support-page.tsx",
+    "line": 154,
+    "attributes": "disabled={ !subject.trim() || !content.trim() || actions.support.isPending } onClick={send} className=\"mt-5 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-detail-page.tsx",
+    "line": 92,
+    "attributes": "onClick={() => setModal(true)} className=\"inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-3 font-bold text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-detail-page.tsx",
+    "line": 235,
+    "attributes": "onClick={() => setModal(false)} className=\"flex-1 rounded-xl border p-3 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-detail-page.tsx",
+    "line": 241,
+    "attributes": "disabled={pending || Boolean(phone && !phoneValidation.valid)} onClick={() => void submit()} className=\"flex-1 rounded-xl bg-red-600 p-3 font-bold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+    "line": 551,
+    "attributes": "disabled={step === 0 || create.isPending} onClick={() => { setError(\"\"); setStep((x) => Math.max(0, x - 1)); }} className=\"rounded-xl border px-5 py-3 font-semibold disabled:opacity-30\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+    "line": 562,
+    "attributes": "onClick={next} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+    "line": 570,
+    "attributes": "disabled={create.isPending || !accepted} onClick={() => void submit()} className=\"rounded-xl bg-blue-600 px-6 py-3 font-bold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+    "line": 715,
+    "attributes": "aria-label={`Xóa ${x.file.name}`} onClick={() => setFiles((v) => v.filter((_, j) => j !== i))} className=\"rounded-lg p-2 text-red-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+    "line": 100,
+    "attributes": "onClick={() => { void overview.refetch(); void occupants.refetch(); void requests.refetch(); }} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-3 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+    "line": 194,
+    "attributes": "onClick={() => setTab(\"ACTIVE\")} className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold ${tab === \"ACTIVE\" ? \"bg-blue-600 text-white\" : \"bg-white text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+    "line": 201,
+    "attributes": "onClick={() => setTab(\"REQUESTS\")} className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold ${tab === \"REQUESTS\" ? \"bg-blue-600 text-white\" : \"bg-white text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-request-detail-page.tsx",
+    "line": 110,
+    "attributes": "onClick={() => setDialog(\"additional\")} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-request-detail-page.tsx",
+    "line": 119,
+    "attributes": "onClick={() => setDialog(\"cancel\")} className=\"rounded-xl border border-red-200 px-4 py-3 font-bold text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-request-detail-page.tsx",
+    "line": 207,
+    "attributes": "aria-label={`Tải ${x.originalName}`} onClick={() => void download(x.id, x.originalName)} className=\"rounded-lg p-2 text-blue-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-request-detail-page.tsx",
+    "line": 286,
+    "attributes": "onClick={() => setDialog(null)} className=\"flex-1 rounded-xl border p-3 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/co-occupants/co-occupant-request-detail-page.tsx",
+    "line": 292,
+    "attributes": "disabled={ actions.additional.isPending || actions.cancel.isPending || actions.upload.isPending } onClick={() => void submit()} className={`flex-1 rounded-xl p-3 font-bold text-white ${dialog === \"cancel\" ? \"bg-red-600\" : \"bg-blue-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-card.tsx",
+    "line": 112,
+    "attributes": "onClick={() => onDownload(contract)} disabled={downloading} className=\"inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-page.tsx",
+    "line": 172,
+    "attributes": "onClick={() => void getDocument(false)} disabled={downloading} className=\"inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold hover:bg-slate-50 disabled:opacity-60\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-page.tsx",
+    "line": 186,
+    "attributes": "onClick={() => void getDocument(true)} disabled={downloading} className=\"inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold hover:bg-slate-50 disabled:opacity-60\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-page.tsx",
+    "line": 196,
+    "attributes": "onClick={() => setDialog(\"extension\")} className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold ${data.status === \"EXPIRING\" ? \"bg-amber-500 text-white\" : \"bg-blue-600 text-white\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-page.tsx",
+    "line": 205,
+    "attributes": "onClick={() => setDialog(\"termination\")} className=\"rounded-xl border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-detail-sections.tsx",
+    "line": 389,
+    "attributes": "aria-label={`Tải ${document.originalName}`} onClick={onDownload} disabled={downloading} className=\"rounded-lg p-2 text-blue-700 hover:bg-blue-50 disabled:opacity-50 print:hidden\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/contract-list-page.tsx",
+    "line": 186,
+    "attributes": "key={value} role=\"tab\" aria-selected={tab === value} onClick={() => setTab(value)} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === value ? \"bg-white text-blue-700 shadow-sm\" : \"text-slate-500\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/request-dialogs.tsx",
+    "line": 47,
+    "attributes": "aria-label=\"Đóng hộp thoại\" className=\"absolute inset-0 bg-slate-950/50\" onClick={onClose}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/request-dialogs.tsx",
+    "line": 68,
+    "attributes": "ref={closeRef} type=\"button\" aria-label=\"Đóng\" onClick={onClose} className=\"rounded-lg p-2 hover:bg-slate-100 focus:ring-4 focus:ring-blue-100\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/request-dialogs.tsx",
+    "line": 239,
+    "attributes": "type=\"button\" onClick={onClose} className=\"rounded-xl border border-slate-300 px-4 py-2.5 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/request-dialogs.tsx",
+    "line": 246,
+    "attributes": "disabled={mutation.isPending} className=\"inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 font-semibold text-white disabled:opacity-60\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/request-dialogs.tsx",
+    "line": 416,
+    "attributes": "type=\"button\" onClick={onClose} className=\"rounded-xl border border-slate-300 px-4 py-2.5 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/contracts/request-dialogs.tsx",
+    "line": 423,
+    "attributes": "disabled={mutation.isPending} className=\"inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 font-semibold text-white disabled:opacity-60\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-detail-page.tsx",
+    "line": 85,
+    "attributes": "onClick={document} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-detail-page.tsx",
+    "line": 92,
+    "attributes": "onClick={() => window.print()} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-detail-page.tsx",
+    "line": 100,
+    "attributes": "onClick={() => setReview(true)} className=\"inline-flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 font-semibold text-amber-800\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-detail-page.tsx",
+    "line": 331,
+    "attributes": "onClick={() => setReview(false)} className=\"rounded-xl border px-4 py-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-detail-page.tsx",
+    "line": 337,
+    "attributes": "disabled={!description.trim() || actions.review.isPending} onClick={submitReview} className=\"rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-list-page.tsx",
+    "line": 95,
+    "attributes": "key={v} onClick={() => { setStatus(v); setPage(0); }} className={`rounded-full px-4 py-2 text-sm font-semibold ${status === v ? \"bg-blue-600 text-white\" : \"bg-slate-100 text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-list-page.tsx",
+    "line": 161,
+    "attributes": "disabled={page === 0} onClick={() => setPage((p) => p - 1)} className=\"rounded-lg border px-4 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-list-page.tsx",
+    "line": 171,
+    "attributes": "disabled={page + 1 === (list.data?.totalPages ?? 0)} onClick={() => setPage((p) => p + 1)} className=\"rounded-lg border px-4 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "line": 154,
+    "attributes": "key={x.code} onClick={() => { setMethod(x.code); idempotencyKey.current = null; }} className={`rounded-xl border p-4 text-left ${method === x.code ? \"border-blue-600 bg-blue-50\" : \"border-slate-200\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "line": 182,
+    "attributes": "disabled={d.remainingAmount <= 0 || a.session.isPending} onClick={create} className=\"mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "line": 207,
+    "attributes": "className=\"mt-2 text-blue-700 underline\" onClick={() => { void active.refetch(); void q.refetch(); }}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "line": 279,
+    "attributes": "disabled={!file || !at || a.proof.isPending} onClick={proof} className=\"mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/invoice-payment-page.tsx",
+    "line": 326,
+    "attributes": "onClick={() => void navigator.clipboard.writeText(content ?? \"\")} title=\"Sao chép\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/payment-history-page.tsx",
+    "line": 77,
+    "attributes": "onClick={() => receipt(x.id)} className=\"inline-flex items-center gap-1 text-blue-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/payment-history-page.tsx",
+    "line": 94,
+    "attributes": "disabled={page === 0} onClick={() => setPage((v) => v - 1)} className=\"rounded-lg border px-4 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/invoices/payment-history-page.tsx",
+    "line": 104,
+    "attributes": "disabled={page + 1 === query.data?.totalPages} onClick={() => setPage((v) => v + 1)} className=\"rounded-lg border px-4 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 160,
+    "attributes": "onClick={() => setDialog(\"additional\")} className=\"rounded-xl border px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 168,
+    "attributes": "onClick={() => setDialog(\"cancel\")} className=\"rounded-xl border border-red-200 px-4 py-2 font-semibold text-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 184,
+    "attributes": "onClick={() => setDialog(\"reopen\")} className=\"inline-flex items-center gap-2 rounded-xl bg-amber-500 px-4 py-2 font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 258,
+    "attributes": "key={x.id} onClick={() => download(x.id, x.fileName)} className=\"flex items-center justify-between rounded-xl border p-3 text-left\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 288,
+    "attributes": "disabled={!files.length || a.upload.isPending} onClick={upload} className=\"rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 328,
+    "attributes": "aria-label=\"Gửi tin nhắn\" disabled={!message.trim() || a.message.isPending} onClick={send} className=\"self-end rounded-xl bg-blue-600 p-3 text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 363,
+    "attributes": "onClick={confirmSchedule} className=\"flex-1 rounded-xl bg-blue-600 px-3 py-2 font-semibold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 369,
+    "attributes": "onClick={() => setDialog(\"reschedule\")} className=\"flex-1 rounded-xl border px-3 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 502,
+    "attributes": "onClick={() => setDialog(null)} className=\"rounded-xl border px-4 py-2\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-detail-page.tsx",
+    "line": 508,
+    "attributes": "disabled={ !text.trim() || (dialog === \"reschedule\" && !dateValue) || (dialog === \"additional\" && Boolean(phone) && !phoneValidation.valid) } onClick={action} className=\"rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-feedback-page.tsx",
+    "line": 145,
+    "attributes": "disabled={ action.feedback.isPending || (result !== \"PASSED\" && comment.trim().length < 10) } onClick={submit} className=\"w-full rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-feedback-page.tsx",
+    "line": 179,
+    "attributes": "key={x} type=\"button\" aria-label={`${x} sao`} aria-pressed={value === x} onClick={() => onChange(x)} className=\"rounded-lg p-1 focus:ring-2 focus:ring-blue-500\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-list-page.tsx",
+    "line": 75,
+    "attributes": "onClick={() => { void summary.refetch(); void list.refetch(); }} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-list-page.tsx",
+    "line": 128,
+    "attributes": "key={v} onClick={() => { setStatus(v); setPage(0); }} className={`rounded-full px-4 py-2 text-sm font-semibold ${status === v ? \"bg-blue-600 text-white\" : \"bg-slate-100 text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-list-page.tsx",
+    "line": 199,
+    "attributes": "onClick={() => { setKeyword(\"\"); setCategory(\"\"); setPriority(\"\"); setStatus(\"ALL\"); setPage(0); }} className=\"mt-3 text-sm font-semibold text-blue-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-list-page.tsx",
+    "line": 272,
+    "attributes": "disabled={page === 0} onClick={() => setPage((v) => v - 1)} className=\"rounded-lg border px-4 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-list-page.tsx",
+    "line": 282,
+    "attributes": "disabled={page + 1 === list.data?.totalPages} onClick={() => setPage((v) => v + 1)} className=\"rounded-lg border px-4 py-2 disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 151,
+    "attributes": "onClick={() => router.back()} className=\"inline-flex items-center gap-2 font-semibold text-slate-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 191,
+    "attributes": "key={x.location.roomId} onClick={() => patch(\"roomId\", x.location.roomId)} className={`rounded-xl border p-4 text-left ${data.roomId === x.location.roomId ? \"border-blue-600 bg-blue-50\" : \"\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 251,
+    "attributes": "key={code} onClick={() => patch(\"category\", code)} className={`rounded-xl border p-4 text-left ${data.category === code ? \"border-blue-600 bg-blue-50\" : \"\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 386,
+    "attributes": "aria-label={`Xóa ${x.file.name}`} onClick={() => { URL.revokeObjectURL(x.url); setFiles((v) => v.filter((y) => y !== x)); }} className=\"absolute right-1 top-1 rounded-full bg-white p-2 text-red-600 shadow\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 518,
+    "attributes": "disabled={step === 1} onClick={() => setStep((x) => x - 1)} className=\"rounded-xl border px-5 py-2 font-semibold disabled:opacity-0\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 526,
+    "attributes": "disabled={!valid()} onClick={() => setStep((x) => x + 1)} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2 font-bold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/maintenance/maintenance-new-page.tsx",
+    "line": 535,
+    "attributes": "disabled={!confirmed || create.isPending} onClick={submit} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2 font-bold text-white disabled:opacity-40\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-detail-page.tsx",
+    "line": 59,
+    "attributes": "onClick={() => actions.restore.mutate(id)} disabled={actions.restore.isPending} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-detail-page.tsx",
+    "line": 68,
+    "attributes": "onClick={() => actions.archive.mutate(id, { onSuccess: () => router.push(\"/tenant/notifications\"), }) } disabled={actions.archive.isPending} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-detail-page.tsx",
+    "line": 82,
+    "attributes": "onClick={() => actions.unread.mutate(id)} className=\"rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-detail-page.tsx",
+    "line": 158,
+    "attributes": "onClick={() => actions.acknowledge.mutate(id)} disabled={actions.acknowledge.isPending} className=\"inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 113,
+    "attributes": "onClick={() => { void summary.refetch(); void list.refetch(); }} className=\"inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-semibold\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 158,
+    "attributes": "key={x.id} onClick={() => chooseTab(x.id)} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold ${tab === x.id ? \"bg-blue-600 text-white\" : \"bg-slate-100 text-slate-600\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 246,
+    "attributes": "onClick={() => { setKeyword(\"\"); setCategory(\"\"); setSeverity(\"\"); setReadStatus(\"\"); setPage(0); }} className=\"text-sm font-bold text-blue-600\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 260,
+    "attributes": "disabled={!summary.data?.totalUnread || actions.allRead.isPending} onClick={() => actions.allRead.mutate(undefined, { onSuccess: () => setFeedback(\"Đã đánh dấu tất cả là đã đọc.\"), }) } className=\"inline-flex items-center gap-2 text-sm font-bold text",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 277,
+    "attributes": "onClick={() => bulk(\"MARK_READ\")} className=\"rounded-lg bg-white/10 px-3 py-2 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 283,
+    "attributes": "onClick={() => bulk(\"MARK_UNREAD\")} className=\"rounded-lg bg-white/10 px-3 py-2 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 289,
+    "attributes": "onClick={() => bulk(tab === \"ARCHIVED\" ? \"RESTORE\" : \"ARCHIVE\")} className=\"rounded-lg bg-white/10 px-3 py-2 text-sm\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 350,
+    "attributes": "disabled={page === 0} onClick={() => setPage((v) => v - 1)} className=\"rounded-lg border bg-white p-2 disabled:opacity-40\" aria-label=\"Trang trước\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-list-page.tsx",
+    "line": 361,
+    "attributes": "disabled={page + 1 === (list.data?.totalPages ?? 0)} onClick={() => setPage((v) => v + 1)} className=\"rounded-lg border bg-white p-2 disabled:opacity-40\" aria-label=\"Trang sau\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/notifications/notification-settings-page.tsx",
+    "line": 195,
+    "attributes": "onClick={save} disabled={mutation.isPending} className=\"inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white disabled:opacity-50\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 108,
+    "attributes": "aria-label=\"Mở menu\" onClick={() => setMenuOpen(true)} className=\"grid size-10 place-items-center rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 140,
+    "attributes": "aria-label=\"Đóng menu\" className=\"absolute inset-0 bg-slate-950/40\" onClick={() => setMenuOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 148,
+    "attributes": "aria-label=\"Đóng menu\" onClick={() => setMenuOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 519,
+    "attributes": "aria-label=\"Mở trợ lý SmartHome AI\" onClick={() => setAiOpen((v) => !v)} className=\"fixed bottom-20 right-4 z-40 grid size-14 place-items-center rounded-full bg-blue-600 text-white shadow-xl lg:bottom-6 lg:right-6\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-home-dashboard.tsx",
+    "line": 530,
+    "attributes": "aria-label=\"Đóng trợ lý\" onClick={() => setAiOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-shell.tsx",
+    "line": 81,
+    "attributes": "className=\"absolute inset-0 bg-slate-950/40\" aria-label=\"Đóng menu\" onClick={() => setMenuOpen(false)}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-shell.tsx",
+    "line": 89,
+    "attributes": "aria-label=\"Đóng menu\" onClick={() => setMenuOpen(false)} className=\"rounded-lg p-2 hover:bg-slate-100\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-shell.tsx",
+    "line": 104,
+    "attributes": "aria-label=\"Mở menu\" onClick={() => setMenuOpen(true)} className=\"grid size-10 place-items-center rounded-xl hover:bg-slate-100 lg:hidden\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-user-menu.tsx",
+    "line": 52,
+    "attributes": "type=\"button\" aria-haspopup=\"menu\" aria-expanded={open} aria-controls=\"tenant-user-menu\" onClick={() => setOpen((value) => !value)} className=\"flex max-w-[260px] items-center gap-2 rounded-xl px-2 py-1.5 text-left outline-none transition hover:bg-sla",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/tenant-user-menu.tsx",
+    "line": 120,
+    "attributes": "type=\"button\" role=\"menuitem\" onClick={() => { setOpen(false); setConfirmingLogout(true); }} className=\"flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 focus-visible:b",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 163,
+    "attributes": "type=\"button\" onClick={() => setFormulaOpen(true)} className=\"inline-flex cursor-pointer items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 219,
+    "attributes": "type=\"button\" key={type} onClick={() => setChartType(type)} className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold ${chartType === type ? \"bg-white text-blue-700 shadow-sm\" : \"text-slate-500\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 513,
+    "attributes": "type=\"button\" key={item.period} onClick={() => onSelect(item.period)} className={`cursor-pointer rounded-xl border p-4 text-left ${selectedPeriod === item.period ? \"border-blue-400 bg-blue-50\" : \"border-slate-200\"}`}",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 575,
+    "attributes": "className=\"absolute inset-0 bg-slate-950/50\" onClick={onClose} aria-label=\"Đóng\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 593,
+    "attributes": "type=\"button\" onClick={onClose} className=\"cursor-pointer rounded-lg p-2 hover:bg-slate-100\" aria-label=\"Đóng\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  },
+  {
+    "file": "boarding-house-frontend/src/components/tenant/utilities/tenant-utilities-page.tsx",
+    "line": 731,
+    "attributes": "type=\"button\" onClick={onRetry} className=\"mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700\"",
+    "status": "REQUIRES_BEHAVIOR_CHECK"
+  }
+]

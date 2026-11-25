@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": ".next-audit15-integrations/tsconfig.tsbuildinfo"
+  },
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "**/*.mts",
+    ".next-audit15-integrations/types/**/*.ts",
+    ".next-audit15-integrations/dev/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", ".next", ".next-audit14-demo"]
+}

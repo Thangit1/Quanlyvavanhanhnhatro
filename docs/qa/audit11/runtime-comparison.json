@@ -1,0 +1,10 @@
+﻿{
+    "checkedAt":  "2026-11-18T17:39:15.9519700+07:00",
+    "livePort":  8080,
+    "livePaths":  456,
+    "liveCommunications":  0,
+    "testPort":  18082,
+    "testPaths":  531,
+    "testCommunications":  21,
+    "liveChanged":  false
+}

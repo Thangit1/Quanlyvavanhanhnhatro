@@ -1,0 +1,845 @@
+{
+  "description": "AST comparison omitting className attributes and CSS utility string values; routing, handlers, API calls, form bindings and other data are compared.",
+  "files": [
+    {
+      "file": "src/app/403/page.tsx",
+      "nonStyleBefore": "bbc59598f357e9e6f1d444af5fcdb1869d22ff5b91a247fa30e90bd74eb142c9",
+      "nonStyleAfter": "bbc59598f357e9e6f1d444af5fcdb1869d22ff5b91a247fa30e90bd74eb142c9",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/accept-invitation/page.tsx",
+      "nonStyleBefore": "dccd69cc637d2993ce461819a5f48a36a9483ec122e45bf32bc15a827dd83d37",
+      "nonStyleAfter": "dccd69cc637d2993ce461819a5f48a36a9483ec122e45bf32bc15a827dd83d37",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/accountant/error.tsx",
+      "nonStyleBefore": "1c4e125039035cdcedeec087d9c2d3b3fa6a2196e2df572cc345edc6f89310a1",
+      "nonStyleAfter": "1c4e125039035cdcedeec087d9c2d3b3fa6a2196e2df572cc345edc6f89310a1",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/accountant/loading.tsx",
+      "nonStyleBefore": "41cff419c1a98ef7d2f4dd4924598e19820c84bda572554127d335503385de60",
+      "nonStyleAfter": "41cff419c1a98ef7d2f4dd4924598e19820c84bda572554127d335503385de60",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/admin/maintenance/error.tsx",
+      "nonStyleBefore": "4261f945ae60346c221427d29f56b98396f9f60edf46ec66c89be848bfbdc95b",
+      "nonStyleAfter": "4261f945ae60346c221427d29f56b98396f9f60edf46ec66c89be848bfbdc95b",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/change-password/page.tsx",
+      "nonStyleBefore": "7846d1689166eb99ef49b0b66ed89e0ffe69a2106e45963056a9f1004366eb06",
+      "nonStyleAfter": "7846d1689166eb99ef49b0b66ed89e0ffe69a2106e45963056a9f1004366eb06",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/error.tsx",
+      "nonStyleBefore": "4a817226028fb083e5291df1a854dd1aa2a9d464b541a03cd2b0e6409a0ccf29",
+      "nonStyleAfter": "4a817226028fb083e5291df1a854dd1aa2a9d464b541a03cd2b0e6409a0ccf29",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/forgot-password/page.tsx",
+      "nonStyleBefore": "609fbc5c0e4edad56fbee28276fa57e31b96a469b34ab9a6e323d8382adbc8a8",
+      "nonStyleAfter": "609fbc5c0e4edad56fbee28276fa57e31b96a469b34ab9a6e323d8382adbc8a8",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/login/page.tsx",
+      "nonStyleBefore": "9af12cda7f009bfffc6e358a95dd92c0058ddb55b16a6b96be1f971d39693245",
+      "nonStyleAfter": "9af12cda7f009bfffc6e358a95dd92c0058ddb55b16a6b96be1f971d39693245",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/register/page.tsx",
+      "nonStyleBefore": "a97f66c6003e10e3cda3cb1962ae615df3e0ec582fc3b0ade447104b91e4e685",
+      "nonStyleAfter": "a97f66c6003e10e3cda3cb1962ae615df3e0ec582fc3b0ade447104b91e4e685",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/accountant/accountant-pages.tsx",
+      "nonStyleBefore": "0bb7a4e2b69266c99d51a1201d5f37090972566a7b288352f039379a7b5b9c84",
+      "nonStyleAfter": "0bb7a4e2b69266c99d51a1201d5f37090972566a7b288352f039379a7b5b9c84",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/accountant/accountant-shell.tsx",
+      "nonStyleBefore": "cf37a97a437205a2cafd54b8872ef433948ac4a0d56963b43912c5b4a7d124e9",
+      "nonStyleAfter": "cf37a97a437205a2cafd54b8872ef433948ac4a0d56963b43912c5b4a7d124e9",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/accounts/account-ui.tsx",
+      "nonStyleBefore": "e264f7cafa375f5b4bb378bb7fbfa02d8008b27a24c60acb3e5f4dacf003fdd7",
+      "nonStyleAfter": "e264f7cafa375f5b4bb378bb7fbfa02d8008b27a24c60acb3e5f4dacf003fdd7",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/accounts/accounts-page.tsx",
+      "nonStyleBefore": "4e88a059cf4f37d2f1213025e887a064dbb2920ef10175e5abd067653fc9b29c",
+      "nonStyleAfter": "4e88a059cf4f37d2f1213025e887a064dbb2920ef10175e5abd067653fc9b29c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/accounts/create-account-wizard.tsx",
+      "nonStyleBefore": "72d54b726c749933afef276556d923f2facaeeaeac2cfedf03adc7e731b50bed",
+      "nonStyleAfter": "72d54b726c749933afef276556d923f2facaeeaeac2cfedf03adc7e731b50bed",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/accounts/manager-tenant-accounts.tsx",
+      "nonStyleBefore": "7529688640ee1a29b6d6e263518c935639d6bc50108640cfa4eb15bed6263a92",
+      "nonStyleAfter": "7529688640ee1a29b6d6e263518c935639d6bc50108640cfa4eb15bed6263a92",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/admin-dashboard.tsx",
+      "nonStyleBefore": "6cc8fed1bd7c5818c77736a98e9ca9e2fb719dd80dfb18eda716b6fec6543348",
+      "nonStyleAfter": "6cc8fed1bd7c5818c77736a98e9ca9e2fb719dd80dfb18eda716b6fec6543348",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/admin-shell.tsx",
+      "nonStyleBefore": "3e12f2c5ea1bc9fe3a9559a0b2b086404805701e0671fcd948170840fb078f20",
+      "nonStyleAfter": "3e12f2c5ea1bc9fe3a9559a0b2b086404805701e0671fcd948170840fb078f20",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/admin-user-menu.tsx",
+      "nonStyleBefore": "2406edc3d12127fc30e85cf045113a4fcddb08da4eef17728bdc77fa9e0f50ab",
+      "nonStyleAfter": "2406edc3d12127fc30e85cf045113a4fcddb08da4eef17728bdc77fa9e0f50ab",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/contracts/contract-create-page.tsx",
+      "nonStyleBefore": "f2fe0c76668d8889fe2762423ac5cfd5c2ac900db55f2eafa01c8bd85ba5fc73",
+      "nonStyleAfter": "f2fe0c76668d8889fe2762423ac5cfd5c2ac900db55f2eafa01c8bd85ba5fc73",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/contracts/contract-detail-page.tsx",
+      "nonStyleBefore": "b57c69a22999c0ca3fdea5c13cabd9826e9cad483b65e96b1471ac8e1ccba719",
+      "nonStyleAfter": "b57c69a22999c0ca3fdea5c13cabd9826e9cad483b65e96b1471ac8e1ccba719",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/contracts/contract-extension-review.tsx",
+      "nonStyleBefore": "760b5a6e71d08576715a3878d12de89973e55ea0b532b18f2e85624d91363ac8",
+      "nonStyleAfter": "760b5a6e71d08576715a3878d12de89973e55ea0b532b18f2e85624d91363ac8",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/contracts/contract-list-page.tsx",
+      "nonStyleBefore": "bf0757a3641e9c270a62819f2c9fd5ff56e48d318dc210dc83ea5da758e04b2d",
+      "nonStyleAfter": "bf0757a3641e9c270a62819f2c9fd5ff56e48d318dc210dc83ea5da758e04b2d",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/contracts/contract-services-editor.tsx",
+      "nonStyleBefore": "6eedbe758c84844e814a9f5a8824911d09bc37e7744f643caefbebfcbb22c429",
+      "nonStyleAfter": "6eedbe758c84844e814a9f5a8824911d09bc37e7744f643caefbebfcbb22c429",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/contracts/contract-status-badge.tsx",
+      "nonStyleBefore": "d4905b70de15ae152578d582b24d68a749d84edd7b3d1627dc22317c4337a982",
+      "nonStyleAfter": "d4905b70de15ae152578d582b24d68a749d84edd7b3d1627dc22317c4337a982",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/contracts/direct-contract-draft-panel.tsx",
+      "nonStyleBefore": "02438859501873a96d97038e188c846c79c5af3bcf4955b50b3e1addc660404a",
+      "nonStyleAfter": "02438859501873a96d97038e188c846c79c5af3bcf4955b50b3e1addc660404a",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/invoices/invoice-detail-page.tsx",
+      "nonStyleBefore": "88ba0d5cbfd997bbebe482876858412046da2a2eb50eecb02a2f676b6bd85a73",
+      "nonStyleAfter": "88ba0d5cbfd997bbebe482876858412046da2a2eb50eecb02a2f676b6bd85a73",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/invoices/invoice-form-pages.tsx",
+      "nonStyleBefore": "5c81673ad365dd178800efecf13ab49f7301f56873dc9f500eb6dda252a30e49",
+      "nonStyleAfter": "5c81673ad365dd178800efecf13ab49f7301f56873dc9f500eb6dda252a30e49",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/invoices/invoice-list-page.tsx",
+      "nonStyleBefore": "a2923b1a5435901f2bfdd25500711293bb5d60627ae9525f81a5082bc4f462de",
+      "nonStyleAfter": "a2923b1a5435901f2bfdd25500711293bb5d60627ae9525f81a5082bc4f462de",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/invoices/invoice-policy-panel.tsx",
+      "nonStyleBefore": "0d1e9dc101049c3fbfb7cb2d7a5ebf4622e53fb84977d0d3fbb29b44a5f0f17a",
+      "nonStyleAfter": "0d1e9dc101049c3fbfb7cb2d7a5ebf4622e53fb84977d0d3fbb29b44a5f0f17a",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/lifecycle/checkout-workspace.tsx",
+      "nonStyleBefore": "be5bab6361fecc15a8037e7319a3319309c2e306b6d0f68020ba2cd27ab66684",
+      "nonStyleAfter": "be5bab6361fecc15a8037e7319a3319309c2e306b6d0f68020ba2cd27ab66684",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/lifecycle/rental-lifecycle-page.tsx",
+      "nonStyleBefore": "45f57ca730344741e743c24aa5a4c0ac9bd68c1778ef47627a29292c79e111c2",
+      "nonStyleAfter": "45f57ca730344741e743c24aa5a4c0ac9bd68c1778ef47627a29292c79e111c2",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/maintenance/maintenance-detail-page.tsx",
+      "nonStyleBefore": "22c9178104dac8133228d3415ca75e24468d65415c913a39f0d4d49df1a663b1",
+      "nonStyleAfter": "22c9178104dac8133228d3415ca75e24468d65415c913a39f0d4d49df1a663b1",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/maintenance/maintenance-evidence.tsx",
+      "nonStyleBefore": "faef2b558ff53a46578fed8aab399e409094998f444434b4c5cb2009e1de0ccd",
+      "nonStyleAfter": "faef2b558ff53a46578fed8aab399e409094998f444434b4c5cb2009e1de0ccd",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/maintenance/maintenance-form-page.tsx",
+      "nonStyleBefore": "c8fd115720685e581ae4d695f176ba8703731efa8b5c480244e4d162626aec15",
+      "nonStyleAfter": "c8fd115720685e581ae4d695f176ba8703731efa8b5c480244e4d162626aec15",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/maintenance/maintenance-list-page.tsx",
+      "nonStyleBefore": "4532ad584c1c852beee624e34702cd11d994b58e7c61805e54cb3631853a1e78",
+      "nonStyleAfter": "4532ad584c1c852beee624e34702cd11d994b58e7c61805e54cb3631853a1e78",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/maintenance/maintenance-resource-pages.tsx",
+      "nonStyleBefore": "a19296947791da93b34eb67c9cea5686dd2bd6a1f268f804a1baf8eeeda8e1d0",
+      "nonStyleAfter": "a19296947791da93b34eb67c9cea5686dd2bd6a1f268f804a1baf8eeeda8e1d0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/maintenance/maintenance-shared.tsx",
+      "nonStyleBefore": "6f9b83bc1004f00ba9462973583e4f5f5cfbbf68dfcc059bb3c7a82d309c121d",
+      "nonStyleAfter": "6f9b83bc1004f00ba9462973583e4f5f5cfbbf68dfcc059bb3c7a82d309c121d",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/maintenance/operations-workspace.tsx",
+      "nonStyleBefore": "bd099662ba07b242d871b1fe847b52f5d7f7715e31dd14bb23fd541d778fda91",
+      "nonStyleAfter": "bd099662ba07b242d871b1fe847b52f5d7f7715e31dd14bb23fd541d778fda91",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/organizations/organization-management-page.tsx",
+      "nonStyleBefore": "0b5cd65e62d5dfe48850458a76c5938cf24e00349768bc0499e1510bd6d20695",
+      "nonStyleAfter": "0b5cd65e62d5dfe48850458a76c5938cf24e00349768bc0499e1510bd6d20695",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/property-list-workspace.tsx",
+      "nonStyleBefore": "2790cee3da0f338dc15824214db03e056524c1f9d4ab29de3e35be9cfb0dd7bd",
+      "nonStyleAfter": "2790cee3da0f338dc15824214db03e056524c1f9d4ab29de3e35be9cfb0dd7bd",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/property-managers-panel.tsx",
+      "nonStyleBefore": "eb8f5afacb550c9da15a9ace8accb58b6ef7fbe229ca24684249f70c744cda1a",
+      "nonStyleAfter": "eb8f5afacb550c9da15a9ace8accb58b6ef7fbe229ca24684249f70c744cda1a",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/property-pages.tsx",
+      "nonStyleBefore": "a0f829321a53b6f8ae9dcdd912df018283e53c84dd7ec47d7dbc7f2b363a39d3",
+      "nonStyleAfter": "a0f829321a53b6f8ae9dcdd912df018283e53c84dd7ec47d7dbc7f2b363a39d3",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/property-room-details.tsx",
+      "nonStyleBefore": "168ebbb75af85709b9bdaa052675ca434f6c4593f6aebdbaca7763596af8bf8d",
+      "nonStyleAfter": "168ebbb75af85709b9bdaa052675ca434f6c4593f6aebdbaca7763596af8bf8d",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/room-assets-editor.tsx",
+      "nonStyleBefore": "6b726d2cc2b54ec920cd244938469b98fddc89d96ee4860078f868da97783115",
+      "nonStyleAfter": "6b726d2cc2b54ec920cd244938469b98fddc89d96ee4860078f868da97783115",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/room-list-workspace.tsx",
+      "nonStyleBefore": "4154e48ce4a259bd36d41979fdb6962d721e4687b8a91ffe679e8a8b874221a6",
+      "nonStyleAfter": "4154e48ce4a259bd36d41979fdb6962d721e4687b8a91ffe679e8a8b874221a6",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/room-pages.tsx",
+      "nonStyleBefore": "9d280913e7c44bbbf0e8da1b84ab855927edc20990d6e528ee31c52277bd558e",
+      "nonStyleAfter": "9d280913e7c44bbbf0e8da1b84ab855927edc20990d6e528ee31c52277bd558e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/properties/room-workspace-ui.tsx",
+      "nonStyleBefore": "aa038bb0081b0967459a004e3d5cbf189efe0e1ee8d93328592a682e6178ffe0",
+      "nonStyleAfter": "aa038bb0081b0967459a004e3d5cbf189efe0e1ee8d93328592a682e6178ffe0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/reports/management-report-workspace.tsx",
+      "nonStyleBefore": "1394f3c0aa47b00d173f5a362fd639165f623af0f29565fb18c0bad31eedcc02",
+      "nonStyleAfter": "1394f3c0aa47b00d173f5a362fd639165f623af0f29565fb18c0bad31eedcc02",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/reports/report-detail-page.tsx",
+      "nonStyleBefore": "e0bd4c89c190d0d46eedd1fd64549fabf06568f2ed060e03fdb530bc6786bcd0",
+      "nonStyleAfter": "e0bd4c89c190d0d46eedd1fd64549fabf06568f2ed060e03fdb530bc6786bcd0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/reports/report-export-history-page.tsx",
+      "nonStyleBefore": "9839cec4f9bd832074d3744150373e4403234192fe3327cbb5b42f6e787cbe0c",
+      "nonStyleAfter": "9839cec4f9bd832074d3744150373e4403234192fe3327cbb5b42f6e787cbe0c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/reports/report-overview-page.tsx",
+      "nonStyleBefore": "23c8e2d91768e17043607a929e7a068e7daea0f8a88a99315473f25f9d5f717c",
+      "nonStyleAfter": "23c8e2d91768e17043607a929e7a068e7daea0f8a88a99315473f25f9d5f717c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/reports/report-shared.tsx",
+      "nonStyleBefore": "818fbe843ad28abb84abac7fb4f43daacb2ab17e443d8dfddeea68ee26892bd9",
+      "nonStyleAfter": "818fbe843ad28abb84abac7fb4f43daacb2ab17e443d8dfddeea68ee26892bd9",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/settings/organization-settings-panel.tsx",
+      "nonStyleBefore": "ee2153425cd43ca9c5bdc81b18aa0f7eeb316a5a8a4cda52ad0350bfe745c2f4",
+      "nonStyleAfter": "ee2153425cd43ca9c5bdc81b18aa0f7eeb316a5a8a4cda52ad0350bfe745c2f4",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/settings/settings-form.tsx",
+      "nonStyleBefore": "3d3284fc893ae5c7774e4664e5a96a2cbe3b8577181ca3fc4d59fb452e3f69a0",
+      "nonStyleAfter": "3d3284fc893ae5c7774e4664e5a96a2cbe3b8577181ca3fc4d59fb452e3f69a0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/settings/settings-navigation.tsx",
+      "nonStyleBefore": "dfb50a0a18e73d13eb63639f57dff414b90852e4245182292205c66acd8c58df",
+      "nonStyleAfter": "dfb50a0a18e73d13eb63639f57dff414b90852e4245182292205c66acd8c58df",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/settings/settings-page.tsx",
+      "nonStyleBefore": "2c2934e2697cb7b443ad5c1c6a8046dd7b150ee8086d68060f33b88193e02a84",
+      "nonStyleAfter": "2c2934e2697cb7b443ad5c1c6a8046dd7b150ee8086d68060f33b88193e02a84",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/tenants/tenant-detail-page.tsx",
+      "nonStyleBefore": "a60a995f1f84bfcc079a1a81ded44f9117e9387d057139af877640123dac36cf",
+      "nonStyleAfter": "a60a995f1f84bfcc079a1a81ded44f9117e9387d057139af877640123dac36cf",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/tenants/tenant-form-page.tsx",
+      "nonStyleBefore": "9a5e66890611548aed6b3eca7b765df3f9b6259338e1d5c7e49ac0932634017b",
+      "nonStyleAfter": "9a5e66890611548aed6b3eca7b765df3f9b6259338e1d5c7e49ac0932634017b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/tenants/tenant-intake-page.tsx",
+      "nonStyleBefore": "e5386d0ebe43fc43cc46da8ac080091016a7535a9647418814ccb181453abd4e",
+      "nonStyleAfter": "e5386d0ebe43fc43cc46da8ac080091016a7535a9647418814ccb181453abd4e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/tenants/tenant-list-page.tsx",
+      "nonStyleBefore": "27ba4c2c3af2ba00f438f860112c0790bb5344ce80f106e9bedc329456a34244",
+      "nonStyleAfter": "27ba4c2c3af2ba00f438f860112c0790bb5344ce80f106e9bedc329456a34244",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/tenants/tenant-members-panel.tsx",
+      "nonStyleBefore": "9141c1dabb652d372ff0013fade474d56c7dea98e824e59f881ca20ad7206319",
+      "nonStyleAfter": "9141c1dabb652d372ff0013fade474d56c7dea98e824e59f881ca20ad7206319",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/admin/utilities/utility-workspace-page.tsx",
+      "nonStyleBefore": "7039a59ae6fed2349a2ca8407432d23da3b502904fa1b6b17c84e619d7c7f965",
+      "nonStyleAfter": "7039a59ae6fed2349a2ca8407432d23da3b502904fa1b6b17c84e619d7c7f965",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/auth/brand.tsx",
+      "nonStyleBefore": "b3662331e97bb10dbfda02d33f952cf1d2d0d5a62b53452053fb6438311b76bb",
+      "nonStyleAfter": "b3662331e97bb10dbfda02d33f952cf1d2d0d5a62b53452053fb6438311b76bb",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/auth/login-form.tsx",
+      "nonStyleBefore": "734a720f0cd4fe2e6248c8a34aa9e0dd6a9fc58fee529f3ee30f27ad1bde0197",
+      "nonStyleAfter": "734a720f0cd4fe2e6248c8a34aa9e0dd6a9fc58fee529f3ee30f27ad1bde0197",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/auth/password-input.tsx",
+      "nonStyleBefore": "580d08a4778218cf55a34cb9012a4b43d8d4b409f4f8b32d3f492baec86babc0",
+      "nonStyleAfter": "580d08a4778218cf55a34cb9012a4b43d8d4b409f4f8b32d3f492baec86babc0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/auth/protected-page.tsx",
+      "nonStyleBefore": "b107f7b9c667546b105fa296fec212e564e0d5033cf887ecb19f820314202c1c",
+      "nonStyleAfter": "b107f7b9c667546b105fa296fec212e564e0d5033cf887ecb19f820314202c1c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/auth/register-form.tsx",
+      "nonStyleBefore": "8d3a877706d557abf268a158d10e9673feb6847d18e378973496d8c12c673d7a",
+      "nonStyleAfter": "8d3a877706d557abf268a158d10e9673feb6847d18e378973496d8c12c673d7a",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/auth/role-selector.tsx",
+      "nonStyleBefore": "c848705926e606fbd4ad4a8ea3cd5bbd9a444d7a7f34f8b507124e87880df58c",
+      "nonStyleAfter": "c848705926e606fbd4ad4a8ea3cd5bbd9a444d7a7f34f8b507124e87880df58c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/features/health/health-check-card.tsx",
+      "nonStyleBefore": "8d1346c9469c5acb07a34ead3222f7db4f66a136ad94c370ee0bc393dc06f09e",
+      "nonStyleAfter": "8d1346c9469c5acb07a34ead3222f7db4f66a136ad94c370ee0bc393dc06f09e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/accounting-period-panel.tsx",
+      "nonStyleBefore": "e77e528e530247b404ef4e36183489c0ce58efd7c90bc34ca338cd6ef4dd2c08",
+      "nonStyleAfter": "e77e528e530247b404ef4e36183489c0ce58efd7c90bc34ca338cd6ef4dd2c08",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/checkout-evidence-panel.tsx",
+      "nonStyleBefore": "e79b2ae52c7a167cb6a1b14d6c4cfc6c551c24f07965a4d48f0c81529a2d315e",
+      "nonStyleAfter": "e79b2ae52c7a167cb6a1b14d6c4cfc6c551c24f07965a4d48f0c81529a2d315e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/checkout-settlement-panel.tsx",
+      "nonStyleBefore": "aa7ff77f5b5e19aab7c7579c1bc4ed29966ce0fd04bd8ff0f4844e82ca214318",
+      "nonStyleAfter": "aa7ff77f5b5e19aab7c7579c1bc4ed29966ce0fd04bd8ff0f4844e82ca214318",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/communication-bell.tsx",
+      "nonStyleBefore": "e00f078869b2719e58f584e826c7a04415f596687cd0fa3edf68c32916db1b10",
+      "nonStyleAfter": "e00f078869b2719e58f584e826c7a04415f596687cd0fa3edf68c32916db1b10",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/communication-workspace.tsx",
+      "nonStyleBefore": "230afe48ce09b494a43cea019ede879ded90177ef726567f8a3be40742e4193d",
+      "nonStyleAfter": "230afe48ce09b494a43cea019ede879ded90177ef726567f8a3be40742e4193d",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/contract-changes-panel.tsx",
+      "nonStyleBefore": "6045759c6ed2df7e777705129ac241034ec6b5c385a1834f76e8a64402884b3e",
+      "nonStyleAfter": "6045759c6ed2df7e777705129ac241034ec6b5c385a1834f76e8a64402884b3e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/contract-confirmation-progress.tsx",
+      "nonStyleBefore": "276ec2974152926894da16978b307c563cf7ee6feae2f67f56e61793246486be",
+      "nonStyleAfter": "276ec2974152926894da16978b307c563cf7ee6feae2f67f56e61793246486be",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/contract-meter-readiness.tsx",
+      "nonStyleBefore": "676672393c0ec38528e0287365b0540c19857ac9dc925d328cab8deccf751d2f",
+      "nonStyleAfter": "676672393c0ec38528e0287365b0540c19857ac9dc925d328cab8deccf751d2f",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/contract-onboarding-panel.tsx",
+      "nonStyleBefore": "1adf2cf6a1f8aeaeb34b850abc6c94ddbf8a6549ba3a3d33feddac1da41a6939",
+      "nonStyleAfter": "1adf2cf6a1f8aeaeb34b850abc6c94ddbf8a6549ba3a3d33feddac1da41a6939",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/dashboard-ui.tsx",
+      "nonStyleBefore": "8cb1f45fa09e21d8420b1b210c9a72975950f755bdfc2d475e7d5f7be3f76da8",
+      "nonStyleAfter": "8cb1f45fa09e21d8420b1b210c9a72975950f755bdfc2d475e7d5f7be3f76da8",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/deposit-ledger-panel.tsx",
+      "nonStyleBefore": "c69dd1a835f207553edce52048625216d839bb98f3eb61362cc64a975c3a24e4",
+      "nonStyleAfter": "c69dd1a835f207553edce52048625216d839bb98f3eb61362cc64a975c3a24e4",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/finance-workspace.tsx",
+      "nonStyleBefore": "110b2a9f92ea9c77db33c140a31f0398232a5aa45d49ee83fe9a4784d0ff80fe",
+      "nonStyleAfter": "110b2a9f92ea9c77db33c140a31f0398232a5aa45d49ee83fe9a4784d0ff80fe",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/handover-document.tsx",
+      "nonStyleBefore": "bc64e255e83b6ede8c4c0dc8f0b7d9e60deead03fd30e3100a5e364e41b503f0",
+      "nonStyleAfter": "bc64e255e83b6ede8c4c0dc8f0b7d9e60deead03fd30e3100a5e364e41b503f0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/image-upload.tsx",
+      "nonStyleBefore": "8824f08aeba8a00c535307a85511878b6c26f4d5112fd672a2e9d7906c7c02b0",
+      "nonStyleAfter": "8824f08aeba8a00c535307a85511878b6c26f4d5112fd672a2e9d7906c7c02b0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/initial-room-meter-form.tsx",
+      "nonStyleBefore": "2d6843d4eb9d6d940c59f1f92642f3b3780d92e356d666991027e05395f89011",
+      "nonStyleAfter": "2d6843d4eb9d6d940c59f1f92642f3b3780d92e356d666991027e05395f89011",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/management-finance-panel.tsx",
+      "nonStyleBefore": "328e954cd73e40ff060df56fb97dbdf57e0336bb203e27c259bb54dfe9b5df14",
+      "nonStyleAfter": "328e954cd73e40ff060df56fb97dbdf57e0336bb203e27c259bb54dfe9b5df14",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/management-ui.tsx",
+      "nonStyleBefore": "68a4859064910eff75e5159991f6d62c539d657185cf31a658f75808e87e0133",
+      "nonStyleAfter": "68a4859064910eff75e5159991f6d62c539d657185cf31a658f75808e87e0133",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/monthly-billing-panel.tsx",
+      "nonStyleBefore": "0abde3139b7855eb0a3d9e65f654ea382de77e111ec02a90b849c34404a57757",
+      "nonStyleAfter": "0abde3139b7855eb0a3d9e65f654ea382de77e111ec02a90b849c34404a57757",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/onboarding-handover-editor.tsx",
+      "nonStyleBefore": "0f34a74c9c219342b2938662246a79e43a1c21160d0b17d4047d2a0993d1ff64",
+      "nonStyleAfter": "0f34a74c9c219342b2938662246a79e43a1c21160d0b17d4047d2a0993d1ff64",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/onboarding-identity-profile.tsx",
+      "nonStyleBefore": "2301d56c265f39dea5157fad582e8525c34223f86a0919d44d40954e7a9c4c0c",
+      "nonStyleAfter": "2301d56c265f39dea5157fad582e8525c34223f86a0919d44d40954e7a9c4c0c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/onboarding-procedures.tsx",
+      "nonStyleBefore": "0f5f4fb524a1975292660329248410b92b81343f169cd6a35882f22e9f99bf4d",
+      "nonStyleAfter": "0f5f4fb524a1975292660329248410b92b81343f169cd6a35882f22e9f99bf4d",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/shared/room-meter-management.tsx",
+      "nonStyleBefore": "03da0ed3facef44688c1073b4993f671b33846a7553e52983b2b6f996b112913",
+      "nonStyleAfter": "03da0ed3facef44688c1073b4993f671b33846a7553e52983b2b6f996b112913",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/technician/technician-dashboard.tsx",
+      "nonStyleBefore": "0a5eeeb39d4a92f3ef66c07b1c59758796e6dda620d560b06c6ea211cb96680b",
+      "nonStyleAfter": "0a5eeeb39d4a92f3ef66c07b1c59758796e6dda620d560b06c6ea211cb96680b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/technician/technician-resource-pages.tsx",
+      "nonStyleBefore": "15cf4d1ba43e46fdd0fbcd7865baa34cb58c286c8ff1818fd035d7e49d0ff3fd",
+      "nonStyleAfter": "15cf4d1ba43e46fdd0fbcd7865baa34cb58c286c8ff1818fd035d7e49d0ff3fd",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/technician/technician-shell.tsx",
+      "nonStyleBefore": "97fc1315c9eccc892cc3bf97723cc72e234273f94098c61302d6db90778a8451",
+      "nonStyleAfter": "97fc1315c9eccc892cc3bf97723cc72e234273f94098c61302d6db90778a8451",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/technician/technician-task-detail.tsx",
+      "nonStyleBefore": "1b0d849dcb8f8a818406dba7991ab118b05e427a23fee7975eaa111abb5f9994",
+      "nonStyleAfter": "1b0d849dcb8f8a818406dba7991ab118b05e427a23fee7975eaa111abb5f9994",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/technician/technician-task-list.tsx",
+      "nonStyleBefore": "3e95d5fdb0e4a798b497f342d15851819587030f4b35f63dcb28e1535c329950",
+      "nonStyleAfter": "3e95d5fdb0e4a798b497f342d15851819587030f4b35f63dcb28e1535c329950",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/technician/technician-ui.tsx",
+      "nonStyleBefore": "7f80368596d310cd807a968c25869bb2b8fd8318bf83716083bccc3919328c7e",
+      "nonStyleAfter": "7f80368596d310cd807a968c25869bb2b8fd8318bf83716083bccc3919328c7e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/account-overview-page.tsx",
+      "nonStyleBefore": "b0134d965cffe9f0d128ae8e6dd77a722d635487997e7c5967a9a2a02bcd6db6",
+      "nonStyleAfter": "b0134d965cffe9f0d128ae8e6dd77a722d635487997e7c5967a9a2a02bcd6db6",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/account-ui.tsx",
+      "nonStyleBefore": "7652aad3bd24bbaab9428fa4edeebf4d744bd8369a01849fd415c0db8631b459",
+      "nonStyleAfter": "7652aad3bd24bbaab9428fa4edeebf4d744bd8369a01849fd415c0db8631b459",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/activity-page.tsx",
+      "nonStyleBefore": "681058e9c9ef94cb613eccb364e26cc2f37883d3bc5e95741833b83dcbbd5b0b",
+      "nonStyleAfter": "681058e9c9ef94cb613eccb364e26cc2f37883d3bc5e95741833b83dcbbd5b0b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/change-password-page.tsx",
+      "nonStyleBefore": "7bd553eba20ddabbc88bd4a537a44c3a820b62fb79a72e815942d7f3905f65f6",
+      "nonStyleAfter": "7bd553eba20ddabbc88bd4a537a44c3a820b62fb79a72e815942d7f3905f65f6",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/documents-page.tsx",
+      "nonStyleBefore": "39d718540117a5ffd8b253079bbe64260a08376c097aa28633b69a8f21aaff3e",
+      "nonStyleAfter": "39d718540117a5ffd8b253079bbe64260a08376c097aa28633b69a8f21aaff3e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/preferences-page.tsx",
+      "nonStyleBefore": "f3a1e11c500731759310a8747084a812f08c6c3c130c295ceda43b998d9ab906",
+      "nonStyleAfter": "f3a1e11c500731759310a8747084a812f08c6c3c130c295ceda43b998d9ab906",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/profile-page.tsx",
+      "nonStyleBefore": "9885a707e63543713f7a929cfa31e97c8400ac1f4018b71ad2fda99841bad92b",
+      "nonStyleAfter": "9885a707e63543713f7a929cfa31e97c8400ac1f4018b71ad2fda99841bad92b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/security-page.tsx",
+      "nonStyleBefore": "600c8d0e8b6b06838f97134fe38ad1b4fc8b229439a9e5ddbc882411fe701fee",
+      "nonStyleAfter": "600c8d0e8b6b06838f97134fe38ad1b4fc8b229439a9e5ddbc882411fe701fee",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/sessions-page.tsx",
+      "nonStyleBefore": "bc7af020f4ba9b89b2cab5387bb0d86e1897b851deed635b3b643e7a80465793",
+      "nonStyleAfter": "bc7af020f4ba9b89b2cab5387bb0d86e1897b851deed635b3b643e7a80465793",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/account/support-page.tsx",
+      "nonStyleBefore": "7c497d042b621c52bff48816a8a15d5595d82be6b685b8601c0e58f3b7cdaed8",
+      "nonStyleAfter": "7c497d042b621c52bff48816a8a15d5595d82be6b685b8601c0e58f3b7cdaed8",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/co-occupants/co-occupant-detail-page.tsx",
+      "nonStyleBefore": "9170f47f94b0fab36275a2a0bc99555999e9cc176e1a2906c6aa64456ef8e6fa",
+      "nonStyleAfter": "9170f47f94b0fab36275a2a0bc99555999e9cc176e1a2906c6aa64456ef8e6fa",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/co-occupants/co-occupant-empty-state.tsx",
+      "nonStyleBefore": "bcdbb7a9b153d10dee0c709096468ca5066b413fbb9f34e103b610d4b7e7d681",
+      "nonStyleAfter": "bcdbb7a9b153d10dee0c709096468ca5066b413fbb9f34e103b610d4b7e7d681",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/co-occupants/co-occupant-history-page.tsx",
+      "nonStyleBefore": "3da54d6819094d1b73590c9b384aec8acfee8ec381e2df041b205682dd2b5b69",
+      "nonStyleAfter": "3da54d6819094d1b73590c9b384aec8acfee8ec381e2df041b205682dd2b5b69",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/co-occupants/co-occupant-new-page.tsx",
+      "nonStyleBefore": "2078977a8d482be5dc9c3f122d6ef075dd58482efdb5ae170ee918f8ef9b80b9",
+      "nonStyleAfter": "2078977a8d482be5dc9c3f122d6ef075dd58482efdb5ae170ee918f8ef9b80b9",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/co-occupants/co-occupant-overview-page.tsx",
+      "nonStyleBefore": "00c6869f10045872c369342279afc9f1585de2f917f6b7bf4f2360512ed36317",
+      "nonStyleAfter": "00c6869f10045872c369342279afc9f1585de2f917f6b7bf4f2360512ed36317",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/co-occupants/co-occupant-request-detail-page.tsx",
+      "nonStyleBefore": "1c602fc13767b2e2fa84d713a9c1a52c1f4c5e89e413bc627bed61b0d77b2d6e",
+      "nonStyleAfter": "1c602fc13767b2e2fa84d713a9c1a52c1f4c5e89e413bc627bed61b0d77b2d6e",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/co-occupants/co-occupant-ui.tsx",
+      "nonStyleBefore": "9b383fc9052f6a99da8e11c859bcdbba0f6db19ae4bdee830115938df880ff9c",
+      "nonStyleAfter": "9b383fc9052f6a99da8e11c859bcdbba0f6db19ae4bdee830115938df880ff9c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/contracts/contract-card.tsx",
+      "nonStyleBefore": "8c488dc8cc7afe2fa35675a4679fc36f92be490c52a42fe6916049dcefe38f6b",
+      "nonStyleAfter": "8c488dc8cc7afe2fa35675a4679fc36f92be490c52a42fe6916049dcefe38f6b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/contracts/contract-detail-page.tsx",
+      "nonStyleBefore": "b47c9e12f8e0624b71cf410315b48092e39a2de84ec608fb4633c7e0559d463d",
+      "nonStyleAfter": "b47c9e12f8e0624b71cf410315b48092e39a2de84ec608fb4633c7e0559d463d",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/contracts/contract-detail-sections.tsx",
+      "nonStyleBefore": "ab285f5bfe91c4c09733946ceed351df59f7b84b7fc5ce8134283c224260e539",
+      "nonStyleAfter": "ab285f5bfe91c4c09733946ceed351df59f7b84b7fc5ce8134283c224260e539",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/contracts/contract-list-page.tsx",
+      "nonStyleBefore": "91371897b72d2f16e41063084b72924394e1f869fef71d9c9000a471eb3596d1",
+      "nonStyleAfter": "91371897b72d2f16e41063084b72924394e1f869fef71d9c9000a471eb3596d1",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/contracts/request-dialogs.tsx",
+      "nonStyleBefore": "58c02af63da6a650f55f16042995d1d8d673aefa03d60388505bb1f6d8f5b1ad",
+      "nonStyleAfter": "58c02af63da6a650f55f16042995d1d8d673aefa03d60388505bb1f6d8f5b1ad",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/invoices/invoice-detail-page.tsx",
+      "nonStyleBefore": "d9c6ae24d22b1d1f448f9807868ff95c90b1a6335b6bd963ee90b53d7bf721f0",
+      "nonStyleAfter": "d9c6ae24d22b1d1f448f9807868ff95c90b1a6335b6bd963ee90b53d7bf721f0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/invoices/invoice-list-page.tsx",
+      "nonStyleBefore": "3517aa4ecd8b4237f4f9429ef0fd22b1ea4f90d3139f8389bf59b100ce550db7",
+      "nonStyleAfter": "3517aa4ecd8b4237f4f9429ef0fd22b1ea4f90d3139f8389bf59b100ce550db7",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/invoices/invoice-payment-page.tsx",
+      "nonStyleBefore": "c7564a6f8072c5c2bc6f50ea770640c223096aa41652d874a72851676165791c",
+      "nonStyleAfter": "c7564a6f8072c5c2bc6f50ea770640c223096aa41652d874a72851676165791c",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/invoices/invoice-ui.tsx",
+      "nonStyleBefore": "340f9c13d561d36fb1162889dd6b5dbb48e3cdc19599e4fa0d61b7d168b2d801",
+      "nonStyleAfter": "340f9c13d561d36fb1162889dd6b5dbb48e3cdc19599e4fa0d61b7d168b2d801",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/invoices/payment-history-page.tsx",
+      "nonStyleBefore": "aff98ad5fa17ebca8fa49ed93d0a51225650cbcb1a7394ab393241188ade39a6",
+      "nonStyleAfter": "aff98ad5fa17ebca8fa49ed93d0a51225650cbcb1a7394ab393241188ade39a6",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/maintenance/maintenance-detail-page.tsx",
+      "nonStyleBefore": "60c4ffeb19d2345ec4b4b8c97500363b5bc18920bd2195527992a04e1bdee74b",
+      "nonStyleAfter": "60c4ffeb19d2345ec4b4b8c97500363b5bc18920bd2195527992a04e1bdee74b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/maintenance/maintenance-feedback-page.tsx",
+      "nonStyleBefore": "2e62cb9f9d11471ce9a98769cdf91ebccb90d02d6cf6339cb51f9a66ade172c1",
+      "nonStyleAfter": "2e62cb9f9d11471ce9a98769cdf91ebccb90d02d6cf6339cb51f9a66ade172c1",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/maintenance/maintenance-list-page.tsx",
+      "nonStyleBefore": "af741a7311e73ddfac2f0ca6c1cd3f8a226aeac85468ec20c4fb9bcac70639a8",
+      "nonStyleAfter": "af741a7311e73ddfac2f0ca6c1cd3f8a226aeac85468ec20c4fb9bcac70639a8",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/maintenance/maintenance-new-page.tsx",
+      "nonStyleBefore": "23ea0e1e0fdddf817282148f7aa56f0b91595f0c18c9496a467148e2e9608760",
+      "nonStyleAfter": "23ea0e1e0fdddf817282148f7aa56f0b91595f0c18c9496a467148e2e9608760",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/maintenance/maintenance-ui.tsx",
+      "nonStyleBefore": "2a84ed75972e0733e9ef15cc7fc8729731a9b21a301f430a36774bce661fb8c7",
+      "nonStyleAfter": "2a84ed75972e0733e9ef15cc7fc8729731a9b21a301f430a36774bce661fb8c7",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/notifications/notification-detail-page.tsx",
+      "nonStyleBefore": "adf4bcc5149403030326bb0bcef4a993bda3156e7a7c133cc68b417ff91427fc",
+      "nonStyleAfter": "adf4bcc5149403030326bb0bcef4a993bda3156e7a7c133cc68b417ff91427fc",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/notifications/notification-list-page.tsx",
+      "nonStyleBefore": "918359d6e88c5b1388cb60773312e62d2e1558e47237777dbd57f2359df51c52",
+      "nonStyleAfter": "918359d6e88c5b1388cb60773312e62d2e1558e47237777dbd57f2359df51c52",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/notifications/notification-settings-page.tsx",
+      "nonStyleBefore": "39abe45b555bc71ea30ba277a2017dca008235e601f32cb4d25c6239b0e8841f",
+      "nonStyleAfter": "39abe45b555bc71ea30ba277a2017dca008235e601f32cb4d25c6239b0e8841f",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/notifications/notification-ui.tsx",
+      "nonStyleBefore": "ff39c628fabea217ae2b0fe0fa4d969ee194dd60381aec5260831d35a67ac0e0",
+      "nonStyleAfter": "ff39c628fabea217ae2b0fe0fa4d969ee194dd60381aec5260831d35a67ac0e0",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/tenant-home-dashboard.tsx",
+      "nonStyleBefore": "0b4bdd14e1e54794af5d6a9565d91b72e582c1b7ab47a97e6f887d65b42bac33",
+      "nonStyleAfter": "0b4bdd14e1e54794af5d6a9565d91b72e582c1b7ab47a97e6f887d65b42bac33",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/tenant-shell.tsx",
+      "nonStyleBefore": "cb8d1e4fc4516783bea055202874c9347a592b29891180dfb3c8034cc36af8ce",
+      "nonStyleAfter": "cb8d1e4fc4516783bea055202874c9347a592b29891180dfb3c8034cc36af8ce",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/tenant-user-menu.tsx",
+      "nonStyleBefore": "9e1ede0bd0ece62ed17115bfadb6553759c509fb972dd4a72e48151911a4187b",
+      "nonStyleAfter": "9e1ede0bd0ece62ed17115bfadb6553759c509fb972dd4a72e48151911a4187b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/tenant/utilities/tenant-utilities-page.tsx",
+      "nonStyleBefore": "2ea4abe1ea671958228606c5ef76446fb0178463a2743e2915abf2574e25ad7b",
+      "nonStyleAfter": "2ea4abe1ea671958228606c5ef76446fb0178463a2743e2915abf2574e25ad7b",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/ui/button.tsx",
+      "nonStyleBefore": "72b178666473e6c846c2d1c3f5bab5bc72e46842ca73764cc6d0435b4df6493d",
+      "nonStyleAfter": "72b178666473e6c846c2d1c3f5bab5bc72e46842ca73764cc6d0435b4df6493d",
+      "unchanged": true
+    },
+    {
+      "file": "src/components/ui/number-input.tsx",
+      "nonStyleBefore": "641a526c49d1eb3d85ace537b459fc23bc3719af9ec54cfd5e97beb5ffba2480",
+      "nonStyleAfter": "641a526c49d1eb3d85ace537b459fc23bc3719af9ec54cfd5e97beb5ffba2480",
+      "unchanged": true
+    }
+  ]
+}

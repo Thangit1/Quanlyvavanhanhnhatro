@@ -1,0 +1,676 @@
+{
+  "runId": "d291850f-181d-4fb5-94ba-f29af561217f",
+  "status": "PASS",
+  "cases": [
+    {
+      "name": "Login real owner",
+      "status": "PASS"
+    },
+    {
+      "name": "TC01 native room file chooser",
+      "status": "PASS"
+    },
+    {
+      "name": "TC02 TC03 TC04 multiple local image previews before save",
+      "status": "PASS"
+    },
+    {
+      "name": "TC09 TC10 TC23 save once with multipart photographs",
+      "status": "PASS"
+    },
+    {
+      "name": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "status": "PASS"
+    },
+    {
+      "name": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "status": "PASS"
+    },
+    {
+      "name": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "status": "PASS"
+    },
+    {
+      "name": "fullscreen next previous and responsive gallery",
+      "status": "PASS"
+    },
+    {
+      "name": "TC12 card list displays saved cover",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "responses": [
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/auth/refresh",
+      "status": 401
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/auth/login",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/debt?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/occupancy?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/expenses?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/reports/overview?startDate=2026-11-01&endDate=2026-11-30",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/invoices?status=UNPAID&size=5&page=0",
+      "status": 200
+    },
+    {
+      "case": "Login real owner",
+      "url": "http://127.0.0.1:57118/api/admin/dashboard?period=MONTH",
+      "status": 200
+    },
+    {
+      "case": "TC01 native room file chooser",
+      "url": "http://127.0.0.1:57118/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC01 native room file chooser",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC01 native room file chooser",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC01 native room file chooser",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC01 native room file chooser",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC01 native room file chooser",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC01 native room file chooser",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/rooms",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/rooms",
+      "status": 201
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/50994659-1cbe-4921-b8f2-a111da2deb07.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/50994659-1cbe-4921-b8f2-a111da2deb07.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC09 TC10 TC23 save once with multipart photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/50994659-1cbe-4921-b8f2-a111da2deb07.png",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC11 TC13 TC30 refresh and load persisted photographs",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/50994659-1cbe-4921-b8f2-a111da2deb07.png",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC14 TC15 TC16 TC17 edit cover order and remove after confirmation",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "TC05 TC06 TC07 TC08 reject oversized fake unsupported and excessive selections",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/rooms/3",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/294655b7-766e-4254-bdde-ec3b67a41d17.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "fullscreen next previous and responsive gallery",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/auth/refresh",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/auth/me",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/rooms?page=0&size=20",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/communications/unread",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/owner/organizations",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/rooms?page=0&size=20",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/properties/options",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/2050b7f4-bd0b-4a0d-8def-507b18b90dfc.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/rental-lifecycle",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/2050b7f4-bd0b-4a0d-8def-507b18b90dfc.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/properties/4/images/20c14ac8-f163-45ab-8258-b28c7fa8b271.png",
+      "status": 200
+    },
+    {
+      "case": "TC12 card list displays saved cover",
+      "url": "http://127.0.0.1:57118/api/admin/rental-lifecycle",
+      "status": 200
+    }
+  ],
+  "apiInterception": false
+}
