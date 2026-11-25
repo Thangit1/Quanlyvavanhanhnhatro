@@ -17,6 +17,10 @@ import tools.jackson.databind.json.JsonMapper;
 /** Official OA v3 + ZBS phone/UID transport. Unknown approval states always fail closed. */
 @Service
 public class ZaloNotificationProvider {
+    private record TemplateApproval(boolean enabled, boolean fresh) {
+        boolean canSend() { return enabled && fresh; }
+    }
+
     final JdbcClient db;final IntegrationVault vault;final Environment environment;final JsonMapper json;final TransactionTemplate tx;
     final HttpClient http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NEVER).build();
     public ZaloNotificationProvider(JdbcClient db,IntegrationVault vault,Environment environment,JsonMapper json,org.springframework.transaction.PlatformTransactionManager manager){this.db=db;this.vault=vault;this.environment=environment;this.json=json;tx=new TransactionTemplate(manager);}
@@ -27,16 +31,66 @@ public class ZaloNotificationProvider {
         String token=vault.read(c.owner(),"ZALO","ACCESS_TOKEN");
         if(operation.equals("REFRESH_TOKEN"))return refresh(c);
         identity(c,token);
-        if(operation.equals("CHECK")||operation.equals("SYNC_TEMPLATES")){
-            var data=request("https://business.openapi.zalo.me/template/all?offset=0&limit=100",token,null);JsonNode items=data.isArray()?data:data.path("templates");if(!items.isArray())return new Outcome("DEGRADED","ZBS_TEMPLATE_CAPABILITY_UNVERIFIED",null,Map.of("oaAuthentication","VERIFIED","templates","UNVERIFIED","webhook","NOT_VERIFIED"));
-            db.sql("DELETE FROM integration_templates WHERE owner_id=:owner").param("owner",c.owner()).update();int active=0;
-            for(JsonNode item:items){String id=item.path("template_id").asText();if(!id.matches("[0-9]{1,60}"))continue;String state=item.path("status").asText("UNKNOWN");if(state.equals("ENABLE"))active++;String name=item.path("template_name").asText("ZBS template");if(name.length()>200)name=name.substring(0,200);db.sql("INSERT INTO integration_templates(owner_id,template_id,oa_id,name,status,details) VALUES(:owner,:id,:oa,:name,:status,'{}')").param("owner",c.owner()).param("id",id).param("oa",c.text("oaId")).param("name",name).param("status",state.length()>40?"UNKNOWN":state).update();}
-            return new Outcome(active>0?"CONNECTED":"DEGRADED",active>0?"ZBS_APPROVED_TEMPLATES_AVAILABLE":"ZBS_NO_ENABLED_TEMPLATE",null,Map.of("oaAuthentication","VERIFIED","templates",active,"webhook","NOT_VERIFIED","quota","CHECKED_BY_PROVIDER_ON_SEND"));
-        }
-        if(operation.equals("TEST_SEND")){if(test==null||test.templateId()==null)throw invalid("ZBS_TEMPLATE_REQUIRED");var rows=db.sql("SELECT status FROM integration_templates WHERE owner_id=:owner AND oa_id=:oa AND template_id=:id AND synced_at>=CURRENT_TIMESTAMP-INTERVAL 1 DAY").param("owner",c.owner()).param("oa",c.text("oaId")).param("id",test.templateId()).query(String.class).list();if(rows.isEmpty()||!rows.getFirst().equals("ENABLE"))return new Outcome("DEGRADED","ZBS_TEMPLATE_NOT_APPROVED_OR_STALE",null,Map.of("send","BLOCKED"));
+        if(operation.equals("CHECK")||operation.equals("SYNC_TEMPLATES")) return syncTemplates(c, token);
+        if(operation.equals("TEST_SEND")){if(test==null||test.templateId()==null)throw invalid("ZBS_TEMPLATE_REQUIRED");if(!templateApproval(c,test.templateId()).canSend())return templateBlocked();
             String uid=test.recipient();if(uid==null||!uid.matches("[0-9]{1,40}"))throw invalid("ZALO_UID_INVALID");if(!Arrays.asList(environment.getProperty("INTEGRATION_ZALO_TEST_UIDS","").split(",")).contains(uid))throw invalid("ZALO_TEST_RECIPIENT_NOT_ALLOWED");if(!environment.getProperty("INTEGRATION_ZALO_LIVE_TEST",Boolean.class,false))return new Outcome("SIMULATED","ZBS_RENDER_ONLY_NO_PROVIDER_SEND",null,Map.of("send","SIMULATED","templateId",test.templateId()));
             var data=request("https://openapi.zalo.me/v3.0/oa/message/template",token,Map.of("user_id",uid,"template_id",test.templateId(),"template_data",test.parameters()==null?Map.of():test.parameters()));return new Outcome("SENT","ZBS_PROVIDER_ACCEPTED",safeReference(data.path("message_id").asText()),Map.of("acceptance","PROVIDER_ACCEPTED","delivery","NOT_CONFIRMED"));
         }throw invalid("ZALO_OPERATION_UNSUPPORTED");
+    }
+
+    private Outcome syncTemplates(Config config, String token) throws Exception {
+        var data = request("https://business.openapi.zalo.me/template/all?offset=0&limit=100", token, null);
+        var items = data.isArray() ? data : data.path("templates");
+        if (!items.isArray()) {
+            return new Outcome("DEGRADED", "ZBS_TEMPLATE_CAPABILITY_UNVERIFIED", null,
+                    Map.of("oaAuthentication", "VERIFIED", "templates", "UNVERIFIED", "webhook", "NOT_VERIFIED"));
+        }
+
+        int active = tx.execute(status -> {
+            db.sql("SELECT id FROM users WHERE id=:owner FOR UPDATE")
+                    .param("owner", config.owner()).query(Long.class).single();
+            long current = db.sql("""
+                    SELECT COUNT(*) FROM integration_configs
+                    WHERE owner_id=:owner AND kind='ZALO' AND enabled=TRUE AND version=:version
+                    """).param("owner", config.owner()).param("version", config.version()).query(Long.class).single();
+            if (current != 1) throw invalid("ZALO_CONFIGURATION_CHANGED");
+
+            db.sql("DELETE FROM integration_templates WHERE owner_id=:owner")
+                    .param("owner", config.owner()).update();
+            int enabled = 0;
+            for (JsonNode item : items) {
+                String id = item.path("template_id").asText();
+                if (!id.matches("[0-9]{1,60}")) continue;
+                String state = item.path("status").asText("UNKNOWN");
+                String name = item.path("template_name").asText("ZBS template");
+                db.sql("""
+                        INSERT INTO integration_templates(owner_id,template_id,oa_id,name,status,details)
+                        VALUES(:owner,:id,:oa,:name,:status,'{}')
+                        """).param("owner", config.owner()).param("id", id).param("oa", config.text("oaId"))
+                        .param("name", name.substring(0, Math.min(name.length(), 200)))
+                        .param("status", state.length() > 40 ? "UNKNOWN" : state).update();
+                if (state.equals("ENABLE")) enabled++;
+            }
+            return enabled;
+        });
+
+        return new Outcome(active > 0 ? "CONNECTED" : "DEGRADED",
+                active > 0 ? "ZBS_APPROVED_TEMPLATES_AVAILABLE" : "ZBS_NO_ENABLED_TEMPLATE", null,
+                Map.of("oaAuthentication", "VERIFIED", "templates", active, "webhook", "NOT_VERIFIED",
+                        "quota", "CHECKED_BY_PROVIDER_ON_SEND"));
+    }
+
+    private TemplateApproval templateApproval(Config config, String templateId) {
+        return db.sql("""
+                SELECT status, synced_at>=CURRENT_TIMESTAMP-INTERVAL 1 DAY AS fresh
+                FROM integration_templates WHERE owner_id=:owner AND oa_id=:oa AND template_id=:id
+                """).param("owner", config.owner()).param("oa", config.text("oaId")).param("id", templateId)
+                .query((rs, row) -> new TemplateApproval("ENABLE".equals(rs.getString("status")), rs.getBoolean("fresh")))
+                .optional().orElse(new TemplateApproval(false, false));
+    }
+
+    private Outcome templateBlocked() {
+        return new Outcome("DEGRADED", "ZBS_TEMPLATE_NOT_APPROVED_OR_STALE", null, Map.of("send", "BLOCKED"));
     }
     public Outcome refresh(Config c){if(!vault.writable())throw invalid("SECRET_STORE_REQUIRED_FOR_TOKEN_ROTATION");return tx.execute(status->{
         db.sql("SELECT id FROM users WHERE id=:id FOR UPDATE").param("id",c.owner()).query(Long.class).single();String refresh=vault.read(c.owner(),"ZALO","REFRESH_TOKEN"),appSecret=vault.read(c.owner(),"ZALO","APP_SECRET");if(refresh.isBlank()||appSecret.isBlank())throw invalid("ZALO_REFRESH_CREDENTIAL_MISSING");
@@ -47,14 +101,43 @@ public class ZaloNotificationProvider {
         if(rows.isEmpty())return new Outcome("DEGRADED","ZBS_BUSINESS_EVENT_MAPPING_REQUIRED",null,Map.of());
         var row=rows.getFirst();Object mappings=c.settings().get("templateMappings");String template=mappings instanceof Map<?,?> map?Objects.toString(map.get(row.get("event_type")),""):"";
         if(template.isBlank())return new Outcome("DEGRADED","ZBS_EVENT_TEMPLATE_NOT_MAPPED",null,Map.of());
-        if(db.sql("SELECT COUNT(*) FROM integration_templates WHERE owner_id=:owner AND oa_id=:oa AND template_id=:id AND status='ENABLE' AND synced_at>=CURRENT_TIMESTAMP-INTERVAL 1 DAY").param("owner",c.owner()).param("oa",c.text("oaId")).param("id",template).query(Long.class).single()!=1)return new Outcome("DEGRADED","ZBS_TEMPLATE_NOT_APPROVED_OR_STALE",null,Map.of());
-        if(!c.environment().equals("PRODUCTION"))return new Outcome("SIMULATED","ZBS_BUSINESS_TEST_NO_REAL_SEND",null,Map.of());
+        var approval = templateApproval(c, template);
+        if (!approval.enabled()) return templateBlocked();
+        if (!c.environment().equals("PRODUCTION")) {
+            return approval.canSend() ? new Outcome("SIMULATED", "ZBS_BUSINESS_TEST_NO_REAL_SEND", null, Map.of())
+                    : templateBlocked();
+        }
         String phone=db.sql("SELECT phone FROM tenant_profiles WHERE user_id=:id ORDER BY id LIMIT 1").param("id",recipient).query(String.class).optional().orElse("");if(phone.startsWith("+"))phone=phone.substring(1);if(phone.startsWith("0"))phone="84"+phone.substring(1);if(!phone.matches("84[0-9]{9}"))return new Outcome("DEGRADED","ZBS_RECIPIENT_PHONE_INVALID",null,Map.of());
         var data=new LinkedHashMap<String,String>();
         var allowed=businessFields(property,recipient,String.valueOf(row.get("source_type")),((Number)row.get("source_id")).longValue());
         Object configuration=c.settings().get("templateParameters");Object event=configuration instanceof Map<?,?> parameters?parameters.get(row.get("event_type")):null;if(event instanceof Map<?,?> parameters)for(var entry:parameters.entrySet()){String name=entry.getKey().toString(),field=entry.getValue().toString();if(!name.matches("[a-zA-Z0-9_]{1,60}")||!allowed.containsKey(field)||allowed.get(field).isBlank())return new Outcome("DEGRADED","ZBS_TEMPLATE_PARAMETER_MAPPING_INVALID",null,Map.of());data.put(name,allowed.get(field));}
         if(data.isEmpty())return new Outcome("DEGRADED","ZBS_TEMPLATE_PARAMETERS_REQUIRED",null,Map.of());
-        try{String token=vault.read(c.owner(),"ZALO","ACCESS_TOKEN");identity(c,token);var accepted=request("https://business.openapi.zalo.me/message/template",token,Map.of("phone",phone,"template_id",template,"template_data",data,"tracking_id",key));return new Outcome("SENT","ZBS_PROVIDER_ACCEPTED",safeReference(accepted.path("msg_id").asText()),Map.of("delivery","NOT_CONFIRMED"));}catch(com.thangit.boardinghouse.common.exception.AuthException failure){return new Outcome("ERROR",failure.getMessage().contains("ZALO_PROVIDER_REJECTED")?"ZBS_PROVIDER_REJECTED":"ZBS_IDENTITY_OR_TRANSPORT_REJECTED",null,Map.of());}catch(Exception unknown){return new Outcome("UNKNOWN","ZBS_OUTCOME_UNCONFIRMED",null,Map.of());}
+        String token = vault.read(c.owner(), "ZALO", "ACCESS_TOKEN");
+        try {
+            identity(c, token);
+            if (!approval.fresh()) {
+                syncTemplates(c, token);
+                if (!templateApproval(c, template).canSend()) return templateBlocked();
+            }
+        } catch (Exception unavailable) {
+            return new Outcome("ERROR", "ZBS_PREFLIGHT_FAILED", null, Map.of("send", "BLOCKED"));
+        }
+
+        try {
+            var dataSent = request("https://business.openapi.zalo.me/message/template", token,
+                    Map.of("phone", phone, "template_id", template, "template_data", data, "tracking_id", key));
+            String reference = safeReference(dataSent.path("msg_id").asText());
+            if (reference != null) {
+                return new Outcome("SENT", "ZBS_PROVIDER_ACCEPTED", reference, Map.of("delivery", "NOT_CONFIRMED"));
+            }
+        } catch (com.thangit.boardinghouse.common.exception.AuthException failure) {
+            if (failure.code().startsWith("ZALO_PROVIDER_REJECTED_")) {
+                return new Outcome("ERROR", "ZBS_PROVIDER_REJECTED", null, Map.of());
+            }
+        } catch (Exception unknown) {
+            // A message can have been accepted before the response became unavailable.
+        }
+        return new Outcome("UNKNOWN", "ZBS_OUTCOME_UNCONFIRMED", null, Map.of());
     }
     /** Scoped, explicit transactional fields only; never identity documents or free-text tenant records. */
     public Map<String,String> businessFields(long property,long recipient,String type,long source){

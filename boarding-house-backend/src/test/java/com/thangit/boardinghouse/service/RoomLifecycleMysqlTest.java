@@ -22,15 +22,33 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 class RoomLifecycleMysqlTest {
     final DepositLedgerMysqlTest f=new DepositLedgerMysqlTest();
     RoomLifecycleGuard rooms;BookingExpirationService expiry;AdminPropertyServiceImpl properties;
-    DepositLedgerMysqlTest.Fixture migrationBooking;long migrationContract;long beforeContracts,beforeBookings,beforeHistory;
+    long migrationBooking,migrationRoom,migrationContract;long beforeContracts,beforeBookings,beforeHistory;
     final AuthenticatedUser manager=new AuthenticatedUser(2L,"manager@test.invalid",RoleCode.MANAGER);
     final AuthenticatedUser manager2=new AuthenticatedUser(6L,"manager2@test.invalid",RoleCode.MANAGER);
     @BeforeAll void setup()throws Exception {
         f.setup("prompt04_test_","22");rooms=new RoomLifecycleGuard(f.db);expiry=new BookingExpirationService(f.db,rooms);
         properties=new AdminPropertyServiceImpl(new AdminPropertyRepository(f.db),rooms);
-        migrationBooking=f.booking("0");migrationContract=lease(migrationBooking.room(),LocalDate.now().toString(),LocalDate.now().plusYears(1).toString());f.db.sql("UPDATE rental_bookings SET contract_id=:c,status='CONTRACT_CREATED' WHERE id=:id").param("c",migrationContract).param("id",migrationBooking.booking()).update();
+        seedVersion22Booking();
         beforeContracts=count("contracts","1=1");beforeBookings=count("rental_bookings","1=1");beforeHistory=count("room_status_history","1=1");
         Flyway.configure().dataSource(f.dataSource).load().migrate();
+    }
+
+    private void seedVersion22Booking() {
+        long property=f.insert("INSERT INTO properties(owner_id,code,name,address) VALUES(1,'MIGRATION-23','Migration test','Synthetic')");
+        migrationRoom=f.insert("INSERT INTO rooms(property_id,code,monthly_rent,status) VALUES("+property+",'M23',1000,'RESERVED')");
+        long profile=f.db.sql("SELECT id FROM tenant_profiles WHERE user_id=5").query(Long.class).optional()
+                .orElseGet(()->f.insert("INSERT INTO tenant_profiles(tenant_code,user_id,full_name,phone) VALUES('M23',5,'Migration test','0900000000')"));
+        LocalDate today=LocalDate.now();
+        migrationContract=lease(migrationRoom,today.toString(),today.plusYears(1).toString());
+        migrationBooking=f.insert("""
+                INSERT INTO rental_bookings(code,property_id,room_id,tenant_profile_id,contract_id,status,
+                  reservation_start,reservation_end,created_by)
+                VALUES('M23',%d,%d,%d,%d,'CONTRACT_CREATED',CURRENT_DATE,CURRENT_DATE+INTERVAL 7 DAY,1)
+                """.formatted(property,migrationRoom,profile,migrationContract));
+        f.db.sql("""
+                INSERT INTO room_status_history(room_id,old_status,new_status,reason,actor_id)
+                VALUES(:room,'VACANT','RESERVED','Migration test booking',1)
+                """).param("room",migrationRoom).update();
     }
     long count(String table,String where){return f.db.sql("SELECT COUNT(*) FROM "+table+" WHERE "+where).query(Long.class).single();}
     String status(long room){return f.db.sql("SELECT status FROM rooms WHERE id=:id").param("id",room).query(String.class).single();}
@@ -71,7 +89,7 @@ class RoomLifecycleMysqlTest {
     @Test void tc20_roomOutsideAssignmentIsForbidden(){var x=free("READY");f.error("PROPERTY_ACCESS_DENIED",()->book(manager,x));assertThat(status(x.room())).isEqualTo("READY");}
     @Test void tc21_concurrentManualTransitionsRespectVersion()throws Exception{var x=free("READY");assign(x);long v=version(x.room());assertThat(parallel(()->f.run(()->properties.changeStatus(manager,x.room(),new ChangeStatus("MAINTENANCE","Kiểm tra kỹ thuật",v,false))),()->f.run(()->properties.changeStatus(manager2,x.room(),new ChangeStatus("INACTIVE","Ngừng khai thác",v,false))))).isEqualTo(1);assertThat(version(x.room())).isEqualTo(v+1);}
     @Test void tc22_roomTransitionsHaveActorTimeAndReason(){var a=active();checkout(a,"0");assertThat(count("room_status_history","room_id="+a.fixture.room()+" AND actor_id=1 AND reason IS NOT NULL AND created_at IS NOT NULL")).isEqualTo(4);}
-    @Test void tc23_migrationPreservesHistoryAndContracts(){assertThat(count("contracts","id="+migrationContract)).isEqualTo(1);assertThat(count("rental_bookings","id="+migrationBooking.booking()+" AND contract_id="+migrationContract)).isEqualTo(1);assertThat(count("room_status_history","room_id="+migrationBooking.room())).isEqualTo(1);assertThat(count("flyway_schema_history","version='23' AND success=1")).isEqualTo(1);assertThat(beforeContracts).isEqualTo(3);assertThat(beforeBookings).isEqualTo(1);assertThat(beforeHistory).isEqualTo(1);}
+    @Test void tc23_migrationPreservesHistoryAndContracts(){assertThat(count("contracts","id="+migrationContract)).isEqualTo(1);assertThat(count("rental_bookings","id="+migrationBooking+" AND contract_id="+migrationContract)).isEqualTo(1);assertThat(count("room_status_history","room_id="+migrationRoom)).isEqualTo(1);assertThat(count("flyway_schema_history","version='23' AND success=1")).isEqualTo(1);assertThat(beforeContracts).isEqualTo(3);assertThat(beforeBookings).isEqualTo(1);assertThat(beforeHistory).isEqualTo(1);}
     @Test void tc24_expiredPaidBookingPreservesHeldMoney(){var x=f.booking("500000");f.run(()->f.ledger.collect(f.accountant,x.deposit(),f.key(),f.cash("500000")));due(x);f.run(()->expiry.expire(x.booking()));assertThat(f.balance(x.deposit())).isEqualByComparingTo("500000");assertThat(count("deposit_transactions","deposit_id="+x.deposit()+" AND transaction_type='REFUND'")).isZero();assertThat(count("expired_booking_money_to_resolve","booking_id="+x.booking())).isEqualTo(1);}
     @Test void adjacentHalfOpenIntervalsDoNotOverlap(){var x=f.booking("0");LocalDate end=LocalDate.now().plusDays(10);lease(x.room(),LocalDate.now().toString(),end.toString());f.run(()->rooms.contractDates(x.room(),end,end.plusDays(10),null,x.booking()));}
     @Test void validBookingExtensionIsRespectedByExpiry(){var x=f.booking("0");f.run(()->f.lifecycle.extendBooking(f.owner,x.booking(),new ExtendBooking(LocalDate.now().plusDays(30),"Đã thống nhất gia hạn",0L)));assertThat(f.inTx(()->expiry.expire(x.booking()))).isFalse();assertThat(status(x.room())).isEqualTo("RESERVED");}

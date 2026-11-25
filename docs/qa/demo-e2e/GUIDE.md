@@ -1,10 +1,10 @@
 # Prompt 14 — môi trường demo và kiểm thử
 
-Môi trường đang chuẩn bị trên máy này dùng schema **boarding_house_e2e_test_v3**, MySQL test **3317**, API **18083**, giao diện **13000**. Không dùng ứng dụng ở cổng 3000 để thử dữ liệu này. Mọi giao dịch trong môi trường demo đều là dữ liệu TEST, không chuyển tiền thật.
+Môi trường trình diễn dùng schema **boarding_house_e2e_test_customer**, MySQL test **3317**, API **18083**, giao diện **13000**. Giao diện ở cổng 3000 dùng dữ liệu của bản chạy local riêng. Các số liệu, địa chỉ, tài khoản và giao dịch trong bộ demo đều là dữ liệu TEST.
 
 ## Mở giao diện và tài khoản
 
-Mở [đăng nhập demo](http://127.0.0.1:13000/login). Mật khẩu ngẫu nhiên nằm trong `scripts/.demo-local/boarding_house_e2e_test_v3/credentials.json`, trường `password`. File này bị Git bỏ qua; không chép vào báo cáo hoặc commit.
+Mở [đăng nhập demo](http://127.0.0.1:13000/login). Mật khẩu ngẫu nhiên nằm trong `scripts/.demo-local/boarding_house_e2e_test_customer/credentials.json`, trường `password`. File này bị Git bỏ qua.
 
 | Vai trò | Email |
 |---|---|
@@ -24,14 +24,22 @@ Công ty `DEMO-COMPANY`, nhà trọ `TEST-HOUSE-01`, địa chỉ và danh tính
 | Fixture | Phòng | Trạng thái chuẩn bị |
 |---|---|---|
 | MANUAL | TEST-P101 | READY; hồ sơ và tài khoản, **chưa có hợp đồng** |
+| Kích hoạt | TEST-P102 | Hợp đồng chờ xác nhận. Hộp thư local có link đặt mật khẩu cho `tenant-activation@test.invalid`. |
 | A | TEST-P201 | Hợp đồng đã ký/nhận phòng; hóa đơn chưa thanh toán |
 | B | TEST-P202 | Thu đủ 4.200.000đ tiền mặt một lần |
 | C | TEST-P203 | Minh chứng chuyển khoản PENDING; chưa thu tiền, vẫn nợ đủ |
 | D | TEST-P204 | Minh chứng được kế toán duyệt; một khoản thu TEST |
-| E | TEST-P205 | Yêu cầu CARD không hỗ trợ bị từ chối; không có khoản thu |
-| F | TEST-P206 | Ban đầu chưa trả; lệnh Verify thu đủ sau hạn vào 10/11 |
+| E | TEST-P205 | Thanh toán mô phỏng `FAILED`, công nợ vẫn 4.200.000đ |
+| F | TEST-P206 | Thanh toán mô phỏng `TEST_SUCCEEDED`, công nợ vẫn 4.200.000đ. Lệnh Verify có thể ghi khoản thu demo sau hạn vào 10/11. |
 
 `TEST-CONTRACT-001` là **fixture ID** của A. Mã hợp đồng và mã hồ sơ trong ứng dụng do nghiệp vụ hiện có tự sinh, không bị ghi đè bằng SQL. Tra mã thực và ID trong `manifest.json` cùng thư mục credentials. Trên bộ dữ liệu hiện tại: [hợp đồng A](http://127.0.0.1:13000/admin/contracts/1), [hóa đơn A](http://127.0.0.1:13000/admin/invoices/1), [hóa đơn người thuê A](http://127.0.0.1:13000/tenant/invoices/1). Đăng nhập đúng vai trò trước khi mở liên kết. Với schema mới, dùng ID mới trong manifest.
+
+### Các màn hình mở trước buổi trình diễn
+
+- Người thuê A mở [thanh toán hóa đơn](http://127.0.0.1:13000/tenant/invoices/1/payment) để trình diễn nút **Giả lập**. VietQR dùng tài khoản ngân hàng mẫu toàn số 0 dành cho màn hình minh họa.
+- Kế toán mở [minh chứng thanh toán](http://127.0.0.1:13000/accountant/payment-proofs). Mẫu C chờ duyệt, mẫu D đã duyệt. Chọn kỳ 10/2026 nếu cần xem các khoản đã thu trong báo cáo.
+- Chủ nhà mở [Trung tâm tích hợp](http://127.0.0.1:13000/admin/settings/integrations). Gửi email thử đến `tenant-a@test.invalid`, hoặc chọn mẫu Zalo TEST và nhập UID `42424242`. Mẫu `9091` nhận tham số `{"invoice_code":"DEMO-001","amount":"4200000"}` và trả `SIMULATED`.
+- Mở [hộp thư demo](http://127.0.0.1:18025) để xem thư nhắc hạn và thư kích hoạt. Tìm theo địa chỉ `tenant-a@test.invalid` hoặc `tenant-activation@test.invalid`.
 
 Hợp đồng từ 01/10/2026 đến 30/09/2027, tiền phòng/cọc 3.500.000đ. Các ngày kết thúc phải được hiểu theo quy ước khoảng thời gian của backend hiện có. Các phòng không có hợp đồng trùng thời gian. Kỳ hóa đơn 01–31/10, mở thanh toán 28/10, hạn 05/11 theo Asia/Ho_Chi_Minh. Thanh toán toàn bộ số dư; không có phí trễ tự phát, khóa tài khoản hay tự kết thúc hợp đồng.
 
@@ -51,18 +59,18 @@ Preview lưu ở `preview-A.json` … `preview-F.json`. Hóa đơn có calculati
 Cần Java 21, Maven wrapper, Node và dependencies frontend đã cài; MySQL 8 test phải sẵn sàng. Trên máy này MySQL test 3317 đang có sẵn. Tại thư mục repository, mở hai terminal:
 
 ```powershell
-.\scripts\demo.ps1 -Action Start -Database boarding_house_e2e_test_v3
+.\scripts\demo.ps1 -Action Start -Database boarding_house_e2e_test_customer
 ```
 
 ```powershell
-.\scripts\demo.ps1 -Action Frontend -Database boarding_house_e2e_test_v3
+.\scripts\demo.ps1 -Action Frontend -Database boarding_house_e2e_test_customer
 ```
 
 Start giữ terminal chạy API và SMTP. Frontend dùng `.next-audit14-demo`, không ghi đè `.next` của ứng dụng chính. Nếu cổng đã có tiến trình demo, dùng Status rồi mở trình duyệt; không khởi chạy chồng.
 
 ```powershell
-.\scripts\demo.ps1 -Action Status -Database boarding_house_e2e_test_v3
-.\scripts\demo.ps1 -Action Stop -Database boarding_house_e2e_test_v3
+.\scripts\demo.ps1 -Action Status -Database boarding_house_e2e_test_customer
+.\scripts\demo.ps1 -Action Stop -Database boarding_house_e2e_test_customer
 ```
 
 Stop đóng API/SMTP; dừng terminal frontend bằng Ctrl+C. Chạy Start lại trên schema COMPLETE chỉ mở dữ liệu cũ, không seed thêm. Schema không có marker hoặc seed dở bị từ chối. Muốn bộ dữ liệu sạch, chọn tên mới, ví dụ `boarding_house_e2e_test_run02`, cùng tên đó trong mọi lệnh. Schema cũ được giữ lại; không có lệnh DROP, xóa migration hay reset database chính.
@@ -80,10 +88,10 @@ Không dùng mật khẩu database chính. Launcher chỉ kết nối 127.0.0.1,
 ## Đồng hồ, email và kiểm tra tự động
 
 ```powershell
-.\scripts\demo.ps1 -Action Date -Date 2026-11-03 -Database boarding_house_e2e_test_v3
-.\scripts\demo.ps1 -Action Date -Date 2026-11-05 -Database boarding_house_e2e_test_v3
-.\scripts\demo.ps1 -Action Date -Date 2026-11-06 -Database boarding_house_e2e_test_v3
-.\scripts\demo.ps1 -Action Date -Date 2026-11-10 -Database boarding_house_e2e_test_v3
+.\scripts\demo.ps1 -Action Date -Date 2026-11-03 -Database boarding_house_e2e_test_customer
+.\scripts\demo.ps1 -Action Date -Date 2026-11-05 -Database boarding_house_e2e_test_customer
+.\scripts\demo.ps1 -Action Date -Date 2026-11-06 -Database boarding_house_e2e_test_customer
+.\scripts\demo.ps1 -Action Date -Date 2026-11-10 -Database boarding_house_e2e_test_customer
 ```
 
 Đọc `clock-status.txt` để biết lệnh đã áp dụng. Có thể quay về 28/10. `BusinessTime` dùng java.time.Clock; runtime test thay Clock trong JVM riêng. Mỗi kết nối SQL test đặt timezone và **session timestamp** từ cùng Clock; không thay đồng hồ hệ điều hành, giờ MySQL toàn cục hoặc JVM ứng dụng chính. Token đăng nhập vẫn hết hạn theo thời gian thật. Không có endpoint đổi giờ production.
@@ -95,7 +103,7 @@ Mở [SMTP inbox local](http://127.0.0.1:18025). SMTP nghe loopback **11025**, l
 Lệnh dưới chạy kiểm tra API, snapshot, công nợ, các mốc hạn, SMTP và thu đủ hóa đơn **F** sau quá hạn. Đây là thao tác có ghi giao dịch TEST vào F; A/C/E vẫn để chưa thanh toán.
 
 ```powershell
-.\scripts\demo.ps1 -Action Verify -Database boarding_house_e2e_test_v3
+.\scripts\demo.ps1 -Action Verify -Database boarding_house_e2e_test_customer
 ```
 
 Đọc `verification.json`; lỗi thực thi ngoài assertion ở `verification-error.txt`. Dừng ở 10/11 sau khi chạy. Đối chiếu kết quả tổng hợp đã kiểm tra trong `REPORT.md` và `matrix.json`; không suy diễn PASS từ việc tạo dữ liệu.
@@ -120,7 +128,7 @@ Các suite tạo schema mới riêng và giữ lại để kiểm tra; không d�
 
 ## Giới hạn được ghi rõ
 
-- Kịch bản E chứng minh yêu cầu CARD không hỗ trợ bị từ chối và không ghi tiền; **chưa chứng minh phiên gateway FAILED** vì repository chưa có provider/callback thanh toán. TC24 phải BLOCKED, không ghi PASS hoặc dựng trạng thái bằng SQL.
+- Kịch bản E và F dùng phiên `SIMULATED` thật của ứng dụng với kết quả TEST. Việc trình diễn callback VNPay/MoMo cần merchant sandbox và URL HTTPS công khai. Mẫu Zalo trong demo đến từ phản hồi mô phỏng trong bộ test.
 - Quy trình gia hạn, bảo trì, dịch vụ và trả phòng có bằng chứng kiểm thử service/HTTP trên các schema test riêng; các màn hình chưa tự động bấm hết từng nút của các quy trình này. Bộ demo vẫn để hợp đồng có hiệu lực cho người kiểm thử tự thao tác.
 - Đã sửa form hợp đồng trực tiếp để chọn được hồ sơ mới theo nhà trọ quản lý dù chưa có lịch sử cư trú. Hai kiểm thử hồi quy kiểm tra trường hợp hợp lệ và chặn hồ sơ thuộc nhà trọ khác; không tạo cư trú giả để làm form hoạt động.
 - Báo cáo tài chính demo chỉ ở schema riêng. Không triển khai launcher/test class vào production, không trộn các fixture hiệu năng/legacy của bộ acceptance vào schema demo.

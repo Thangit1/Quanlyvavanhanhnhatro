@@ -30,6 +30,8 @@ Mailpit độc lập: SMTP `127.0.0.1:1025`, UI `http://127.0.0.1:8025`; bật A
 
 Gửi thử mặc định chỉ render và báo SIMULATED, không báo SENT. Gửi UID thật cần bật server `INTEGRATION_ZALO_LIVE_TEST=true`, allowlist `INTEGRATION_ZALO_TEST_UIDS`, token và mẫu được duyệt. Tin nghiệp vụ qua SĐT chỉ gửi thật trong PRODUCTION, yêu cầu người thuê đồng ý nhận Zalo và có số điện thoại trong hồ sơ.
 
+Khi gửi tin nghiệp vụ ở PRODUCTION, backend đồng bộ lại trạng thái mẫu đã duyệt nếu bản lưu đã quá một ngày. Chỉ gửi khi Zalo vẫn báo `ENABLE`. Kết quả gửi thiếu mã tin nhắn được ghi `UNKNOWN` để người vận hành đối soát.
+
 Nguồn hợp đồng/nhận phòng/trả phòng có `contract_code`, `room_code`, `start_date`, `end_date`, `contract_status`, `checkin_date`, `checkout_date`. Nguồn bảo trì có `maintenance_code`, `room_code`, `maintenance_status`, `preferred_service_time`, `sla_due_at`, `completed_at`. Backend kiểm property và tenant cho từng nguồn; không đưa CCCD, hồ sơ, mô tả tự do vào template context. Chỉ ánh xạ các trường tồn tại và không rỗng; biến không hỗ trợ sẽ chặn gửi. Các sự kiện cọc dùng context hợp đồng, không tự suy ra số tiền hoàn của một giao dịch từ tổng số dư. Đồng bộ template hiện đọc tối đa 100 mẫu của OA; mẫu ngoài cache không được gửi.
 
 ## Web Push
@@ -42,7 +44,9 @@ Sau khi đăng ký thiết bị, dùng Gửi thử tại card. Validate VAPID ch
 
 Đăng ký merchant sandbox tại [VNPay](https://sandbox.vnpayment.vn/) hoặc [MoMo Developers](https://developers.momo.vn/), nhận mã merchant/partner và khóa tương ứng. Cần URL HTTPS công khai cho provider truy cập callback; localhost không nhận được callback từ Internet.
 
-VNPay: provider VNPAY, TEST, bật VNPay, nhập TmnCode, Hash Secret (`VNPAY_HASH_KEY`), Return URL và IPN URL `/api/integrations/payments/vnpay/ipn`. MoMo: provider MOMO, TEST, bật MoMo, PartnerCode, AccessKey, SecretKey, Redirect URL và IPN `/api/integrations/payments/momo/ipn`. Không ghép khóa sandbox với production.
+Với VNPay, chọn provider VNPAY và môi trường TEST. Bật VNPay, lưu TmnCode, Return URL và IPN URL `/api/gateways/vnpay/ipn`. Khai báo `INTEGRATION_<ownerId>_PAYMENT_VNPAY_HASH_KEY` chỉ trong môi trường backend.
+
+Với MoMo, chọn provider MOMO và môi trường TEST. Bật MoMo, lưu PartnerCode, Redirect URL và IPN URL `/api/gateways/momo/ipn`. Khai báo `INTEGRATION_<ownerId>_PAYMENT_MOMO_ACCESS_KEY` và `INTEGRATION_<ownerId>_PAYMENT_MOMO_SECRET_KEY` chỉ trong môi trường backend. Dùng khóa của đúng merchant và môi trường đã chọn.
 
 Người thuê chỉ tạo phiên cho hóa đơn của mình, backend lấy số tiền còn phải trả. VNPay ký URL 2.1.0; MoMo gọi API captureWallet chính thức. Trang quay về không tự ghi thu. IPN phải đúng chữ ký, merchant, mã tham chiếu, số tiền và mã thành công; callback lặp không ghi hai lần. **TEST_SUCCEEDED không tạo payment, allocation hoặc ledger thật.** PRODUCTION chỉ ghi thu qua dịch vụ hóa đơn hiện có sau khi kiểm chứng callback. Không chuyển cấu hình gateway khi còn phiên đang chờ.
 
@@ -73,8 +77,8 @@ Hạn mức theo chủ nhà và idempotency chống gọi lại; nội dung prom
 | `GET /api/tenant/invoices/{id}/gateways` | TENANT sở hữu hóa đơn |
 | `POST /api/tenant/invoices/{id}/gateway/{provider}` | TENANT, Idempotency-Key |
 | `GET /api/tenant/gateway-sessions/{id}` | TENANT sở hữu phiên |
-| `GET /api/integrations/payments/vnpay/ipn` | Public, xác minh chữ ký và dữ liệu |
-| `POST /api/integrations/payments/momo/ipn` | Public, xác minh chữ ký và dữ liệu |
+| `GET /api/gateways/vnpay/ipn` | Public, xác minh chữ ký và dữ liệu |
+| `POST /api/gateways/momo/ipn` | Public, xác minh chữ ký và dữ liệu |
 | `GET /api/integrations/zalo/oauth/callback` | Public, state/code một lần |
 | `POST /api/integrations/zalo/webhook/{owner}` | Public, chữ ký/app/OA/timestamp |
 

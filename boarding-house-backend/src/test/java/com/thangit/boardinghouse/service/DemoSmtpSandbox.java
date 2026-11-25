@@ -7,10 +7,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
-import org.springframework.jdbc.core.simple.JdbcClient;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 
 /** Loopback-only SMTP receiver. Captured .eml is evidence of SMTP acceptance, never delivery. */
 final class DemoSmtpSandbox implements AutoCloseable {
+    static final String RECIPIENTS="owner@test.invalid,manager@test.invalid,accountant@test.invalid,technician@test.invalid,"
+        +"tenant-manual@test.invalid,tenant-a@test.invalid,tenant-b@test.invalid,tenant-c@test.invalid,"
+        +"tenant-d@test.invalid,tenant-e@test.invalid,tenant-f@test.invalid,tenant-activation@test.invalid";
+    private static final Set<String> ALLOWED=Set.of(RECIPIENTS.split(","));
     final ServerSocket smtp;
     final HttpServer inbox;
     final ExecutorService executor=Executors.newCachedThreadPool();
@@ -20,8 +25,8 @@ final class DemoSmtpSandbox implements AutoCloseable {
         smtp=new ServerSocket();smtp.bind(new InetSocketAddress("127.0.0.1",11025));
         inbox=HttpServer.create(new InetSocketAddress("127.0.0.1",18025),0);
         inbox.createContext("/",exchange->{
-            StringBuilder text=new StringBuilder("SmartHome AI TEST SMTP inbox — ACCEPTED, not DELIVERED\n\n");
-            try(var files=Files.list(messages)){for(Path file:files.sorted().toList())text.append(file.getFileName()).append('\n').append(Files.readString(file)).append("\n\n");}
+            StringBuilder text=new StringBuilder("Hộp thư SmartHome AI TEST — SMTP đã tiếp nhận\n\n");
+            try(var files=Files.list(messages)){for(Path file:files.sorted().toList())text.append(readMessage(file)).append("\n\n");}
             byte[] bytes=text.toString().getBytes(StandardCharsets.UTF_8);exchange.getResponseHeaders().set("Content-Type","text/plain; charset=utf-8");exchange.sendResponseHeaders(200,bytes.length);try(var out=exchange.getResponseBody()){out.write(bytes);}
         });inbox.setExecutor(executor);inbox.start();
         executor.submit(()->{while(!smtp.isClosed())try{Socket socket=smtp.accept();executor.submit(()->receive(socket));}catch(IOException e){if(!smtp.isClosed())throw new UncheckedIOException(e);}});
@@ -35,25 +40,12 @@ final class DemoSmtpSandbox implements AutoCloseable {
             else if(upper.equals("QUIT")){writer.print("221 Bye\r\n");writer.flush();break;}else writer.print("502 Unsupported\r\n");writer.flush();
         }
     }catch(IOException ignored){/* Failed SMTP transaction is not recorded as accepted. */}}
-    static boolean allowed(String email){return email!=null&&email.matches("(?:owner|manager|accountant|technician|tenant-(?:manual|[a-f]))@test\\.invalid");}
-    @Override public void close()throws IOException{smtp.close();inbox.stop(0);executor.shutdownNow();}
-    static final class Sender implements CommunicationSender {
-        final JdbcClient db;Sender(JdbcClient db){this.db=db;}
-        public Result unavailableOrSend(String channel,String key,long recipient,String title,String body){
-            if(!channel.equals("EMAIL"))return new Result("FAILED","TEST_CHANNEL_DISABLED",null,false);
-            String address=db.sql("SELECT email FROM users WHERE id=:id").param("id",recipient).query(String.class).single();
-            if(!allowed(address))return new Result("FAILED","TEST_RECIPIENT_BLOCKED",null,false);
-            try(var socket=new Socket()){
-                socket.connect(new InetSocketAddress("127.0.0.1",11025),3000);socket.setSoTimeout(5000);
-                var reader=new BufferedReader(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));var writer=new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),StandardCharsets.UTF_8),true);
-                expect(reader,220);command(writer,reader,"EHLO localhost",250);command(writer,reader,"MAIL FROM:<smarthome@test.invalid>",250);command(writer,reader,"RCPT TO:<"+address+">",250);command(writer,reader,"DATA",354);
-                String subject="[SmartHome AI - TEST] "+title.replaceAll("[\\r\\n]"," ");
-                writer.print("From: smarthome@test.invalid\r\nTo: "+address+"\r\nSubject: =?UTF-8?B?"+Base64.getEncoder().encodeToString(subject.getBytes(StandardCharsets.UTF_8))+"?=\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nX-Test-Business-Key: "+key+"\r\n\r\n");
-                for(String line:(body+"\n\nĐây là email thử nghiệm, không yêu cầu thanh toán tiền thật.").split("\\R",-1))writer.print((line.startsWith(".")?".":"")+line+"\r\n");writer.print(".\r\n");writer.flush();String accepted=expect(reader,250);command(writer,reader,"QUIT",221);
-                return new Result("SENT","SMTP_ACCEPTED",accepted.substring(accepted.lastIndexOf(' ')+1),false);
-            }catch(IOException e){return new Result("FAILED","TEST_SMTP_FAILED",null,true);}
-        }
-        static void command(PrintWriter writer,BufferedReader reader,String value,int code)throws IOException{writer.print(value+"\r\n");writer.flush();expect(reader,code);}
-        static String expect(BufferedReader reader,int code)throws IOException{String line=reader.readLine();if(line==null||!line.startsWith(Integer.toString(code)))throw new IOException("Unexpected SMTP response");return line;}
+    static String readMessage(Path file)throws IOException{
+        try(var input=Files.newInputStream(file)){
+            var message=new MimeMessage(Session.getInstance(new Properties()),input);
+            return "Người nhận: "+message.getHeader("X-Test-Recipient",", ")+"\nTiêu đề: "+message.getSubject()+"\n\n"+message.getContent();
+        }catch(jakarta.mail.MessagingException invalid){return Files.readString(file);}
     }
+    static boolean allowed(String email){return email!=null&&ALLOWED.contains(email);}
+    @Override public void close()throws IOException{smtp.close();inbox.stop(0);executor.shutdownNow();}
 }

@@ -40,9 +40,10 @@ class PropertyImageHttpTest {
   var response=http.send(HttpRequest.newBuilder(URI.create(base()+path)).header("Authorization","Bearer "+token).header("Content-Type","multipart/form-data; boundary="+boundary).method(method,HttpRequest.BodyPublishers.ofByteArray(out.toByteArray())).build(),HttpResponse.BodyHandlers.ofString());assertThat(response.statusCode()).as(method+" "+path+" "+response.body()).isEqualTo(status);evidence.add(Map.of("method",method,"path",path,"status",status));return json.readTree(response.body()).path("data");
  }
  @Test @Order(1) void realUploadReloadCacheHeadersAndAccessScope()throws Exception{
+  String codePrefix="QAIMAGE_"+UUID.randomUUID().toString().substring(0,8)+"_";
   for(String format:List.of("jpeg","png","webp")){
    byte[] bytes=format.equals("webp")?Base64.getDecoder().decode("UklGRjoAAABXRUJQVlA4IC4AAADQAQCdASoMAAgAAUAmJaACdLoB+AADsAD+7gpn/q0PlofLQ/hIf+dg2JdrwAAA"):PropertyImageStorageTest.picture(format);
-   var result=save("POST","/admin/properties",owner,payload("QAIMAGE_"+format,null,null),bytes,"photo."+format,"image/"+format,1,201);property=result.path("id").asLong();
+   var result=save("POST","/admin/properties",owner,payload(codePrefix+format,null,null),bytes,"photo."+format,"image/"+format,1,201);property=result.path("id").asLong();
    var detail=json.readTree(get("/admin/properties/"+property,owner,200).body()).path("data");current=detail.path("thumbnailUrl").asText();var image=get(current,owner,200);assertThat(image.headers().firstValue("content-type")).contains("image/png");assertThat(image.headers().firstValue("cache-control")).contains("private, no-store");get(current,null,401);get(current,manager,403);get(current,accountant,403);
   }
  }

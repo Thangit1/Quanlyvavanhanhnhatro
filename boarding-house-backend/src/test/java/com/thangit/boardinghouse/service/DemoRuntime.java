@@ -5,6 +5,8 @@ import com.thangit.boardinghouse.domain.auth.RoleCode;
 import com.thangit.boardinghouse.security.AuthenticatedUser;
 import com.thangit.boardinghouse.dto.request.lifecycle.RentalLifecycleRequests.*;
 import com.thangit.boardinghouse.dto.request.invoice.AdminInvoiceRequests.*;
+import com.thangit.boardinghouse.service.integration.IntegrationCenter;
+import com.thangit.boardinghouse.service.integration.ZaloNotificationProvider;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.*;
@@ -18,7 +20,6 @@ import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -73,7 +74,7 @@ public final class DemoRuntime {
                 try(var insert=connection.prepareStatement("INSERT INTO users(id,email,password_hash,full_name) VALUES(?,?,?,?)")){
                     insert.setInt(1,entry.getKey());insert.setString(2,entry.getValue().toLowerCase()+"@test.invalid");insert.setString(3,hash);insert.setString(4,"TEST "+entry.getValue());insert.executeUpdate();
                 }
-                statement.executeUpdate("INSERT INTO user_roles SELECT "+entry.getKey()+",id,CURRENT_TIMESTAMP FROM roles WHERE code='"+entry.getValue()+"'");
+                statement.executeUpdate("INSERT INTO user_roles(user_id,role_id) SELECT "+entry.getKey()+",id FROM roles WHERE code='"+entry.getValue()+"'");
             }
             statement.executeUpdate("INSERT INTO accountant_profiles(user_id,employee_code) VALUES(3,'TEST-ACCOUNTANT')");
             statement.executeUpdate("INSERT INTO technician_profiles(user_id,employee_code) VALUES(6,'TEST-TECHNICIAN')");
@@ -84,26 +85,39 @@ public final class DemoRuntime {
         ReflectionTestUtils.setField(BusinessTime.class,"clock",CLOCK);
         String jwt=required("DEMO_JWT_SECRET");if(jwt.length()<40)throw new IllegalArgumentException("DEMO_JWT_SECRET must have 40+ characters");
         var application=new SpringApplication(BoardingHouseBackendApplication.class,DemoConfiguration.class);
-        var c=application.run("--spring.profiles.active=e2e-demo","--server.address=127.0.0.1","--server.port=18083",
+        var c=application.run("--spring.profiles.active=dev,e2e-demo","--server.address=127.0.0.1","--server.port=18083",
             "--spring.datasource.url="+url,"--spring.datasource.username="+user,"--spring.datasource.password="+secret,
             "--spring.flyway.url="+url,"--spring.flyway.user="+user,"--spring.flyway.password="+secret,
             "--app.security.jwt.secret="+jwt,"--app.scheduling.enabled=false","--app.ai.provider=none","--app.communications.reminder-email.enabled=true",
             "--app.cors.allowed-origins=http://127.0.0.1:13000","--app.media.property-root="+directory.resolve("property-images"),
-            "--app.security.cookie.name=demo_refresh_token","--app.security.login.rate-limit-max=10000");
+            "--app.security.cookie.name=demo_refresh_token","--app.security.cookie.secure=false","--app.security.login.rate-limit-max=10000",
+            "--app.payments.simulation-enabled=true","--app.payments.vietqr-template=compact2",
+            "--INTEGRATION_1_PAYMENT_VNPAY_HASH_KEY=","--INTEGRATION_1_PAYMENT_MOMO_ACCESS_KEY=","--INTEGRATION_1_PAYMENT_MOMO_SECRET_KEY=",
+            "--app.mail.business-delivery-enabled=true","--app.frontend-url=http://127.0.0.1:13000",
+            "--spring.mail.host=127.0.0.1","--spring.mail.port=11025","--spring.mail.username=demo","--spring.mail.password=test-only",
+            "--spring.mail.properties.mail.smtp.auth=false","--spring.mail.properties.mail.smtp.starttls.enable=false",
+            "--spring.mail.properties.mail.smtp.starttls.required=false","--spring.mail.properties.mail.smtp.timeout=5000",
+            "--spring.mail.properties.mail.smtp.connectiontimeout=3000","--app.mail.from=smarthome@test.invalid",
+            "--INTEGRATION_MASTER_KEY=","--INTEGRATION_SMTP_HOSTS=127.0.0.1","--INTEGRATION_ALLOW_LOCAL_SMTP=true",
+            "--INTEGRATION_TEST_RECIPIENTS="+DemoSmtpSandbox.RECIPIENTS,"--MAIL_TEST_RECIPIENT=",
+            "--INTEGRATION_1_ZALO_ACCESS_TOKEN=local-demo-only","--INTEGRATION_ZALO_TEST_UIDS=42424242",
+            "--INTEGRATION_ZALO_LIVE_TEST=false","--logging.level.com.thangit.boardinghouse=INFO");
         try(c;var sandbox=new DemoSmtpSandbox(directory)){
             DemoRuntime demo=new DemoRuntime(c);
+            demo.configureIntegrationFixtures();
             if(fresh){demo.seed();demo.db.sql("UPDATE demo_run SET state='COMPLETE' WHERE id=1").update();}
             else if(!Files.exists(directory.resolve("manifest.json")))throw new IllegalStateException("Manifest missing; do not reseed an existing schema");
             long demoProperty=demo.json.readTree(Files.readString(directory.resolve("manifest.json"))).path("propertyId").asLong();
             demo.ensureCatalog(demoProperty);
+            demo.refreshDemoZaloTemplates();
             if(demo.db.sql("SELECT COUNT(*) FROM communication_rules WHERE property_id=:id AND event_type='INVOICE_OVERDUE' AND offset_days=5").param("id",demoProperty).query(Long.class).single()==0)c.getBean(CommunicationService.class).saveRule(demo.owner,null,new CommunicationService.Rule(demoProperty,"INVOICE_OVERDUE","TENANT",5,9,5,true,0));
             Files.deleteIfExists(directory.resolve("stop"));Files.writeString(directory.resolve("ready"),schema);Files.writeString(directory.resolve("clock-status.txt"),BusinessTime.now().toString());
             System.out.println("DEMO READY: API http://127.0.0.1:18083/api | SMTP inbox http://127.0.0.1:18025 | private manifest "+directory.resolve("manifest.json"));
             String previous=Files.readString(clockFile).trim();
             while(!Files.exists(directory.resolve("stop"))){
                 Thread.sleep(1000);String value=Files.readString(clockFile).trim();
-                if(!value.equals(previous)){try{changeDate(value);previous=value;Files.writeString(directory.resolve("clock-status.txt"),BusinessTime.now().toString());}catch(RuntimeException e){Files.writeString(directory.resolve("clock-status.txt"),"REJECTED: "+value);}}
-                c.getBean(CommunicationJobs.class).scan(BusinessTime.now());c.getBean(CommunicationJobs.class).deliver(BusinessTime.now());
+                if(!value.equals(previous)){try{changeDate(value);previous=value;demo.refreshDemoZaloTemplates();Files.writeString(directory.resolve("clock-status.txt"),BusinessTime.now().toString());}catch(RuntimeException e){Files.writeString(directory.resolve("clock-status.txt"),"REJECTED: "+value);}}
+                demo.runCommunicationJobs();
                 if(Files.deleteIfExists(directory.resolve("verify"))){
                     try {new DemoVerification(demo).run();previous=Files.readString(clockFile).trim();Files.writeString(directory.resolve("clock-status.txt"),BusinessTime.now().toString());}
                     catch(Exception failure){Files.writeString(directory.resolve("verification-error.txt"),failure.toString());}
@@ -123,7 +137,53 @@ public final class DemoRuntime {
                 Connection initialize(Connection connection)throws SQLException{try(var statement=connection.createStatement()){statement.execute("SET time_zone='+07:00'");statement.execute("SET timestamp="+instant.get().getEpochSecond());return connection;}catch(SQLException e){connection.close();throw e;}}
             };return bean;
         }};}
-        @Bean @Primary CommunicationSender demoSender(JdbcClient db){return new DemoSmtpSandbox.Sender(db);}
+    }
+
+    void runCommunicationJobs() {
+        var now=BusinessTime.now();
+        var jobs=context.getBean(CommunicationJobs.class);
+        jobs.scan(now);
+        jobs.deliver(now);
+        context.getBean(ExternalCommunicationWorker.class).runBatch(now);
+    }
+
+    @SuppressWarnings("unchecked")
+    void configureIntegrationFixtures() throws Exception {
+        var zalo=context.getBean(ZaloNotificationProvider.class);
+        var transport=org.mockito.Mockito.mock(HttpClient.class);
+        org.mockito.Mockito.doAnswer(invocation->{
+            HttpRequest request=invocation.getArgument(0);
+            String responseBody=switch(request.uri().getPath()) {
+                case "/v3.0/oa/getoa" -> "{\"error\":0,\"data\":{\"oa_id\":\"1111\"}}";
+                case "/template/all" -> "{\"error\":0,\"data\":[{\"template_id\":\"9091\",\"template_name\":\"TEST - Nhac han hoa don\",\"status\":\"ENABLE\"}]}";
+                default -> throw new IllegalStateException("The demo Zalo transport supports local fixtures only");
+            };
+            var response=org.mockito.Mockito.mock(HttpResponse.class);
+            org.mockito.Mockito.when(response.statusCode()).thenReturn(200);
+            org.mockito.Mockito.when(response.body()).thenReturn(responseBody);
+            return response;
+        }).when(transport).send(org.mockito.ArgumentMatchers.any(HttpRequest.class),org.mockito.ArgumentMatchers.any(HttpResponse.BodyHandler.class));
+        ReflectionTestUtils.setField(zalo,"http",transport);
+
+        var center=context.getBean(IntegrationCenter.class);
+        if(center.config(1,"EMAIL").version()==0){
+            center.save(owner,"EMAIL",new IntegrationCenter.Save("SMTP","TEST",true,Map.of(
+                "host","127.0.0.1","port",11025,"tlsMode","NONE","authentication",false,
+                "fromEmail","smarthome@test.invalid","fromName","SmartHome AI TEST"),Map.of(),0));
+        }
+        if(center.config(1,"ZALO").version()==0){
+            center.save(owner,"ZALO",new IntegrationCenter.Save("ZBS","TEST",true,Map.of(
+                "oaId","1111","appId","2222","oaName","TEST - Zalo OA mô phỏng",
+                "templateMappings",Map.of("INVOICE_BEFORE_DUE","9091"),
+                "templateParameters",Map.of("INVOICE_BEFORE_DUE",Map.of("invoice_code","invoice_code","amount","remaining_amount"))),Map.of(),0));
+        }
+    }
+
+    void refreshDemoZaloTemplates() {
+        var center=context.getBean(IntegrationCenter.class);
+        center.execute(owner,"ZALO","SYNC_TEMPLATES",UUID.randomUUID().toString(),null);
+        center.execute(owner,"ZALO","TEST_SEND",UUID.randomUUID().toString(),new IntegrationCenter.TestRequest(
+            "42424242","9091",Map.of("invoice_code","DEMO-001","amount","4200000")));
     }
 
     JsonNode call(String role,String method,String path,Object body,int expected)throws Exception{
@@ -148,16 +208,34 @@ public final class DemoRuntime {
         call("OWNER","PUT","/owner/access/properties/"+property+"/managers",Map.of("userId",2,"capabilities",List.of("CONTRACT_APPROVE","FINANCE_READ","FINANCE_WRITE","DEPOSIT_APPROVE","EXPORT"),"reason","TEST assignment"),200);
         var settings=context.getBean(AdminSettingService.class);
         settings.updateBilling(owner,new com.thangit.boardinghouse.dto.request.setting.AdminSettingRequests.UpdateBilling(false,28,5,false,false,false,"FIXED",BigDecimal.ZERO,List.of(2),List.of(1,5),true));
-        settings.updateGroup(owner,"payments",new com.thangit.boardinghouse.dto.request.setting.AdminSettingRequests.UpdateGroup(Map.of("cashEnabled",true,"bankTransferEnabled",true,"bankName","TEST SANDBOX - DO NOT TRANSFER","accountName","TEST ONLY","accountNumber","0000000000","qrEnabled",false,"transferContent","TEST {invoiceCode}")));
+        settings.updateGroup(owner,"payments",new com.thangit.boardinghouse.dto.request.setting.AdminSettingRequests.UpdateGroup(Map.of("cashEnabled",true,"bankTransferEnabled",true,"bankName","TEST SANDBOX - DO NOT TRANSFER","bankBin","970436","accountName","TEST ONLY","accountNumber","0000000000","qrEnabled",true,"transferContent","TEST {invoiceCode}")));
         db.sql("INSERT INTO accountant_property_assignments(accountant_id,property_id,granted_by) VALUES(3,:p,1)").param("p",property).update();
         db.sql("INSERT INTO technician_property_assignments(technician_id,property_id,granted_by) VALUES(6,:p,1)").param("p",property).update();
         ensureCatalog(property);
         fixture("MANUAL",101,false);
         for(int i=0;i<6;i++)fixture(String.valueOf((char)('A'+i)),201+i,true);
-        for(String event:List.of("INVOICE_ISSUED","INVOICE_BEFORE_DUE","INVOICE_DUE","INVOICE_OVERDUE","PAYMENT_CONFIRMED"))context.getBean(CommunicationService.class).saveRule(owner,null,new CommunicationService.Rule(property,event,"TENANT",event.equals("INVOICE_BEFORE_DUE")?2:event.equals("INVOICE_OVERDUE")?1:0,9,5,true,0));
         changeDate("2026-10-28");Files.writeString(directory.resolve("clock.txt"),"2026-10-28");
+        context.getBean(com.thangit.boardinghouse.service.integration.IntegrationRuleInstaller.class).owner(owner.id());
+        long activationContract=seedActivationExample();
         var manifest=new LinkedHashMap<String,Object>();manifest.put("companyId",company);manifest.put("propertyId",property);manifest.put("fixtures",fixtures);manifest.put("frontend","http://127.0.0.1:13000");manifest.put("api","http://127.0.0.1:18083/api");manifest.put("smtpInbox","http://127.0.0.1:18025");manifest.put("accounts",List.of("owner@test.invalid","manager@test.invalid","accountant@test.invalid","technician@test.invalid"));
+        manifest.put("activationContractId",activationContract);
         Files.writeString(directory.resolve("manifest.json"),json.writeValueAsString(manifest));
+    }
+
+    long seedActivationExample() throws Exception {
+        long room=call("OWNER","POST","/admin/rooms",Map.of("propertyId",property,"buildingId",building,"floorId",floor,
+            "code","TEST-P102","name","Phòng kích hoạt mẫu","monthlyRent",3500000,"depositAmount",3500000,"capacity",2),201).path("id").asLong();
+        call("OWNER","PATCH","/admin/rooms/"+room+"/status",Map.of("status","READY","reason","TEST readiness inspection",
+            "version",version("rooms",room),"readinessConfirmed",true),200);
+        var person=Map.of("fullName","Nguyễn Văn Test Kích Hoạt","phone","0900000102","email","tenant-activation@test.invalid",
+            "dateOfBirth","2000-05-15","identityNumber","000000000102","permanentAddress","Địa chỉ giả lập TEST");
+        var terms=Map.of("startDate",BusinessTime.today().toString(),"endDate",BusinessTime.today().plusYears(1).toString(),
+            "depositAmount",3500000,"paymentDueDay",5,"noticePeriodDays",30,"monthlyRent",3500000,
+            "utilityRates",List.of(new AgreedRate("ELECTRICITY","Điện TEST","METER",money("3500"),"kWh"),
+                new AgreedRate("WATER","Nước TEST","METER",money("25000"),"m3")),
+            "services",List.of(),"terms",List.of(),"initialPaymentRequired",false);
+        return call("OWNER","POST","/admin/contracts",Map.of("roomId",room,"newTenant",person,"terms",terms,
+            "expectedCheckinDate",BusinessTime.today().toString(),"submit",true),201).path("id").asLong();
     }
     void fixture(String scenario,int number,boolean active)throws Exception{
         long room=call("OWNER","POST","/admin/rooms",Map.of("propertyId",property,"buildingId",building,"floorId",floor,"code","TEST-P"+number,"name","Phòng kiểm thử "+number,"monthlyRent",3500000,"depositAmount",3500000,"capacity",2,"assets",List.of(Map.of("name","TEST bàn","quantity",1,"conditionStatus","GOOD"))),201).path("id").asLong();
@@ -168,16 +246,18 @@ public final class DemoRuntime {
         long profile=call("OWNER","POST","/admin/tenants",person,201).path("id").asLong();
         call("OWNER","POST","/admin/tenants/"+profile+"/account",Map.of("email",email,"temporaryPassword",password+"-Initial"),200);
         long tenant=db.sql("SELECT user_id FROM tenant_profiles WHERE id=:id").param("id",profile).query(Long.class).single();
+        db.sql("INSERT INTO notification_preferences(user_id,email_enabled,zalo_enabled) VALUES(:id,TRUE,TRUE) ON DUPLICATE KEY UPDATE email_enabled=TRUE,zalo_enabled=TRUE")
+            .param("id",tenant).update();
         var fixture=new LinkedHashMap<String,Object>();fixture.put("scenario",scenario);fixture.put("roomId",room);fixture.put("roomCode","TEST-P"+number);fixture.put("tenantProfileId",profile);fixture.put("tenantEmail",email);fixture.put("initialPasswordRequired",true);fixture.put("initialPasswordSuffix","-Initial");
         fixtures.add(fixture);if(!active)return;
         long booking=call("OWNER","POST","/admin/rental-lifecycle/bookings",new CreateBooking(profile,room,BusinessTime.today(),BusinessTime.today().plusDays(7),BigDecimal.ZERO,"TENANT_REQUEST","TEST fixture tenant request"),201).path("id").asLong();
         var terms=new CreateContract(LocalDate.of(2026,10,1),LocalDate.of(2027,9,30),money("3500000"),5,30,null,money("3500000"),List.of(new AgreedRate("ELECTRICITY","Điện TEST","METER",money("3500"),"kWh"),new AgreedRate("WATER","Nước TEST","METER",money("25000"),"m3")),List.of(agreed("INTERNET","Internet TEST","100000",property),agreed("CLEANING","Vệ sinh TEST","50000",property)),null,false);
         long contract=call("OWNER","POST","/admin/rental-lifecycle/bookings/"+booking+"/contract",terms,201).path("id").asLong();fixture.put("contractId",contract);
         long deposit=db.sql("SELECT id FROM tenant_deposits WHERE contract_id=:id").param("id",contract).query(Long.class).single();
-        context.getBean(DepositLedgerService.class).collect(accountant,deposit,"TEST-DEPOSIT-"+contract,new DepositLedgerService.Cash(money("3500000"),"CASH",BusinessTime.now().minusSeconds(1),null,"TEST-DEPOSIT","TEST ONLY: synthetic receipt",false));
         var onboarding=context.getBean(ContractOnboardingService.class);var actor=new AuthenticatedUser(tenant,email,RoleCode.TENANT);
         var identity=(Map<?,?>)onboarding.detail(owner,contract).get("identityProfile");onboarding.verifyIdentityReviewed(owner,contract,new ContractOnboardingService.IdentityReview("TEST-ONLY synthetic fixture evidence, not a real identity check",true,identity.get("dataHash").toString()));
         var cv=(Map<?,?>)onboarding.detail(owner,contract).get("contractVersion");var confirmation=new ContractOnboardingService.Confirmation(((Number)cv.get("version")).longValue(),cv.get("content_hash").toString());onboarding.confirmContract(owner,contract,confirmation);onboarding.confirmContract(actor,contract,confirmation);
+        context.getBean(DepositLedgerService.class).collect(accountant,deposit,"TEST-DEPOSIT-"+contract,new DepositLedgerService.Cash(money("3500000"),"CASH",BusinessTime.now().minusSeconds(1),null,"TEST-DEPOSIT","TEST ONLY: synthetic receipt",false));
         long checkin=call("OWNER","POST","/admin/rental-lifecycle/checkins",new PrepareCheckin(contract,booking,BusinessTime.today(),null,"TEST synthetic signed handover"),201).path("id").asLong();
         onboarding.saveHandover(owner,contract,new ContractOnboardingService.Handover(version("rental_checkins",checkin),BusinessTime.today(),money("1200"),money("80"),1,"TEST-HANDOVER"));
         var hv=(Map<?,?>)onboarding.detail(owner,contract).get("handoverVersion");onboarding.confirmHandover(actor,contract,new ContractOnboardingService.Confirmation(((Number)hv.get("version")).longValue(),hv.get("content_hash").toString()));
@@ -204,7 +284,11 @@ public final class DemoRuntime {
             fixture.put("proofId",proof.id());
             if(scenario.equals("D"))call("ACCOUNTANT","POST","/accountant/payment-proofs/"+proof.id()+"/approve",Map.of("version",0,"note","TEST ONLY synthetic transfer reviewed","issueReceipt",true),200);
         }
-        if(scenario.equals("E")){call("TENANT","POST","/tenant/invoices/"+invoice+"/payment-session",Map.of("amount",total,"paymentMethod","CARD"),400);fixture.put("limitation","Unsupported CARD request rejected; no FAILED gateway session exists because no gateway provider is configured.");}
+        if(Set.of("E","F").contains(scenario)){
+            var transactions=context.getBean(PaymentTransactionService.class);
+            long session=((Number)transactions.simulate(actor,invoice,"TEST-GATEWAY-"+invoice).get("id")).longValue();
+            fixture.put("gatewayStatus",transactions.outcome(actor,session,scenario.equals("E")?"FAILED":"SUCCESS").get("status"));
+        }
         changeDate("2026-10-01");
     }
     void tenantLogin(String email,String pass)throws Exception{

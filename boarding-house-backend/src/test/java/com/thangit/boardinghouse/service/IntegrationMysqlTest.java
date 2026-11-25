@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
@@ -30,7 +31,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /** Actual HTTP/Security/MySQL/Mailpit. Remote Zalo/AI/IPN fixtures are explicitly simulated. */
-@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT,properties={"server.address=127.0.0.1","server.port=18084","app.security.jwt.secret=integration-test-only-jwt-abcdefghijklmnopqrstuvwxyz0123456789","app.scheduling.enabled=false","app.mail.business-delivery-enabled=true","app.ai.provider=none","app.cors.allowed-origins=http://127.0.0.1:13000,http://127.0.0.1:13001","app.security.login.rate-limit-max=10000"})
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT,properties={"server.address=127.0.0.1","server.port=${prompt15.http.port:18084}","app.security.jwt.secret=integration-test-only-jwt-abcdefghijklmnopqrstuvwxyz0123456789","app.scheduling.enabled=false","app.mail.business-delivery-enabled=true","app.ai.provider=none","app.cors.allowed-origins=http://127.0.0.1:13000,http://127.0.0.1:13001","app.security.login.rate-limit-max=10000"})
 @Import(IntegrationMysqlTest.SqlTime.class)
 @EnabledIfSystemProperty(named="prompt15.mysql",matches="true")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -49,12 +50,13 @@ class IntegrationMysqlTest {
     @TestConfiguration(proxyBeanMethods=false) static class SqlTime {
         @Bean static BeanPostProcessor sqlBusinessClock(){return new BeanPostProcessor(){@Override public Object postProcessAfterInitialization(Object bean,String name){if(bean instanceof DataSource source&&!(bean instanceof DelegatingDataSource))return new DelegatingDataSource(source){@Override public java.sql.Connection getConnection()throws java.sql.SQLException{return initialize(super.getConnection());}@Override public java.sql.Connection getConnection(String user,String password)throws java.sql.SQLException{return initialize(super.getConnection(user,password));}java.sql.Connection initialize(java.sql.Connection connection)throws java.sql.SQLException{try(var statement=connection.createStatement()){statement.execute("SET time_zone='+07:00'");statement.execute("SET timestamp="+BusinessTime.now().atZone(BusinessTime.ZONE).toEpochSecond());return connection;}catch(java.sql.SQLException error){connection.close();throw error;}}};return bean;}};}
     }
+    @LocalServerPort int port;
     @Autowired JsonMapper json;@Autowired PasswordEncoder encoder;@Autowired IntegrationCenter center;@Autowired IntegrationVault vault;@Autowired IntegrationAdapters adapters;@Autowired ZaloNotificationProvider zalo;@Autowired ZaloOAuth oauth;@Autowired GatewayPayments gateways;@Autowired CommunicationJobs jobs;@Autowired ExternalCommunicationWorker worker;
     final AuthenticatedUser owner=new AuthenticatedUser(1L,"owner@test.invalid",RoleCode.OWNER);
     final HttpClient http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();final Map<String,String> tokens=new HashMap<>();
     CheckoutSettlementMysqlTest.Case lease;long invoice;String smtpPassword,originalMasterClock;
     @BeforeAll void prepare(){smtpPassword=smtp.path("password").asText();b.workflow=f.checkoutWorkflow;b.billing=new MonthlyBillingService(f.db);b.invoices=new AdminInvoiceRepository(f.db);b.invoiceService=new com.thangit.boardinghouse.service.impl.AdminInvoiceServiceImpl(b.invoices);for(var entry:Map.of(1,"OWNER",2,"MANAGER",3,"ACCOUNTANT",4,"OWNER",5,"TENANT",6,"TECHNICIAN").entrySet())f.db.sql("INSERT IGNORE INTO user_roles(user_id,role_id) SELECT :id,id FROM roles WHERE code=:role").param("id",entry.getKey()).param("role",entry.getValue()).update();for(var entry:Map.of(1,"owner",2,"manager",3,"accountant",4,"other-owner",5,"tenant-a",6,"technician").entrySet())f.db.sql("UPDATE users SET email=:email,password_hash=:password WHERE id=:id").param("email",entry.getValue()+"@test.invalid").param("password",encoder.encode(password)).param("id",entry.getKey()).update();lease=b.active("0",false);invoice=b.oldDebt(lease,"4200000");f.db.sql("INSERT INTO notification_preferences(user_id,email_enabled) VALUES(5,TRUE) ON DUPLICATE KEY UPDATE email_enabled=TRUE").update();}
-    String base(){return "http://127.0.0.1:18084/api";}
+    String base(){return "http://127.0.0.1:"+port+"/api";}
     String login(String role)throws Exception{String email=role.equals("TENANT")?"tenant-a@test.invalid":role.equals("OTHER")?"other-owner@test.invalid":role.toLowerCase()+"@test.invalid";var response=http.send(HttpRequest.newBuilder(URI.create(base()+"/auth/login")).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(json.writeValueAsString(Map.of("email",email,"password",password,"requestedRole",role.equals("OTHER")?"OWNER":role)))).build(),HttpResponse.BodyHandlers.ofString());assertThat(response.statusCode()).as("Actual fixture login").isEqualTo(200);return json.readTree(response.body()).path("data").path("accessToken").asText();}
     JsonNode call(String role,String method,String path,Object body,int expected)throws Exception{return call(role,method,path,body,expected,UUID.randomUUID().toString());}
     JsonNode call(String role,String method,String path,Object body,int expected,String key)throws Exception{String token=tokens.get(role);if(token==null){token=login(role);tokens.put(role,token);}var response=http.send(HttpRequest.newBuilder(URI.create(base()+path)).timeout(Duration.ofSeconds(30)).header("Authorization","Bearer "+token).header("Content-Type","application/json").header("Idempotency-Key",key).method(method,body==null?HttpRequest.BodyPublishers.noBody():HttpRequest.BodyPublishers.ofString(json.writeValueAsString(body))).build(),HttpResponse.BodyHandlers.ofString());assertThat(response.statusCode()).as(method+" "+path+" response="+response.body()).isEqualTo(expected);return json.readTree(response.body()).path("data");}
@@ -93,17 +95,82 @@ class IntegrationMysqlTest {
         String timestamp=Long.toString(Instant.now().toEpochMilli());String body=json.writeValueAsString(Map.of("app_id","2222","oa_id","1111","timestamp",timestamp,"event_name","TEST_UNKNOWN_EVENT"));String secret="TEST-NOT-A-REAL-OA-SECRET";String signature="mac="+HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(("2222"+body+timestamp+secret).getBytes(java.nio.charset.StandardCharsets.UTF_8)));assertThat(oauth.webhook(1,body,signature).toString()).contains("VERIFIED");assertThat(oauth.webhook(1,body,signature).toString()).contains("DUPLICATE");assertThatThrownBy(()->oauth.webhook(1,body,"mac=invalid")).isInstanceOf(RuntimeException.class);assertThatThrownBy(()->oauth.webhook(4,body,signature)).isInstanceOf(RuntimeException.class);assertThatThrownBy(()->oauth.callback("missing-state","not-a-real-code")).isInstanceOf(RuntimeException.class);
         call("OWNER","DELETE","/owner/integrations/ZALO/connection",null,200);
     }
+
+    @Test @Order(13)
+    @SuppressWarnings("unchecked")
+    void businessZaloRefreshesExpiredApprovalBeforeSending() throws Exception {
+        var settings = Map.<String, Object>of("oaId", "1111", "appId", "2222",
+                "templateMappings", Map.of("INVOICE_ISSUED", "9091"),
+                "templateParameters", Map.of("INVOICE_ISSUED", Map.of("invoice_code", "invoice_code")));
+        call("OWNER", "PUT", "/owner/integrations/ZALO", Map.of("provider", "ZBS", "environment", "PRODUCTION",
+                "enabled", true, "settings", settings, "secrets", Map.of("ACCESS_TOKEN", "TEST-ONLY-ZALO-TOKEN"),
+                "version", center.config(1, "ZALO").version()), 200);
+        f.db.sql("UPDATE tenant_profiles SET phone='0900000000' WHERE user_id=5").update();
+        String businessKey = WebPushSender.hash("zalo-expired-approval-test");
+        f.db.sql("""
+                INSERT INTO communication_deliveries(rule_id,property_id,recipient_id,channel,category,title,body,
+                  source_type,source_id,business_key,status,scheduled_at,next_attempt_at)
+                SELECT id,:property,5,'ZALO','INVOICE','TEST','TEST','INVOICE',:invoice,:key,'DISPATCHING',NOW(),NOW()
+                FROM communication_rules WHERE property_id=:property AND event_type='INVOICE_ISSUED'
+                  AND audience='TENANT' AND offset_days=0
+                """).param("property", lease.property()).param("invoice", invoice).param("key", businessKey).update();
+        f.db.sql("""
+                INSERT INTO integration_templates(owner_id,template_id,oa_id,name,status,details,synced_at)
+                VALUES(1,'9091','1111','Test template','ENABLE','{}',NOW()-INTERVAL 2 DAY)
+                """).update();
+
+        var provider = mock(HttpClient.class);
+        var approval = new java.util.concurrent.atomic.AtomicReference<>("ENABLE");
+        var sendBody = new java.util.concurrent.atomic.AtomicReference<>("{\"error\":0,\"data\":{\"msg_id\":\"test-zbs-1\"}}");
+        doAnswer(invocation -> {
+            HttpRequest request = invocation.getArgument(0);
+            var response = mock(HttpResponse.class);
+            when(response.statusCode()).thenReturn(200);
+            when(response.body()).thenReturn(switch (request.uri().getPath()) {
+                case "/v3.0/oa/getoa" -> "{\"error\":0,\"data\":{\"oa_id\":\"1111\"}}";
+                case "/template/all" -> "{\"error\":0,\"data\":[{\"template_id\":\"9091\",\"status\":\""
+                        + approval.get() + "\"}]}";
+                case "/message/template" -> sendBody.get();
+                default -> throw new AssertionError("Unexpected Zalo endpoint: " + request.uri());
+            });
+            return response;
+        }).when(provider).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+
+        Object real = ReflectionTestUtils.getField(zalo, "http");
+        ReflectionTestUtils.setField(zalo, "http", provider);
+        try {
+            var config = center.config(1, "ZALO");
+            var result = zalo.sendBusiness(config, lease.property(), 5, businessKey);
+            assertThat(result.status()).isEqualTo("SENT");
+            assertThat(result.reference()).isEqualTo("test-zbs-1");
+            var requests = inOrder(provider);
+            requests.verify(provider).send(argThat(req -> req.uri().getPath().equals("/v3.0/oa/getoa")), any());
+            requests.verify(provider).send(argThat(req -> req.uri().getPath().equals("/template/all")), any());
+            requests.verify(provider).send(argThat(req -> req.method().equals("POST")), any());
+
+            sendBody.set("{\"error\":0,\"data\":{}}");
+            assertThat(zalo.sendBusiness(config, lease.property(), 5, businessKey).status()).isEqualTo("UNKNOWN");
+
+            approval.set("PENDING_REVIEW");
+            f.db.sql("UPDATE integration_templates SET synced_at=NOW()-INTERVAL 2 DAY WHERE owner_id=1").update();
+            assertThat(zalo.sendBusiness(config, lease.property(), 5, businessKey).code())
+                    .isEqualTo("ZBS_TEMPLATE_NOT_APPROVED_OR_STALE");
+            verify(provider, times(2)).send(argThat(req -> req.method().equals("POST")), any());
+        } finally {
+            ReflectionTestUtils.setField(zalo, "http", real);
+        }
+    }
     @Test @Order(6) void tc14_16_18_19_webPushKeysAndSubscriptionsAreOwnedAndPrivate()throws Exception{
         var generated=call("OWNER","POST","/owner/integrations/WEB_PUSH/keys",Map.of(),200);String publicKey=generated.path("settings").path("publicKey").asText();assertThat(publicKey).isNotBlank();assertThat(generated.path("secretsConfigured").path("PRIVATE_KEY").asBoolean()).isTrue();save("WEB_PUSH","VAPID",true,Map.of("publicKey",publicKey,"subject","mailto:owner@test.invalid"),Map.of());assertThat(operation("WEB_PUSH","CHECK",Map.of()).path("status").asText()).isEqualTo("CONFIGURED");String endpoint="https://fcm.googleapis.com/fcm/send/SYNTHETIC-NO-NETWORK-"+UUID.randomUUID();String auth=Base64.getUrlEncoder().withoutPadding().encodeToString(new byte[16]);var response=call("TENANT","POST","/push/subscriptions",Map.of("ownerId",1,"endpoint",endpoint,"p256dh",publicKey,"auth",auth),200);long id=response.path("id").asLong();call("TENANT","DELETE","/push/subscriptions/"+id,null,200);assertThat(count("SELECT COUNT(*) FROM web_push_subscriptions WHERE id="+id+" AND enabled=FALSE")).isEqualTo(1);call("OTHER","POST","/push/subscriptions",Map.of("ownerId",1,"endpoint",endpoint,"p256dh",publicKey,"auth",auth),403);assertThat(generated.toString().contains(vault.read(1,"WEB_PUSH","PRIVATE_KEY"))).isFalse();
     }
-    Map<String,Object> gatewaySettings(){return Map.of("cashEnabled",true,"bankTransferEnabled",false,"vnpayEnabled",true,"tmnCode","TESTTMN","vnpayReturnUrl","http://127.0.0.1:13000/tenant/payments","vnpayIpnUrl","http://127.0.0.1:18084/api/gateways/vnpay/ipn","momoEnabled",false);}
+    Map<String,Object> gatewaySettings(){return Map.of("cashEnabled",true,"bankTransferEnabled",false,"vnpayEnabled",true,"tmnCode","TESTTMN","vnpayReturnUrl","http://127.0.0.1:13000/tenant/payments","vnpayIpnUrl",base()+"/gateways/vnpay/ipn","momoEnabled",false);}
     Map<String,String> vnpFields(long id,String code,String transaction)throws Exception{var session=f.db.sql("SELECT * FROM gateway_sessions WHERE id=:id").param("id",id).query().singleRow();var fields=new LinkedHashMap<String,String>();fields.put("vnp_TxnRef",session.get("merchant_reference").toString());fields.put("vnp_TmnCode","TESTTMN");fields.put("vnp_Amount",((BigDecimal)session.get("amount")).multiply(BigDecimal.valueOf(100)).toBigIntegerExact().toString());fields.put("vnp_ResponseCode",code);fields.put("vnp_TransactionStatus",code);fields.put("vnp_TransactionNo",transaction);fields.put("vnp_SecureHash",GatewayPayments.hmac("HmacSHA512",vault.read(1,"PAYMENT","VNPAY_HASH_KEY"),GatewayPayments.vnpCanonical(fields)));return fields;}
     @Test @Order(7) void tc20_22_23_24_signedSandboxCallbacksCannotPostCashAndDuplicatesAreSafe()throws Exception{
         save("PAYMENT","VNPAY",true,gatewaySettings(),Map.of("VNPAY_HASH_KEY","TEST-HASH-"+UUID.randomUUID()));var a=b.active("0",false);long bill=b.oldDebt(a,"4200000");String key=UUID.randomUUID().toString();var session=call("TENANT","POST","/tenant/invoices/"+bill+"/gateway/VNPAY",Map.of(),200,key);long id=session.path("id").asLong();assertThat(session.path("checkout_url").asText()).startsWith("https://sandbox.vnpayment.vn/");assertThat(call("TENANT","POST","/tenant/invoices/"+bill+"/gateway/VNPAY",Map.of(),200,key).path("id").asLong()).isEqualTo(id);var invalid=new LinkedHashMap<>(vnpFields(id,"00","TEST-TRANSACTION-1"));invalid.put("vnp_SecureHash","invalid");assertThat(gateways.vnpIpn(invalid).toString()).contains("97");var wrongAmount=new LinkedHashMap<>(vnpFields(id,"00","TEST-TRANSACTION-1"));wrongAmount.put("vnp_Amount","1");wrongAmount.put("vnp_SecureHash",GatewayPayments.hmac("HmacSHA512",vault.read(1,"PAYMENT","VNPAY_HASH_KEY"),GatewayPayments.vnpCanonical(wrongAmount)));assertThat(gateways.vnpIpn(wrongAmount).toString()).contains("04");var signed=vnpFields(id,"00","TEST-TRANSACTION-1");assertThat(gateways.vnpIpn(signed).toString()).contains("TEST_SUCCEEDED");assertThat(gateways.vnpIpn(signed).toString()).contains("02");assertThat(count("SELECT COUNT(*) FROM payments WHERE invoice_id="+bill)).isZero();assertThat(f.db.sql("SELECT remaining_amount FROM invoices WHERE id=:id").param("id",bill).query(BigDecimal.class).single()).isEqualByComparingTo("4200000");
         var failure=b.active("0",false);long failedBill=b.oldDebt(failure,"4200000");long failed=call("TENANT","POST","/tenant/invoices/"+failedBill+"/gateway/VNPAY",Map.of(),200).path("id").asLong();assertThat(gateways.vnpIpn(vnpFields(failed,"24","TEST-FAIL-1")).toString()).contains("CANCELLED");assertThat(count("SELECT COUNT(*) FROM payments WHERE invoice_id="+failedBill)).isZero();
     }
     @Test @Order(8) void tc21_momoSignatureAndAmountAreVerifiedWithoutNetworkClaims()throws Exception{
-        var settings=new LinkedHashMap<>(gatewaySettings());settings.put("momoEnabled",true);settings.put("partnerCode","TEST-PARTNER");settings.put("momoRedirectUrl","http://127.0.0.1:13000/tenant/payments");settings.put("momoIpnUrl","http://127.0.0.1:18084/api/gateways/momo/ipn");save("PAYMENT","MOMO",true,settings,Map.of("MOMO_ACCESS_KEY","TEST-NOT-A-REAL-MOMO-ACCESS","MOMO_SECRET_KEY","TEST-NOT-A-REAL-MOMO-SECRET"));Object real=ReflectionTestUtils.getField(gateways,"http");var client=mock(HttpClient.class);
+        var settings=new LinkedHashMap<>(gatewaySettings());settings.put("momoEnabled",true);settings.put("partnerCode","TEST-PARTNER");settings.put("momoRedirectUrl","http://127.0.0.1:13000/tenant/payments");settings.put("momoIpnUrl",base()+"/gateways/momo/ipn");save("PAYMENT","MOMO",true,settings,Map.of("MOMO_ACCESS_KEY","TEST-NOT-A-REAL-MOMO-ACCESS","MOMO_SECRET_KEY","TEST-NOT-A-REAL-MOMO-SECRET"));Object real=ReflectionTestUtils.getField(gateways,"http");var client=mock(HttpClient.class);
         try{doAnswer(invocation->{HttpRequest request=invocation.getArgument(0);assertThat(request.uri().getHost()).isEqualTo("test-payment.momo.vn");var response=mock(HttpResponse.class);when(response.statusCode()).thenReturn(400);when(response.body()).thenReturn("{\"resultCode\":11,\"message\":\"SIMULATED provider rejection\"}");return response;}).when(client).send(any(HttpRequest.class),any(HttpResponse.BodyHandler.class));ReflectionTestUtils.setField(gateways,"http",client);var a=b.active("0",false);long bill=b.oldDebt(a,"4200000");var session=call("TENANT","POST","/tenant/invoices/"+bill+"/gateway/MOMO",Map.of(),200);assertThat(session.path("status").asText()).isEqualTo("FAILED");assertThatThrownBy(()->gateways.momoIpn(Map.of("orderId","UNKNOWN","signature","invalid"))).isInstanceOf(RuntimeException.class);assertThat(count("SELECT COUNT(*) FROM payments WHERE invoice_id="+bill)).isZero();
             String reference=f.db.sql("SELECT merchant_reference FROM gateway_sessions WHERE id=:id").param("id",session.path("id").asLong()).query(String.class).single();var fields=new LinkedHashMap<String,String>();fields.put("orderId",reference);fields.put("requestId",reference);fields.put("partnerCode","TEST-PARTNER");fields.put("amount","4200000");fields.put("transId","TEST-MOMO-"+UUID.randomUUID());fields.put("resultCode","0");fields.put("responseTime",Long.toString(System.currentTimeMillis()));fields.put("signature","invalid");assertThatThrownBy(()->gateways.momoIpn(fields)).isInstanceOf(RuntimeException.class);
             fields.put("signature",GatewayPayments.hmac("HmacSHA256",vault.read(1,"PAYMENT","MOMO_SECRET_KEY"),GatewayPayments.momoCanonical(vault.read(1,"PAYMENT","MOMO_ACCESS_KEY"),fields)));assertThat(gateways.momoIpn(fields)).isEqualTo("TEST_SUCCEEDED");assertThat(gateways.momoIpn(fields)).isEqualTo("DUPLICATE");assertThat(count("SELECT COUNT(*) FROM payments WHERE invoice_id="+bill)).isZero();assertThat(f.db.sql("SELECT remaining_amount FROM invoices WHERE id=:id").param("id",bill).query(BigDecimal.class).single()).isEqualByComparingTo("4200000");
