@@ -10,37 +10,6 @@ Kết quả kiểm thử thanh toán, email, Zalo và triển khai local ngày 2
 
 Triển khai đầy đủ Next.js, Spring Boot, MySQL và HTTPS bằng cấu hình Compose riêng. Xem [hướng dẫn triển khai](docs/06-deployment/README.md).
 
-## Ảnh phòng (Prompt 16)
-
-Form Thêm/Sửa phòng dùng `RoomImages`, tối đa 10 ảnh JPG/PNG/WEBP, 5 MB/ảnh.
-Chọn ảnh, ảnh đại diện, thứ tự và thao tác xóa được áp dụng khi **Lưu phòng**.
-Backend lưu metadata và ảnh trong cùng transaction; lỗi một ảnh sẽ hủy toàn bộ lần lưu.
-Gửi lại cùng `Idempotency-Key` trả về phòng đã tạo, không tạo phòng hoặc file lần nữa.
-
-- `POST /api/admin/rooms`, `PUT /api/admin/rooms/{id}` nhận multipart:
-  `room` (JSON thông tin phòng), `gallery` (JSON `{items, cover}`), các part `images`.
-  `items` giữ thứ tự, mỗi phần tử là URL đã thuộc phòng hoặc `upload:0`, `upload:1`...
-  `cover` là chỉ số ảnh đại diện. PUT yêu cầu `room.version` để tránh ghi đè thay đổi mới.
-- `GET /api/admin/rooms/{id}` trả `images` và `room.thumbnailUrl` để tải lại gallery.
-  PUT cùng endpoint áp dụng thêm/xóa/đổi thứ tự/đổi ảnh đại diện; không sửa metadata bằng API riêng rời rạc.
-- File được đọc qua `GET /api/admin/properties/{propertyId}/images/{key}` có xác thực và kiểm tra phạm vi nhà trọ.
-  Giao diện dùng `PropertyImage` lấy blob bằng API client có token; không cần mở wildcard Next Image remote hosts.
-- Tái sử dụng `PropertyImageStorage`: xác minh MIME/nội dung, giải mã và mã hóa lại PNG,
-  tên UUID, không lưu tên file gốc hoặc đường dẫn Windows vào DB.
-- `PROPERTY_IMAGE_ROOT` cấu hình thư mục persistent **bên ngoài repository**, ví dụ
-  `D:/SmartHomeData/property-images`. Mặc định `${user.home}/.smarthome/property-images`.
-  Container/cloud cần mount volume persistent dùng chung giữa các replica; không dùng ổ tạm của container.
-  Repository hiện chưa có adapter object storage S3/Azure Blob.
-- Migration V44 giữ ảnh cũ, chuẩn hóa một ảnh đại diện và thêm bảng chống lưu trùng.
-  Ảnh bị bỏ liên kết được cleanup hiện có thu gom sau 24 giờ, chỉ khi không còn đối tượng tham chiếu.
-
-Kiểm thử opt-in dùng MySQL riêng (không cổng 3306):
-`-DroomImages.mysql=true -Dprompt03.mysql.port=13319 -Dprompt03.mysql.user=root -Dprompt03.mysql.password=`.
-Test HTTP: `-DroomImages.http=true -Dtest=RoomImageHttpTest`.
-`-DroomImages.browser=true` giữ fixture HTTP cho `node scripts/room-images-browser.cjs`;
-script browser dùng Chrome CDP 9226, frontend test 13000 và file ảnh giả lập tại `D:/DATN/prompt12-fixtures`.
-Kết quả và ảnh chụp nằm trong `docs/qa/room-images`.
-
 ## Yêu cầu trên Windows
 
 - Git
