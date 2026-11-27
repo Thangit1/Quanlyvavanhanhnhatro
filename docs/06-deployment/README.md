@@ -1,5 +1,9 @@
 # Triển khai SmartHome AI
 
+Với frontend trên **Vercel** và backend qua **Cloudflare Tunnel**, dùng
+[hướng dẫn Authentication và password recovery](PASSWORD_RECOVERY.md).
+Phần Compose bên dưới là phương án triển khai cùng máy chủ đã có của dự án.
+
 `docker-compose.deploy.yml` triển khai Caddy, Next.js, Spring Boot profile `prod` và MySQL. Caddy phục vụ frontend và chuyển `/api/*` đến backend trên cùng tên miền HTTPS. Frontend dùng `/api` ngay từ lúc build. MySQL, backend và frontend giao tiếp trong mạng Compose. Máy chủ chỉ mở cổng 80 và 443 của Caddy. [Định tuyến Caddy](https://caddyserver.com/docs/caddyfile/matchers), [HTTPS tự động](https://caddyserver.com/docs/automatic-https).
 
 ## Khởi động

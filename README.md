@@ -2,6 +2,10 @@
 
 Monorepo đồ án tốt nghiệp gồm frontend Next.js, backend Spring Boot và MySQL. Giai đoạn 1 cung cấp nền tảng dự án, migration xác thực, bảo mật cơ sở và health check end-to-end.
 
+Authentication sau deploy Vercel + Cloudflare Tunnel, SMTP hệ thống, khôi phục mật khẩu,
+cookie khác site và proxy Next.js tùy chọn: xem [hướng dẫn password recovery](docs/06-deployment/PASSWORD_RECOVERY.md).
+Kết quả build, MySQL/SMTP test và Chromium ngày 26/11/2026: [báo cáo QA Authentication](docs/qa/QA_AUTH_RECOVERY_2026-11-26.md).
+
 Kết quả kiểm thử thanh toán, email, Zalo và triển khai local ngày 25/11/2026 có trong [báo cáo QA](docs/qa/QA_DEPLOY_2026-11-25.md). Phạm vi nghiệm thu các module trước đó được ghi tại [Prompt 11](docs/qa/RELEASE_READINESS.md), [báo cáo thực thi](docs/qa/TEST_EXECUTION_REPORT.md) và [danh sách lỗi](docs/qa/BUG_REPORT.md).
 
 Triển khai đầy đủ Next.js, Spring Boot, MySQL và HTTPS bằng cấu hình Compose riêng. Xem [hướng dẫn triển khai](docs/06-deployment/README.md).

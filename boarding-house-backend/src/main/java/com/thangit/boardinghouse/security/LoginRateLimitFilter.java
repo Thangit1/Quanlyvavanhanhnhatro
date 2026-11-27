@@ -21,11 +21,12 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
     private final ObjectMapper mapper;
     private final int limit;
     private final long windowMs;
+    private final ClientAddress addresses;
 
-    public LoginRateLimitFilter(ObjectMapper mapper,
+    public LoginRateLimitFilter(ObjectMapper mapper, ClientAddress addresses,
             @Value("${app.security.login.rate-limit-max:20}") int limit,
             @Value("${app.security.login.rate-limit-window:60000}") long windowMs) {
-        this.mapper = mapper; this.limit = limit; this.windowMs = windowMs;
+        this.mapper = mapper; this.limit = limit; this.windowMs = windowMs; this.addresses = addresses;
     }
 
     @Override protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -35,7 +36,7 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
     @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain) throws ServletException, IOException {
         long now = Instant.now().toEpochMilli();
-        Window window = windows.compute(request.getRemoteAddr(), (ignored, current) ->
+        Window window = windows.compute(addresses.of(request), (ignored, current) ->
                 current == null || now - current.startedAt >= windowMs ? new Window(now, 1) : current.increment());
         if (windows.size() > 10_000) windows.entrySet().removeIf(entry -> now - entry.getValue().startedAt >= windowMs);
         if (window.count > limit) {

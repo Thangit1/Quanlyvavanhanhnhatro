@@ -17,9 +17,26 @@ export const authService = {
       .then((r) => r.data),
   me: () =>
     apiClient.get<ApiEnvelope<AuthUser>>("/auth/me").then((r) => r.data.data),
-  logout: () => apiClient.post<ApiEnvelope<null>>("/auth/logout"),
+  logout: (token?: string | null) =>
+    apiClient.post<ApiEnvelope<null>>(
+      "/auth/logout",
+      undefined,
+      token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+    ),
   forgotPassword: (email: string) =>
     apiClient
       .post<ApiEnvelope<null>>("/auth/forgot-password", { email })
+      .then((r) => r.data),
+  resetPassword: (
+    token: string,
+    newPassword: string,
+    confirmPassword: string,
+  ) =>
+    apiClient
+      .post<ApiEnvelope<null>>("/auth/reset-password", {
+        token,
+        newPassword,
+        confirmPassword,
+      })
       .then((r) => r.data),
 };

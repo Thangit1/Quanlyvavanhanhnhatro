@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { ArrowLeft, LoaderCircle, Mail } from "lucide-react";
 import { Brand } from "@/components/auth/brand";
 import { authService } from "@/services/auth.service";
+import { authErrorMessage } from "@/services/auth-error";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -23,11 +24,12 @@ export default function ForgotPasswordPage() {
     }
     setLoading(true);
     setError(null);
+    setMessage(null);
     try {
       const result = await authService.forgotPassword(normalized);
       setMessage(result.message);
-    } catch {
-      setError("Không thể kết nối đến máy chủ. Vui lòng thử lại.");
+    } catch (error) {
+      setError(authErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -96,9 +98,6 @@ export default function ForgotPasswordPage() {
           <ArrowLeft className="size-4" />
           Quay lại đăng nhập
         </Link>
-        <p className="mt-5 text-center text-xs text-warning">
-          Môi trường hiện tại chưa tích hợp dịch vụ gửi email.
-        </p>
       </div>
     </main>
   );

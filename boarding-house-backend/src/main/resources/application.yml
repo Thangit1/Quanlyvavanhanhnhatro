@@ -69,6 +69,11 @@ app:
       lock-duration: ${LOGIN_LOCK_DURATION:900000}
       rate-limit-max: ${LOGIN_RATE_LIMIT_MAX:20}
       rate-limit-window: ${LOGIN_RATE_LIMIT_WINDOW:60000}
+    recovery:
+      enabled: ${PASSWORD_RECOVERY_ENABLED:false}
+      email-limit: ${PASSWORD_RECOVERY_EMAIL_LIMIT:3}
+      ip-limit: ${PASSWORD_RECOVERY_IP_LIMIT:20}
+    trusted-cloudflare-proxies: ${TRUSTED_CLOUDFLARE_PROXIES:}
   cors:
     allowed-origins: ${FRONTEND_URL:http://localhost:3000}
   ai:

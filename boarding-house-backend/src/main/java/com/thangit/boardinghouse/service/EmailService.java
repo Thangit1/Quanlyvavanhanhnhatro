@@ -26,6 +26,17 @@ public class EmailService {
     private final String testRecipient;
     private final boolean businessDeliveryEnabled;
 
+    /** Recovery has its own explicit opt-in; owner integration SMTP is never used. */
+    public boolean canSendRecovery() { return configured(); }
+
+    public Result sendRecoveryEmail(String recipient, String subject, String body) {
+        if (!configured()) return result("NOT_CONFIGURED", "SMTP_CREDENTIALS_MISSING", null, false);
+        // Recovery opt-in is checked by PasswordRecoveryService. Retain the test recipient fence.
+        if (!testRecipient.isBlank() && !testRecipient.equalsIgnoreCase(recipient))
+            return result("ERROR", "TEST_RECIPIENT_NOT_ALLOWED", null, false);
+        return sendConfigured(mailSender, senderEmail, senderName, List.of(recipient), subject, body, false, null);
+    }
+
     public EmailService(JavaMailSender mailSender,
                         @Value("${app.mail.from:${spring.mail.username:}}") String senderEmail,
                         @Value("${app.mail.from-name:SmartHome AI}") String senderName,

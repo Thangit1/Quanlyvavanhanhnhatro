@@ -28,8 +28,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter,
             LoginRateLimitFilter loginRateLimitFilter,
-            RestAuthenticationEntryPoint entryPoint, RestAccessDeniedHandler deniedHandler) throws Exception {
+            RestAuthenticationEntryPoint entryPoint, RestAccessDeniedHandler deniedHandler,
+            @Value("${app.cors.allowed-origins}") List<String> origins, tools.jackson.databind.ObjectMapper json) throws Exception {
         return http
+                // Stateless bearer APIs; cookie auth is protected by AuthCsrfFilter's origin/header checks.
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -63,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/tenant/**").hasRole("TENANT")
                         .anyRequest().authenticated())
                 .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new com.thangit.boardinghouse.security.AuthCsrfFilter(origins, json), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -88,9 +91,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.allowed-origins}") List<String> origins) {
         CorsConfiguration configuration = new CorsConfiguration();
+        if (origins.stream().anyMatch(origin -> origin.contains("*") || origin.equals("null")))
+            throw new IllegalArgumentException("CORS requires explicit origins with credentials");
         configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Idempotency-Key"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Idempotency-Key", "X-Auth-Request"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

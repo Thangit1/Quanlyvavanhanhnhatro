@@ -32,9 +32,13 @@ public class AuthController {
     private final RegistrationService registrationService;
     private final AuthProperties properties;
     private final com.thangit.boardinghouse.security.LiveSessionVerifier sessions;
+    private final com.thangit.boardinghouse.service.PasswordRecoveryService recovery;
+    private final com.thangit.boardinghouse.security.ClientAddress addresses;
 
-    public AuthController(AuthService authService, RegistrationService registrationService, AuthProperties properties,com.thangit.boardinghouse.security.LiveSessionVerifier sessions) {
+    public AuthController(AuthService authService, RegistrationService registrationService, AuthProperties properties,com.thangit.boardinghouse.security.LiveSessionVerifier sessions, com.thangit.boardinghouse.service.PasswordRecoveryService recovery, com.thangit.boardinghouse.security.ClientAddress addresses) {
         this.authService = authService; this.registrationService = registrationService; this.properties = properties;this.sessions=sessions;
+        this.recovery = recovery;
+        this.addresses = addresses;
     }
 
     @PostMapping("/register")
@@ -77,11 +81,16 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body) {
-        // Response is deliberately identical for existing and unknown accounts.
-        // Email delivery is not configured in this project yet; no reset token is exposed here.
-        throw new AuthException(HttpStatus.SERVICE_UNAVAILABLE,"PASSWORD_RECOVERY_UNAVAILABLE",
-                "Hệ thống chưa cấu hình gửi hướng dẫn khôi phục mật khẩu. Vui lòng liên hệ chủ trọ.");
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body, HttpServletRequest request) {
+        recovery.request(body.email(), clientIp(request));
+        return ResponseEntity.accepted().body(ApiResponse.success(com.thangit.boardinghouse.service.PasswordRecoveryService.REQUEST_MESSAGE, null));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody com.thangit.boardinghouse.dto.request.auth.ResetPasswordRequest body, HttpServletRequest request) {
+        recovery.reset(body, clientIp(request));
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie("", Duration.ZERO).toString())
+                .body(ApiResponse.success("Đặt lại mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.", null));
     }
 
     private ResponseCookie cookie(String value, Duration maxAge) {
@@ -103,7 +112,7 @@ public class AuthController {
                 .map(Cookie::getValue).findFirst().orElse(null);
     }
 
-    private static String clientIp(HttpServletRequest request) {
-        return request.getRemoteAddr();
+    private String clientIp(HttpServletRequest request) {
+        return addresses.of(request);
     }
 }

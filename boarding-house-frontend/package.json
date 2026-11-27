@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:security": "node --test scripts/session-security.test.cjs",
+    "test:auth": "node --test scripts/session-security.test.cjs scripts/auth-recovery.test.cjs",
     "test:monthly-payments": "node --test scripts/monthly-payment-ui.test.cjs",
     "test:owner-manager": "node --test scripts/owner-manager-assignment.test.cjs scripts/session-security.test.cjs",
     "test:accounts": "node --test scripts/accounts-center.test.cjs scripts/owner-manager-assignment.test.cjs scripts/session-security.test.cjs",

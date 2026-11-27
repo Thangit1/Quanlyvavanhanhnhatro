@@ -7,6 +7,7 @@ import { adminPropertyService } from "@/services/admin-property.service";
 import { organizationService } from "@/services/organization.service";
 import { adminReportService } from "@/services/admin-report.service";
 import { currentSessionEpoch } from "@/services/api-client";
+import { usePathname } from "next/navigation";
 
 export function reportingRange(period: string, now = new Date()) {
   const year = now.getFullYear();
@@ -50,6 +51,11 @@ export function ManagementScopeProvider({
   children: React.ReactNode;
 }) {
   const { user } = useAuth();
+  const pathname = usePathname();
+  // Public recovery forms must survive bootstrap/logout epoch changes: their bearer
+  // reset token lives only in component memory after removing the URL fragment.
+  if (pathname === "/reset-password" || pathname === "/forgot-password")
+    return children;
   return (
     <ScopeSession
       key={`${user?.id}:${user?.activeRole}:${currentSessionEpoch()}`}

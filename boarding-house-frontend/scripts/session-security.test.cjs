@@ -257,6 +257,18 @@ test("403 does not rotate or retry credentials", async () => {
   await assert.rejects(h.client.get("/owner/forbidden"));
   assert.equal(rotations, 0);
 });
+
+test("blocked refresh cookie produces one 401 and no refresh loop", async () => {
+  const h = harness();
+  h.api.setAccessToken("expired");
+  let rotations = 0, requests = 0, expired = 0;
+  h.window.addEventListener("auth:expired", () => expired++);
+  h.refresh.defaults.adapter = (config) => { rotations++; return reject(config, 401); };
+  h.client.defaults.adapter = (config) => { requests++; return reject(config, 401); };
+  await assert.rejects(h.client.get("/tenant/contracts"), error => error.response.status === 401);
+  assert.equal(rotations, 1); assert.equal(requests, 1); assert.equal(expired, 1);
+  assert.equal(h.api.getAccessToken(), null);
+});
 test("revoking a previously readable resource emits one cache purge", async () => {
   const h = harness();
   let purges = 0;

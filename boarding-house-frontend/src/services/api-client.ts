@@ -32,13 +32,21 @@ export const apiClient = axios.create({
   baseURL,
   timeout: 10_000,
   withCredentials: true,
-  headers: { Accept: "application/json", "Content-Type": "application/json" },
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "X-Auth-Request": "1",
+  },
 });
 const refreshClient = axios.create({
   baseURL,
   timeout: 10_000,
   withCredentials: true,
-  headers: { Accept: "application/json", "Content-Type": "application/json" },
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "X-Auth-Request": "1",
+  },
 });
 
 export function setAccessToken(token: string | null) {
@@ -124,7 +132,8 @@ apiClient.interceptors.response.use(
       config._sessionEpoch !== sessionEpoch
     )
       return Promise.reject(new CanceledError("Session changed"));
-    const isAuthEndpoint = config?.url?.startsWith("/auth/") || config?.url === "/v1/health";
+    const isAuthEndpoint =
+      config?.url?.startsWith("/auth/") || config?.url === "/v1/health";
     if (
       error.response?.status === 403 &&
       (error.response.data as { errorCode?: string } | undefined)?.errorCode ===

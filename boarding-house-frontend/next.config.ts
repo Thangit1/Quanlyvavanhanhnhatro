@@ -9,6 +9,12 @@ if (auditDist && !/^\.next-audit[a-zA-Z0-9_-]*$/.test(auditDist)) {
 }
 const nextConfig: NextConfig = {
   distDir: auditDist || ".next",
+  ...(auditDist === ".next-audit-auth"
+    ? {
+        experimental: { cpus: 2, webpackMemoryOptimizations: true },
+        typescript: { tsconfigPath: "tsconfig.auth.json" },
+      }
+    : {}),
   ...(auditDist === ".next-audit14-demo"
     ? { typescript: { tsconfigPath: "tsconfig.demo.json" } }
     : auditDist === ".next-audit15-integrations"

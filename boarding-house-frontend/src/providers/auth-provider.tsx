@@ -8,6 +8,8 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { authErrorMessage } from "@/services/auth-error";
 import { authService } from "@/services/auth.service";
 import { disableWebPush } from "@/services/web-push.service";
 import {
@@ -27,18 +29,22 @@ interface AuthContextValue {
   login: (payload: LoginPayload) => Promise<AuthUser>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  discardSession: () => void;
+  sessionWarning: string | null;
 }
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isBootstrapping, setBootstrapping] = useState(true);
+  const [sessionWarning, setSessionWarning] = useState<string | null>(null);
   const router = useRouter();
   const queries = useQueryClient();
   const clearSession = useCallback(() => {
     resetApiSession();
     clearSessionCache(queries);
     setUser(null);
+    setSessionWarning(null);
   }, [queries]);
   useEffect(() => {
     let active = true;
@@ -99,6 +105,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       setAccessToken(envelope.data.accessToken);
       setUser(envelope.data.user);
+      const epoch = currentSessionEpoch();
+      // Verify that the browser actually retained/sent the HttpOnly cookie.
+      // A blocked cookie still permits this in-memory session; never persist refresh tokens in JS.
+      try {
+        await refreshAccessToken();
+      } catch (error) {
+        if (currentSessionEpoch() !== epoch)
+          throw new axios.CanceledError("Session changed");
+        if (
+          axios.isAxiosError(error) &&
+          error.response?.status === 401 &&
+          error.response.data?.errorCode === "MISSING_REFRESH_TOKEN"
+        )
+          setSessionWarning(
+            "Trình duyệt không gửi được cookie đăng nhập. Phiên hiện tại có thể mất khi tải lại trang. Hãy cho phép cookie hoặc dùng địa chỉ đăng nhập cùng origin do quản trị viên cấu hình.",
+          );
+        else setSessionWarning(authErrorMessage(error));
+      }
+      if (currentSessionEpoch() !== epoch)
+        throw new axios.CanceledError("Session changed");
       return envelope.data.user;
     },
     [clearSession],
@@ -109,10 +135,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* Logout still clears the authenticated session. */
     }
+    const token = getAccessToken();
     clearSession();
     const epoch = currentSessionEpoch();
     try {
-      await authService.logout();
+      await authService.logout(token);
     } catch {
       /* local logout still completes */
     }
@@ -124,10 +151,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(await authService.me());
   }, []);
   const value = useMemo(
-    () => ({ user, isBootstrapping, login, logout, refreshUser }),
-    [user, isBootstrapping, login, logout, refreshUser],
+    () => ({
+      user,
+      isBootstrapping,
+      login,
+      logout,
+      refreshUser,
+      discardSession: clearSession,
+      sessionWarning,
+    }),
+    [
+      user,
+      isBootstrapping,
+      login,
+      logout,
+      refreshUser,
+      clearSession,
+      sessionWarning,
+    ],
   );
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {sessionWarning && (
+        <div
+          role="status"
+          className="border-b bg-amber-50 px-4 py-3 text-sm text-amber-900"
+        >
+          {sessionWarning}
+        </div>
+      )}
+      {children}
+    </AuthContext.Provider>
+  );
 }
 export function useAuth() {
   const value = useContext(AuthContext);
